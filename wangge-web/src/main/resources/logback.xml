@@ -84,7 +84,7 @@
         <file>${log.home}/mq.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -98,7 +98,7 @@
         <file>${log.home}/aace.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/aace.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <FileNamePattern>${log.home}/aace.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -112,7 +112,7 @@
         <file>${log.home}/facade-param.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/facade-param.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <FileNamePattern>${log.home}/facade-param.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -126,7 +126,7 @@
         <file>${log.home}/performance-time.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/performance-time.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <FileNamePattern>${log.home}/performance-time.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -141,7 +141,6 @@
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <FileNamePattern>${log.home}/access.log.%d{yyyy-MM-dd}</FileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
@@ -169,7 +168,6 @@
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <FileNamePattern>${log.home}/schedule.log.%d{yyyy-MM-dd}</FileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
