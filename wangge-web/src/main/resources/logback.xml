@@ -84,7 +84,7 @@
         <file>${log.home}/mq.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
+            <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}</FileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
