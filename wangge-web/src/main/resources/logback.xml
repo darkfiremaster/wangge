@@ -50,10 +50,10 @@
     </appender>
 
     <appender name="PROJECT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${log.home}/cai.log</file>
+        <file>${log.home}/wangge.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.home}/cai.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <FileNamePattern>${log.home}/wangge.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
@@ -187,7 +187,7 @@
         <appender-ref ref="SQL" />
     </logger>
 
-    <logger name="com.shinemo.cai.core.mq" additivity="false">
+    <logger name="com.shinemo.wangge.core.mq" additivity="false">
         <level value="${loglevel}" />
         <appender-ref ref="MQ" />
     </logger>
