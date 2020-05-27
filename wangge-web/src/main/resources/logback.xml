@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+    <property name="loglevel" value="info" />
+    <property name="log.home" value="/data/logs/wangge" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{64} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/error.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/error.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/info.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/info.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="PROJECT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/cai.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/cai.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${loglevel}</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/sql.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/sql.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="MQ" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/mq.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="AACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/aace.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/aace.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="PrintParamResult" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/facade-param.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/facade-param.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="Performance" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/performance-time.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/performance-time.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="ACCESS_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/access.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/access.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="HTTP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/http.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/http.log.%d{yyyy-MM-dd}-%i.gz</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - %X{session} - [%thread] %-5level - %logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="SCHEDULE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/schedule.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${log.home}/schedule.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.mybatis.spring.SqlSessionUtils" level="ERROR" />
+    <logger name="org.springframework.jdbc.datasource.DataSourceUtils" level="ERROR" />
+    <logger name="org.mybatis.spring.transaction.SpringManagedTransaction" level="ERROR" />
+
+    <logger name="mapper" additivity="false">
+        <level value="debug" />
+        <appender-ref ref="SQL" />
+    </logger>
+
+    <logger name="com.shinemo.cai.core.mq" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="MQ" />
+    </logger>
+
+    <logger name="com.shinemo.Aace.Logger" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="AACE" />
+    </logger>
+
+    <logger name="com.shinemo.client.aop.log.PrintParamResult" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="PrintParamResult" />
+    </logger>
+
+    <logger name="com.shinemo.client.aop.performance.PerformanceInner" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="Performance" />
+    </logger>
+
+    <logger name="com.shinemo.client.aop.performance.PerformanceOuter" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="Performance" />
+    </logger>
+
+    <logger name="access" additivity="false">
+        <level value="info" />
+        <appender-ref ref="ACCESS_LOG" />
+    </logger>
+
+    <logger name="com.shinemo.client.http.HttpConnectionUtil" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="HTTP" />
+    </logger>
+
+    <logger name="org.apache.http" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="HTTP" />
+    </logger>
+
+    <logger name="com.shinemo.myts" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="SCHEDULE" />
+    </logger>
+
+    <logger name="org.springframework.scheduling.quartz" additivity="false">
+        <level value="${loglevel}" />
+        <appender-ref ref="SCHEDULE" />
+    </logger>
+
+    <root>
+        <level value="${loglevel}" />
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="PROJECT" />
+        <appender-ref ref="ERROR_LOG" />
+        <appender-ref ref="INFO_LOG" />
+    </root>
+</configuration>
