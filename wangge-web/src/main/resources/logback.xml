@@ -83,11 +83,9 @@
     <appender name="MQ" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.home}/mq.log</file>
         <append>true</append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>${log.home}/mq.log.%d{yyyy-MM-dd}-%i</FileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
@@ -139,10 +137,9 @@
     <appender name="ACCESS_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.home}/access.log</file>
         <append>true</append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>${log.home}/access.log.%d{yyyy-MM-dd}</FileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
@@ -166,10 +163,9 @@
     <appender name="SCHEDULE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${log.home}/schedule.log</file>
         <append>true</append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>${log.home}/schedule.log.%d{yyyy-MM-dd}</FileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level -%logger{35} - %msg%n</pattern>
