@@ -19,6 +19,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.shinemo.csm</groupId>
+            <artifactId>csmconfig-springboot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.shinemo.ds</groupId>
+            <artifactId>datasource</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
