@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SmartGridBizMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.stallup.domain.model.SmartGridBiz">
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="icon" column="icon"/>
+        <result property="config" column="config"/>
+        <result property="url" column="url"/>
+        <result property="status" column="status"/>
+        <result property="category" column="category"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+		id, gmt_create, gmt_modified, `name`, `type`, icon, config, url, status,category
+	</sql>
+
+    <sql id="table">
+        t_smart_grid_biz
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+                    <if test="name != null">and name = #{name}</if>
+                    <if test="type != null">and type = #{type}</if>
+                    <if test="icon != null">and icon = #{icon}</if>
+                    <if test="config != null">and config = #{config}</if>
+                    <if test="url != null">and url = #{url}</if>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="category != null">and category = #{category}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.stallup.domain.query.SmartGridBizQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.stallup.domain.query.SmartGridBizQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.stallup.domain.query.SmartGridBizQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="com.shinemo.stallup.domain.query.SmartGridBizQuery">
+        delete from
+        <include refid="table"/>
+        where id = #{id}
+    </delete>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.stallup.domain.model.SmartGridBiz">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="icon != null">
+                icon,
+            </if>
+            <if test="config != null">
+                config,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="category != null">
+                category,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type, jdbcType=INTEGER},
+            </if>
+            <if test="icon != null">
+                #{icon, jdbcType=VARCHAR},
+            </if>
+            <if test="config != null">
+                #{config, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="url != null">
+                #{url, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
+            </if>
+            <if test="category != null">
+                #{category, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.stallup.domain.model.SmartGridBiz">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="name != null">
+                `name` = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type, jdbcType=INTEGER},
+            </if>
+            <if test="icon != null">
+                icon = #{icon, jdbcType=VARCHAR},
+            </if>
+            <if test="config != null">
+                config= #{config, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="category != null">
+                category = #{category, jdbcType=INTEGER},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

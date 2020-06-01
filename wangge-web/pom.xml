@@ -27,6 +27,15 @@
             <groupId>com.shinemo.ds</groupId>
             <artifactId>datasource</artifactId>
         </dependency>
+        <!--cmgr-->
+        <dependency>
+            <groupId>com.shinemo.utils</groupId>
+            <artifactId>shinemo-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.shinemo.uban</groupId>
+            <artifactId>shinemo-commons</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

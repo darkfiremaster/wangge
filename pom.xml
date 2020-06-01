@@ -224,6 +224,37 @@
                 <artifactId>datasource</artifactId>
                 <version>1.0.16</version>
             </dependency>
+            <!--cmgr-->
+            <dependency>
+                <groupId>com.shinemo.utils</groupId>
+                <artifactId>shinemo-utils</artifactId>
+                <version>1.1.30-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.shinemo.common</groupId>
+                <artifactId>common</artifactId>
+                <version>1.0.7-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>5.1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${springboot-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.shinemo.uban</groupId>
+                <artifactId>shinemo-commons</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.shinemo.cmmc.report</groupId>
+                <artifactId>cmmc-report-client</artifactId>
+                <version>9.3-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

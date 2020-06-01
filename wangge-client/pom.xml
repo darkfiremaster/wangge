@@ -20,5 +20,14 @@
             <groupId>com.shinemo</groupId>
             <artifactId>common-client</artifactId>
         </dependency>
+        <!--cmgr-->
+        <dependency>
+            <groupId>com.shinemo.utils</groupId>
+            <artifactId>shinemo-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.shinemo.cmmc.report</groupId>
+            <artifactId>cmmc-report-client</artifactId>
+        </dependency>
     </dependencies>
 </project>
