@@ -6,6 +6,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.DateUtils;
@@ -67,7 +68,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     @Resource
     private BusinessConfigMapper businessConfigMapper;
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisService redisService;
     @Resource
     private StallUpConfig stallUpConfig;
     @Resource
@@ -861,7 +862,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                                     members.add(member);
                                 }
                                 //设置缓存失效时间24小时
-                                stringRedisTemplate.opsForValue().set(huaweiResponse.getBuildingId() + huaweiHouseResponse.getHouseNumber(), JSON.toJSONString(members), 24, TimeUnit.HOURS);
+                                redisService.set(huaweiResponse.getBuildingId() + huaweiHouseResponse.getHouseNumber(), JSON.toJSONString(members), 24*60*60);
                                 householdVO.setFamilyMembers(members);
                             }
                             householdVOS.add(householdVO);
@@ -1041,7 +1042,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
 
     @Override
     public ApiResult<List<FamilyMember>> getFamilyMembers(String buildingId, String unitId, String houseNumber) {
-        String redisValue = stringRedisTemplate.opsForValue().get(buildingId + houseNumber);
+        String redisValue = redisService.get(buildingId + houseNumber);
         if (!StringUtils.isBlank(redisValue)) {
             List<FamilyMember> list = JSONArray.parseArray(redisValue, FamilyMember.class);
             return ApiResult.of(0, list);
@@ -1050,7 +1051,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         request.setType(1);
         request.setBuildingId(buildingId);
         ApiResult<List<BuildingDetailsVO>> buildingPlan = getBuildingPlan(request);
-        String redisValue02 = stringRedisTemplate.opsForValue().get(buildingId + houseNumber);
+        String redisValue02 = redisService.get(buildingId + houseNumber);
         if (!StringUtils.isBlank(redisValue02)) {
             List<FamilyMember> list = JSONArray.parseArray(redisValue, FamilyMember.class);
             return ApiResult.of(0, list);
