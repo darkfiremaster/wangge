@@ -15,7 +15,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author htdong
  * @date 2020年4月15日 上午11:30:57
  */
-@ImportResource(locations = { "classpath:wangge-web.xml" })
+@ImportResource({
+        "classpath:wangge-web.xml"
+})
 @ComponentScan("com.shinemo.wangge")
 @SpringBootApplication
 @EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", username = "${nacos.username}", password = "${nacos.password}"))

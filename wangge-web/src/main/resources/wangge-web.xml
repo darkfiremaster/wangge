@@ -24,4 +24,8 @@
             <bean class="com.shinemo.client.interceptor.LocalhostInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
+
+    <!--引入文件上传服务-->
+    <bean id="fileSystemClient" class="com.shinemo.common.tools.tfs.FileSystemClient"/>
+
 </beans>

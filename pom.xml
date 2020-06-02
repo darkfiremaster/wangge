@@ -255,6 +255,21 @@
                 <artifactId>cmmc-report-client</artifactId>
                 <version>9.3-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>com.shinemo.aace</groupId>
+                <artifactId>aace-api</artifactId>
+                <version>1.5.19.46</version>
+            </dependency>
+            <dependency>
+                <groupId>com.shinemo.aace</groupId>
+                <artifactId>aace</artifactId>
+                <version>4.0.7-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.shinemo.aace</groupId>
+                <artifactId>jace-api</artifactId>
+                <version>1.2.3-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
