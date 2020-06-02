@@ -32,7 +32,6 @@ import javax.annotation.Resource;
 @SpringBootApplication(
         scanBasePackages = {
                 "com.shinemo.wangge",
-                "com.shinemo.springboot"
         }
 )
 @EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", username = "${nacos.username}", password = "${nacos.password}"))

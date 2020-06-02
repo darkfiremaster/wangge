@@ -13,7 +13,7 @@
         <property name="envName" value="${deploy.env}" />
     </bean>
 
-    <bean id="springContextHolder" class="com.shinemo.client.spring.SpringContextHolder" />
+    <!--<bean id="springContextHolder" class="com.shinemo.client.spring.SpringContextHolder" />-->
 
     <!--引入redis锁-->
     <bean id="redisLock" class="com.shinemo.common.tools.redis.RedisLock"/>
