@@ -18,8 +18,7 @@ import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 @SpringBootApplication
 @EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", username = "${nacos.username}", password = "${nacos.password}"))
 @NacosPropertySource(dataId = "wangge", groupId = "${nacos.group.id}")
-// @NacosPropertySource(dataId = "wangge", groupId = "dynamic", autoRefreshed =
-// true, first = true)
+@NacosPropertySource(dataId = "wangge", groupId = "dynamic", autoRefreshed = true, first = true)
 public class MainApplication {
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
