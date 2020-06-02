@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.handler;
 
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.domain.UrlRedirectHandlerRequest;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class SmsHotHandler implements UrlRedirectHandler{
 	private static final String SOURCE_KEY = "sms-warm-up-10001";
 
 	@Setter
-	private StringRedisTemplate stringRedisTemplate;
+	private RedisService redisService;
 
 	@Override
 	public String getUrl(UrlRedirectHandlerRequest request) {
@@ -43,7 +44,7 @@ public class SmsHotHandler implements UrlRedirectHandler{
 		String authKey = SmartGridUtils.genUuid();
 		log.info("【getUrl】 authKey = {}",authKey);
 		String redisValue = request.getUserPhone() + "," + SOURCE_KEY;
-		stringRedisTemplate.opsForValue().set(authKey,redisValue,300L, TimeUnit.SECONDS);
+		redisService.set(authKey,redisValue,300);
 		StringBuilder url = new StringBuilder();
 		url.append(domain).
 				append(path).

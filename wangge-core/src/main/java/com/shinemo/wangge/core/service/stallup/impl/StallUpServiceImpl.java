@@ -4,8 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.common.tools.exception.ApiException;
-import com.shinemo.common.tools.redis.RedisLock;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.domain.LockContext;
+import com.shinemo.my.redis.service.RedisLock;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -103,8 +104,8 @@ public class StallUpServiceImpl implements StallUpService {
     @Transactional(rollbackFor = Exception.class)
     public void create(StallUpRequest stallUpRequest) {
         String key = String.format(CREATE_KEY, stallUpRequest.getMobile(), stallUpRequest.getId());
-        boolean lock = redisLock.tryLock(key, INTERVAL_TIME);
-        if (!lock) {
+        boolean hasLock = redisLock.lock(LockContext.create(key, INTERVAL_TIME));
+        if (!hasLock) {
             log.error("[create] redisLock.tryLock failed, key:{}", key);
             throw new ApiException(StallUpErrorCodes.FREQUENT_ERROR);
         }
@@ -199,15 +200,15 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
         String key = String.format(UPDATE_PARENT_KEY, activity.getParentId());
-        boolean lock = redisLock.tryLock(key, EXPIRE_TIME);
-        if (!lock) {
+        boolean hasLock = redisLock.lock(LockContext.create(key, EXPIRE_TIME));
+        if (!hasLock) {
             log.error("[cancel] redisLock.tryLock failed, key:{}", key);
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         try {
             updateParent(child, null, new Date());
         } finally {
-            redisLock.unlock(key);
+            redisLock.unlock(LockContext.create(key));
         }
     }
 
@@ -248,15 +249,15 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
         String key = String.format(UPDATE_PARENT_KEY, child.getParentId());
-        boolean lock = redisLock.tryLock(key, EXPIRE_TIME);
-        if (!lock) {
+        boolean hasLock = redisLock.lock(LockContext.create(key, EXPIRE_TIME));
+        if (!hasLock) {
             log.error("[sign] redisLock.tryLock failed, key:{}", key);
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         try {
             updateParent(child, startTime, null);
         } finally {
-            redisLock.unlock(key);
+            redisLock.unlock(LockContext.create(key));
         }
     }
 
@@ -348,15 +349,15 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
         String key = String.format(UPDATE_PARENT_KEY, child.getParentId());
-        boolean lock = redisLock.tryLock(key, EXPIRE_TIME);
-        if (!lock) {
+        boolean hasLock = redisLock.lock(LockContext.create(key, EXPIRE_TIME));
+        if (!hasLock) {
             log.error("[end] redisLock.tryLock failed, key:{}", key);
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         try {
             updateParent(child, null, endTime);
         } finally {
-            redisLock.unlock(key);
+            redisLock.unlock(LockContext.create(key));
         }
     }
 
@@ -415,15 +416,15 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
         String key = String.format(UPDATE_PARENT_KEY, child.getParentId());
-        boolean lock = redisLock.tryLock(key, EXPIRE_TIME);
-        if (!lock) {
+        boolean hasLock = redisLock.lock(LockContext.create(key, EXPIRE_TIME));
+        if (!hasLock) {
             log.error("[autoEnd] redisLock.tryLock failed, key:{}", key);
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         try {
             updateParent(child, null, endTime);
         } finally {
-            redisLock.unlock(key);
+            redisLock.unlock(LockContext.create(key));
         }
     }
 
