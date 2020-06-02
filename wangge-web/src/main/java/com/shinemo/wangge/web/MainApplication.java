@@ -37,8 +37,7 @@ import javax.annotation.Resource;
 )
 @EnableNacosConfig(globalProperties = @NacosProperties(enableRemoteSyncConfig = "true", username = "${nacos.username}", password = "${nacos.password}"))
 @NacosPropertySource(dataId = "wangge", groupId = "${nacos.group.id}")
-// @NacosPropertySource(dataId = "wangge", groupId = "dynamic", autoRefreshed =
-// true, first = true)
+@NacosPropertySource(dataId = "wangge", groupId = "dynamic", autoRefreshed = true, first = true)
 @MapperScan(basePackages = {
         "com.shinemo.wangge.mapper"
 })
