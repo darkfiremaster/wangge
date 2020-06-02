@@ -108,6 +108,7 @@ public class IndexController {
 		response.setIndexList(indexList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
 		List<StallUpBizType> quickAccessList = stallUpConfig.getConfig().getQuickAccessList();
 		response.setQuickAccessList(quickAccessList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
+		// TODO
 		//督导
 		response.setDuDaoTopId(24L);
 		response.setDuDaoBottomId(25L);

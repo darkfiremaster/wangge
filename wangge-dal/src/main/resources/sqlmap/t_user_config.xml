@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.UserConfigMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.smartgrid.domain.model.UserConfigDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="userId" column="user_id" />
+        <result property="gridBiz" column="grid_biz" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, user_id, grid_biz
+    </sql>
+
+    <sql id="table">
+        t_user_config
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="userId != null">and user_id = #{userId}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result" parameterType="com.shinemo.smartgrid.domain.query.UserConfigQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        <if test="queryTotal">
+            limit #{startRow},#{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.smartgrid.domain.query.UserConfigQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.smartgrid.domain.query.UserConfigQuery">
+        select count(*) from
+        <include refid="table" />
+        <include refid="conditions" />
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="com.shinemo.smartgrid.domain.model.UserConfigDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="gridBiz != null">
+                grid_biz,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="gridBiz != null">
+                #{gridBiz},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.smartgrid.domain.model.UserConfigDO">
+        UPDATE
+        <include refid="table" />
+        <set>
+            gmt_modified = now(),
+            <if test="gridBiz != null">
+                grid_biz = #{gridBiz},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>
