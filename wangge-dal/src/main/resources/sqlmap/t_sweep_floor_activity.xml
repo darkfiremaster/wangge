@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SweepFloorActivityMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="communityName" column="community_name" />
+        <result property="communityId" column="community_id" />
+        <result property="location" column="location" />
+        <result property="address" column="address" />
+        <result property="creator" column="creator" />
+        <result property="creatorName" column="creator_name" />
+        <result property="creatorOrgId" column="creator_org_id" />
+        <result property="status" column="status" />
+        <result property="mobile" column="mobile" />
+        <result property="gridId" column="grid_id" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, community_name, community_id, location, address, creator,creator_name,creator_org_id,status,mobile,grid_id,
+        start_time,end_time
+    </sql>
+
+    <sql id="table">
+        t_sweep_floor_activity
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="creator != null">and creator = #{creator}</if>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="createTime == null">
+                        <if test="startTime != null"><![CDATA[and start_time >= #{startTime}]]></if>
+                        <if test="endTime != null"><![CDATA[and end_time <= #{endTime}]]></if>
+                    </if>
+                    <if test="createTime != null">
+                        <if test="startTime != null"><![CDATA[and gmt_create >= #{startTime}]]></if>
+                        <if test="endTime != null"><![CDATA[and gmt_create <= #{endTime}]]></if>
+                    </if>
+                    <if test="gridId != null">and FIND_IN_SET(#{gridId},grid_id)</if>
+                    <if test="ids != null and ids.size() > 0">
+                        and id in
+                        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
+                    <if test="statusList != null and statusList.size() > 0">
+                        and status in
+                        <foreach collection="statusList" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result" parameterType="com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        order by gmt_create desc
+        <if test="queryTotal">
+           limit #{startRow},#{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery">
+        select count(*) from
+        <include refid="table" />
+        <include refid="conditions" />
+    </select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery">
+        delete from
+        <include refid="table" />
+        where id = #{id}
+    </delete>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="communityName != null">
+                community_name,
+            </if>
+            <if test="communityId != null">
+                community_id,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="creatorName != null">
+                creator_name,
+            </if>
+            <if test="creatorOrgId != null">
+                creator_org_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="gridId != null">
+                grid_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{gmtCreate},
+            #{gmtModified},
+            <if test="communityName != null">
+                #{communityName},
+            </if>
+            <if test="communityId != null">
+                #{communityId},
+            </if>
+            <if test="location != null">
+                #{location},
+            </if>
+            <if test="address != null">
+                #{address},
+            </if>
+            <if test="creator != null">
+                #{creator},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName},
+            </if>
+            <if test="creatorOrgId != null">
+                #{creatorOrgId},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="gridId != null">
+                #{gridId},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO">
+        UPDATE
+        <include refid="table" />
+        <set>
+            gmt_modified = now(),
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="gridId != null">
+                grid_id = #{gridId},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

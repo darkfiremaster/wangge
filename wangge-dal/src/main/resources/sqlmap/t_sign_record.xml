@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SignRecordMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepfloor.domain.model.SignRecordDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="userId" column="user_id" />
+        <result property="activityId" column="activity_id" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="bizType" column="biz_type" />
+        <result property="startLocation" column="start_location" />
+        <result property="endLocation" column="end_location" />
+        <result property="imgUrl" column="img_url" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, user_id, activity_id, start_time, end_time, biz_type,start_location,end_location,img_url,remark
+    </sql>
+
+    <sql id="table">
+        t_sign_record
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="activityId != null">and activity_id = #{activityId}</if>
+                    <if test="userId != null">and user_id = #{userId}</if>
+                    <if test="bizType != null">and biz_type = #{bizType}</if>
+                    <if test="startTime != null"><![CDATA[and start_time >= #{startTime}]]></if>
+                    <if test="endTime != null"><![CDATA[and end_time <= #{endTime}]]></if>
+                    <if test="activityIds != null and activityIds.size() > 0">
+                        and activity_id in
+                        <foreach collection="activityIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result" parameterType="com.shinemo.sweepfloor.domain.query.SignRecordQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        <if test="queryTotal">
+            limit #{startRow},#{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepfloor.domain.query.SignRecordQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepfloor.domain.query.SignRecordQuery">
+        select count(*) from
+        <include refid="table" />
+        <include refid="conditions" />
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="com.shinemo.sweepfloor.domain.model.SignRecordDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="activityId != null">
+                activity_id,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="bizType != null">
+                biz_type,
+            </if>
+            <if test="startLocation != null">
+                start_location,
+            </if>
+            <if test="endLocation != null">
+                end_location,
+            </if>
+            <if test="imgUrl != null">
+                img_url,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="activityId != null">
+                #{activityId},
+            </if>
+            <if test="startTime != null">
+                #{startTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="bizType != null">
+                #{bizType},
+            </if>
+            <if test="startLocation != null">
+                #{startLocation},
+            </if>
+            <if test="endLocation != null">
+                #{endLocation},
+            </if>
+            <if test="imgUrl != null">
+                #{imgUrl},
+            </if>
+            <if test="imgUrl != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepfloor.domain.model.SignRecordDO">
+        UPDATE
+        <include refid="table" />
+        <set>
+            gmt_modified = now(),
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="startLocation != null">
+                start_location = #{startLocation},
+            </if>
+            <if test="endLocation != null">
+                end_location = #{endLocation},
+            </if>
+            <if test="imgUrl != null">
+                img_url = #{imgUrl},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

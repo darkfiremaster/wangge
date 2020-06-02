@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper">
+
+	<!-- 结果集对应关系 -->
+	<resultMap id="result" type="com.shinemo.stallup.domain.model.ParentStallUpActivity" >
+		<id column="id" property="id"/>
+		<result property="gmtCreate" column="gmt_create"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="communityName" column="community_name"/>
+		<result property="communityId" column="community_id"/>
+		<result property="address" column="address"/>
+		<result property="mobile" column="mobile"/>
+		<result property="name" column="name"/>
+		<result property="title" column="title"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="realStartTime" column="real_start_time"/>
+		<result property="realEndTime" column="real_end_time"/>
+		<result property="location" column="location"/>
+		<result property="status" column="status"/>
+        <result property="partner" column="partner"/>
+		<result property="gridId" column="grid_id"/>
+		<result property="custIdList" column="cust_id_list"/>
+		<result property="bizList" column="biz_list"/>
+		<result property="flag" column="flag"/>
+		<result property="extend" column="extend"/>
+	</resultMap>
+
+	<!-- 数据库字段 -->
+	<sql id="columns">
+		id, gmt_create, gmt_modified, community_name, community_id, address, mobile, `name`, title, start_time, end_time, real_start_time, real_end_time, location, status, partner,grid_id, cust_id_list, biz_list, flag, extend
+	</sql>
+
+    <sql id="table">
+        t_parent_stall_up_activity
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+					<if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
+					<if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+					<if test="communityName != null">and community_name = #{communityName}</if>
+					<if test="communityId != null">and community_id = #{communityId}</if>
+					<if test="address != null">and address = #{address}</if>
+					<if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="name != null">and `name` = #{name}</if>
+					<if test="title != null">and title = #{title}</if>
+					<if test="startTime != null">and start_time = #{startTime}</if>
+					<if test="endTime != null">and end_time = #{endTime}</if>
+					<if test="realStartTime != null">and real_start_time = #{realStartTime}</if>
+					<if test="realEndTime != null">and real_end_time = #{realEndTime}</if>
+					<if test="location != null">and location = #{location}</if>
+					<if test="status != null">and status = #{status}</if>
+                    <if test="partner != null">and partner = #{partner}</if>
+					<if test="gridId != null">and grid_id = #{gridId}</if>
+					<if test="custIdList != null">and cust_id_list = #{custIdList}</if>
+					<if test="bizList != null">and biz_list = #{bizList}</if>
+					<if test="flag != null">and flag = #{flag}</if>
+					<if test="extend != null">and extend = #{extend}</if>
+                    <if test="ltCreateTime!=null">and gmt_create &lt;= #{ltCreateTime}</if>
+                    <if test="gtCreateTime!=null">and gmt_create &gt;= #{gtCreateTime}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+	<!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+	<!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+	<!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <select id="getList" resultMap="result" parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+
+        select * from
+        <include refid="table"/>
+        where 1=1
+        <if test="mobile!=null"> and mobile = #{mobile}</if>
+        <if test="ltCreateTime!=null">and gmt_create &lt;= #{ltCreateTime}</if>
+        <if test="gtCreateTime!=null">and gmt_create &gt;= #{gtCreateTime}</if>
+        <if test="status!=null">and status = #{status}</if>
+        <if test="gridId!=null">and grid_id = #{gridId}</if>
+        <if test="mobile!=null">
+            union
+            select * from
+            <include refid="table"/>
+            where id in (
+                select distinct parent_id from t_stall_up_activity where mobile = #{mobile}
+                <if test="gridId!=null">and grid_id = #{gridId}</if>
+            )
+            <if test="ltCreateTime!=null">and gmt_create &lt;= #{ltCreateTime}</if>
+            <if test="gtCreateTime!=null">and gmt_create &gt;= #{gtCreateTime}</if>
+            <if test="status!=null">and status = #{status}</if>
+        </if>
+    </select>
+
+    <select id="countList" resultMap="result" parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+        select grid_id,count(*) as count from
+        <include refid="table"/>
+        where 1=1
+        <if test="ltStartTime!=null">and start_time &lt; #{ltStartTime}</if>
+        <if test="gtRealEndTime!=null">and real_end_time &gt;= #{gtRealEndTime}</if>
+        <if test="status!=null">and status = #{status}</if>
+        and grid_id in
+        <foreach collection="gridIds" item="gridId" open="(" close=")" separator=",">
+            #{gridId}
+        </foreach>
+        group by grid_id
+    </select>
+
+	<!-- 删除 -->
+    <delete id="delete" parameterType="com.shinemo.stallup.domain.query.ParentStallUpActivityQuery">
+        delete from
+        <include refid="table"/>
+        where id = #{id}
+    </delete>
+
+	<!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.stallup.domain.model.ParentStallUpActivity">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+				id,
+			</if>
+					gmt_create,
+					gmt_modified,
+            <if test="communityName != null">
+				community_name,
+			</if>
+            <if test="communityId != null">
+				community_id,
+			</if>
+            <if test="address != null">
+				address,
+			</if>
+            <if test="mobile != null">
+				mobile,
+			</if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="title != null">
+				title,
+			</if>
+            <if test="startTime != null">
+				start_time,
+			</if>
+            <if test="endTime != null">
+				end_time,
+			</if>
+            <if test="realStartTime != null">
+				real_start_time,
+			</if>
+            <if test="realEndTime != null">
+				real_end_time,
+			</if>
+            <if test="location != null">
+				location,
+			</if>
+            <if test="status != null">
+				status,
+			</if>
+            <if test="partner != null">
+                partner,
+            </if>
+            <if test="gridId != null">
+				grid_id,
+			</if>
+            <if test="custIdList != null">
+				cust_id_list,
+			</if>
+            <if test="bizList != null">
+				biz_list,
+			</if>
+            <if test="flag != null">
+				flag,
+			</if>
+            <if test="extend != null">
+				extend,
+			</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+				#{id, jdbcType=BIGINT},
+            </if>
+                    now(),
+                    now(),
+            <if test="communityName != null">
+				#{communityName, jdbcType=VARCHAR},
+            </if>
+            <if test="communityId != null">
+				#{communityId, jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+				#{address, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+				#{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+				#{title, jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+				#{startTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+				#{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+				#{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+				#{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="location != null">
+				#{location, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+				#{status, jdbcType=INTEGER},
+            </if>
+            <if test="partner != null">
+                #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="gridId != null">
+				#{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="custIdList != null">
+				#{custIdList, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bizList != null">
+				#{bizList, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="flag != null">
+				#{flag, jdbcType=INTEGER},
+            </if>
+            <if test="extend != null">
+				#{extend, jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.stallup.domain.model.ParentStallUpActivity">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="communityName != null">
+                community_name = #{communityName, jdbcType=VARCHAR},
+            </if>
+            <if test="communityId != null">
+                community_id = #{communityId, jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                `name` = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                title = #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+                real_start_time = #{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+                real_end_time = #{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="location != null">
+                location = #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="partner != null">
+                partner = #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="gridId != null">
+                grid_id = #{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="custIdList != null">
+                cust_id_list = #{custIdList, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bizList != null">
+                biz_list = #{bizList, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="flag != null">
+                flag = #{flag, jdbcType=INTEGER},
+            </if>
+            <if test="extend != null">
+                extend = #{extend, jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepfloor.domain.model.HuaweiApiLogDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="mobile" column="mobile" />
+        <result property="costTime" column="cost_time" />
+        <result property="request" column="request" />
+        <result property="response" column="response" />
+        <result property="status" column="status" />
+        <result property="url" column="url" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, mobile, cost_time, request,response,status,url
+    </sql>
+
+    <sql id="table">
+        t_huawei_api_log${tableIndex}
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="com.shinemo.sweepfloor.domain.model.HuaweiApiLogDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="costTime != null">
+                cost_time,
+            </if>
+            <if test="request != null">
+                request,
+            </if>
+            <if test="response != null">
+                response,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="costTime != null">
+                #{costTime},
+            </if>
+            <if test="request != null">
+                #{request},
+            </if>
+            <if test="response != null">
+                #{response},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+        </trim>
+    </insert>
+</mapper>

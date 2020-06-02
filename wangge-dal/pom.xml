@@ -51,5 +51,10 @@
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
         </dependency>
+        <!--cmgr-->
+        <dependency>
+            <groupId>com.shinemo.common</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
     </dependencies>
 </project>

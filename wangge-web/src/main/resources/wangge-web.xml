@@ -15,10 +15,19 @@
 
     <bean id="springContextHolder" class="com.shinemo.client.spring.SpringContextHolder" />
 
+    <!--引入redis锁-->
+    <bean id="redisLock" class="com.shinemo.common.tools.redis.RedisLock"/>
+
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/backdoor/**" />
             <bean class="com.shinemo.client.interceptor.LocalhostInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
+
+    <!--引入文件上传服务-->
+    <bean id="fileSystemClient" class="com.shinemo.common.tools.tfs.FileSystemClient"/>
+
+    <bean id="cmmcBaseClient" class="com.shinemo.jace.api.cmmc.base.CmmcBaseClient"/>
+
 </beans>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.ThirdApiMappingMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.thirdapi.domain.model.ThirdApiMappingDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="apiName" column="api_name" />
+        <result property="url" column="url" />
+        <result property="method" column="method" />
+        <result property="description" column="description" />
+        <result property="status" column="status" />
+        <result property="contentType" column="content_type" />
+        <result property="httpMethod" column="http_method" />
+        <result property="flag" column="flag" />
+        <result property="type" column="type" />
+        <result property="timeout" column="timeout" />
+        <result property="mockData" column="mock_data" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id,gmt_create,gmt_modified,api_name,url,method,description,status,content_type,http_method,flag,type,timeout,mock_data,remark
+    </sql>
+
+    <sql id="table">
+        t_third_api_mapping
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="apiName != null">and api_name = #{apiName}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.thirdapi.domain.query.ThirdApiMappingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        limit 1
+    </select>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result" parameterType="com.shinemo.thirdapi.domain.query.ThirdApiMappingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.thirdapi.domain.model.ThirdApiMappingDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="apiName != null">
+                api_name,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="method != null">
+                method,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="contentType != null">
+                content_type,
+            </if>
+            <if test="httpMethod != null">
+                http_method,
+            </if>
+            <if test="flag != null">
+                flag,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="timeout != null">
+                timeout,
+            </if>
+            <if test="mockData != null">
+                mock_data,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            <if test="apiName != null">
+                #{apiName},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="method != null">
+                #{method},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="contentType != null">
+                #{contentType},
+            </if>
+            <if test="httpMethod != null">
+                #{httpMethod},
+            </if>
+            <if test="flag != null">
+                #{flag},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="timeout != null">
+                #{timeout},
+            </if>
+            <if test="mockData != null">
+                #{mockData},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>
