@@ -3,10 +3,13 @@ package com.shinemo.wangge.core.service.stallup.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.redis.RedisLock;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.domain.model.UserConfigDO;
+import com.shinemo.smartgrid.domain.query.UserConfigQuery;
 import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.common.error.StallUpErrorCodes;
@@ -30,6 +33,8 @@ import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
 import com.shinemo.wangge.dal.mapper.SignRecordMapper;
 import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
 import com.shinemo.wangge.dal.mapper.StallUpMarketingNumberMapper;
+import com.shinemo.wangge.dal.mapper.UserConfigMapper;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,13 +70,14 @@ public class StallUpServiceImpl implements StallUpService {
     private static final Integer EXPIRE_TIME = 5;
     private static final Integer INTERVAL_TIME = 1;
     private static final String CREATE_KEY = "cmgr_stallup_c_mobile_%s_id_%s";
-    //更新父摆摊，粒度为父摆摊id
+    // 更新父摆摊，粒度为父摆摊id
     private static final String UPDATE_PARENT_KEY = "cmgr_stallup_up_pid_%s";
     private static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static final Function<Object, String> toJson = v -> v == null ? null : GsonUtils.toJson(v);
     private static final Function<Date, String> date2String = v -> v == null ? null : FORMAT.format(v);
-    private static final BiFunction<Long, Long, Boolean> timeFilter = (a, b) -> a != null && b != null && a.longValue() >= b.longValue();
+    private static final BiFunction<Long, Long, Boolean> timeFilter = (a, b) -> a != null && b != null
+            && a.longValue() >= b.longValue();
 
     private static final SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -83,6 +89,9 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private SignRecordMapper signRecordMapper;
+
+    @Resource
+    private UserConfigMapper userConfigMapper;
 
     @Resource
     private StallUpMarketingNumberMapper stallUpMarketingNumberMapper;
@@ -139,28 +148,16 @@ public class StallUpServiceImpl implements StallUpService {
         }).collect(Collectors.toList());
         String partnerListJson = toJson.apply(list);
         for (GridUserDetail detail : list) {
-            StallUpActivity stallUpActivity = StallUpActivity.builder()
-                    .communityId(request.getCommunityId())
-                    .communityName(request.getCommunityName())
-                    .address(request.getAddress())
-                    .creatorId(request.getUid())
-                    .mobile(detail.getMobile())
-                    .creatorOrgId(request.getOrgId())
-                    .title(request.getTitle())
-                    .startTime(startTime)
-                    .endTime(endTime)
-                    .location(request.getLocation())
-                    .partner(partnerListJson)
-                    .gridId(request.getGridId())
-                    .custIdList(custIdListJson)
-                    .bizList(bizTypeListJson)
-                    .status(StallUpStatusEnum.PREPARE.getId())
-                    .name(nameMap.get(detail.getMobile()))
-                    .build();
+            StallUpActivity stallUpActivity = StallUpActivity.builder().communityId(request.getCommunityId())
+                    .communityName(request.getCommunityName()).address(request.getAddress()).creatorId(request.getUid())
+                    .mobile(detail.getMobile()).creatorOrgId(request.getOrgId()).title(request.getTitle())
+                    .startTime(startTime).endTime(endTime).location(request.getLocation()).partner(partnerListJson)
+                    .gridId(request.getGridId()).custIdList(custIdListJson).bizList(bizTypeListJson)
+                    .status(StallUpStatusEnum.PREPARE.getId()).name(nameMap.get(detail.getMobile())).build();
             insertList.add(stallUpActivity);
         }
         if (insertList.size() > 0) {
-            //插入父摆摊
+            // 插入父摆摊
             ParentStallUpActivity parent = new ParentStallUpActivity();
             BeanUtils.copyProperties(insertList.get(0), parent);
             parent.setId(null);
@@ -168,12 +165,14 @@ public class StallUpServiceImpl implements StallUpService {
             String name = null;
             ApiResult<GetGridUserInfoResult.DataBean> result = null;
             try {
-                result = huaWeiService.getGridUserInfoDetail(HuaWeiRequest.builder().mobile(request.getMobile()).build());
+                result = huaWeiService
+                        .getGridUserInfoDetail(HuaWeiRequest.builder().mobile(request.getMobile()).build());
                 if (result.isSuccess()) {
                     name = result.getData().getUserName();
                 }
             } catch (ApiException e) {
-                log.error("[create] failed call huaWeiService.getGridUserInfoDetail, mobile:{}, result:{}", request.getMobile(), result);
+                log.error("[create] failed call huaWeiService.getGridUserInfoDetail, mobile:{}, result:{}",
+                        request.getMobile(), result);
             }
             if (name == null) {
                 name = SmartGridContext.getUserName();
@@ -181,8 +180,9 @@ public class StallUpServiceImpl implements StallUpService {
             parent.setName(name);
             parent.setFlag(0);
             parentStallUpActivityMapper.insert(parent);
-            //批量插入子摆摊
-            stallUpActivityMapper.insertBatch(insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
+            // 批量插入子摆摊
+            stallUpActivityMapper.insertBatch(
+                    insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
         }
     }
 
@@ -191,10 +191,7 @@ public class StallUpServiceImpl implements StallUpService {
     public void cancel(StallUpRequest stallUpRequest) {
         StallUpCancelRequest request = (StallUpCancelRequest) stallUpRequest;
         int status = StallUpStatusEnum.CANCELED.getId();
-        StallUpActivity activity = StallUpActivity.builder()
-                .id(request.getId())
-                .status(status)
-                .build();
+        StallUpActivity activity = StallUpActivity.builder().id(request.getId()).status(status).build();
         stallUpActivityMapper.update(activity);
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
@@ -216,7 +213,7 @@ public class StallUpServiceImpl implements StallUpService {
     public void sign(StallUpRequest stallUpRequest) {
         StallUpSignRequest request = (StallUpSignRequest) stallUpRequest;
         int status = StallUpStatusEnum.STARTED.getId();
-        //是否有正在进行的摆摊计划
+        // 是否有正在进行的摆摊计划
         StallUpActivityQuery query = new StallUpActivityQuery();
         query.setMobile(request.getMobile());
         query.setStatus(status);
@@ -225,25 +222,18 @@ public class StallUpServiceImpl implements StallUpService {
             log.error("[sign] exist started, stallUpActivity:{}", stallUpActivity);
             throw new ApiException(StallUpErrorCodes.SIGN_ERROR);
         }
-        //插入签到记录
+        // 插入签到记录
         Date startTime = new Date();
         SignRecordDO signRecordDO = new SignRecordDO();
         signRecordDO.setBizType(BIZ_TYPE);
         signRecordDO.setActivityId(request.getId());
         signRecordDO.setUserId(request.getUid().toString());
         signRecordDO.setStartTime(startTime);
-        signRecordDO.setStartLocation(
-                GsonUtils.toJson(StallUpSignDetail.builder()
-                        .address(request.getAddress())
-                        .location(request.getLocation())
-                        .build())
-        );
+        signRecordDO.setStartLocation(GsonUtils.toJson(
+                StallUpSignDetail.builder().address(request.getAddress()).location(request.getLocation()).build()));
         signRecordMapper.insert(signRecordDO);
-        //更新摆摊计划状态
-        StallUpActivity activity = StallUpActivity.builder()
-                .id(request.getId())
-                .status(status)
-                .build();
+        // 更新摆摊计划状态
+        StallUpActivity activity = StallUpActivity.builder().id(request.getId()).status(status).build();
         stallUpActivityMapper.update(activity);
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
@@ -278,71 +268,53 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpConfig.ConfigDetail config = stallUpConfig.getConfig();
         int status = StallUpStatusEnum.END.getId();
         if (distance > config.getRadius()) {
-            log.error("[end] distance error, signLocation:{}, planLocation:{}, distance:{}",
-                    location, activity.getLocation(), distance);
+            log.error("[end] distance error, signLocation:{}, planLocation:{}, distance:{}", location,
+                    activity.getLocation(), distance);
             status = StallUpStatusEnum.ABNORMAL_END.getId();
         }
-        //更新打卡记录
+        // 更新打卡记录
         Date endTime = new Date();
         SignRecordDO newSignRecordDO = new SignRecordDO();
         newSignRecordDO.setId(signRecordDO.getId());
         newSignRecordDO.setEndTime(endTime);
-        newSignRecordDO.setEndLocation(
-                GsonUtils.toJson(StallUpSignDetail.builder()
-                        .address(request.getAddress())
-                        .location(request.getLocation())
-                        .build())
-        );
+        newSignRecordDO.setEndLocation(GsonUtils.toJson(
+                StallUpSignDetail.builder().address(request.getAddress()).location(request.getLocation()).build()));
         newSignRecordDO.setRemark(request.getRemark());
         newSignRecordDO.setImgUrl(GsonUtils.toJson(request.getImageList()));
         signRecordMapper.update(newSignRecordDO);
-        //更新摆摊计划状态
-        StallUpActivity updateActivity = StallUpActivity.builder()
-                .id(request.getId())
-                .status(status)
-                .build();
+        // 更新摆摊计划状态
+        StallUpActivity updateActivity = StallUpActivity.builder().id(request.getId()).status(status).build();
         stallUpActivityMapper.update(updateActivity);
-        //插入或更新摆摊办理量详情
+        // 插入或更新摆摊办理量详情
         StallUpMarketingNumberQuery marketingNumberQuery = new StallUpMarketingNumberQuery();
         marketingNumberQuery.setActivityId(request.getId());
         StallUpMarketingNumber stallUpMarketingNumber = stallUpMarketingNumberMapper.get(marketingNumberQuery);
         if (stallUpMarketingNumber == null) {
-            StallUpMarketingNumber value = StallUpMarketingNumber.builder()
-                    .userId(request.getUid())
-                    .activityId(request.getId())
-                    .remark(request.getBizRemark())
-                    .build();
+            StallUpMarketingNumber value = StallUpMarketingNumber.builder().userId(request.getUid())
+                    .activityId(request.getId()).remark(request.getBizRemark()).build();
             if (CollectionUtils.isEmpty(request.getBizDetailList())) {
                 String bizList = activity.getBizList();
                 List<Long> list = GsonUtils.fromGson2Obj(bizList, new TypeToken<List<Long>>() {
                 }.getType());
                 value.setCount(0);
-                value.setDetail(
-                        GsonUtils.toJson(list.stream().map(v -> {
-                            StallUpBizType bizType = new StallUpBizType();
-                            bizType.setId(v);
-                            bizType.setNum(0);
-                            return bizType;
-                        }).collect(Collectors.toList()))
-                );
+                value.setDetail(GsonUtils.toJson(list.stream().map(v -> {
+                    StallUpBizType bizType = new StallUpBizType();
+                    bizType.setId(v);
+                    bizType.setNum(0);
+                    return bizType;
+                }).collect(Collectors.toList())));
             } else {
                 value.setCount(request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum());
                 value.setDetail(toJson.apply(request.getBizDetailList()));
             }
-            //插入
+            // 插入
             stallUpMarketingNumberMapper.insert(value);
         } else {
-            //更新
+            // 更新
             if (!CollectionUtils.isEmpty(request.getBizDetailList())) {
-                stallUpMarketingNumberMapper.update(StallUpMarketingNumber.builder()
-                        .id(stallUpMarketingNumber.getId())
-                        .count(
-                                request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum()
-                        )
-                        .detail(toJson.apply(request.getBizDetailList()))
-                        .remark(request.getBizRemark())
-                        .build()
-                );
+                stallUpMarketingNumberMapper.update(StallUpMarketingNumber.builder().id(stallUpMarketingNumber.getId())
+                        .count(request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum())
+                        .detail(toJson.apply(request.getBizDetailList())).remark(request.getBizRemark()).build());
             }
         }
         StallUpActivity child = request.getActivity();
@@ -372,19 +344,16 @@ public class StallUpServiceImpl implements StallUpService {
         if (signRecordDO == null) {
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
-        //更新打卡记录
+        // 更新打卡记录
         Date endTime = new Date();
         SignRecordDO newSignRecordDO = new SignRecordDO();
         newSignRecordDO.setId(signRecordDO.getId());
         newSignRecordDO.setEndTime(endTime);
         signRecordMapper.update(newSignRecordDO);
-        //更新摆摊计划状态
-        StallUpActivity updateActivity = StallUpActivity.builder()
-                .id(request.getId())
-                .status(status)
-                .build();
+        // 更新摆摊计划状态
+        StallUpActivity updateActivity = StallUpActivity.builder().id(request.getId()).status(status).build();
         stallUpActivityMapper.update(updateActivity);
-        //插入或更新摆摊办理量详情
+        // 插入或更新摆摊办理量详情
         StallUpMarketingNumberQuery marketingNumberQuery = new StallUpMarketingNumberQuery();
         marketingNumberQuery.setActivityId(request.getId());
         StallUpMarketingNumber stallUpMarketingNumber = stallUpMarketingNumberMapper.get(marketingNumberQuery);
@@ -396,21 +365,14 @@ public class StallUpServiceImpl implements StallUpService {
             List<Long> list = GsonUtils.fromGson2Obj(bizList, new TypeToken<List<Long>>() {
             }.getType());
 
-            //插入
-            stallUpMarketingNumberMapper.insert(StallUpMarketingNumber.builder()
-                .userId(request.getUid())
-                .activityId(request.getId())
-                .count(0)
-                .detail(
-                    GsonUtils.toJson(list.stream().map(v -> {
-                            StallUpBizType bizType = new StallUpBizType();
-                            bizType.setId(v);
-                            bizType.setNum(0);
-                            return bizType;
-                        }).collect(Collectors.toList())
-                    )
-                ).build()
-            );
+            // 插入
+            stallUpMarketingNumberMapper.insert(StallUpMarketingNumber.builder().userId(request.getUid())
+                    .activityId(request.getId()).count(0).detail(GsonUtils.toJson(list.stream().map(v -> {
+                        StallUpBizType bizType = new StallUpBizType();
+                        bizType.setId(v);
+                        bizType.setNum(0);
+                        return bizType;
+                    }).collect(Collectors.toList()))).build());
         }
         StallUpActivity child = request.getActivity();
         child.setStatus(status);
@@ -442,7 +404,7 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         StallUpActivity stallUpActivity = result.getData();
-        //业务办理
+        // 业务办理
         List<Long> bizIdList = GsonUtils.fromGson2Obj(stallUpActivity.getBizList(), new TypeToken<List<Long>>() {
         }.getType());
         List<StallUpBizType> bizTypeList = new ArrayList<>();
@@ -485,20 +447,16 @@ public class StallUpServiceImpl implements StallUpService {
     }
 
     @Override
-    public ApiResult<GetEndListResponse> getEndList(String mobile, Integer page, Integer pageSize, Long startTime, Long endTime) {
+    public ApiResult<GetEndListResponse> getEndList(String mobile, Integer page, Integer pageSize, Long startTime,
+            Long endTime) {
         Page result = PageHelper.startPage(page, pageSize, true);
-        //实际结束时间倒序
+        // 实际结束时间倒序
         PageHelper.orderBy("real_end_time desc");
-        //查询已结束和自动结束的摆摊
+        // 查询已结束和自动结束的摆摊
         StallUpActivityQuery query = new StallUpActivityQuery();
         query.setMobile(mobile);
-        query.setStatusList(
-                Arrays.asList(
-                        StallUpStatusEnum.END.getId(),
-                        StallUpStatusEnum.AUTO_END.getId(),
-                        StallUpStatusEnum.ABNORMAL_END.getId()
-                )
-        );
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.END.getId(), StallUpStatusEnum.AUTO_END.getId(),
+                StallUpStatusEnum.ABNORMAL_END.getId()));
         query.setBizType(BIZ_TYPE);
         if (startTime != null) {
             query.setGtRealEndTime(new Date(startTime));
@@ -509,9 +467,7 @@ public class StallUpServiceImpl implements StallUpService {
         GetEndListResponse response = new GetEndListResponse();
         List<StallUpDetail> endList = stallUpActivityMapper.getList(query);
         if (endList != null || endList.size() > 0) {
-            response.setEndList(endList.stream().map(
-                    v -> getEndDetail(v)
-            ).collect(Collectors.toList()));
+            response.setEndList(endList.stream().map(v -> getEndDetail(v)).collect(Collectors.toList()));
         }
         response.setTotal(result.getTotal());
         return ApiResult.of(0, response);
@@ -520,84 +476,70 @@ public class StallUpServiceImpl implements StallUpService {
     @Override
     public ApiResult<GetStallUpListResponse> getList(String mobile) {
         LocalDateTime now = LocalDateTime.now();
-        //是当周第几天
+        // 是当周第几天
         int dayOfWeek = now.getDayOfWeek().getValue();
-        //是当月第几天
+        // 是当月第几天
         int dayOfMonth = now.getDayOfMonth();
-        //本周第一天可能小于本月第一天
+        // 本周第一天可能小于本月第一天
         int maxBeforeDays = Math.max(dayOfMonth, dayOfWeek);
-        //查询当前用户全量摆摊记录
+        // 查询当前用户全量摆摊记录
         StallUpActivityQuery query = new StallUpActivityQuery();
         query.setMobile(mobile);
         query.setBizType(BIZ_TYPE);
-        query.setStatusList(Arrays.asList(
-                StallUpStatusEnum.PREPARE.getId(),
-                StallUpStatusEnum.STARTED.getId()
-        ));
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.PREPARE.getId(), StallUpStatusEnum.STARTED.getId()));
         List<StallUpDetail> list = stallUpActivityMapper.getList(query);
         List<StallUpDetail> startList = new ArrayList<>();
         List<StallUpDetail> prepareList = new ArrayList<>();
         list.forEach(v -> {
-            //待开始
+            // 待开始
             if (v.getStatus().equals(StallUpStatusEnum.PREPARE.getId())) {
                 prepareList.add(v);
             }
-            //已开始
+            // 已开始
             else if (v.getStatus().equals(StallUpStatusEnum.STARTED.getId()) && startList.size() == 0) {
                 startList.add(v);
             }
         });
-        //查询当前用户 状态是已结束的摆摊
-        query.setStatusList(Arrays.asList(
-                StallUpStatusEnum.END.getId(),
-                StallUpStatusEnum.AUTO_END.getId(),
-                StallUpStatusEnum.ABNORMAL_END.getId()
-        ));
-        //本周和本月已完成的一起load到内存中再过滤
+        // 查询当前用户 状态是已结束的摆摊
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.END.getId(), StallUpStatusEnum.AUTO_END.getId(),
+                StallUpStatusEnum.ABNORMAL_END.getId()));
+        // 本周和本月已完成的一起load到内存中再过滤
         query.setRealEndDays(maxBeforeDays - 1);
         List<StallUpDetail> endList = stallUpActivityMapper.getList(query);
         GetStallUpListResponse response = new GetStallUpListResponse();
-        //本周已结束统计
+        // 本周已结束统计
         Long nowMillions = LocalDateTimeUtils.toEpochMilli(now);
-        //本周第一天
+        // 本周第一天
         LocalDateTime firstDayOfWeek = LocalDateTimeUtils.getFirstDayOfWeek(now);
-        //本周第一天的时间戳
+        // 本周第一天的时间戳
         Long firstDayOfWeekMillions = LocalDateTimeUtils.getStartOfDay(firstDayOfWeek);
-        //本周第一天 <= 实际结束时间 <= 当前时间
-        List<StallUpDetail> weekList = endList.stream().filter(
-                v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfWeekMillions)
-                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime())
-        ).collect(Collectors.toList());
-        response.setWeekDetail(StallUpBizTotal.builder()
-                .stallUpNum(weekList.size())
-                .bizNum(weekList.stream().mapToInt(v -> v.getBizTotal()).sum())
-                .build());
-        //本月已结束统计
-        //本月第一天
+        // 本周第一天 <= 实际结束时间 <= 当前时间
+        List<StallUpDetail> weekList = endList.stream()
+                .filter(v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfWeekMillions)
+                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime()))
+                .collect(Collectors.toList());
+        response.setWeekDetail(StallUpBizTotal.builder().stallUpNum(weekList.size())
+                .bizNum(weekList.stream().mapToInt(v -> v.getBizTotal()).sum()).build());
+        // 本月已结束统计
+        // 本月第一天
         LocalDateTime firstDayOfMonth = LocalDateTimeUtils.getFirstDayOfMonth(now);
-        //本月第一天的时间戳
+        // 本月第一天的时间戳
         Long firstDayOfMonthMillions = LocalDateTimeUtils.getStartOfDay(firstDayOfMonth);
-        //本月第一天 <= 实际结束时间 <= 当前时间
-        List<StallUpDetail> monthList = endList.stream().filter(
-                v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfMonthMillions)
-                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime())
-        ).collect(Collectors.toList());
-        response.setMonthDetail(StallUpBizTotal.builder()
-                .stallUpNum(monthList.size())
-                .bizNum(monthList.stream().mapToInt(v -> v.getBizTotal()).sum())
-                .build());
-        //已开始，最多一条
+        // 本月第一天 <= 实际结束时间 <= 当前时间
+        List<StallUpDetail> monthList = endList.stream()
+                .filter(v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfMonthMillions)
+                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime()))
+                .collect(Collectors.toList());
+        response.setMonthDetail(StallUpBizTotal.builder().stallUpNum(monthList.size())
+                .bizNum(monthList.stream().mapToInt(v -> v.getBizTotal()).sum()).build());
+        // 已开始，最多一条
         if (startList.size() > 0) {
             response.setStartedDetail(getDetailVO(startList.get(0)));
         }
-        //待开始计划开始时间升序
+        // 待开始计划开始时间升序
         if (prepareList.size() > 0) {
-            response.setPrepareDetail(
-                    prepareList.stream()
-                            .map(v -> getDetailVO(v))
-                            .sorted(Comparator.comparing(StallUpDetailVO::getStartTime))
-                            .collect(Collectors.toList())
-            );
+            response.setPrepareDetail(prepareList.stream().map(v -> getDetailVO(v))
+                    .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList()));
         } else {
             response.setPrepareDetail(new ArrayList<>());
         }
@@ -609,63 +551,51 @@ public class StallUpServiceImpl implements StallUpService {
         LocalDateTime now = LocalDateTime.now();
         int dayOfMonth = now.getDayOfMonth();
         int dayOfWeek = now.getDayOfWeek().getValue();
-        //下周一0点
+        // 下周一0点
         Long startOfNextWeek = LocalDateTimeUtils.getStartOfDay(now.plusDays(8 - dayOfWeek));
-        //联表查询
+        // 联表查询
         StallUpActivityQuery query = new StallUpActivityQuery();
         query.setMobile(mobile);
-        query.setStatusList(Arrays.asList(
-                StallUpStatusEnum.STARTED.getId()
-        ));
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.STARTED.getId()));
         query.setBizType(BIZ_TYPE);
-        //已开始
+        // 已开始
         List<StallUpDetail> startList = stallUpActivityMapper.getList(query);
 
-        query.setStatusList(Arrays.asList(
-                StallUpStatusEnum.PREPARE.getId()
-        ));
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.PREPARE.getId()));
         query.setStartOfNextWeek(new Date(startOfNextWeek));
-        //本周待开始列表
+        // 本周待开始列表
         List<StallUpDetail> prepareList = stallUpActivityMapper.getList(query);
 
-        query.setStatusList(Arrays.asList(
-                StallUpStatusEnum.END.getId(),
-                StallUpStatusEnum.AUTO_END.getId(),
-                StallUpStatusEnum.ABNORMAL_END.getId()
-        ));
+        query.setStatusList(Arrays.asList(StallUpStatusEnum.END.getId(), StallUpStatusEnum.AUTO_END.getId(),
+                StallUpStatusEnum.ABNORMAL_END.getId()));
         query.setStartOfNextWeek(null);
         query.setRealEndDays(dayOfMonth - 1);
-        //本月已结束列表
+        // 本月已结束列表
         List<StallUpDetail> endList = stallUpActivityMapper.getList(query);
         GetStallUpSimpleInfoResponse response = new GetStallUpSimpleInfoResponse();
-        //本周统计
+        // 本周统计
         Long nowMillions = LocalDateTimeUtils.toEpochMilli(now);
         LocalDateTime firstDayOfWeek = LocalDateTimeUtils.getFirstDayOfWeek(now);
         Long firstDayOfWeekMillions = LocalDateTimeUtils.getStartOfDay(firstDayOfWeek);
-        List<StallUpDetail> weekList = endList.stream().filter(
-                v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfWeekMillions)
-                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime())
-        ).collect(Collectors.toList());
-        response.setWeekDetail(StallUpBizTotal.builder()
-                .stallUpNum(weekList.size())
-                .bizNum(weekList.stream().mapToInt(v -> v.getBizTotal()).sum())
-                .build());
-        //今日待办
+        List<StallUpDetail> weekList = endList.stream()
+                .filter(v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfWeekMillions)
+                        && timeFilter.apply(nowMillions, v.getRealEndTime().getTime()))
+                .collect(Collectors.toList());
+        response.setWeekDetail(StallUpBizTotal.builder().stallUpNum(weekList.size())
+                .bizNum(weekList.stream().mapToInt(v -> v.getBizTotal()).sum()).build());
+        // 今日待办
         Long startOfNextDay = LocalDateTimeUtils.getStartOfDay(now.plusDays(1));
-        response.setTodayToDo(prepareList.stream().filter(
-                v -> timeFilter.apply(startOfNextDay - 1, v.getStartTime().getTime())
-        ).count());
-        //本周待办
-        response.setWeekToDo(prepareList.stream().filter(
-                v -> timeFilter.apply(startOfNextWeek - 1, v.getStartTime().getTime())
-        ).count());
-        //本月已办
+        response.setTodayToDo(prepareList.stream()
+                .filter(v -> timeFilter.apply(startOfNextDay - 1, v.getStartTime().getTime())).count());
+        // 本周待办
+        response.setWeekToDo(prepareList.stream()
+                .filter(v -> timeFilter.apply(startOfNextWeek - 1, v.getStartTime().getTime())).count());
+        // 本月已办
         LocalDateTime firstDayOfMonth = LocalDateTimeUtils.getFirstDayOfMonth(now);
         Long firstDayOfMonthMillions = LocalDateTimeUtils.getStartOfDay(firstDayOfMonth);
-        response.setMonthDone(endList.stream().filter(
-                v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfMonthMillions)
-        ).count());
-        //已开始
+        response.setMonthDone(endList.stream()
+                .filter(v -> timeFilter.apply(v.getRealEndTime().getTime(), firstDayOfMonthMillions)).count());
+        // 已开始
         if (startList != null && startList.size() > 0) {
             StallUpDetail detail = startList.get(0);
             StallUpDetailVO startDetail = new StallUpDetailVO();
@@ -687,7 +617,7 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         StallUpActivity stallUpActivity = result.getData();
-        //业务办理
+        // 业务办理
         List<Long> bizIdList = GsonUtils.fromGson2Obj(stallUpActivity.getBizList(), new TypeToken<List<Long>>() {
         }.getType());
         List<StallUpBizType> bizTypeList = new ArrayList<>();
@@ -703,7 +633,7 @@ public class StallUpServiceImpl implements StallUpService {
             });
             Collections.sort(bizTypeList);
         }
-        //营销功能
+        // 营销功能
         StallUpMarketingNumberQuery marketingNumberQuery = new StallUpMarketingNumberQuery();
         marketingNumberQuery.setActivityId(id);
         StallUpMarketingNumber stallUpMarketingNumber = stallUpMarketingNumberMapper.get(marketingNumberQuery);
@@ -759,39 +689,29 @@ public class StallUpServiceImpl implements StallUpService {
         query.setActivityId(request.getId());
         StallUpMarketingNumber stallUpMarketingNumber = stallUpMarketingNumberMapper.get(query);
         if (stallUpMarketingNumber == null) {
-            //插入摆摊办理量
-            stallUpMarketingNumberMapper.insert(StallUpMarketingNumber.builder()
-                    .userId(request.getUid())
-                    .activityId(request.getId())
-                    .count(
-                            (request.getBizDetailList() == null || request.getBizDetailList().size() == 0) ? 0 :
-                                    request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum()
-                    )
-                    .detail(toJson.apply(request.getBizDetailList()))
-                    .remark(request.getBizRemark())
-                    .build()
-            );
+            // 插入摆摊办理量
+            stallUpMarketingNumberMapper
+                    .insert(StallUpMarketingNumber.builder().userId(request.getUid()).activityId(request.getId())
+                            .count((request.getBizDetailList() == null || request.getBizDetailList().size() == 0) ? 0
+                                    : request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum())
+                            .detail(toJson.apply(request.getBizDetailList())).remark(request.getBizRemark()).build());
         } else {
-            //更新摆摊办理量
-            stallUpMarketingNumberMapper.update(StallUpMarketingNumber.builder()
-                    .id(stallUpMarketingNumber.getId())
-                    .count(
-                            (request.getBizDetailList() == null || request.getBizDetailList().size() == 0) ? 0 :
-                                    request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum()
-                    )
-                    .detail(toJson.apply(request.getBizDetailList()))
-                    .remark(request.getBizRemark())
-                    .build()
-            );
+            // 更新摆摊办理量
+            stallUpMarketingNumberMapper.update(StallUpMarketingNumber.builder().id(stallUpMarketingNumber.getId())
+                    .count((request.getBizDetailList() == null || request.getBizDetailList().size() == 0) ? 0
+                            : request.getBizDetailList().stream().mapToInt(v -> v.getNum()).sum())
+                    .detail(toJson.apply(request.getBizDetailList())).remark(request.getBizRemark()).build());
         }
         return ApiResult.of(0, true);
     }
 
     @Override
     public ApiResult<List<GetGridUserTree>> getGridUserTree(String mobile, String gridId) {
-        ApiResult<GridUserListResponse> result = huaWeiService.getGridUserList(HuaWeiRequest.builder().mobile(mobile).gridId(gridId).build());
+        ApiResult<GridUserListResponse> result = huaWeiService
+                .getGridUserList(HuaWeiRequest.builder().mobile(mobile).gridId(gridId).build());
         if (!result.isSuccess()) {
-            log.error("[getGridUserTree] failed call huaWeiService.getGridUserInfo, mobile:{}, result:{}", mobile, result);
+            log.error("[getGridUserTree] failed call huaWeiService.getGridUserInfo, mobile:{}, result:{}", mobile,
+                    result);
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         List<GridUserDetail> userList = result.getData().getGetGridUserList();
@@ -860,11 +780,12 @@ public class StallUpServiceImpl implements StallUpService {
             if (v.getStatus().equals(StallUpStatusEnum.END.getId())) {
                 bean.setRealEndTime(v.getRealEndTime() == null ? null : format1.format(v.getRealEndTime()));
             }
-            List<GridUserDetail> gridUserDetailList = GsonUtils.fromGson2Obj(v.getPartner(), new TypeToken<List<GridUserDetail>>() {
-            }.getType());
+            List<GridUserDetail> gridUserDetailList = GsonUtils.fromGson2Obj(v.getPartner(),
+                    new TypeToken<List<GridUserDetail>>() {
+                    }.getType());
             bean.setPartnerList(gridUserDetailList.stream().map(v1 -> v1.getName()).collect(Collectors.toList()));
             if (v.getStatus().equals(StallUpStatusEnum.END.getId()) && v.hasException()) {
-                //异常结束
+                // 异常结束
                 bean.setStatus(4);
             } else {
                 bean.setStatus(v.getStatus());
@@ -900,7 +821,7 @@ public class StallUpServiceImpl implements StallUpService {
             response.setRealEndTime(format1.format(realEndTime));
         }
         if (parent.getStatus().equals(StallUpStatusEnum.END.getId()) && parent.hasException()) {
-            //异常结束
+            // 异常结束
             response.setStatus(4);
         } else {
             response.setStatus(parent.getStatus());
@@ -908,7 +829,7 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivityQuery stallUpActivityQuery = new StallUpActivityQuery();
         stallUpActivityQuery.setBizType(BIZ_TYPE);
         stallUpActivityQuery.setParentId(id);
-        //手机号， bizList   解析bizList->StallUpBizType(List)  获得id 和数量
+        // 手机号， bizList 解析bizList->StallUpBizType(List) 获得id 和数量
         List<StallUpDetail> children = stallUpActivityMapper.getList(stallUpActivityQuery);
         // key->ID， 获取名字
         Map<Long, StallUpBizType> map = stallUpConfig.getConfig().getMap();
@@ -950,7 +871,8 @@ public class StallUpServiceImpl implements StallUpService {
             bizListBean.setBizName(map.get(entry.getKey()).getName());
             // 人员填充
             Map<String, GetParentDetailResponse.BizListBean.UserListBean> userMap = entry.getValue();
-            bizListBean.setTotal(userMap.values().stream().mapToInt(GetParentDetailResponse.BizListBean.UserListBean::getNum).sum());
+            bizListBean.setTotal(
+                    userMap.values().stream().mapToInt(GetParentDetailResponse.BizListBean.UserListBean::getNum).sum());
             useMobileMap.forEach((mob, name) -> {
                 if (userMap.get(mob) == null) {
                     GetParentDetailResponse.BizListBean.UserListBean userBean = new GetParentDetailResponse.BizListBean.UserListBean();
@@ -979,24 +901,24 @@ public class StallUpServiceImpl implements StallUpService {
         return ApiResult.of(0, response);
     }
 
-	@Override
+    @Override
     public ApiResult<GetParentSimpleResponse> getParentSimple(List<String> gridIds) {
         GetParentSimpleResponse response = new GetParentSimpleResponse();
-		//待开始
-		ParentStallUpActivityQuery query = new ParentStallUpActivityQuery();
-		query.setStatus(StallUpStatusEnum.PREPARE.getId());
-		query.setGridIds(gridIds);
-		//计划时间在明天之前
-		query.setLtStartTime(new Date(LocalDateTimeUtils.getStartOfDay(LocalDateTime.now().plusDays(1))));
-		List<ParentStallUpActivity> prepareList = parentStallUpActivityMapper.countList(query);
-		//进行中
-		query.setLtStartTime(null);
-		query.setStatus(StallUpStatusEnum.STARTED.getId());
+        // 待开始
+        ParentStallUpActivityQuery query = new ParentStallUpActivityQuery();
+        query.setStatus(StallUpStatusEnum.PREPARE.getId());
+        query.setGridIds(gridIds);
+        // 计划时间在明天之前
+        query.setLtStartTime(new Date(LocalDateTimeUtils.getStartOfDay(LocalDateTime.now().plusDays(1))));
+        List<ParentStallUpActivity> prepareList = parentStallUpActivityMapper.countList(query);
+        // 进行中
+        query.setLtStartTime(null);
+        query.setStatus(StallUpStatusEnum.STARTED.getId());
         List<ParentStallUpActivity> startList = parentStallUpActivityMapper.countList(query);
-		//已结束
-		query.setStatus(StallUpStatusEnum.END.getId());
-		query.setGtRealEndTime(new Date(LocalDateTimeUtils.getStartOfDay(LocalDateTime.now())));
-		List<ParentStallUpActivity> endList = parentStallUpActivityMapper.countList(query);
+        // 已结束
+        query.setStatus(StallUpStatusEnum.END.getId());
+        query.setGtRealEndTime(new Date(LocalDateTimeUtils.getStartOfDay(LocalDateTime.now())));
+        List<ParentStallUpActivity> endList = parentStallUpActivityMapper.countList(query);
 
         Map<String, Long> prepareMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(prepareList)) {
@@ -1014,6 +936,18 @@ public class StallUpServiceImpl implements StallUpService {
         response.setStartMap(startMap);
         response.setEndMap(endMap);
         return ApiResult.of(0, response);
+    }
+
+    @Override
+	public ApiResult<List<Long>> getGridBiz(String uid) {
+	    UserConfigQuery query = new UserConfigQuery();
+	    query.setUserId(uid);
+	    UserConfigDO uc = userConfigMapper.get(query);
+	    if(uc == null || !StringUtils.hasText(uc.getGridBiz())) {
+	        return ApiResult.success( // TODO
+	                );
+	    }
+	    return ApiResult.success(GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class));
 	}
 
     /**
@@ -1039,9 +973,11 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpConfig.ConfigDetail config = stallUpConfig.getConfig();
         Map<Long, StallUpBizType> bizMap = config.getBizMap();
         if (bizIdList != null && bizIdList.size() > 0) {
-            StringBuilder sb = new StringBuilder(Optional.ofNullable(bizMap.get(bizIdList.get(0))).map(v -> v.getName()).orElse(""));
+            StringBuilder sb = new StringBuilder(
+                    Optional.ofNullable(bizMap.get(bizIdList.get(0))).map(v -> v.getName()).orElse(""));
             for (int i = 1; i < bizIdList.size(); i++) {
-                sb.append("+").append(Optional.ofNullable(bizMap.get(bizIdList.get(i))).map(v -> v.getName()).orElse(""));
+                sb.append("+")
+                        .append(Optional.ofNullable(bizMap.get(bizIdList.get(i))).map(v -> v.getName()).orElse(""));
             }
             stallUpDetailVO.setBizTypeStr(sb.toString());
         }
@@ -1069,8 +1005,9 @@ public class StallUpServiceImpl implements StallUpService {
         StallUpActivityQuery query = new StallUpActivityQuery();
         query.setId(id);
         StallUpActivity stallUpActivity = stallUpActivityMapper.get(query);
-        //摆摊id和用户手机号不对应
-        if (stallUpActivity == null || stallUpActivity.getMobile() == null || !stallUpActivity.getMobile().equals(mobile)) {
+        // 摆摊id和用户手机号不对应
+        if (stallUpActivity == null || stallUpActivity.getMobile() == null
+                || !stallUpActivity.getMobile().equals(mobile)) {
             return ApiResult.fail(-1);
         }
         return ApiResult.success(stallUpActivity);
@@ -1116,7 +1053,7 @@ public class StallUpServiceImpl implements StallUpService {
      */
     private void updateParent(StallUpActivity activity, Date realStartTime, Date realEndTime) {
         Long parentId = activity.getParentId();
-        //查询父摆摊
+        // 查询父摆摊
         ParentStallUpActivityQuery query = new ParentStallUpActivityQuery();
         query.setId(parentId);
         ParentStallUpActivity parent = parentStallUpActivityMapper.get(query);
@@ -1127,30 +1064,32 @@ public class StallUpServiceImpl implements StallUpService {
         updateParent.setId(parent.getId());
         updateParent.setFlag(parent.getFlag());
         Integer status = activity.getStatus();
-        //子摆摊签到
+        // 子摆摊签到
         if (status.equals(StallUpStatusEnum.STARTED.getId())) {
             if (parent.getStatus().equals(StallUpStatusEnum.PREPARE.getId())) {
-                //第一个签到
+                // 第一个签到
                 updateParent.setRealStartTime(realStartTime);
                 updateParent.setStatus(StallUpStatusEnum.STARTED.getId());
                 parentStallUpActivityMapper.update(updateParent);
             }
             return;
         }
-        //子摆摊取消、结束
+        // 子摆摊取消、结束
         boolean update = false;
         if (StallUpExceptionEnum.isExceptionEnd(status)) {
-            //异常结束
+            // 异常结束
             updateParent.addExceptionFlag();
             update = true;
         }
-        //查子摆摊
+        // 查子摆摊
         StallUpActivityQuery stallUpActivityQuery = new StallUpActivityQuery();
         stallUpActivityQuery.setParentId(parentId);
         List<StallUpActivity> children = stallUpActivityMapper.find(stallUpActivityQuery);
-        List<StallUpActivity> notEndList = children.stream().filter(v -> v.getStatus().equals(StallUpStatusEnum.PREPARE.getId())
-            || v.getStatus().equals(StallUpStatusEnum.STARTED.getId())).collect(Collectors.toList());
-        //父摆摊是否结束
+        List<StallUpActivity> notEndList = children.stream()
+                .filter(v -> v.getStatus().equals(StallUpStatusEnum.PREPARE.getId())
+                        || v.getStatus().equals(StallUpStatusEnum.STARTED.getId()))
+                .collect(Collectors.toList());
+        // 父摆摊是否结束
         if (CollectionUtils.isEmpty(notEndList)) {
             updateParent.setStatus(StallUpStatusEnum.END.getId());
             updateParent.setRealEndTime(realEndTime);
