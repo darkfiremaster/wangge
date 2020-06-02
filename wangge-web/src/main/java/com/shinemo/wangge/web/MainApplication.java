@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ImportResource;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author htdong
@@ -24,6 +25,7 @@ import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 @MapperScan(basePackages = {
         "com.shinemo.wangge.mapper"
 })
+@EnableScheduling
 public class MainApplication {
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);

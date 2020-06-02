@@ -1,5 +1,6 @@
 package com.shinemo.thirdapi.domain.query;
 
+import com.shinemo.smartgrid.domain.QueryBase;
 import lombok.Data;
 
 /**
@@ -8,7 +9,7 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class ThirdApiMappingQuery{
+public class ThirdApiMappingQuery extends QueryBase {
 
     private Long id;
 
