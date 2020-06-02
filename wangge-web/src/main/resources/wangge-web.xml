@@ -28,4 +28,6 @@
     <!--引入文件上传服务-->
     <bean id="fileSystemClient" class="com.shinemo.common.tools.tfs.FileSystemClient"/>
 
+    <bean id="cmmcBaseClient" class="com.shinemo.jace.api.cmmc.base.CmmcBaseClient"/>
+
 </beans>

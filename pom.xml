@@ -21,6 +21,7 @@
     </modules>
 
     <properties>
+        <start-class>com.shinemo.wangge.web.MainApplication</start-class>
         <client-version>1.0.0-SNAPSHOT</client-version>
         <dal-version>1.0.0</dal-version>
         <core-version>1.0.0</core-version>
