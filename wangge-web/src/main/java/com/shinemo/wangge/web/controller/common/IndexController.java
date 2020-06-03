@@ -290,6 +290,7 @@ public class IndexController {
         stallUpBizType.setIsDisplay(v.getIsDisplay());
         stallUpBizType.setType(v.getType());
         stallUpBizType.setIcon(v.getIcon());
+        stallUpBizType.setCategory(v.getCategory());
         if (v.getType() == 1) {
             stallUpBizType.setUrl(v.getUrl());
         }
