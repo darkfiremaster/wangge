@@ -217,6 +217,9 @@ public class IndexController {
     @SmIgnore
     public ApiResult<GetSimpleInfoResponse> getAllHomePageBizList() {
         GetSimpleInfoResponse response = new GetSimpleInfoResponse();
+        List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(SmartGridContext.getUid()).stream()
+                .map(i -> toBizTypeVO(stallUpConfig.getConfig().getMap().get(i))).collect(Collectors.toList());
+        response.setHomePageBizList(homePageBizList);
         List<StallUpBizType> indexList = stallUpConfig.getConfig().getIndexList();
         response.setIndexList(indexList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
         List<StallUpBizType> quickAccessList = stallUpConfig.getConfig().getQuickAccessList();
