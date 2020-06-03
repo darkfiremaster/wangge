@@ -159,4 +159,6 @@ public interface StallUpService {
 	 * @return
 	 */
 	ApiResult<GetParentSimpleResponse> getParentSimple(List<String> gridIds);
+	
+	ApiResult<List<Long>> getGridBiz(String uid);
 }

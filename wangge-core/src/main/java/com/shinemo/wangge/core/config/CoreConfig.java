@@ -20,6 +20,11 @@ import com.shinemo.my.redis.service.impl.RedisServiceImpl;
 @EnableTransactionManagement(proxyTargetClass = true)
 public class CoreConfig {
 
+    @Bean
+    public SpringContextHolder springContextHolder() {
+        return new SpringContextHolder();
+    }
+
     @Bean(initMethod = "init")
     public CenterConfig centerConfig(@Value("${aace.center.ipport}") String ipAndPort,
             @Value("${appname}") String appName, @Value("${aace.trace}") boolean enableTrace,
@@ -57,4 +62,6 @@ public class CoreConfig {
         node.setPassword(pwd);
         return new RedisServiceImpl(node);
     }
+
+
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -20,6 +21,7 @@ public class SpringContextHolder implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
+        System.out.println("applicationContext正在初始化,application:"+context);
         SpringContextHolder.context = context;
     }
 

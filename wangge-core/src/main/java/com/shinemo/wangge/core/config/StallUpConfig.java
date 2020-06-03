@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.config;
 
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.enums.BusinessConfigEnum;
 import com.shinemo.stallup.domain.enums.ThirdHandlerTypeEnum;
@@ -42,7 +43,7 @@ public class StallUpConfig {
 	@Resource
 	private SmartGridBizMapper smartGridBizMapper;
 	@Resource
-	private StringRedisTemplate stringRedisTemplate;
+	private RedisService redisService;
 	private static final Integer BASE_CONFIG_TYPE = 1;
 	private static final Integer BIZ_TYPE = 2;
 
@@ -135,7 +136,7 @@ public class StallUpConfig {
 		//短信预热配置
 		SmsHotConfig smsHotConfig = config.getSmsHotConfig();
 		SmsHotHandler smsHotHandler = new SmsHotHandler();
-		smsHotHandler.setStringRedisTemplate(stringRedisTemplate);
+		smsHotHandler.setRedisService(redisService);
 		smsHotHandler.setDomain(smsHotConfig.getDomain());
 		smsHotHandler.setPath(smsHotConfig.getPath());
 		tmpUrlMap.put(ThirdHandlerTypeEnum.SMS_HOT.getType(),smsHotHandler);

@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.controller.common;
 
 
 import com.shinemo.common.annotation.SmIgnore;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.stallup.domain.request.SmsHotReverseAuthRequest;
 import com.shinemo.stallup.domain.response.SmsHotReverseAuthResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 public class SmsHotReverseAuthController {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisService redisService;
 
 
     @PostMapping("/reverse/auth")
@@ -55,7 +56,7 @@ public class SmsHotReverseAuthController {
                 response.setMsg("sourceKey is null");
                 return response;
             }
-            String redisValue = stringRedisTemplate.opsForValue().get(request.getAuthKey());
+            String redisValue = redisService.get(request.getAuthKey());
             if (StringUtils.isBlank(redisValue)) {
                 response.setCode(403);
                 response.setMsg("authKey is error");
