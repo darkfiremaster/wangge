@@ -103,12 +103,17 @@ public class IndexController {
 		response.setMonthDone(stallUpInfo.getMonthDone() + sweepFloorData.getMonthDone());
 		response.setWeekToDo(stallUpInfo.getWeekToDo() + sweepFloorData.getWeekToDo());
 		response.setSweepFloorActivityVO(sweepFloorData.getSweepFloorActivityVO());
-		//首页
-		List<StallUpBizType> indexList = stallUpConfig.getConfig().getIndexList();
-		response.setIndexList(indexList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
-		List<StallUpBizType> quickAccessList = stallUpConfig.getConfig().getQuickAccessList();
-		response.setQuickAccessList(quickAccessList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
-		// TODO
+        // 首页
+        // List<StallUpBizType> indexList = stallUpConfig.getConfig().getIndexList();
+        // response.setIndexList(indexList.stream().map(v ->
+        // toBizTypeVO(v)).collect(Collectors.toList()));
+        // List<StallUpBizType> quickAccessList =
+        // stallUpConfig.getConfig().getQuickAccessList();
+        // response.setQuickAccessList(quickAccessList.stream().map(v ->
+        // toBizTypeVO(v)).collect(Collectors.toList()));
+        List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(uid + "").stream()
+                .map(i -> toBizTypeVO(stallUpConfig.getConfig().getMap().get(i))).collect(Collectors.toList());
+        response.setHomePageBizList(homePageBizList);
 		//督导
 		response.setDuDaoTopId(24L);
 		response.setDuDaoBottomId(25L);
