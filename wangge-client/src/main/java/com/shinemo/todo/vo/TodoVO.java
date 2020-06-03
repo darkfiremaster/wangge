@@ -1,8 +1,9 @@
 package com.shinemo.todo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @Author shangkaihui
@@ -49,12 +50,14 @@ public class TodoVO {
     /**
      * 执行时间
      */
-    private LocalDateTime operatorTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date operatorTime;
 
     /**
      * 开始时间
      */
-    private LocalDateTime startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date startTime;
 
 
 

@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Data
 public class TodoQuery  extends QueryBase {
 
+    private Long id;
+
     private String thirdId;
 
     private Integer thirdType;

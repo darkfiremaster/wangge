@@ -4,6 +4,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoIndexVO;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
 
@@ -34,4 +35,5 @@ public interface TodoService {
      */
     ApiResult<ListVO<TodoVO>> getTodoList(TodoQuery todoQuery);
 
+    ApiResult<TodoIndexVO> getIndexInfo();
 }

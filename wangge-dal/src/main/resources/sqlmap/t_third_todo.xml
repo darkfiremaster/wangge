@@ -35,18 +35,9 @@
             <choose>
                 <when test="id != null">and id = #{id}</when>
                 <otherwise>
-                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
-                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
                     <if test="thirdId != null">and third_id = #{thirdId}</if>
                     <if test="thirdType != null">and third_type = #{thirdType}</if>
-                    <if test="title != null">and title = #{title}</if>
-                    <if test="remark != null">and remark = #{remark}</if>
                     <if test="status != null">and status = #{status}</if>
-                    <if test="label != null">and label = #{label}</if>
-                    <if test="operatorTime != null">and operator_time = #{operatorTime}</if>
-                    <if test="operatorMobile != null">and operator_mobile = #{operatorMobile}</if>
-                    <if test="startTime != null">and start_time = #{startTime}</if>
-                    <if test="extend != null">and extend = #{extend}</if>
                 </otherwise>
             </choose>
         </where>
@@ -154,13 +145,13 @@
                 #{label, jdbcType=VARCHAR},
             </if>
             <if test="operatorTime != null">
-                #{operatorTime, jdbcType=TIMESTAMP},
+                #{operatorTime},
             </if>
             <if test="operatorMobile != null">
                 #{operatorMobile, jdbcType=VARCHAR},
             </if>
             <if test="startTime != null">
-                #{startTime, jdbcType=TIMESTAMP},
+                #{startTime},
             </if>
             <if test="extend != null">
                 #{extend, jdbcType=LONGVARCHAR},
@@ -193,13 +184,13 @@
                 label = #{label, jdbcType=VARCHAR},
             </if>
             <if test="operatorTime != null">
-                operator_time = #{operatorTime, jdbcType=TIMESTAMP},
+                operator_time = #{operatorTime},
             </if>
             <if test="operatorMobile != null">
                 operator_mobile = #{operatorMobile, jdbcType=VARCHAR},
             </if>
             <if test="startTime != null">
-                start_time = #{startTime, jdbcType=TIMESTAMP},
+                start_time = #{startTime},
             </if>
             <if test="extend != null">
                 extend = #{extend, jdbcType=LONGVARCHAR}

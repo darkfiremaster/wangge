@@ -5,7 +5,6 @@ import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -49,7 +48,7 @@ public class TodoDO implements Model {
     /**
      * 执行时间
      */
-    private LocalDateTime operatorTime;
+    private Date operatorTime;
     /**
      * 执行人手机号
      */
@@ -58,7 +57,7 @@ public class TodoDO implements Model {
     /**
      * 开始时间
      */
-    private LocalDateTime startTime;
+    private Date startTime;
 
     /**
      * 拓展字段

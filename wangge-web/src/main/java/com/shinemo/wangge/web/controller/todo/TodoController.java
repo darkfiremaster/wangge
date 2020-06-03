@@ -4,6 +4,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.query.TodoQuery;
+import com.shinemo.todo.vo.TodoIndexVO;
 import com.shinemo.todo.vo.TodoRequest;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
@@ -41,8 +42,14 @@ public class TodoController {
 
     @PostMapping("/getTodoList")
     @SmIgnore
-    public ApiResult<ListVO<TodoVO>> getTodoList(TodoQuery todoQuery) {
+    public ApiResult<ListVO<TodoVO>> getTodoList(@RequestBody TodoQuery todoQuery) {
         return todoService.getTodoList(todoQuery);
+    }
+
+    @PostMapping("/getIndexInfo")
+    @SmIgnore
+    public ApiResult<TodoIndexVO> getIndexInfo() {
+        return todoService.getIndexInfo();
     }
 
 }

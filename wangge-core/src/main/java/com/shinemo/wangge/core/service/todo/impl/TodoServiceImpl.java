@@ -17,6 +17,7 @@ import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoTypeQuery;
 import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoIndexVO;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.service.todo.TodoService;
@@ -172,9 +173,10 @@ public class TodoServiceImpl implements TodoService {
         Assert.notNull(todoQuery.getCurrentPage(), "currentPage is null");
 
         Page<TodoDO> page = PageHelper.startPage(todoQuery.getCurrentPage().intValue(), todoQuery.getPageSize().intValue());
+        List<TodoDO> todoDOS = thirdTodoMapper.find(todoQuery);
         ListVO<TodoVO> listVO = new ListVO();
         listVO.setTotalCount(page.getTotal());
-        List<TodoVO> todoVOList = page.getResult().stream().map(todoDO -> {
+        List<TodoVO> todoVOList = todoDOS.stream().map(todoDO -> {
             TodoVO todoVO = new TodoVO();
             BeanUtils.copyProperties(todoDO, todoVO);
             todoVO.setThirdTypeName(ThirdTodoTypeEnum.getById(todoVO.getThirdType()).getName());
@@ -182,8 +184,15 @@ public class TodoServiceImpl implements TodoService {
 
         }).collect(Collectors.toList());
         listVO.setRows(todoVOList);
-
+        listVO.setCurrentPage(todoQuery.getCurrentPage());
+        listVO.setPageSize(todoQuery.getPageSize());
         return ApiResult.of(0, listVO);
+    }
+
+    @Override
+    public ApiResult<TodoIndexVO> getIndexInfo() {
+
+        return ApiResult.of(0);
     }
 
     private TodoDO getTodoDO(TodoDTO todoDTO) {
