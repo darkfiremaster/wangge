@@ -51,7 +51,7 @@ public class GetGridMobileSchedule {
 		BufferedWriter bw = null;
 		try {
 			String fileName = "mobile";
-			file = new File("/data/logs/cmgr/", fileName + ".txt");
+			file = new File("/data/logs/wangge/", fileName + ".txt");
 			if(file.isFile() && file.exists()){
 				file.delete();
 			}
