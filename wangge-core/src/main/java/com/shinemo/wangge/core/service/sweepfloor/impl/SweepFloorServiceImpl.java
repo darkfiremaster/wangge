@@ -523,7 +523,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
 
     @Override
     public ApiResult<ListVO<SweepFloorActivityVO>> getSweepFloorActivity(Integer status, Integer pageSize,
-                                                                         Integer currentPage, Date satrtTime, Date endTime) {
+                                                                         Integer currentPage, Long satrtTime, Long endTime) {
         //查询活动信息
         SweepFloorActivityQuery request = new SweepFloorActivityQuery();
         request.setCreator(SmartGridContext.getUid());
@@ -548,8 +548,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             signRecordQuery.setPageSize(pageSize);
             signRecordQuery.setCurrentPage(currentPage);
             signRecordQuery.setQueryTotal(true);
-            signRecordQuery.setStartTime(satrtTime);
-            signRecordQuery.setEndTime(endTime);
+            signRecordQuery.setStartTime(new Date(satrtTime));
+            signRecordQuery.setEndTime(new Date(endTime));
             signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
             signRecordQuery.setUserId(SmartGridContext.getUid());
             List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
@@ -562,8 +562,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             activityDOS = sweepFloorActivityMapper.find(activityQuery);
 
             SignRecordQuery countQuery = new SignRecordQuery();
-            countQuery.setStartTime(satrtTime);
-            countQuery.setEndTime(endTime);
+            countQuery.setStartTime(new Date(satrtTime));
+            countQuery.setEndTime(new Date(endTime));
             countQuery.setUserId(SmartGridContext.getUid());
             countQuery.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
             count = signRecordMapper.count(countQuery);
@@ -1250,11 +1250,11 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(Integer status, Integer pageSize, Integer currentPage, Date startTime, Date endTime, String mobile, String gridId) {
+    public ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(Integer status, Integer pageSize, Integer currentPage, Long startTime, Long endTime, String mobile, String gridId) {
         SweepFloorActivityQuery sweepFloorActivityQuery = new SweepFloorActivityQuery();
         sweepFloorActivityQuery.setStatus(status);
-        sweepFloorActivityQuery.setStartTime(startTime);
-        sweepFloorActivityQuery.setEndTime(endTime);
+        sweepFloorActivityQuery.setStartTime(new Date(startTime));
+        sweepFloorActivityQuery.setEndTime(new Date(endTime));
         sweepFloorActivityQuery.setGridId(gridId);
         sweepFloorActivityQuery.setQueryTotal(true);
         sweepFloorActivityQuery.setCurrentPage(currentPage);

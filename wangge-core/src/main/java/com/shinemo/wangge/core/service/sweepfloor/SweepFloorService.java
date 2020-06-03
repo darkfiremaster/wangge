@@ -34,7 +34,7 @@ public interface SweepFloorService {
     ApiResult<Void> endSign(SignRecordQuery request);
 
     ApiResult<ListVO<SweepFloorActivityVO>> getSweepFloorActivity(Integer status, Integer pageSize,
-                                                                  Integer currentPage, Date satrtTime, Date endTime);
+                                                                  Integer currentPage, Long satrtTime, Long endTime);
 
     ApiResult<List<BuildingVO>> getBuildings(SweepFloorBuildingQuery request);
 
@@ -65,8 +65,8 @@ public interface SweepFloorService {
     ApiResult<ListVO<SmartGridVO>> getSweepFloorActivityByGridIds(List<String> gridIds, boolean page, Integer pageSize, Integer currentPage);
 
 
-    ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(Integer status, Integer pageSize, Integer currentPage, Date startTime,
-                                                                   Date endTime,
+    ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(Integer status, Integer pageSize, Integer currentPage, Long startTime,
+                                                                   Long endTime,
                                                                    String mobile,
                                                                    String gridId);
 

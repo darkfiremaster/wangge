@@ -227,7 +227,7 @@ public class SweepFloorController {
     @SmIgnore
     public ApiResult<ListVO<SweepFloorActivityVO>> getSweepFloorActivity(@RequestParam Integer status, @RequestParam(required = false) Integer pageSize,
                                                                          @RequestParam(required = false) Integer currentPage,
-                                                                         @RequestParam(required = false)Date startTime, @RequestParam(required = false)Date endTime) {
+                                                                         @RequestParam(required = false)Long startTime, @RequestParam(required = false)Long endTime) {
         return sweepFloorService.getSweepFloorActivity(status,pageSize,currentPage,startTime,endTime);
     }
 
@@ -240,8 +240,8 @@ public class SweepFloorController {
     public ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(@RequestParam(required = false) Integer status,
                                                                           @RequestParam(required = false) Integer pageSize,
                                                                           @RequestParam(required = false) Integer currentPage,
-                                                                          @RequestParam(required = false)Date startTime,
-                                                                          @RequestParam(required = false)Date endTime,
+                                                                          @RequestParam(required = false)Long startTime,
+                                                                          @RequestParam(required = false)Long endTime,
                                                                           @RequestParam(required = false)String seMobile,
                                                                           @RequestParam String gridId) {
         Assert.notNull(gridId,"gridId is null");
