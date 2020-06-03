@@ -1,5 +1,7 @@
-package com.shinemo.wangge.client.todo.domain;
+package com.shinemo.todo.domain;
 
+import com.shinemo.todo.enums.ThirdTodoTypeEnum;
+import com.shinemo.todo.enums.TodoTypeEnum;
 import lombok.Data;
 
 /**
@@ -8,13 +10,13 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class ToDoTypeDO {
+public class TodoTypeDO {
 
     private Long id;
 
     /**
      * 类型
-     * @see com.shinemo.wangge.client.todo.enums.ToDoTypeEnum
+     * @see TodoTypeEnum
      */
     private Integer type;
 
@@ -25,7 +27,7 @@ public class ToDoTypeDO {
 
     /**
      * 第三方待办事项类型
-     * @see com.shinemo.wangge.client.todo.enums.ThirdTypeEnum
+     * @see ThirdTodoTypeEnum
      */
     private Integer todoType;
 

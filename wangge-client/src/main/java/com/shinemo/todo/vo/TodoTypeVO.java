@@ -1,4 +1,4 @@
-package com.shinemo.wangge.client.todo.vo;
+package com.shinemo.todo.vo;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @Desc
  */
 @Data
-public class ToDoTypeVO {
+public class TodoTypeVO {
 
     private List<ToDoTypeListBean> toDoTypeList;
 

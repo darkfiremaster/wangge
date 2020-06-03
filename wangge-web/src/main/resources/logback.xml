@@ -179,6 +179,7 @@
     <logger name="mapper" additivity="false">
         <level value="debug" />
         <appender-ref ref="SQL" />
+        <appender-ref ref="CONSOLE" />
     </logger>
 
     <logger name="com.shinemo.wangge.core.mq" additivity="false">

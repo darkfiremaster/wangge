@@ -1,4 +1,4 @@
-package com.shinemo.wangge.client.todo.vo;
+package com.shinemo.todo.vo;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class ToDoVO {
+public class TodoVO {
     protected static final long serialVersionUID = 4753810862868386037L;
 
     private Long id;

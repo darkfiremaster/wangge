@@ -1,7 +1,10 @@
-package com.shinemo.wangge.client.todo.domain;
+package com.shinemo.todo.domain;
 
+import com.shinemo.todo.enums.ThirdTodoTypeEnum;
+import com.shinemo.todo.enums.TodoStatusEnum;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -10,7 +13,7 @@ import java.util.Date;
  * @Desc
  */
 @Data
-public class ToDoDO  {
+public class TodoDO {
     protected static final long serialVersionUID = 4753810862868386037L;
 
     private Long id;
@@ -22,7 +25,7 @@ public class ToDoDO  {
     private String thirdId;
     /**
      * 第三方类型
-     * @see com.shinemo.wangge.client.todo.enums.ThirdTypeEnum
+     * @see ThirdTodoTypeEnum
      */
     private Integer thirdType;
     /**
@@ -35,7 +38,7 @@ public class ToDoDO  {
     private String remark;
     /**
      * 状态
-     * @see com.shinemo.wangge.client.todo.enums.ToDoStatusEnum
+     * @see TodoStatusEnum
      */
     private Integer status;
     /**
@@ -45,19 +48,17 @@ public class ToDoDO  {
     /**
      * 执行时间
      */
-    private Date operatorTime;
+    private LocalDateTime operatorTime;
     /**
      * 执行人手机号
      */
     private String operatorMobile;
+
     /**
-     * 创建时间
+     * 开始时间
      */
-    private Date createTime;
-    /**
-     * 创建人手机号
-     */
-    private String creatorMobile;
+    private LocalDateTime startTime;
+
     /**
      * 拓展字段
      */
