@@ -31,8 +31,8 @@ public class GetSimpleInfoResponse {
 	private List<StallUpBizType> indexList;
 	//首页业务办理
 	private List<StallUpBizType> quickAccessList;
-	//首页业务办理
-	private List<StallUpBizType> bizList;
+	//首页业务办理，7个长在首页的应用
+	private List<StallUpBizType> homePageBizList;
 	private DuDaoQueryResultVO duDaoResult;
 	private Long duDaoTopId;
 	private Long duDaoBottomId;

@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
@@ -108,6 +109,9 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private HuaWeiService huaWeiService;
+    
+    @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
+    private String defaultBiz;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -940,16 +944,34 @@ public class StallUpServiceImpl implements StallUpService {
     }
 
     @Override
-	public ApiResult<List<Long>> getGridBiz(String uid) {
-	    UserConfigQuery query = new UserConfigQuery();
-	    query.setUserId(uid);
-	    UserConfigDO uc = userConfigMapper.get(query);
-	    if(uc == null || !StringUtils.hasText(uc.getGridBiz())) {
-	        return ApiResult.success( // TODO
-	                );
-	    }
-	    return ApiResult.success(GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class));
-	}
+    public List<Long> getGridBiz(String uid) {
+        UserConfigQuery query = new UserConfigQuery();
+        query.setUserId(uid);
+        UserConfigDO uc = userConfigMapper.get(query);
+        if (uc == null || !StringUtils.hasText(uc.getGridBiz())) {
+            return GsonUtil.fromJsonToList(defaultBiz, Long[].class);
+        }
+        return GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class);
+    }
+    
+    @Override
+    public ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz) {
+        UserConfigQuery query = new UserConfigQuery();
+        query.setUserId(uid);
+        UserConfigDO uc = userConfigMapper.get(query);
+        if (uc == null) {
+            UserConfigDO ins = new UserConfigDO();
+            ins.setUserId(uid);
+            ins.setGridBiz(GsonUtil.toJson(gridBiz));
+            userConfigMapper.insert(ins);
+        } else {
+            UserConfigDO upd = new UserConfigDO();
+            upd.setId(uc.getId());
+            upd.setGridBiz(GsonUtil.toJson(gridBiz));
+            userConfigMapper.update(upd);
+        }
+        return ApiResult.success();
+    }
 
     /**
      * 获取待开始和已开始的VO
