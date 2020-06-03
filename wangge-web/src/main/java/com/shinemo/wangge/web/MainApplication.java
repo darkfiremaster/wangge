@@ -2,14 +2,12 @@ package com.shinemo.wangge.web;
 
 import com.shinemo.wangge.web.config.AuthCheckerAutoConfiguration;
 import com.shinemo.wangge.web.config.SmCommonProperties;
-import com.shinemo.wangge.web.intercepter.CustMgrInterceptor;
 import com.shinemo.wangge.web.intercepter.IntranetInterceptor;
 import com.shinemo.wangge.web.intercepter.SmartGridInterceptor;
 import com.shinemo.wangge.web.intercepter.TokenAuthChecker;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
 import com.alibaba.nacos.api.annotation.NacosProperties;
@@ -43,8 +41,6 @@ import javax.annotation.Resource;
 @EnableScheduling
 public class MainApplication implements WebMvcConfigurer {
 
-    @Resource
-    private CustMgrInterceptor custMgrInterceptor;
 
     @Resource
     private IntranetInterceptor intranetInterceptor;
@@ -71,10 +67,6 @@ public class MainApplication implements WebMvcConfigurer {
                 )
                 .excludePathPatterns(properties.getAuth().getExcludeUrlPatterns())
                 .order(0);
-        registry.addInterceptor(custMgrInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/backdoor/**", "/error")
-                .order(Ordered.LOWEST_PRECEDENCE);
         registry.addInterceptor(intranetInterceptor)
                 .addPathPatterns("/backdoor/**")
                 .order(Ordered.HIGHEST_PRECEDENCE);
