@@ -31,4 +31,14 @@ public class TodoTypeDO {
      */
     private Integer todoType;
 
+    /**
+     * 状态
+     */
+    private Integer status;
+
+    /**
+     * 排序
+     */
+    private Integer sort;
+
 }

@@ -1,6 +1,9 @@
 package com.shinemo.todo.query;
 
+import com.shinemo.client.common.QueryBase;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @Author shangkaihui
@@ -8,7 +11,7 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class TodoQuery {
+public class TodoQuery  extends QueryBase {
 
     private String thirdId;
 
@@ -16,4 +19,13 @@ public class TodoQuery {
 
     private String mobile;
 
+    private Integer timeType;
+
+    private Integer status;
+
+    private Integer todoType;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
 }

@@ -1,14 +1,15 @@
 package com.shinemo.wangge.web.controller.todo;
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.vo.TodoRequest;
+import com.shinemo.todo.vo.TodoTypeVO;
+import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author shangkaihui
@@ -32,5 +33,16 @@ public class TodoController {
         return todoService.operateTodoThing(todoRequest.getTodoDTO());
     }
 
+    @PostMapping("/getTypeList")
+    @SmIgnore
+    public ApiResult<TodoTypeVO> getTypeList() {
+        return todoService.getTypeList();
+    }
+
+    @PostMapping("/getTodoList")
+    @SmIgnore
+    public ApiResult<ListVO<TodoVO>> getTodoList(TodoQuery todoQuery) {
+        return todoService.getTodoList(todoQuery);
+    }
 
 }

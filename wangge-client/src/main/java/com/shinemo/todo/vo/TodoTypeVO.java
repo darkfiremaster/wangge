@@ -1,6 +1,8 @@
 package com.shinemo.todo.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,19 +14,21 @@ import java.util.List;
 @Data
 public class TodoTypeVO {
 
-    private List<ToDoTypeListBean> toDoTypeList;
+    private List<TodoTypeListBean> toDoTypeList;
 
 
     @Data
-    public static class ToDoTypeListBean {
+    public static class TodoTypeListBean {
         private String name;
         private List<ChildListBean> childList;
 
         @Data
+        @AllArgsConstructor
+        @NoArgsConstructor
         public static class ChildListBean {
 
             private String name;
-            private String toDoType;
+            private Integer todoType;
         }
     }
 }

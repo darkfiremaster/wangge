@@ -1,5 +1,6 @@
 package com.shinemo.todo.domain;
 
+import com.shinemo.client.dal.entity.Model;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.Date;
  * @Desc
  */
 @Data
-public class TodoDO {
+public class TodoDO implements Model {
     protected static final long serialVersionUID = 4753810862868386037L;
 
     private Long id;
