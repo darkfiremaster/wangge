@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepvillage.domain.SweepVillageActivityDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="title" column="title"/>
+        <result property="villageId" column="village_id"/>
+        <result property="villageName" column="village_name"/>
+        <result property="area" column="area"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="location" column="location"/>
+        <result property="rgsLocation" column="rgs_location"/>
+        <result property="mobile" column="mobile"/>
+        <result property="status" column="status"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="remark" column="remark"/>
+        <result property="picUrl" column="pic_url"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, title, village_id, village_name, area, area_code, location, rgs_location, mobile, status, start_time, end_time, remark, pic_url
+    </sql>
+
+    <sql id="table">
+        t_sweep_village_activity
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <!--<if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>-->
+                    <!--<if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>-->
+                    <!--<if test="title != null">and title = #{title}</if>-->
+                    <!--<if test="villageId != null">and village_id = #{villageId}</if>-->
+                    <!--<if test="villageName != null">and village_name = #{villageName}</if>-->
+                    <!--<if test="area != null">and area = #{area}</if>-->
+                    <!--<if test="areaCode != null">and area_code = #{areaCode}</if>-->
+                    <!--<if test="location != null">and location = #{location}</if>-->
+                    <!--<if test="rgsLocation != null">and rgs_location = #{rgsLocation}</if>-->
+                    <!--<if test="mobile != null">and mobile = #{mobile}</if>-->
+                    <!--<if test="status != null">and status = #{status}</if>-->
+                    <!--<if test="startTime != null">and start_time = #{startTime}</if>-->
+                    <!--<if test="endTime != null">and end_time = #{endTime}</if>-->
+                    <!--<if test="remark != null">and remark = #{remark}</if>-->
+                    <!--<if test="picUrl != null">and pic_url = #{picUrl}</if>-->
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.sweepvillage.domain.SweepVillageActivityDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="title != null">
+                title,
+            </if>
+            <if test="villageId != null">
+                village_id,
+            </if>
+            <if test="villageName != null">
+                village_name,
+            </if>
+            <if test="area != null">
+                area,
+            </if>
+            <if test="areaCode != null">
+                area_code,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="rgsLocation != null">
+                rgs_location,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="picUrl != null">
+                pic_url,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="title != null">
+                #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="villageId != null">
+                #{villageId, jdbcType=VARCHAR},
+            </if>
+            <if test="villageName != null">
+                #{villageName, jdbcType=VARCHAR},
+            </if>
+            <if test="area != null">
+                #{area, jdbcType=VARCHAR},
+            </if>
+            <if test="areaCode != null">
+                #{areaCode, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="rgsLocation != null">
+                #{rgsLocation, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                #{startTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark, jdbcType=VARCHAR},
+            </if>
+            <if test="picUrl != null">
+                #{picUrl, jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepvillage.domain.SweepVillageActivityDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="title != null">
+                title = #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="villageId != null">
+                village_id = #{villageId, jdbcType=VARCHAR},
+            </if>
+            <if test="villageName != null">
+                village_name = #{villageName, jdbcType=VARCHAR},
+            </if>
+            <if test="area != null">
+                area = #{area, jdbcType=VARCHAR},
+            </if>
+            <if test="areaCode != null">
+                area_code = #{areaCode, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                location = #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="rgsLocation != null">
+                rgs_location = #{rgsLocation, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                remark = #{remark, jdbcType=VARCHAR},
+            </if>
+            <if test="picUrl != null">
+                pic_url = #{picUrl, jdbcType=LONGVARCHAR}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>
