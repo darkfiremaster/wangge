@@ -953,6 +953,25 @@ public class StallUpServiceImpl implements StallUpService {
         }
         return GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class);
     }
+    
+    @Override
+    public ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz) {
+        UserConfigQuery query = new UserConfigQuery();
+        query.setUserId(uid);
+        UserConfigDO uc = userConfigMapper.get(query);
+        if (uc == null) {
+            UserConfigDO ins = new UserConfigDO();
+            ins.setUserId(uid);
+            ins.setGridBiz(GsonUtil.toJson(gridBiz));
+            userConfigMapper.insert(ins);
+        } else {
+            UserConfigDO upd = new UserConfigDO();
+            upd.setId(uc.getId());
+            upd.setGridBiz(GsonUtil.toJson(gridBiz));
+            userConfigMapper.update(upd);
+        }
+        return ApiResult.success();
+    }
 
     /**
      * 获取待开始和已开始的VO

@@ -10,6 +10,7 @@ import com.shinemo.common.tools.exception.ErrorCode;
  */
 public interface StallUpErrorCodes {
 	ErrorCode BASE_ERROR = new ErrorCode(500, "系统繁忙，请稍后尝试！");
+	ErrorCode PARAM_ERROR = new ErrorCode(501, "参数错误");
 	ErrorCode ALREADY_CANCEL_ERROR = new ErrorCode(1000, "该摆摊计划已取消！");
 	ErrorCode ALREADY_SIGN_ERROR = new ErrorCode(1002, "该摆摊计划已打卡！");
 	ErrorCode ALREADY_END_ERROR = new ErrorCode(1003, "该摆摊计划已结束！");

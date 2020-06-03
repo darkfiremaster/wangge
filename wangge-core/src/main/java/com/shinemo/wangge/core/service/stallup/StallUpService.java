@@ -161,4 +161,6 @@ public interface StallUpService {
 	ApiResult<GetParentSimpleResponse> getParentSimple(List<String> gridIds);
 	
 	List<Long> getGridBiz(String uid);
+	
+	ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz);
 }
