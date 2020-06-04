@@ -2,6 +2,7 @@ package com.shinemo.wangge.core.service.thirdapi.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -14,6 +15,7 @@ import com.shinemo.stallup.domain.huawei.GetGridUserListResult;
 import com.shinemo.stallup.domain.huawei.GetGridUserListResult.DataBean;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.domain.model.HuaweiApiLogDO;
+import com.shinemo.sweepfloor.domain.vo.BuildingVO;
 import com.shinemo.thirdapi.common.enums.ThirdApiStatusEnum;
 import com.shinemo.thirdapi.common.enums.ThirdApiTypeEnum;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
@@ -120,6 +122,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             }
 
             Map<String, Object> result = getJsonMap(JSON.toJSONString(huaweiResponse.get("data")));
+            dealPage(thirdApiMappingDO,result);
             return ApiResult.of(0, result);
         }
         log.error("[dispatch] http error,url = {}, request = {}, param = {}", thirdApiMappingDO.getUrl(), requestData, param);
@@ -130,9 +133,23 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         log.info("[dispatch] 返回mock数据,url:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), requestData, thirdApiMappingDO.getMockData());
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
         if (huaweiRequestSuccess(result)) {
+            Map<String, Object> objectMap = getJsonMap(JSON.toJSONString(result.get("data")));
+
+            dealPage(thirdApiMappingDO,objectMap);
+            result.put("data",objectMap);
             return ApiResult.of(0, getJsonMap(JSON.toJSONString(result.get("data"))));
         } else {
             return ApiResult.fail(result.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
+        }
+    }
+
+
+    private void dealPage(ThirdApiMappingDO thirdApiMappingDO,Map<String, Object> objectMap) {
+        if (thirdApiMappingDO.isPage()) {
+            objectMap.put("totalCount",objectMap.get("total"));
+            objectMap.put("rows",objectMap.get("pageResult"));
+            objectMap.remove("total");
+            objectMap.remove("pageResult");
         }
     }
 
@@ -234,12 +251,27 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
     public static void main(String[] args) {
 
-        ThirdApiMappingServiceImpl thirdApiMappingService = new ThirdApiMappingServiceImpl();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("code", 200);
-
-        Boolean aBoolean = thirdApiMappingService.huaweiRequestSuccess(map);
-        System.out.println("aBoolean = " + aBoolean);
+//        ThirdApiMappingServiceImpl thirdApiMappingService = new ThirdApiMappingServiceImpl();
+//        HashMap<String, Object> map = new HashMap<>();
+//        map.put("code", 200);
+//
+//        Boolean aBoolean = thirdApiMappingService.huaweiRequestSuccess(map);
+//        List<BuildingVO> buildingVOS = new ArrayList<>();
+//        BuildingVO buildingVO = new BuildingVO();
+//        buildingVO.setBuildingName("测试");
+//        buildingVO.setNumSort(123);
+//        buildingVO.setBuildingId("aaaaa");
+//        BuildingVO buildingVO02 = new BuildingVO();
+//        buildingVO02.setBuildingName("测试");
+//        buildingVO02.setNumSort(123);
+//        buildingVO02.setBuildingId("aaaaa");
+//        buildingVOS.add(buildingVO);
+//        buildingVOS.add(buildingVO02);
+//        ListVO<BuildingVO> list = ListVO.list(buildingVOS, 100);
+//
+//        Map<String, Object> result = JSON.parseObject(JSON.toJSONString(list), new TypeReference<HashMap<String, Object>>() {
+//        });
+//        System.out.println(result);
 
     }
 }

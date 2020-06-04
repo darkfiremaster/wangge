@@ -1,7 +1,5 @@
 package com.shinemo.wangge.core.service.sweepfloor.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
@@ -294,7 +292,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             newMarketingNumberDO.setActivityId(request.getActivityId());
             if (!CollectionUtils.isEmpty(request.getBizDetails())) {
                 newMarketingNumberDO.setCount(request.getBizDetails().stream().mapToInt(v -> v.getNum()).sum());
-                newMarketingNumberDO.setDetail(JSON.toJSONString(request.getBizDetails()));
+                newMarketingNumberDO.setDetail(GsonUtils.toJson(request.getBizDetails()));
             } else {
                 newMarketingNumberDO.setCount(0);
                 List<StallUpBizType> sweepFloorBizList = stallUpConfig.getConfig().getSweepFloorBizList();
@@ -306,7 +304,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                     bizDetail.setNum(0);
                     details.add(bizDetail);
                 }
-                newMarketingNumberDO.setDetail(JSON.toJSONString(details));
+                newMarketingNumberDO.setDetail(GsonUtils.toJson(details));
             }
             newMarketingNumberDO.setRemark(request.getRemark());
             newMarketingNumberDO.setUserId(SmartGridContext.getUid());
@@ -314,7 +312,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         } else {
             if (!CollectionUtils.isEmpty(request.getBizDetails())) {
                 marketingNumberDO.setCount(request.getBizDetails().stream().mapToInt(v -> v.getNum()).sum());
-                marketingNumberDO.setDetail(JSON.toJSONString(request.getBizDetails()));
+                marketingNumberDO.setDetail(GsonUtils.toJson(request.getBizDetails()));
             } else {
                 marketingNumberDO.setCount(0);
                 List<StallUpBizType> sweepFloorBizList = stallUpConfig.getConfig().getSweepFloorBizList();
@@ -326,7 +324,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                     bizDetail.setNum(0);
                     details.add(bizDetail);
                 }
-                marketingNumberDO.setDetail(JSON.toJSONString(details));
+                marketingNumberDO.setDetail(GsonUtils.toJson(details));
             }
             marketingNumberDO.setRemark(request.getRemark());
             sweepFloorMarketingNumberMapper.update(marketingNumberDO);
@@ -380,7 +378,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         BeanUtils.copyProperties(request, visitRecordingDO);
         visitRecordingDO.setMarketingUserId(SmartGridContext.getUid());
         visitRecordingDO.setMarketingUserName(SmartGridContext.getUserName());
-        visitRecordingDO.setBusinessType(JSON.toJSONString(request.getBusinessType()));
+        visitRecordingDO.setBusinessType(GsonUtils.toJson(request.getBusinessType()));
         visitRecordingDO.setGmtCreate(new Date());
         sweepFloorVisitRecordingMapper.insert(visitRecordingDO);
         return ApiResult.of(0);
@@ -473,14 +471,14 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             insertDO.setActivityId(request.getActivityId());
             insertDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
             insertDO.setStartTime(new Date());
-            insertDO.setStartLocation(JSON.toJSONString(request.getLocationDetailVO()));
+            insertDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
             insertDO.setUserId(SmartGridContext.getUid());
             signRecordMapper.insert(insertDO);
         } else {
             SignRecordDO updateDO = new SignRecordDO();
             updateDO.setId(signRecordDO.getId());
             updateDO.setStartTime(new Date());
-            updateDO.setStartLocation(JSON.toJSONString(request.getLocationDetailVO()));
+            updateDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
             signRecordMapper.update(updateDO);
         }
         return ApiResult.of(0);
@@ -513,8 +511,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         SignRecordDO updateDO = new SignRecordDO();
         updateDO.setId(signRecordDO.getId());
         updateDO.setEndTime(new Date());
-        updateDO.setEndLocation(JSON.toJSONString(request.getLocationDetailVO()));
-        updateDO.setImgUrl(JSON.toJSONString(request.getImgUrl()));
+        updateDO.setEndLocation(GsonUtils.toJson(request.getLocationDetailVO()));
+        updateDO.setImgUrl(GsonUtils.toJson(request.getImgUrl()));
         updateDO.setRemark(request.getRemark());
         signRecordMapper.update(updateDO);
 
@@ -862,7 +860,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                                     members.add(member);
                                 }
                                 //设置缓存失效时间24小时
-                                redisService.set(huaweiResponse.getBuildingId() + huaweiHouseResponse.getHouseNumber(), JSON.toJSONString(members), 24*60*60);
+                                redisService.set(huaweiResponse.getBuildingId() + huaweiHouseResponse.getHouseNumber(), GsonUtils.toJson(members), 24*60*60);
                                 householdVO.setFamilyMembers(members);
                             }
                             householdVOS.add(householdVO);
@@ -1044,7 +1042,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     public ApiResult<List<FamilyMember>> getFamilyMembers(String buildingId, String unitId, String houseNumber) {
         String redisValue = redisService.get(buildingId + houseNumber);
         if (!StringUtils.isBlank(redisValue)) {
-            List<FamilyMember> list = JSONArray.parseArray(redisValue, FamilyMember.class);
+            List<FamilyMember> list = GsonUtils.fromJsonToList(redisValue, FamilyMember[].class);
             return ApiResult.of(0, list);
         }
         SweepFloorBuildingQuery request = new SweepFloorBuildingQuery();
@@ -1053,7 +1051,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         ApiResult<List<BuildingDetailsVO>> buildingPlan = getBuildingPlan(request);
         String redisValue02 = redisService.get(buildingId + houseNumber);
         if (!StringUtils.isBlank(redisValue02)) {
-            List<FamilyMember> list = JSONArray.parseArray(redisValue, FamilyMember.class);
+            List<FamilyMember> list = GsonUtils.fromJsonToList(redisValue, FamilyMember[].class);
             return ApiResult.of(0, list);
         } else {
             return ApiResult.of(0, new ArrayList<>());
