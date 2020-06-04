@@ -90,4 +90,15 @@ public class ThirdApiMappingDO {
         return false;
     }
 
+    /**
+     * 是否分页
+     * @return
+     */
+    public Boolean isPage() {
+        if (flag != null) {
+            return (flag.intValue() & 2) == 2;
+        }
+        return false;
+    }
+
 }
