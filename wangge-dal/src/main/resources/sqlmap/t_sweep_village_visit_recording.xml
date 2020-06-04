@@ -58,6 +58,9 @@
         <include refid="table" />
         <include refid="conditions" />
         order by gmt_modified desc
+        <if test="!queryTotal">
+            limit #{startRow},#{pageSize}
+        </if>
     </select>
 
 
@@ -183,5 +186,37 @@
             </if>
         </trim>
     </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="complaintSensitiveCustomersFlag != null">
+                complaint_sensitive_customers_flag = #{complaintSensitiveCustomersFlag},
+            </if>
+            <if test="successFlag != null">
+                success_flag = #{successFlag},
+            </if>
+            <if test="businessType != null">
+                business_type = #{businessType},
+            </if>
+            <if test="broadbandExpireTime != null">
+                broadband_expire_date = #{broadbandExpireTime},
+            </if>
+            <if test="tvBoxExpireTime != null">
+                tv_box_expire_time = #{tvBoxExpireTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
 
 </mapper>

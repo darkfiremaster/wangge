@@ -17,4 +17,6 @@ public class SweepVillageVisitRecordingQuery extends Query {
     private List<String> tenantsIds;
 
     private Long activityId;
+
+    private Integer status;
 }
