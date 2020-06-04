@@ -31,7 +31,6 @@ public class ThirdApiCacheManager {
     @PostConstruct
     public void init() {
         ThirdApiMappingQuery thirdApiMappingQuery = new ThirdApiMappingQuery();
-        thirdApiMappingQuery.setPageEnable(false);
         List<ThirdApiMappingDO> thirdApiMappingDOS = thirdApiMappingMapper.find(thirdApiMappingQuery);
 
         Map<String, ThirdApiMappingDO> map = thirdApiMappingDOS.stream().collect(Collectors.toMap(ThirdApiMappingDO::getApiName, i -> i));
@@ -43,9 +42,7 @@ public class ThirdApiCacheManager {
     @SmIgnore
     public void reload() {
         THIRD_API_CACHE.clear();
-
         ThirdApiMappingQuery thirdApiMappingQuery = new ThirdApiMappingQuery();
-        thirdApiMappingQuery.setPageEnable(false);
         List<ThirdApiMappingDO> thirdApiMappingDOS = thirdApiMappingMapper.find(thirdApiMappingQuery);
         Map<String, ThirdApiMappingDO> map = thirdApiMappingDOS.stream().collect(Collectors.toMap(ThirdApiMappingDO::getApiName, i -> i));
         THIRD_API_CACHE.putAll(map);
