@@ -2,8 +2,9 @@ package com.shinemo.wangge.core.service.sweepvillage.impl;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery;
-import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
 import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
+import com.shinemo.sweepvillage.query.SweepVillageActivityQuery;
 import com.shinemo.sweepvillage.query.VillageQuery;
 import com.shinemo.sweepvillage.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.vo.SweepVillageActivityResultVO;
@@ -33,46 +34,89 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     @Override
     public ApiResult<Void> createSweepVillageActivity(SweepVillageActivityVO sweepVillageActivityVO) {
         Assert.notNull(sweepVillageActivityVO, "sweepVillageActivityVO is null");
-        //todo
+        //todo 校验参数
 
         SweepVillageActivityDO sweepFloorActivityDO = getSweepVillageActivityDO(sweepVillageActivityVO);
         sweepVillageActivityMapper.insert(sweepFloorActivityDO);
 
+        //todo 同步华为
+        //todo 同步代办
         return ApiResult.of(0);
     }
 
-    private SweepVillageActivityDO getSweepVillageActivityDO(SweepVillageActivityVO sweepVillageActivityVO) {
-        return null;
-    }
 
     @Override
     public ApiResult<List<VillageVO>> getVillageList(VillageQuery villageQuery) {
+        //todo 透传华为
         return null;
     }
 
     @Override
     public ApiResult<Void> createVillage(VillageVO villageVO) {
+        //todo 透传华为
         return null;
     }
 
     @Override
     public ApiResult<Void> startActivity(Long id) {
-        return null;
+        //todo 校验参数
+
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setId(id);
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
+        if (sweepVillageActivityDO == null) {
+            //todo
+            return ApiResult.fail("数据不存在", 500);
+        }
+
+        sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
+        sweepVillageActivityMapper.update(sweepVillageActivityDO);
+
+        //todo 透传华为
+        //todo 同步代办
+        return ApiResult.of(0);
     }
 
 
     @Override
     public ApiResult<Void> finishActivity(SweepVillageActivityFinishVO sweepVillageActivityFinishVO) {
-        return null;
+        //todo 校验参数
+
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setId(sweepVillageActivityFinishVO.getId());
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
+        if (sweepVillageActivityDO == null) {
+            //todo
+            return ApiResult.fail("数据不存在", 500);
+        }
+
+        sweepVillageActivityDO.setRemark(sweepVillageActivityFinishVO.getRemark());
+        sweepVillageActivityDO.setPicUrl(sweepVillageActivityFinishVO.getPicUrl());
+        sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.END.getId());
+        sweepVillageActivityMapper.update(sweepVillageActivityDO);
+
+        //todo 透传华为
+        //todo 同步代办
+        return ApiResult.of(0);
     }
 
     @Override
-    public ApiResult<List<SweepFloorActivityVO>> getSweepVillageActivityList(SweepFloorActivityQuery sweepFloorActivityQuery) {
-        return null;
+    public ApiResult<List<SweepVillageActivityVO>> getSweepVillageActivityList(SweepVillageActivityQuery sweepVillageActivityQuery) {
+        //todo 校验参数
+
+        List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
+
+        //todo 转化为vo
+
+        return ApiResult.of(0, null);
     }
 
     @Override
     public ApiResult<SweepVillageActivityResultVO> getFinshResultInfo(SweepFloorActivityQuery sweepFloorActivityQuery) {
+        return null;
+    }
+
+    private SweepVillageActivityDO getSweepVillageActivityDO(SweepVillageActivityVO sweepVillageActivityVO) {
         return null;
     }
 }

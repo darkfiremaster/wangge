@@ -3,6 +3,7 @@ package com.shinemo.wangge.web.config;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.todo.error.TodoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +17,12 @@ public final class SmartGridGlobalExceptionAdvice {
     public ApiResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error(e.getMessage(), e);
         return ApiResult.fail(e.getMessage(),CommonErrorCodes.PARAM_ERROR.code);
+    }
+
+    @ExceptionHandler(TodoException.class)
+    public ApiResult handleTodoException(TodoException e) {
+        log.error(e.getMessage(), e);
+        return ApiResult.fail(e.getMessage(),e.code);
     }
 
     /**

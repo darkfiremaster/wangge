@@ -2,7 +2,7 @@ package com.shinemo.wangge.core.service.sweepvillage;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery;
-import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
+import com.shinemo.sweepvillage.query.SweepVillageActivityQuery;
 import com.shinemo.sweepvillage.query.VillageQuery;
 import com.shinemo.sweepvillage.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.vo.SweepVillageActivityResultVO;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @Author shangkaihui
  * @Date 2020/6/3 17:32
- * @Desc
+ * @Desc 扫村
  */
 public interface SweepVillageActivityService {
 
@@ -56,10 +56,9 @@ public interface SweepVillageActivityService {
 
     /**
      * 获取扫村活动列表
-     * @param sweepFloorActivityQuery
      * @return
      */
-    ApiResult<List<SweepFloorActivityVO>> getSweepVillageActivityList(SweepFloorActivityQuery sweepFloorActivityQuery);
+    ApiResult<List<SweepVillageActivityVO>> getSweepVillageActivityList(SweepVillageActivityQuery sweepVillageActivityQuery);
 
     /**
      * 获取扫村完成情况

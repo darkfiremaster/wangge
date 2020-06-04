@@ -2,11 +2,9 @@ package com.shinemo.wangge.core.service.todo;
 
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.query.TodoQuery;
-import com.shinemo.todo.vo.TodoDTO;
-import com.shinemo.todo.vo.TodoIndexVO;
-import com.shinemo.todo.vo.TodoTypeVO;
-import com.shinemo.todo.vo.TodoVO;
+import com.shinemo.todo.vo.*;
 
 /**
  * @Author shangkaihui
@@ -15,7 +13,7 @@ import com.shinemo.todo.vo.TodoVO;
  */
 public interface TodoService {
 
-    ApiResult<Void> operateTodoThing(TodoDTO todoDTO);
+    ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest);
 
     ApiResult<Void> createTodo(TodoDTO todoDTO);
 
@@ -29,6 +27,8 @@ public interface TodoService {
      */
     ApiResult<TodoTypeVO> getTypeList();
 
+    ApiResult<Void> clearTypeListCache();
+
     /**
      * 获取代办事项列表
      * @return
@@ -36,4 +36,6 @@ public interface TodoService {
     ApiResult<ListVO<TodoVO>> getTodoList(TodoQuery todoQuery);
 
     ApiResult<TodoIndexVO> getIndexInfo();
+
+    ApiResult<Void> insertTodoLog(TodoLogDO todoLogDO);
 }

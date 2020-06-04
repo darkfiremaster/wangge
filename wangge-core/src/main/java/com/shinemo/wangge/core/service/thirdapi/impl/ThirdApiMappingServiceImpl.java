@@ -1,26 +1,20 @@
 package com.shinemo.wangge.core.service.thirdapi.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.http.HttpConnectionUtils;
 import com.shinemo.smartgrid.http.HttpResult;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.smartgrid.utils.ThreadPoolUtil;
-import com.shinemo.stallup.domain.huawei.GetGridUserListResult;
-import com.shinemo.stallup.domain.huawei.GetGridUserListResult.DataBean;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.domain.model.HuaweiApiLogDO;
-import com.shinemo.sweepfloor.domain.vo.BuildingVO;
 import com.shinemo.thirdapi.common.enums.ThirdApiStatusEnum;
 import com.shinemo.thirdapi.common.enums.ThirdApiTypeEnum;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.thirdapi.domain.model.ThirdApiMappingDO;
-import com.shinemo.util.GsonUtil;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper;
@@ -30,7 +24,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Author shangkaihui
@@ -78,7 +74,6 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             //调华为接口
             String mobile = getMobile();
             String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
-            //HttpResult httpResult = mockErrorHttpResult();
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, new HashMap<>());
 
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
@@ -121,7 +116,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
                 return ApiResult.fail(huaweiResponse.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
 
-            Map<String, Object> result = getJsonMap(JSON.toJSONString(huaweiResponse.get("data")));
+            Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get("data")));
             dealPage(thirdApiMappingDO,result);
             return ApiResult.of(0, result);
         }
@@ -133,11 +128,10 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         log.info("[dispatch] 返回mock数据,url:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), requestData, thirdApiMappingDO.getMockData());
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
         if (huaweiRequestSuccess(result)) {
-            Map<String, Object> objectMap = getJsonMap(JSON.toJSONString(result.get("data")));
-
+            Map<String, Object> objectMap = getJsonMap(GsonUtils.toJson(result.get("data")));
             dealPage(thirdApiMappingDO,objectMap);
             result.put("data",objectMap);
-            return ApiResult.of(0, getJsonMap(JSON.toJSONString(result.get("data"))));
+            return ApiResult.of(0, getJsonMap(GsonUtils.toJson(result.get("data"))));
         } else {
             return ApiResult.fail(result.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
         }
@@ -155,6 +149,9 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
     private Boolean huaweiRequestSuccess( Map<String, Object> huaweiResponse) {
         String code = String.valueOf(huaweiResponse.get("code"));
+        //Gson将字符串转map时,int、long默认为double类型,所以这里需要特殊处理,去除小数位
+        String[] split = code.split("\\.");
+        code = split[0];
 
         //特殊处理,当code是303时,返回给前端success,但是返回空数据
         if (Objects.equals(HUAWEI_PHONE_NOT_EXIST_CODE, code)) {
@@ -167,44 +164,6 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             return false;
         }
     }
-
-    private HttpResult mockHttpResult() {
-        GetGridUserListResult getGridUserListResult = new GetGridUserListResult();
-        getGridUserListResult.setCode(200);
-        getGridUserListResult.setMessage("success");
-        DataBean dataBean = new DataBean();
-        List<DataBean.UserListBean> userListBeanList = new ArrayList<>();
-        DataBean.UserListBean userListBean = new DataBean.UserListBean();
-        userListBean.setUserTel("1");
-        userListBean.setUserName("尚凯辉");
-        userListBean.setUserRole("客户经理");
-        userListBeanList.add(userListBean);
-
-        dataBean.setUserList(userListBeanList);
-        getGridUserListResult.setData(dataBean);
-
-        HttpResult httpResult = new HttpResult();
-        httpResult.setCode(200);
-        httpResult.setContent(GsonUtil.toJson(getGridUserListResult));
-        httpResult.setCostTime(100);
-        httpResult.setErrorMsg("success");
-        return httpResult;
-    }
-
-    private HttpResult mockErrorHttpResult() {
-        GetGridUserListResult getGridUserListResult = new GetGridUserListResult();
-        getGridUserListResult.setCode(-1);
-        getGridUserListResult.setMessage("接口超时");
-        getGridUserListResult.setData(null);
-
-        HttpResult httpResult = new HttpResult();
-        httpResult.setCode(200);
-        httpResult.setContent(GsonUtil.toJson(getGridUserListResult));
-        httpResult.setCostTime(100);
-        httpResult.setErrorMsg("success");
-        return httpResult;
-    }
-
 
     /**
      * 记录调用日志
@@ -239,8 +198,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     private Map<String, Object> getJsonMap(String jsonValue) {
         Map<String, Object> result = null;
         try {
-            result = JSON.parseObject(jsonValue, new TypeReference<HashMap<String, Object>>() {
-            });
+            result = GsonUtils.getJsonMap(jsonValue);
         } catch (Exception e) {
             log.error("[getJsonMap] data error,data:{}", jsonValue,e);
             throw new ApiException(ThirdApiErrorCodes.HUA_WEI_RESPONSE_ERROR);
@@ -250,28 +208,6 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     }
 
     public static void main(String[] args) {
-
-//        ThirdApiMappingServiceImpl thirdApiMappingService = new ThirdApiMappingServiceImpl();
-//        HashMap<String, Object> map = new HashMap<>();
-//        map.put("code", 200);
-//
-//        Boolean aBoolean = thirdApiMappingService.huaweiRequestSuccess(map);
-//        List<BuildingVO> buildingVOS = new ArrayList<>();
-//        BuildingVO buildingVO = new BuildingVO();
-//        buildingVO.setBuildingName("测试");
-//        buildingVO.setNumSort(123);
-//        buildingVO.setBuildingId("aaaaa");
-//        BuildingVO buildingVO02 = new BuildingVO();
-//        buildingVO02.setBuildingName("测试");
-//        buildingVO02.setNumSort(123);
-//        buildingVO02.setBuildingId("aaaaa");
-//        buildingVOS.add(buildingVO);
-//        buildingVOS.add(buildingVO02);
-//        ListVO<BuildingVO> list = ListVO.list(buildingVOS, 100);
-//
-//        Map<String, Object> result = JSON.parseObject(JSON.toJSONString(list), new TypeReference<HashMap<String, Object>>() {
-//        });
-//        System.out.println(result);
 
     }
 }
