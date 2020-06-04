@@ -9,4 +9,10 @@ import lombok.Data;
  */
 @Data
 public class SweepVillageActivityFinishVO {
+
+    private Long id;
+
+    private String remark;
+
+    private String picUrl;
 }

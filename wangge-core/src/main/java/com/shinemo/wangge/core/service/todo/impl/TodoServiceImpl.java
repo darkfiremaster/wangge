@@ -83,6 +83,9 @@ public class TodoServiceImpl implements TodoService {
 
         //转换对象
         TodoDO todoDO = getTodoDO(todoDTO);
+
+        //todo 先判断记录是否存在,存在则执行更新,否则执行新增
+
         //新增
         thirdTodoMapper.insert(todoDO);
 
