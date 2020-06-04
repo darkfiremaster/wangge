@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO">
+        <id column="id" property="id" />
+        <result property="gmtCreate" column="gmt_create" />
+        <result property="gmtModified" column="gmt_modified" />
+        <result property="activityId" column="activity_id" />
+        <result property="mobile" column="mobile" />
+        <result property="marketingUserName" column="marketing_user_name" />
+        <result property="tenantsId" column="tenants_id" />
+        <result property="contactName" column="contact_name" />
+        <result property="contactMobile" column="contact_mobile" />
+        <result property="complaintSensitiveCustomersFlag" column="complaint_sensitive_customers_flag" />
+        <result property="successFlag" column="success_flag" />
+        <result property="businessType" column="business_type" />
+        <result property="broadbandExpireTime" column="broadband_expire_date" />
+        <result property="tvBoxExpireTime" column="tv_box_expire_time" />
+        <result property="remark" column="remark" />
+        <result property="status" column="status" />
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, activity_id, mobile, marketing_user_name, tenants_id, contact_name,contact_mobile,complaint_sensitive_customers_flag,success_flag,
+        business_type,broadband_expire_date,tv_box_expire_time,remark,status
+    </sql>
+
+    <sql id="table">
+        t_sweep_village_visit_recording
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">
+                    and id = #{id}
+                </when>
+                <otherwise>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="activityId != null">and activity_id = #{activityId}</if>
+                    <if test="tenantsId != null">and tenants_id = #{tenantsId}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        order by gmt_modified desc
+    </select>
+
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
+        select count(*) from
+        <include refid="table" />
+        <include refid="conditions" />
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+        parameterType="com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO">
+        insert into
+        <include refid="table" />
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            <if test="activityId != null">
+                activity_id,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="marketingUserName != null">
+                marketing_user_name,
+            </if>
+            <if test="tenantsId != null">
+                tenants_id,
+            </if>
+            <if test="contactName != null">
+                contact_name,
+            </if>
+            <if test="contactMobile != null">
+                contact_mobile,
+            </if>
+            <if test="complaintSensitiveCustomersFlag != null">
+                complaint_sensitive_customers_flag,
+            </if>
+            <if test="successFlag != null">
+                success_flag,
+            </if>
+            <if test="businessType != null">
+                business_type,
+            </if>
+            <if test="broadbandExpireTime != null">
+                broadband_expire_date,
+            </if>
+            <if test="successFlag != null">
+                success_flag,
+            </if>
+            <if test="broadbandExpireDate != null">
+                broadband_expire_date,
+            </if>
+            <if test="tvBoxExpireTime != null">
+                tv_box_expire_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            <if test="activityId != null">
+                #{activityId},
+            </if>
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="marketingUserName != null">
+                #{marketingUserName},
+            </if>
+            <if test="tenantsId != null">
+                #{tenantsId},
+            </if>
+            <if test="contactName != null">
+                #{contactName},
+            </if>
+            <if test="contactMobile != null">
+                #{contactMobile},
+            </if>
+            <if test="complaintSensitiveCustomersFlag != null">
+                #{complaintSensitiveCustomersFlag},
+            </if>
+            <if test="successFlag != null">
+                #{successFlag},
+            </if>
+            <if test="businessType != null">
+                business_type,
+            </if>
+            <if test="broadbandExpireTime != null">
+                #{broadbandExpireTime},
+            </if>
+            <if test="successFlag != null">
+                #{successFlag},
+            </if>
+            <if test="broadbandExpireDate != null">
+                #{broadbandExpireDate},
+            </if>
+            <if test="tvBoxExpireTime != null">
+                #{tvBoxExpireTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>
