@@ -73,7 +73,7 @@ public class VisitRecordingController {
      */
     @GetMapping("/getVisitRecordingByTenantsId")
     @SmIgnore
-    public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByTenantsId(@RequestBody VisitRecordingListRequest request) {
+    public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByTenantsId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         Assert.notNull(request.getTenantsId(),"tenantsId is null");
@@ -86,10 +86,21 @@ public class VisitRecordingController {
      */
     @GetMapping("/getVisitRecordingByActivityId")
     @SmIgnore
-    public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(@RequestBody VisitRecordingListRequest request) {
+    public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         return visitRecordingService.getVisitRecordingByActivityId(request);
+    }
+
+    /**
+     * 根据住户id查询走访记录
+     * @return
+     */
+    @GetMapping("/getVisitRecordingDetail")
+    @SmIgnore
+    public ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(@RequestParam Long id) {
+        Assert.notNull(id,"id is null");
+        return visitRecordingService.getVisitRecordingDetail(id);
     }
 
 }

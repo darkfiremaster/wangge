@@ -4,6 +4,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepvillage.domain.request.VisitRecordingListRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageVisitRecordingVO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -16,5 +17,7 @@ public interface VisitRecordingService {
     ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByTenantsId(VisitRecordingListRequest request);
 
     ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId( VisitRecordingListRequest request);
+
+    ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(Long id);
 
 }

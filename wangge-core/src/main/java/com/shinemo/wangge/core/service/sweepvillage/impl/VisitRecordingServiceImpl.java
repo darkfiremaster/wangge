@@ -118,6 +118,17 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         return ApiResult.of(0,ListVO.list(vos,count));
     }
 
+    @Override
+    public ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(Long id) {
+        SweepVillageVisitRecordingDO recordingDO = getDo(id, 1);
+        if (recordingDO == null) {
+            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_NOT_EXIST);
+        }
+        SweepVillageVisitRecordingVO visitRecordingVO = new SweepVillageVisitRecordingVO();
+        BeanUtils.copyProperties(recordingDO,visitRecordingVO);
+        return ApiResult.of(0,visitRecordingVO);
+    }
+
     private SweepVillageVisitRecordingDO getDo(Long id,Integer status) {
         SweepVillageVisitRecordingQuery query = new SweepVillageVisitRecordingQuery();
         query.setId(id);
