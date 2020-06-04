@@ -8,7 +8,7 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class TodoRequest {
+public class TodoThirdRequest {
 
     private Long timeStamp;
 
@@ -16,5 +16,5 @@ public class TodoRequest {
 
     private String sign;
 
-    private TodoDTO todoDTO;
+    private TodoDTO postBody;
 }

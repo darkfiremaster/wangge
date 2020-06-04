@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.TodoLogMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.todo.domain.TodoLogDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="company" column="company"/>
+        <result property="thirdType" column="third_type"/>
+        <result property="thirdId" column="third_id"/>
+        <result property="operatorMobile" column="operator_mobile"/>
+        <result property="costTime" column="cost_time"/>
+        <result property="request" column="request"/>
+        <result property="response" column="response"/>
+        <result property="exception" column="exception"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, company, third_type, third_id, operator_mobile, cost_time, request, response, exception, remark
+    </sql>
+
+    <sql id="table">
+        t_todo_log
+    </sql>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.todo.domain.TodoLogDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="company != null">
+                company,
+            </if>
+            <if test="thirdType != null">
+                third_type,
+            </if>
+            <if test="thirdId != null">
+                third_id,
+            </if>
+            <if test="operatorMobile != null">
+                operator_mobile,
+            </if>
+            <if test="costTime != null">
+                cost_time,
+            </if>
+            <if test="request != null">
+                request,
+            </if>
+            <if test="response != null">
+                response,
+            </if>
+            <if test="exception != null">
+                exception,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="company != null">
+                #{company, jdbcType=VARCHAR},
+            </if>
+            <if test="thirdType != null">
+                #{thirdType, jdbcType=INTEGER},
+            </if>
+            <if test="thirdId != null">
+                #{thirdId, jdbcType=VARCHAR},
+            </if>
+            <if test="operatorMobile != null">
+                #{operatorMobile, jdbcType=VARCHAR},
+            </if>
+            <if test="costTime != null">
+                #{costTime, jdbcType=BIGINT},
+            </if>
+            <if test="request != null">
+                #{request, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="response != null">
+                #{response, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="exception != null">
+                #{exception, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+</mapper>

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,20 +13,26 @@ import java.util.List;
  * @Desc
  */
 @Data
-public class TodoTypeVO {
+public class TodoTypeVO implements Serializable {
+
+    private static final long serialVersionUID = -2478129774225303405L;
 
     private List<TodoTypeListBean> toDoTypeList;
 
 
     @Data
-    public static class TodoTypeListBean {
+    public static class TodoTypeListBean implements Serializable{
+
+        private static final long serialVersionUID = -645282461480703833L;
         private String name;
         private List<ChildListBean> childList;
 
         @Data
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class ChildListBean {
+        public static class ChildListBean implements Serializable{
+
+            private static final long serialVersionUID = -2963719378103084559L;
 
             private String name;
             private Integer todoType;

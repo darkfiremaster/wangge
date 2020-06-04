@@ -5,10 +5,11 @@ import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.vo.TodoIndexVO;
-import com.shinemo.todo.vo.TodoRequest;
+import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.service.todo.TodoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,25 +20,30 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/todo")
+@Slf4j
 public class TodoController {
 
     @Autowired
     private TodoService todoService;
 
+
+
     @PostMapping("/operateTodoThing")
     @SmIgnore
-    public ApiResult<Void> operateTodoThing(@RequestBody TodoRequest todoRequest) {
-        //todo 记录日志
-
-        //todo 校验签名
-
-        return todoService.operateTodoThing(todoRequest.getTodoDTO());
+    public ApiResult<Void> operateTodoThing(@RequestBody TodoThirdRequest todoThirdRequest) {
+        return todoService.operateTodoThing(todoThirdRequest);
     }
 
     @PostMapping("/getTypeList")
     @SmIgnore
     public ApiResult<TodoTypeVO> getTypeList() {
         return todoService.getTypeList();
+    }
+
+    @GetMapping("/clearTypeListCache")
+    @SmIgnore
+    public ApiResult<Void> clearTypeListCache() {
+        return todoService.clearTypeListCache();
     }
 
     @PostMapping("/getTodoList")

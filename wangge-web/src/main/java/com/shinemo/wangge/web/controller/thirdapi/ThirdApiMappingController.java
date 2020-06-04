@@ -1,4 +1,4 @@
-package com.shinemo.wangge.web.controller.thirdapi;
+package com.shinemo.smartgrid.thirdapi.rest;
 
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
@@ -42,7 +42,7 @@ public class ThirdApiMappingController {
 
 
     /**
-     * 重置缓存 http://localhost:20014/cmgr/thirdapi/clearCache?debug
+     * 重置缓存
      * @return
      */
     @GetMapping("/clearCache")

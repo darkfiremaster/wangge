@@ -1,5 +1,8 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
+import com.alicp.jetcache.Cache;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.anno.CreateCache;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ArrayListMultimap;
@@ -9,6 +12,7 @@ import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.domain.TodoDO;
+import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.domain.TodoTypeDO;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoMethodOperateEnum;
@@ -16,16 +20,16 @@ import com.shinemo.todo.enums.TodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoTypeQuery;
-import com.shinemo.todo.vo.TodoDTO;
-import com.shinemo.todo.vo.TodoIndexVO;
-import com.shinemo.todo.vo.TodoTypeVO;
-import com.shinemo.todo.vo.TodoVO;
+import com.shinemo.todo.vo.*;
+import com.shinemo.wangge.core.aop.TodoLog;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
+import com.shinemo.wangge.dal.mapper.TodoLogMapper;
 import com.shinemo.wangge.dal.mapper.TodoTypeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -50,11 +54,31 @@ public class TodoServiceImpl implements TodoService {
     @Autowired
     private TodoTypeMapper todoTypeMapper;
 
+    @Autowired
+    private TodoLogMapper todoLogMapper;
 
+    @Autowired
+    private TodoAuthCheckServiceImpl todoAuthCheckService;
+
+    @CreateCache(name = "TodoServiceImpl.todoTypeCache-", cacheType = CacheType.LOCAL)
+    private Cache<String, TodoTypeVO> todoTypeCache;
+
+    private static final String TODO_TYPE_CACHE_KEY = "todo_type_list";
+
+    @TodoLog
     @Override
-    public ApiResult<Void> operateTodoThing(TodoDTO todoDTO) {
-        Assert.notNull(todoDTO, "param is null");
+    public ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest) {
+        Assert.notNull(todoThirdRequest, "param is null");
+        TodoDTO todoDTO = todoThirdRequest.getPostBody();
+        Assert.notNull(todoDTO.getThirdId(), "thirdId is null");
+        Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
         Assert.notNull(todoDTO.getOperateType(), "operateType is null");
+        Assert.notNull(todoDTO.getOperatorMobile(), "operatorMobile is null");
+
+        Boolean checkSuccess = todoAuthCheckService.checkSign(todoThirdRequest);
+        if (!checkSuccess) {
+            return ApiResultWrapper.fail(TodoErrorCodes.SIGN_ERROR);
+        }
 
         if (Objects.equals(todoDTO.getOperateType(), TodoMethodOperateEnum.CREATE.getId())) {
             return createTodo(todoDTO);
@@ -63,18 +87,13 @@ public class TodoServiceImpl implements TodoService {
         } else if (Objects.equals(todoDTO.getOperateType(), TodoMethodOperateEnum.DELETE.getId())) {
             return deleteTodo(todoDTO);
         } else {
-            return ApiResultWrapper.fail(TodoErrorCodes.OPERATE_TYPE_ERROR);
+             return ApiResultWrapper.fail(TodoErrorCodes.OPERATE_TYPE_ERROR);
         }
     }
 
     @Override
     public ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
-        Assert.notNull(todoDTO.getThirdId(), "thirdId is null");
-        Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operateType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operatorMobile is null");
-
         Assert.notNull(todoDTO.getTitle(), "title is null");
         Assert.notNull(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
@@ -96,11 +115,6 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ApiResult<Void> updateTodo(TodoDTO todoDTO) {
-        //校验参数
-        Assert.notNull(todoDTO.getThirdId(), "thirdId is null");
-        Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operateType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operatorMobile is null");
 
         //转换对象
         TodoDO todoDO = getTodoDO(todoDTO);
@@ -113,11 +127,6 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ApiResult<Void> deleteTodo(TodoDTO todoDTO) {
-        //校验参数
-        Assert.notNull(todoDTO.getThirdId(), "thirdId is null");
-        Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operateType is null");
-        Assert.notNull(todoDTO.getOperateType(), "operatorMobile is null");
 
         //先查再删
         TodoQuery todoQuery = new TodoQuery();
@@ -139,6 +148,11 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ApiResult<TodoTypeVO> getTypeList() {
+        TodoTypeVO todoTypeVO = todoTypeCache.get(TODO_TYPE_CACHE_KEY);
+        if (todoTypeVO != null) {
+            return ApiResult.of(0, todoTypeVO);
+        }
+
         TodoTypeQuery todoTypeQuery = new TodoTypeQuery();
         todoTypeQuery.setPageEnable(false);
         todoTypeQuery.setStatus(StatusEnum.NORMAL.getId());
@@ -149,7 +163,7 @@ public class TodoServiceImpl implements TodoService {
         for (TodoTypeDO todoTypeDO : todoTypeDOS) {
             multimap.put(todoTypeDO.getType(), todoTypeDO);
         }
-        TodoTypeVO todoTypeVO = new TodoTypeVO();
+        todoTypeVO = new TodoTypeVO();
         List<TodoTypeVO.TodoTypeListBean> todoTypeList = new ArrayList<>();
         TodoTypeEnum[] values = TodoTypeEnum.values();
         for (TodoTypeEnum todoTypeEnum : values) {
@@ -164,7 +178,16 @@ public class TodoServiceImpl implements TodoService {
             todoTypeList.add(toDoTypeListBean);
         }
         todoTypeVO.setToDoTypeList(todoTypeList);
+
+        todoTypeCache.put(TODO_TYPE_CACHE_KEY, todoTypeVO);
+
         return ApiResult.of(0, todoTypeVO);
+    }
+
+    @Override
+    public ApiResult<Void> clearTypeListCache() {
+        todoTypeCache.remove(TODO_TYPE_CACHE_KEY);
+        return ApiResult.of(0);
     }
 
     @Override
@@ -195,6 +218,13 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public ApiResult<TodoIndexVO> getIndexInfo() {
 
+        return ApiResult.of(0);
+    }
+
+    @Async
+    @Override
+    public ApiResult<Void> insertTodoLog(TodoLogDO todoLogDO) {
+        todoLogMapper.insert(todoLogDO);
         return ApiResult.of(0);
     }
 

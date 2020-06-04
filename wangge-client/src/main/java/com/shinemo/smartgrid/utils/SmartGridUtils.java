@@ -3,11 +3,10 @@ package com.shinemo.smartgrid.utils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shinemo.stallup.domain.huawei.SearchMapRequest;
+import com.shinemo.todo.vo.TodoDTO;
 import com.shinemo.util.GsonUtil;
 import com.shinemo.util.MD5Util;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -66,14 +65,21 @@ public class SmartGridUtils {
 
     public static void main(String[] args) {
         //System.out.println(genUuid());
-        Map<String,Object> map = new HashMap<>();
-        SearchMapRequest request = new SearchMapRequest();
-        request.setCellName("广西");
-        map.put("timeStamp",1588161226756L);
+        Map<String,Object> map = new TreeMap<>();
+        TodoDTO request = new TodoDTO();
+        request.setThirdId("123");
+        request.setThirdType(1);
+        request.setOperateType(3);
+        request.setOperatorMobile("123");
+        long l = System.currentTimeMillis();
+        System.out.println("l = " + l);
+        map.put("timeStamp",l);
         map.put("postBody",request);
-        map.put("method","queryCellList");
-        String s = genSign(map);
-        System.out.println(s);
+        map.put("method","authUser");
+        map.put("key", "34b18faa-0424-41ad-b73b-80fc02d4be55");
+        System.out.println("map = " + map);
+        String sign = genSign(map);
+        System.out.println(sign);
 
     }
 
