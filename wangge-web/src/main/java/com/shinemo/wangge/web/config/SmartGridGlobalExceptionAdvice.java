@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.config;
 
 import cn.hutool.core.date.DateException;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
+import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.error.TodoException;
@@ -38,6 +39,9 @@ public final class SmartGridGlobalExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ApiResult handleException(Exception e) {
         log.error(e.getMessage(), e);
+        if (e instanceof ApiException) {
+            return ApiResult.fail(e.getMessage(), ((ApiException) e).getCode());
+        }
         return ApiResultWrapper.fail(CommonErrorCodes.SERVER_ERROR);
     }
 

@@ -24,9 +24,12 @@ import com.shinemo.Aace.MutableBoolean;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.Imlogin.IMLoginService;
 import com.shinemo.client.order.AppTypeEnum;
+import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
+import com.shinemo.common.tools.exception.ApiException;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -40,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.common.tools.exception.CommonErrorCodes.INVALID_TOKEN;
 import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
@@ -93,8 +97,7 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
         if (token == null || uid == null) {
             String json = request.getHeader("token");
             if (json != null) {
-                Map<String, String> map = Jsons.fromJson(json, new TypeReference<Map<String, String>>() {
-                });
+                Map<String, String> map = GsonUtils.getStringMap(json);
                 if (map != null) {
                     token = map.get("token");
                     timestamp = NumberUtils.toLong(map.get("ts"));
@@ -106,7 +109,7 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
 
         if (StringUtils.isBlank(token) || StringUtils.isBlank(uid)) {
             log.error("check token fail, token or uid from cookies is not allow blank");
-            return false;
+            throw new ApiException(INVALID_TOKEN);
         }
 
         int ret = RET_SUCCESS;
@@ -146,6 +149,6 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
         }
 
         log.error("token token fail, uid:{}, token:{}, timestamp:{}, retCode:{}", uid, token, timestamp, ret);
-        return false;
+        throw new ApiException(INVALID_TOKEN);
     }
 }

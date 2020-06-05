@@ -20,6 +20,7 @@ public class SmartGridContext {
 	public static String KEY_ORG_NAME = "orgName";
 	public static String KEY_NAME = "name";
 	public static String KEY_MOBILE = "mobile";
+	public static String KEY_GRID_ID = "gridInfo";
 
 	private static final ThreadLocal<Map<String, Object>> local = new ThreadLocal<Map<String, Object>>() {
 		@Override
@@ -108,6 +109,10 @@ public class SmartGridContext {
 
 	public static void setMobile(String mobile) {
 		put(KEY_MOBILE, mobile);
+	}
+
+	public static void setGridInfo(String gridInfo) {
+		put(KEY_GRID_ID, gridInfo);
 	}
 
 	public static String getMobile() {
