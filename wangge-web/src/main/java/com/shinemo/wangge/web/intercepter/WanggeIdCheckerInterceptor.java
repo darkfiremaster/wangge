@@ -96,7 +96,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             log.error("[preHandle] wanggeIdCheck check fail, cookies is empty!");
             throw new ApiException(INVALID_TOKEN);
         }
-        String gridInfo = getValueFromCookies("gridInfo", cookies);
+        String gridInfo = getValueFromCookies(SmartGridContext.KEY_GRID_ID, cookies);
 
         if (StringUtils.isBlank(gridInfo)) {
             String mobile = SmartGridContext.getMobile();
