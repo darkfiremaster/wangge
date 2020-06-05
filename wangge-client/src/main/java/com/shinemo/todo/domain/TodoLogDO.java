@@ -26,6 +26,11 @@ public class TodoLogDO {
 
     private String operatorMobile;
 
+    /**
+     * 状态 1:成功,0:失败
+     */
+    private Integer status;
+
     private Long costTime;
 
     private String request;

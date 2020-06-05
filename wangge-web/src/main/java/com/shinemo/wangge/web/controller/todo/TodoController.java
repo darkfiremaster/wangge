@@ -27,7 +27,6 @@ public class TodoController {
     private TodoService todoService;
 
 
-
     @PostMapping("/operateTodoThing")
     @SmIgnore
     public ApiResult<Void> operateTodoThing(@RequestBody TodoThirdRequest todoThirdRequest) {

@@ -4,7 +4,7 @@
 <mapper namespace="com.shinemo.wangge.dal.mapper.TodoLogMapper">
 
     <!-- 结果集对应关系 -->
-    <resultMap id="result" type="com.shinemo.todo.domain.TodoLogDO" >
+    <resultMap id="result" type="com.shinemo.todo.domain.TodoLogDO">
         <id column="id" property="id"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
@@ -12,6 +12,7 @@
         <result property="thirdType" column="third_type"/>
         <result property="thirdId" column="third_id"/>
         <result property="operatorMobile" column="operator_mobile"/>
+        <result property="status" column="status"/>
         <result property="costTime" column="cost_time"/>
         <result property="request" column="request"/>
         <result property="response" column="response"/>
@@ -21,7 +22,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, gmt_create, gmt_modified, company, third_type, third_id, operator_mobile, cost_time, request, response, exception, remark
+        id, gmt_create, gmt_modified, company, third_type, third_id, operator_mobile, status,cost_time, request, response, exception, remark
     </sql>
 
     <sql id="table">
@@ -51,6 +52,9 @@
             </if>
             <if test="operatorMobile != null">
                 operator_mobile,
+            </if>
+            <if test="status != null">
+                status,
             </if>
             <if test="costTime != null">
                 cost_time,
@@ -85,6 +89,9 @@
             </if>
             <if test="operatorMobile != null">
                 #{operatorMobile, jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
             </if>
             <if test="costTime != null">
                 #{costTime, jdbcType=BIGINT},
