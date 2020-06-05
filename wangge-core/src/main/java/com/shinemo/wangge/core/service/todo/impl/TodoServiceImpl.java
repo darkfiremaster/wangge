@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.CreateCache;
@@ -11,6 +12,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.domain.TodoTypeDO;
@@ -32,7 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -48,13 +52,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TodoServiceImpl implements TodoService {
 
-    @Autowired
+    @Resource
     private ThirdTodoMapper thirdTodoMapper;
 
-    @Autowired
+    @Resource
     private TodoTypeMapper todoTypeMapper;
 
-    @Autowired
+    @Resource
     private TodoLogMapper todoLogMapper;
 
     @Autowired
@@ -75,9 +79,11 @@ public class TodoServiceImpl implements TodoService {
         Assert.notNull(todoDTO.getOperateType(), "operateType is null");
         Assert.notNull(todoDTO.getOperatorMobile(), "operatorMobile is null");
 
-        Boolean checkSuccess = todoAuthCheckService.checkSign(todoThirdRequest);
-        if (!checkSuccess) {
-            return ApiResultWrapper.fail(TodoErrorCodes.SIGN_ERROR);
+        if (!todoThirdRequest.getIgnoreCheckSign()) {
+            Boolean checkSuccess = todoAuthCheckService.checkSign(todoThirdRequest);
+            if (!checkSuccess) {
+                return ApiResultWrapper.fail(TodoErrorCodes.SIGN_ERROR);
+            }
         }
 
         if (Objects.equals(todoDTO.getOperateType(), TodoMethodOperateEnum.CREATE.getId())) {
@@ -87,7 +93,7 @@ public class TodoServiceImpl implements TodoService {
         } else if (Objects.equals(todoDTO.getOperateType(), TodoMethodOperateEnum.DELETE.getId())) {
             return deleteTodo(todoDTO);
         } else {
-             return ApiResultWrapper.fail(TodoErrorCodes.OPERATE_TYPE_ERROR);
+            return ApiResultWrapper.fail(TodoErrorCodes.OPERATE_TYPE_ERROR);
         }
     }
 
@@ -100,22 +106,27 @@ public class TodoServiceImpl implements TodoService {
         Assert.notNull(todoDTO.getLabel(), "label is null");
         Assert.notNull(todoDTO.getOperatorTime(), "operatorTime is null");
 
-        //转换对象
-        TodoDO todoDO = getTodoDO(todoDTO);
+        TodoQuery todoQuery = new TodoQuery();
+        todoQuery.setThirdId(todoDTO.getThirdId());
+        todoQuery.setThirdType(todoDTO.getThirdType());
+        todoQuery.setMobile(todoDTO.getOperatorMobile());
+        TodoDO todoDB = thirdTodoMapper.get(todoQuery);
+        if (todoDB != null) {
+            //修改
+            updateTodo(todoDTO);
+        } else {
+            //新增
+            TodoDO todoDO = getTodoDO(todoDTO);
+            thirdTodoMapper.insert(todoDO);
+            log.info("[createTodo] create todo success");
+        }
 
-        //todo 先判断记录是否存在,存在则执行更新,否则执行新增
-
-        //新增
-        thirdTodoMapper.insert(todoDO);
-
-        log.info("[createTodo] create todo success");
         return ApiResult.of(0);
-    }
 
+    }
 
     @Override
     public ApiResult<Void> updateTodo(TodoDTO todoDTO) {
-
         //转换对象
         TodoDO todoDO = getTodoDO(todoDTO);
         //修改
@@ -193,11 +204,12 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public ApiResult<ListVO<TodoVO>> getTodoList(TodoQuery todoQuery) {
         Assert.notNull(todoQuery, "todoQuery is null");
+        Assert.notNull(SmartGridContext.getMobile(), "mobile is null");
         Assert.notNull(todoQuery.getTimeType(), "timeType is null");
         Assert.notNull(todoQuery.getStatus(), "status is null");
         Assert.notNull(todoQuery.getPageSize(), "pageSize is null");
         Assert.notNull(todoQuery.getCurrentPage(), "currentPage is null");
-
+        todoQuery.setMobile(SmartGridContext.getMobile());
         Page<TodoDO> page = PageHelper.startPage(todoQuery.getCurrentPage().intValue(), todoQuery.getPageSize().intValue());
         List<TodoDO> todoDOS = thirdTodoMapper.find(todoQuery);
         ListVO<TodoVO> listVO = new ListVO();
@@ -217,7 +229,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ApiResult<TodoIndexVO> getIndexInfo() {
-
+        //todo 等产品确认
         return ApiResult.of(0);
     }
 
@@ -231,6 +243,13 @@ public class TodoServiceImpl implements TodoService {
     private TodoDO getTodoDO(TodoDTO todoDTO) {
         TodoDO todoDO = new TodoDO();
         BeanUtils.copyProperties(todoDTO, todoDO);
+        //转换时间
+        String operatorTime = todoDTO.getOperatorTime();
+        todoDO.setOperatorTime(DateUtil.parse(operatorTime, "yyyy-MM-dd HH:mm:ss"));
+        if (!StringUtils.isEmpty(todoDTO.getStartTime())) {
+            todoDO.setStartTime(DateUtil.parse(todoDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
         return todoDO;
     }
 }

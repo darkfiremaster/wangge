@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.config;
 
+import cn.hutool.core.date.DateException;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
@@ -16,13 +17,19 @@ public final class SmartGridGlobalExceptionAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ApiResult handleIllegalArgumentException(IllegalArgumentException e) {
         log.error(e.getMessage(), e);
-        return ApiResult.fail(e.getMessage(),CommonErrorCodes.PARAM_ERROR.code);
+        return ApiResult.fail(CommonErrorCodes.PARAM_ERROR.msg + ":" + e.getMessage(), CommonErrorCodes.PARAM_ERROR.code);
+    }
+
+    @ExceptionHandler(DateException.class)
+    public ApiResult handleDateException(DateException e) {
+        log.error(e.getMessage(), e);
+        return ApiResult.fail(CommonErrorCodes.PARAM_ERROR.msg + ":" + e.getMessage(), CommonErrorCodes.PARAM_ERROR.code);
     }
 
     @ExceptionHandler(TodoException.class)
     public ApiResult handleTodoException(TodoException e) {
         log.error(e.getMessage(), e);
-        return ApiResult.fail(e.getMessage(),e.code);
+        return ApiResult.fail(e.getMessage(), e.code);
     }
 
     /**
@@ -33,8 +40,6 @@ public final class SmartGridGlobalExceptionAdvice {
         log.error(e.getMessage(), e);
         return ApiResultWrapper.fail(CommonErrorCodes.SERVER_ERROR);
     }
-
-
 
 
 }

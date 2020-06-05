@@ -37,6 +37,7 @@
                 <otherwise>
                     <if test="thirdId != null">and third_id = #{thirdId}</if>
                     <if test="thirdType != null">and third_type = #{thirdType}</if>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
                     <if test="status != null">and status = #{status}</if>
                 </otherwise>
             </choose>
