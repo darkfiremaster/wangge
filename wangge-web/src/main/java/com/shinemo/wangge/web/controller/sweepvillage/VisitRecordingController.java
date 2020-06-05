@@ -44,6 +44,7 @@ public class VisitRecordingController {
      * @return
      */
     @PostMapping("/updateVisitRecording")
+    @GridIdChecker
     public ApiResult<Void> updateVisitRecording(@RequestBody SweepVillageVisitRecordingVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
@@ -58,6 +59,7 @@ public class VisitRecordingController {
      * @return
      */
     @PostMapping("/deleteVisitRecording")
+    @GridIdChecker
     public ApiResult<Void> deleteVisitRecording(@RequestBody Long id) {
         Assert.notNull(id,"id is null");
         SweepVillageVisitRecordingVO request = new SweepVillageVisitRecordingVO();
@@ -94,6 +96,7 @@ public class VisitRecordingController {
      * @return
      */
     @GetMapping("/getVisitRecordingDetail")
+    @GridIdChecker
     public ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(@RequestParam Long id) {
         Assert.notNull(id,"id is null");
         return visitRecordingService.getVisitRecordingDetail(id);
