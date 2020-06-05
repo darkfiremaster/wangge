@@ -35,6 +35,7 @@ import com.shinemo.common.tools.exception.ErrorCode;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
@@ -78,6 +79,8 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
 
     public static final int EXPIRE_TIME = 30 * 60 * 60 * 24;
 
+    private static final String COOKIE_AES_KEY = "2258b6e5f32f4774";
+
     ErrorCode INVALID_MOBILE = new ErrorCode(411, "手机号为空");
     ErrorCode NOT_GRID_USER = new ErrorCode(412, "非网格人员");
 
@@ -115,14 +118,15 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
                 throw new ApiException(NOT_GRID_USER);
             }
             SmartGridContext.setGridInfo(json);
-            WebUtil.addCookie(request, response, SmartGridContext.KEY_GRID_ID, encodeCookie,
+            String encrypt = AESUtil.encrypt(encodeCookie, COOKIE_AES_KEY);
+            WebUtil.addCookie(request, response, SmartGridContext.KEY_GRID_ID, encrypt,
                     domain, "/", EXPIRE_TIME, false);
             return true;
         }
-
+        String decrypt = AESUtil.decrypt(gridInfo, COOKIE_AES_KEY);
         String decode = null;
         try {
-            decode = URLDecoder.decode(gridInfo, "utf-8");
+            decode = URLDecoder.decode(decrypt, "utf-8");
         } catch (UnsupportedEncodingException e) {
             log.error("[preHandle] URLDecoder error,gridUserRole = {}",gridInfo);
             throw new ApiException(NOT_GRID_USER);
