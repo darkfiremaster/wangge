@@ -7,6 +7,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.sweepfloor.domain.model.SmartGridActivityDO;
 import com.shinemo.sweepfloor.domain.query.SmartGridActivityQuery;
@@ -23,6 +24,7 @@ import com.shinemo.wangge.dal.mapper.SmartGridActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -123,6 +125,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             SweepVillageVisitRecordingVO visitRecordingVO = new SweepVillageVisitRecordingVO();
             BeanUtils.copyProperties(visitRecordingDO,visitRecordingVO);
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
+            convertBusinessType(visitRecordingDO,visitRecordingVO);
             vos.add(visitRecordingVO);
         }
         SweepVillageVisitRecordingQuery countQuery = new SweepVillageVisitRecordingQuery();
@@ -140,7 +143,23 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         }
         SweepVillageVisitRecordingVO visitRecordingVO = new SweepVillageVisitRecordingVO();
         BeanUtils.copyProperties(recordingDO,visitRecordingVO);
+        visitRecordingVO.setVisitTime(recordingDO.getGmtCreate());
+        convertBusinessType(recordingDO,visitRecordingVO);
+
+        if (checkAuth(recordingDO)) {
+            visitRecordingVO.setUpdateAndDeleteButtonFlag(1);
+        }else {
+            visitRecordingVO.setUpdateAndDeleteButtonFlag(0);
+        }
         return ApiResult.of(0,visitRecordingVO);
+    }
+
+    private void convertBusinessType(SweepVillageVisitRecordingDO recordingDO,SweepVillageVisitRecordingVO visitRecordingVO) {
+        if (!StringUtils.isBlank(recordingDO.getBusinessType())) {
+            visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(recordingDO.getBusinessType(), StallUpBizType[].class));
+        }else {
+            visitRecordingVO.setBusinessType(new ArrayList<>());
+        }
     }
 
     private SweepVillageVisitRecordingDO getDo(Long id,Integer status) {

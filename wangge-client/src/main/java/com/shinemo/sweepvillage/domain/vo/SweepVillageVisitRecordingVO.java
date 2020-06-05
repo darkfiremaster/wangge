@@ -41,4 +41,6 @@ public class SweepVillageVisitRecordingVO {
     private Integer type;
     /** 走访时间 */
     private Date visitTime;
+    /** 是否显示删除、编辑按钮 */
+    private Integer updateAndDeleteButtonFlag;
 }
