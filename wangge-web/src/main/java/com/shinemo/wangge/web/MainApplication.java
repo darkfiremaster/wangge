@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.Ordered;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,6 +35,7 @@ import javax.annotation.Resource;
 @NacosPropertySource(dataId = "wangge", groupId = "${nacos.group.id}")
 @NacosPropertySource(dataId = "wangge", groupId = "dynamic", autoRefreshed = true, first = true)
 @EnableScheduling
+@EnableRetry
 public class MainApplication implements WebMvcConfigurer {
 
 

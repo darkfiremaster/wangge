@@ -21,6 +21,10 @@ import com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -53,10 +57,8 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     private static final String HUAWEI_PHONE_NOT_EXIST_CODE = "303";
 
 
-
     @Override
     public ApiResult<Map<String, Object>> dispatch(Map<String, Object> requestData, String apiName) {
-
         //从缓存中获取数据
         ThirdApiMappingDO thirdApiMappingDO = ThirdApiCacheManager.THIRD_API_CACHE.get(apiName);
 
@@ -84,6 +86,23 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         return ApiResultWrapper.fail(ThirdApiErrorCodes.API_TYPE_ERROR);
     }
 
+    @Retryable(value = {Exception.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 3000, multiplier = 2))
+    @Async
+    @Override
+    public ApiResult<Map<String, Object>> asyncDispatch(Map<String, Object> requestData, String apiName) {
+        return dispatch(requestData, apiName);
+    }
+
+
+    @Recover
+    public ApiResult<Map<String, Object>> asyncDispatchRecover(Exception e, Map<String, Object> map, String apiName) {
+        log.error("[asyncDispatchRecover] request:{},apiName:{},exception:{}", map, apiName, e.getMessage());
+        //todo 补偿处理
+        return ApiResultWrapper.fail(ThirdApiErrorCodes.BASE_ERROR);
+    }
+
     private String getRequestParam(Map<String, Object> requestData, String method, String mobile) {
         requestData.put("mobile", mobile);
         return SmartGridUtils.buildRequestParam(method, requestData, signkey);
@@ -102,6 +121,14 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     }
 
     private ApiResult<Map<String, Object>> handleResult(Map<String, Object> requestData, ThirdApiMappingDO thirdApiMappingDO, String param, HttpResult httpResult) {
+        if (httpResult != null && httpResult.timeOut()) {
+            //超时处理
+            log.error("[dispatch] huawei api timeout error,url={}, request={}, param={}, httpResult = {}",
+                    thirdApiMappingDO.getUrl(), requestData, param, httpResult);
+            throw new RuntimeException("接口超时,请稍后再试");
+        }
+
+
         if (httpResult != null && httpResult.success()) {
             Map<String, Object> huaweiResponse = getJsonMap(httpResult.getContent());
             if (huaweiResponse == null) {
@@ -117,7 +144,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             }
 
             Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get("data")));
-            dealPage(thirdApiMappingDO,result);
+            dealPage(thirdApiMappingDO, result);
             return ApiResult.of(0, result);
         }
         log.error("[dispatch] http error,url = {}, request = {}, param = {}", thirdApiMappingDO.getUrl(), requestData, param);
@@ -129,8 +156,8 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
         if (huaweiRequestSuccess(result)) {
             Map<String, Object> objectMap = getJsonMap(GsonUtils.toJson(result.get("data")));
-            dealPage(thirdApiMappingDO,objectMap);
-            result.put("data",objectMap);
+            dealPage(thirdApiMappingDO, objectMap);
+            result.put("data", objectMap);
             return ApiResult.of(0, getJsonMap(GsonUtils.toJson(result.get("data"))));
         } else {
             return ApiResult.fail(result.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
@@ -138,16 +165,16 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     }
 
 
-    private void dealPage(ThirdApiMappingDO thirdApiMappingDO,Map<String, Object> objectMap) {
+    private void dealPage(ThirdApiMappingDO thirdApiMappingDO, Map<String, Object> objectMap) {
         if (thirdApiMappingDO.isPage()) {
-            objectMap.put("totalCount",objectMap.get("total"));
-            objectMap.put("rows",objectMap.get("pageResult"));
+            objectMap.put("totalCount", objectMap.get("total"));
+            objectMap.put("rows", objectMap.get("pageResult"));
             objectMap.remove("total");
             objectMap.remove("pageResult");
         }
     }
 
-    private Boolean huaweiRequestSuccess( Map<String, Object> huaweiResponse) {
+    private Boolean huaweiRequestSuccess(Map<String, Object> huaweiResponse) {
         String code = String.valueOf(huaweiResponse.get("code"));
         //Gson将字符串转map时,int、long默认为double类型,所以这里需要特殊处理,去除小数位
         String[] split = code.split("\\.");
@@ -200,7 +227,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         try {
             result = GsonUtils.getJsonMap(jsonValue);
         } catch (Exception e) {
-            log.error("[getJsonMap] data error,data:{}", jsonValue,e);
+            log.error("[getJsonMap] data error,data:{}", jsonValue, e);
             throw new ApiException(ThirdApiErrorCodes.HUA_WEI_RESPONSE_ERROR);
         }
 

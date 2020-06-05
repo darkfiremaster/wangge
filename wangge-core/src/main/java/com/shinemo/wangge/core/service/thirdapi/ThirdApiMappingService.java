@@ -13,4 +13,6 @@ public interface ThirdApiMappingService {
 
     ApiResult<Map<String,Object>> dispatch(Map<String, Object> requestData, String apiName);
 
+    ApiResult<Map<String,Object>> asyncDispatch(Map<String, Object> requestData, String apiName);
+
 }
