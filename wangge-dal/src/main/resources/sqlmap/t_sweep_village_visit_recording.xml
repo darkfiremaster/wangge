@@ -17,7 +17,7 @@
         <result property="complaintSensitiveCustomersFlag" column="complaint_sensitive_customers_flag" />
         <result property="successFlag" column="success_flag" />
         <result property="businessType" column="business_type" />
-        <result property="broadbandExpireTime" column="broadband_expire_date" />
+        <result property="broadbandExpireTime" column="broadband_expire_time" />
         <result property="tvBoxExpireTime" column="tv_box_expire_time" />
         <result property="remark" column="remark" />
         <result property="status" column="status" />
@@ -26,7 +26,7 @@
     <!-- 数据库字段 -->
     <sql id="columns">
         id, gmt_create, gmt_modified, activity_id, mobile, marketing_user_name, tenants_id, contact_name,contact_mobile,complaint_sensitive_customers_flag,success_flag,
-        business_type,broadband_expire_date,tv_box_expire_time,remark,status
+        business_type,broadband_expire_time,tv_box_expire_time,remark,status
     </sql>
 
     <sql id="table">
@@ -118,13 +118,7 @@
                 business_type,
             </if>
             <if test="broadbandExpireTime != null">
-                broadband_expire_date,
-            </if>
-            <if test="successFlag != null">
-                success_flag,
-            </if>
-            <if test="broadbandExpireDate != null">
-                broadband_expire_date,
+                broadband_expire_time,
             </if>
             <if test="tvBoxExpireTime != null">
                 tv_box_expire_time,
@@ -169,12 +163,6 @@
             <if test="broadbandExpireTime != null">
                 #{broadbandExpireTime},
             </if>
-            <if test="successFlag != null">
-                #{successFlag},
-            </if>
-            <if test="broadbandExpireDate != null">
-                #{broadbandExpireDate},
-            </if>
             <if test="tvBoxExpireTime != null">
                 #{tvBoxExpireTime},
             </if>
@@ -203,7 +191,7 @@
                 business_type = #{businessType},
             </if>
             <if test="broadbandExpireTime != null">
-                broadband_expire_date = #{broadbandExpireTime},
+                broadband_expire_time = #{broadbandExpireTime},
             </if>
             <if test="tvBoxExpireTime != null">
                 tv_box_expire_time = #{tvBoxExpireTime},

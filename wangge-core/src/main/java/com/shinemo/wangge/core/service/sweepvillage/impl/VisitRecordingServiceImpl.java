@@ -39,9 +39,11 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     @Override
     public ApiResult<Void> add(SweepVillageVisitRecordingVO request) {
         String mobile = SmartGridContext.getMobile();
+        String userName = SmartGridContext.getUserName();
         SweepVillageVisitRecordingDO visitRecordingDO = new SweepVillageVisitRecordingDO();
         BeanUtils.copyProperties(request,visitRecordingDO);
         visitRecordingDO.setMobile(mobile);
+        visitRecordingDO.setMarketingUserName(userName);
         sweepVillageVisitRecordingMapper.insert(visitRecordingDO);
         //todo 同步华为
 

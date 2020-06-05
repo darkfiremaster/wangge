@@ -4,6 +4,7 @@ package com.shinemo.wangge.web.controller.sweepvillage;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.sweepvillage.domain.request.VisitRecordingListRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageVisitRecordingVO;
 import com.shinemo.wangge.core.service.sweepvillage.VisitRecordingService;
@@ -27,7 +28,7 @@ public class VisitRecordingController {
      * @return
      */
     @PostMapping("/addVisitRecording")
-    @SmIgnore
+    @GridIdChecker
     public ApiResult<Void> addVisitRecording(@RequestBody SweepVillageVisitRecordingVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
@@ -43,7 +44,6 @@ public class VisitRecordingController {
      * @return
      */
     @PostMapping("/updateVisitRecording")
-    @SmIgnore
     public ApiResult<Void> updateVisitRecording(@RequestBody SweepVillageVisitRecordingVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
@@ -58,7 +58,6 @@ public class VisitRecordingController {
      * @return
      */
     @PostMapping("/deleteVisitRecording")
-    @SmIgnore
     public ApiResult<Void> deleteVisitRecording(@RequestBody Long id) {
         Assert.notNull(id,"id is null");
         SweepVillageVisitRecordingVO request = new SweepVillageVisitRecordingVO();
@@ -72,7 +71,6 @@ public class VisitRecordingController {
      * @return
      */
     @GetMapping("/getVisitRecordingByTenantsId")
-    @SmIgnore
     public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByTenantsId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
@@ -85,7 +83,6 @@ public class VisitRecordingController {
      * @return
      */
     @GetMapping("/getVisitRecordingByActivityId")
-    @SmIgnore
     public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
@@ -97,7 +94,6 @@ public class VisitRecordingController {
      * @return
      */
     @GetMapping("/getVisitRecordingDetail")
-    @SmIgnore
     public ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(@RequestParam Long id) {
         Assert.notNull(id,"id is null");
         return visitRecordingService.getVisitRecordingDetail(id);

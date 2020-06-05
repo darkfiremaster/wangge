@@ -88,6 +88,16 @@ public class GsonUtils {
 		return paramMap;
 	}
 
+	public static Map<String, String> getStringMap(String jsonStr) {
+		Map<String, String> paramMap = new HashMap<String, String>();
+		if (StringUtils.isNotBlank(jsonStr)) {
+			Type typeOfT = new TypeToken<Map<String, String>>() {
+			}.getType();
+			paramMap = gson.fromJson(jsonStr, typeOfT);
+		}
+		return paramMap;
+	}
+
 
 	public static String toJson(Object object) {
 		if (object instanceof String) {

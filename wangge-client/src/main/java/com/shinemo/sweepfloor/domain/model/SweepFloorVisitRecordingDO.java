@@ -30,7 +30,7 @@ public class SweepFloorVisitRecordingDO {
     /** 是否成功标识 */
     private Integer successFlag;
     /**宽带过期时间 */
-    private Date broadbandExpireDate;
+    private Date broadbandExpireTime;
     /** 联系人 */
     private String contactName;
     /** 联系人手机号 */
