@@ -31,6 +31,7 @@ import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.exception.ApiException;
+import com.shinemo.common.tools.exception.ErrorCode;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.smartgrid.domain.SmartGridContext;
@@ -59,6 +60,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.common.tools.exception.CommonErrorCodes.INVALID_TOKEN;
 import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
@@ -76,6 +78,9 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
 
     public static final int EXPIRE_TIME = 30 * 60 * 60 * 24;
 
+    ErrorCode INVALID_MOBILE = new ErrorCode(411, "手机号为空");
+    ErrorCode NOT_GRID_USER = new ErrorCode(412, "非网格人员");
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final Method method = ((HandlerMethod) handler).getMethod();
@@ -86,7 +91,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
             log.error("wanggeIdCheck check fail, cookies is empty!");
-            return false;
+            throw new ApiException(INVALID_TOKEN);
         }
         String gridInfo = getValueFromCookies("gridInfo", cookies);
 
@@ -94,12 +99,12 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             String mobile = SmartGridContext.getMobile();
             if (StringUtils.isBlank(mobile)) {
                 log.error("[WanggeIdCheckerInterceptor] mobile is empty");
-                return false;
+                throw new ApiException(INVALID_MOBILE);
             }
             List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
             if (CollectionUtils.isEmpty(gridUserRole)) {
                 log.error("[WanggeIdCheckerInterceptor] user not grid user,mobile = {}",mobile);
-                return false;
+                throw new ApiException(NOT_GRID_USER);
             }
             String json = GsonUtils.toJson(gridUserRole);
             String encodeCookie = null;
@@ -107,7 +112,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
                 encodeCookie = URLEncoder.encode( json,"utf-8");
             } catch (UnsupportedEncodingException e) {
                 log.error("[WanggeIdCheckerInterceptor] URLEncoder error,gridUserRole = {}",json);
-                return false;
+                throw new ApiException(NOT_GRID_USER);
             }
             SmartGridContext.setGridInfo(json);
             WebUtil.addCookie(request, response, "gridInfo", encodeCookie,
@@ -120,7 +125,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             decode = URLDecoder.decode(gridInfo, "utf-8");
         } catch (UnsupportedEncodingException e) {
             log.error("[WanggeIdCheckerInterceptor] URLDecoder error,gridUserRole = {}",gridInfo);
-            return false;
+            throw new ApiException(NOT_GRID_USER);
         }
         SmartGridContext.setGridInfo(decode);
         return true;
