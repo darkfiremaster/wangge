@@ -90,7 +90,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         }
         Cookie[] cookies = request.getCookies();
         if (cookies == null || cookies.length == 0) {
-            log.error("wanggeIdCheck check fail, cookies is empty!");
+            log.error("[preHandle] wanggeIdCheck check fail, cookies is empty!");
             throw new ApiException(INVALID_TOKEN);
         }
         String gridInfo = getValueFromCookies("gridInfo", cookies);
@@ -98,12 +98,12 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         if (StringUtils.isBlank(gridInfo)) {
             String mobile = SmartGridContext.getMobile();
             if (StringUtils.isBlank(mobile)) {
-                log.error("[WanggeIdCheckerInterceptor] mobile is empty");
+                log.error("[preHandle] mobile is empty");
                 throw new ApiException(INVALID_MOBILE);
             }
             List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
             if (CollectionUtils.isEmpty(gridUserRole)) {
-                log.error("[WanggeIdCheckerInterceptor] user not grid user,mobile = {}",mobile);
+                log.error("[preHandle] user not grid user,mobile = {}",mobile);
                 throw new ApiException(NOT_GRID_USER);
             }
             String json = GsonUtils.toJson(gridUserRole);
@@ -111,11 +111,11 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             try {
                 encodeCookie = URLEncoder.encode( json,"utf-8");
             } catch (UnsupportedEncodingException e) {
-                log.error("[WanggeIdCheckerInterceptor] URLEncoder error,gridUserRole = {}",json);
+                log.error("[preHandle] URLEncoder error,gridUserRole = {}",json);
                 throw new ApiException(NOT_GRID_USER);
             }
             SmartGridContext.setGridInfo(json);
-            WebUtil.addCookie(request, response, "gridInfo", encodeCookie,
+            WebUtil.addCookie(request, response, SmartGridContext.KEY_GRID_ID, encodeCookie,
                     domain, "/", EXPIRE_TIME, false);
             return true;
         }
@@ -124,7 +124,7 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         try {
             decode = URLDecoder.decode(gridInfo, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            log.error("[WanggeIdCheckerInterceptor] URLDecoder error,gridUserRole = {}",gridInfo);
+            log.error("[preHandle] URLDecoder error,gridUserRole = {}",gridInfo);
             throw new ApiException(NOT_GRID_USER);
         }
         SmartGridContext.setGridInfo(decode);
