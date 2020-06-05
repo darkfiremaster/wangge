@@ -162,15 +162,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         try {
             ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
             List<GridUserRoleDetail> details = apiResult.getData();
-//            List<GridUserRoleDetail> details = new ArrayList<>();
-//            GridUserRoleDetail detail01 = new GridUserRoleDetail();
-//            detail01.setId("783_A2417_06");
-//            detail01.setName("浙江网格");
-//            GridUserRoleDetail detail02 = new GridUserRoleDetail();
-//            detail02.setId("783_A2417_061");
-//            detail02.setName("广西网格");
-//            details.add(detail01);
-//            details.add(detail02);
             if (!CollectionUtils.isEmpty(details)) {
                 List<String> gridIds = details.stream().map(GridUserRoleDetail::getId).collect(Collectors.toList());
                 String join = String.join(",", gridIds);

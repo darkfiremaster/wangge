@@ -37,4 +37,8 @@ public class SweepVillageVisitRecordingVO {
     private Date gmtCreate;
     /** 状态，1正常，0删除 */
     private Integer status;
+    /** 类型，1非历史走访，2历史走访 */
+    private Integer type;
+    /** 走访时间 */
+    private Date visitTime;
 }
