@@ -5,16 +5,22 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
+import com.shinemo.sweepfloor.domain.model.SmartGridActivityDO;
+import com.shinemo.sweepfloor.domain.query.SmartGridActivityQuery;
+import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.sweepvillage.domain.request.VisitRecordingListRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageVisitRecordingVO;
 import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
+import com.shinemo.sweepvillage.query.SweepVillageActivityQuery;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.sweepvillage.VisitRecordingService;
 import com.shinemo.wangge.dal.mapper.SmartGridActivityMapper;
+import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +30,8 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,6 +43,10 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     private HuaWeiService huaWeiService;
     @Resource
     private SmartGridActivityMapper smartGridActivityMapper;
+    @Resource
+    private SweepVillageActivityMapper sweepVillageActivityMapper;
+
+    private static final String GRID_MANAGER_ROLE = "1";
 
     @Override
     public ApiResult<Void> add(SweepVillageVisitRecordingVO request) {
@@ -144,17 +156,37 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         if (!visitRecordingDO.getMobile().equals(queryMobile)) {
             return false;
         }
-        HuaWeiRequest huaWeiRequest = HuaWeiRequest.builder().mobile(SmartGridContext.getMobile()).build();
-        ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
-        if (apiResult.isSuccess()) {
-            List<GridUserRoleDetail> roleDetails = apiResult.getData();
-            if (CollectionUtils.isEmpty(roleDetails)) {
-                return false;
-            }
-            //todo 只有对应网格长才可以编辑
-
+        String gridInfo = SmartGridContext.getGridInfo();
+        List<GridUserRoleDetail> details = GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
+        SweepVillageActivityQuery activityQuery = new SweepVillageActivityQuery();
+        activityQuery.setId(visitRecordingDO.getActivityId());
+        SweepVillageActivityDO activityDO = sweepVillageActivityMapper.get(activityQuery);
+        if (activityDO == null) {
+            log.error("[checkAuth] update visit record error activityDO is null,activityId = {}",visitRecordingDO.getActivityId());
+            return false;
         }
-        return true;
+        SmartGridActivityQuery gridActivityQuery = new SmartGridActivityQuery();
+        gridActivityQuery.setActivityId(activityDO.getId());
+        List<SmartGridActivityDO> gridActivityDOS = smartGridActivityMapper.find(gridActivityQuery);
+        if (CollectionUtils.isEmpty(gridActivityDOS)) {
+            return false;
+        }
+        //List<String> dbGridIds = gridActivityDOS.stream().map(SmartGridActivityDO::getGridId).collect(Collectors.toList());
+        Map<String, GridUserRoleDetail> roleDetailMap = details.stream().collect(Collectors.toMap(GridUserRoleDetail::getId, a -> a, (k1, k2) -> k1));
+        for (SmartGridActivityDO gridActivityDO : gridActivityDOS) {
+            GridUserRoleDetail detail = roleDetailMap.get(gridActivityDO.getGridId());
+            if (detail != null) {
+                List<GridUserRoleDetail.GridRole> roleList = detail.getRoleList();
+                if (!CollectionUtils.isEmpty(roleList)) {
+                    for (GridUserRoleDetail.GridRole role: roleList) {
+                        if (role.getId().equals(GRID_MANAGER_ROLE)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

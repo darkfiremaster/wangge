@@ -119,4 +119,8 @@ public class SmartGridContext {
 		return (String) get(KEY_MOBILE);
 	}
 
+	public static String getGridInfo() {
+		return (String) get(KEY_GRID_ID);
+	}
+
 }
