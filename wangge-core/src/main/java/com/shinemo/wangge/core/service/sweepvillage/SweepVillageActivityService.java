@@ -10,6 +10,7 @@ import com.shinemo.sweepvillage.vo.SweepVillageActivityVO;
 import com.shinemo.sweepvillage.vo.VillageVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author shangkaihui
@@ -38,7 +39,7 @@ public interface SweepVillageActivityService {
      * @param villageVO
      * @return
      */
-    ApiResult<Void> createVillage(VillageVO villageVO);
+    ApiResult<Map<String, Object>> createVillage(VillageVO villageVO);
 
 
     /**
