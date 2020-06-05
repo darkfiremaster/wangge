@@ -1,4 +1,4 @@
-package com.shinemo.smartgrid.thirdapi.rest;
+package com.shinemo.wangge.web.controller.thirdapi;
 
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
