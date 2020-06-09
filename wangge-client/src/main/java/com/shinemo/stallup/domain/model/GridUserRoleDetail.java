@@ -20,6 +20,9 @@ import java.util.List;
 public class GridUserRoleDetail {
 	private String id;
 	private String name;
+	private String cityName;
+	private String cityCode;
+	private String countyName;
 	private List<GridRole> roleList;
 
 	@Data
