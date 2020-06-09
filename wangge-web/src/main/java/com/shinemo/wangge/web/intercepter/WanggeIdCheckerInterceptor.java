@@ -33,6 +33,7 @@ import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.exception.ErrorCode;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.AESUtil;
@@ -72,14 +73,15 @@ import static com.shinemo.util.WebUtils.getValueFromCookies;
 public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
 
 
-    @NacosValue(value = "${domain}", autoRefreshed = true)
-    private String domain = "127.0.0.1";
     @Resource
     private HuaWeiService huaWeiService;
+    @Resource
+    private RedisService redisService;
 
-    public static final int EXPIRE_TIME = 30 * 60 * 60 * 24;
+    public static final int EXPIRE_TIME = 60 * 60 * 24;
 
-    private static final String COOKIE_AES_KEY = "2258b6e5f32f4774";
+
+    private static final String GRID_PREFIX = "smartGrid-info-";
 
     ErrorCode INVALID_MOBILE = new ErrorCode(411, "手机号为空");
     ErrorCode NOT_GRID_USER = new ErrorCode(412, "非网格人员");
@@ -91,47 +93,23 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         if (null == gridIdChecker) {
             return true;
         }
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            log.error("[preHandle] wanggeIdCheck check fail, cookies is empty!");
-            throw new ApiException(INVALID_TOKEN);
-        }
-        String gridInfo = getValueFromCookies(SmartGridContext.KEY_GRID_ID, cookies);
 
-        if (StringUtils.isBlank(gridInfo)) {
-            String mobile = SmartGridContext.getMobile();
-            if (StringUtils.isBlank(mobile)) {
-                log.error("[preHandle] mobile is empty");
-                throw new ApiException(INVALID_MOBILE);
-            }
+        String mobile = SmartGridContext.getMobile();
+        if (StringUtils.isBlank(mobile)) {
+            log.error("[preHandle] mobile is empty");
+            throw new ApiException(INVALID_MOBILE);
+        }
+        String gridInfoCache = redisService.get(GRID_PREFIX + mobile);
+        if (StringUtils.isBlank(gridInfoCache)) {
             List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
             if (CollectionUtils.isEmpty(gridUserRole)) {
                 log.error("[preHandle] user not grid user,mobile = {}",mobile);
                 throw new ApiException(NOT_GRID_USER);
             }
-            String json = GsonUtils.toJson(gridUserRole);
-            String encodeCookie = null;
-            try {
-                encodeCookie = URLEncoder.encode( json,"utf-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error("[preHandle] URLEncoder error,gridUserRole = {}",json);
-                throw new ApiException(NOT_GRID_USER);
-            }
-            SmartGridContext.setGridInfo(json);
-            String encrypt = AESUtil.encrypt(encodeCookie, COOKIE_AES_KEY);
-            WebUtil.addCookie(request, response, SmartGridContext.KEY_GRID_ID, encrypt,
-                    domain, "/", EXPIRE_TIME, false);
-            return true;
+            gridInfoCache = GsonUtils.toJson(gridUserRole);
+            redisService.set(GRID_PREFIX + mobile,gridInfoCache,EXPIRE_TIME);
         }
-        String decrypt = AESUtil.decrypt(gridInfo, COOKIE_AES_KEY);
-        String decode = null;
-        try {
-            decode = URLDecoder.decode(decrypt, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            log.error("[preHandle] URLDecoder error,gridUserRole = {}",gridInfo);
-            throw new ApiException(NOT_GRID_USER);
-        }
-        SmartGridContext.setGridInfo(decode);
+        SmartGridContext.setGridInfo(gridInfoCache);
         return true;
     }
 
