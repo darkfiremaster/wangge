@@ -1,14 +1,16 @@
-package com.shinemo.wangge.web.controller.stallup;
+package com.shinemo.smartgrid.utils;
 
+import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TxtFileExceport {
-    private static String fileName = null;
+public class FileExceportUtil {
+    private static String fileName = "test";
     private static final String defualtCharset = "GBK";
     private static final String newLine = "\r\n";
 
@@ -19,9 +21,12 @@ public class TxtFileExceport {
      * @param charset
      * @return
      */
+
+
+
     public static InputStream exportInputStreamFromClass(Class clazz, List<?> list,
-                                                         String charset) {
-        String content = getExportStringFromClass(clazz, list);
+                                                         String charset,String delimiter) {
+        String content = getExportStringFromClass(clazz, list,delimiter);
         return getInputStream(content, charset);
     }
 
@@ -33,8 +38,8 @@ public class TxtFileExceport {
      * @param exportUrl
      */
     public static void exportFileFromClass(Class clazz, List<?> list, String charset,
-                                           String exportUrl) {
-        String content = getExportStringFromClass(clazz, list);
+                                           String exportUrl,String delimiter) {
+        String content = getExportStringFromClass(clazz, list,delimiter);
         export(content, charset, exportUrl);
     }
 
@@ -79,7 +84,7 @@ public class TxtFileExceport {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 		/*	List<TxtDemo> txtDemos = TxtDemo.generator();
 //		getExportString(TxtDemo.class,txtDemos);
 		TxtFileExceport.fileName = "billDownload"+new Date().getTime();
@@ -88,6 +93,30 @@ public class TxtFileExceport {
 		exportFile(TxtDemo.class, txtDemos, null, urlString);
 		 List<LinkedHashMap<Object, Object>> lists=TxtDemo.generatorMap();
 		 export(getExportStringFromMap(lists), null, urlString);*/
+        String path = "D:/tmp/billDownload/";
+        String urlString = "D:/tmp/billDownload/" + fileName + ".avl";
+        File file = new File(path);
+        file.mkdirs();
+        File file02 = new File(urlString);
+        file02.createNewFile();
+        SweepFloorActivityVO vo = new SweepFloorActivityVO();
+        vo.setStatus(1);
+        vo.setCommunityName("小区名1");
+        vo.setCommunityId("小区id1");
+        vo.setAddress("小区1地址");
+
+        SweepFloorActivityVO vo02 = new SweepFloorActivityVO();
+        vo02.setStatus(1);
+        vo02.setCommunityName("小区名2");
+        vo02.setCommunityId("小区id2");
+        vo02.setAddress("小区2地址");
+
+        List<SweepFloorActivityVO> vos = new ArrayList<>();
+        vos.add(vo);
+        vos.add(vo02);
+
+        exportFileFromClass(SweepFloorActivityVO.class,vos,null,urlString,",");
+
     }
 
     /**
@@ -96,7 +125,7 @@ public class TxtFileExceport {
      * @param list
      * @return
      */
-    public static String getExportStringFromClass(Class clazz, List<?> list) {
+    public static String getExportStringFromClass(Class clazz, List<?> list,String delimiter) {
         StringBuffer sb = new StringBuffer();
         for (Object object : list) {
             Field[] fs = clazz.getDeclaredFields();
@@ -105,11 +134,17 @@ public class TxtFileExceport {
                 field.setAccessible(true);
                 String valString;
                 try {
-                    valString = field.get(object).toString();
+
+                    Object o = field.get(object);
+                    if (o == null) {
+                        valString = "";
+                    }else {
+                        valString = o.toString();
+                    }
                     if (i == (fs.length - 1)) {
                         sb.append(valString + newLine);
                     } else {
-                        sb.append(valString + ",");
+                        sb.append(valString + delimiter);
                     }
                 } catch (IllegalArgumentException e) {
                     // TODO Auto-generated catch block
