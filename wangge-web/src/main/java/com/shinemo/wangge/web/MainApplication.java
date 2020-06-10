@@ -78,6 +78,7 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/sweepFloor/**")
                 .addPathPatterns("/thirdapi/**")
                 .addPathPatterns("/sweepvillage/**")
+                .addPathPatterns("/operate/**")
                 .excludePathPatterns("/backdoor/**", "/error")
                 .order(1);
     }
