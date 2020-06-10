@@ -1,14 +1,10 @@
 package com.shinemo.wangge.web.config;
 
-import com.shinemo.my.redis.domain.RedisSentinelNode;
-import com.shinemo.my.redis.service.RedisLock;
-import com.shinemo.my.redis.service.RedisService;
-import com.shinemo.my.redis.service.impl.RedisLockImpl;
-import com.shinemo.my.redis.service.impl.RedisServiceImpl;
+import java.net.UnknownHostException;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +13,14 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.util.StringUtils;
 
-import java.net.UnknownHostException;
+import com.shinemo.my.redis.domain.RedisSentinelNode;
+import com.shinemo.my.redis.service.RedisLock;
+import com.shinemo.my.redis.service.RedisService;
+import com.shinemo.my.redis.service.impl.RedisLockImpl;
+import com.shinemo.my.redis.service.impl.RedisServiceImpl;
+import com.shinemo.rds.RedisConf;
+import com.shinemo.rds.RedisConfProxy;
 
 @Configuration
 @EnableCaching
@@ -27,8 +28,8 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     @Bean
     @ConditionalOnMissingBean(name = "redisTemplate")
-    public RedisTemplate<Object, Object> redisTemplate(
-            RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+    public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
+            throws UnknownHostException {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
@@ -37,18 +38,14 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     @Bean(name = "redisService")
     @ConditionalOnMissingBean(RedisService.class)
-    @ConditionalOnProperty(prefix = "shinemo.redis", name = {"sentinel.nodes", "sentinel.master", "password", "database"})
-    public RedisService redisServiceUrl(@Value("${shinemo.redis.sentinel.nodes}") String sentinelNodes,
-                                        @Value("${shinemo.redis.sentinel.master}") String sentinelMaster,
-                                        @Value("${shinemo.redis.password}") String password,
-                                        @Value("${shinemo.redis.database}") Integer database) {
-        String nodes = StringUtils.arrayToDelimitedString(StringUtils.commaDelimitedListToStringArray(sentinelNodes), ";");
-        RedisSentinelNode redisNode = new RedisSentinelNode(nodes, sentinelMaster);
-        redisNode.setDatabase(database);
-        redisNode.setPassword(password);
-        return new RedisServiceImpl(redisNode);
+    public RedisService redisServiceUrl(@Value("${shinemo.redis.dataName}") String dataName,
+            @Value("${shinemo.redis.database}") Integer database) {
+        RedisConf redisConf = RedisConfProxy.get(dataName);
+        RedisSentinelNode node = new RedisSentinelNode(redisConf.getSentinels(), redisConf.getMastername());
+        node.setDatabase(database);
+        node.setPassword(redisConf.getPasswd());
+        return new RedisServiceImpl(node);
     }
-
 
     @Bean(name = "redisLock")
     @DependsOn("redisService")
@@ -57,6 +54,5 @@ public class RedisConfig extends CachingConfigurerSupport {
         redisLock.setRedisService(redisService);
         return redisLock;
     }
-
 
 }
