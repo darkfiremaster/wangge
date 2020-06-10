@@ -70,7 +70,7 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/backdoor/**")
                 .order(Ordered.HIGHEST_PRECEDENCE);
         registry.addInterceptor(wanggeIdCheckerInterceptor)
-                .addPathPatterns("/sweepvillage/**")
+                .addPathPatterns("/**")
                 .order(Ordered.LOWEST_PRECEDENCE);
         registry.addInterceptor(new SmartGridInterceptor())
                 .addPathPatterns("/stallUp/**")

@@ -47,6 +47,9 @@ public class GetGridUserInfoResult {
 
 			private String areaCode;
 			private String areaName;
+			private String cityName;
+			private String cityCode;
+			private String countyName;
 			private List<RoleListBean> roleList;
 
 			@Data
