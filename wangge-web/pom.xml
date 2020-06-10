@@ -28,10 +28,10 @@
             <artifactId>datasource</artifactId>
         </dependency>
         <!--cmgr-->
-        <dependency>
+        <!-- <dependency>
             <groupId>com.shinemo.aace</groupId>
             <artifactId>aace</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.shinemo.utils</groupId>
             <artifactId>shinemo-utils</artifactId>
@@ -40,14 +40,14 @@
             <groupId>com.shinemo.uban</groupId>
             <artifactId>shinemo-commons</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.shinemo.aace</groupId>
             <artifactId>aace-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.shinemo.aace</groupId>
             <artifactId>jace-api</artifactId>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
