@@ -1,5 +1,20 @@
 package com.shinemo.wangge.web.controller.common;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.gson.JsonElement;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
@@ -29,20 +44,10 @@ import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 首页
@@ -82,60 +87,63 @@ public class IndexController {
         response.setStallUpStartedDetail(stallUpInfo.getStartedDetail());
         response.setStallUpWeekDetail(stallUpInfo.getWeekDetail());
 
-		//查询扫楼相关信息
-		ApiResult<IndexInfoResponse> sweepFloorServiceIndexInfo = sweepFloorService.getIndexInfo(uid);
-		if (sweepFloorServiceIndexInfo == null || !sweepFloorServiceIndexInfo.isSuccess()) {
-			log.error("[getIndex] failed call sweepFloorService.getIndexInfo, uid:{}", uid);
-			throw new ApiException(StallUpErrorCodes.BASE_ERROR);
-		}
-		ApiResult<SweepFloorBusinessCountAndHouseCountVO> businessCountAndHouseCount = sweepFloorService.getBusinessCountAndHouseCount(1);
-		SweepFloorBizTotal sweepFloorBizTotal = new SweepFloorBizTotal();
-		if (businessCountAndHouseCount != null && businessCountAndHouseCount.isSuccess()) {
-			SweepFloorBusinessCountAndHouseCountVO countData = businessCountAndHouseCount.getData();
-			sweepFloorBizTotal.setBusinessCount(countData.getBusinessCount());
-			sweepFloorBizTotal.setHouseCount(countData.getHouseCount());
-			response.setSweepFloorBizTotal(sweepFloorBizTotal);
-		}else {
-			sweepFloorBizTotal.setBusinessCount(0);
-			sweepFloorBizTotal.setHouseCount(0);
-		}
-		IndexInfoResponse sweepFloorData = sweepFloorServiceIndexInfo.getData();
-		//加上扫楼
-		response.setTodayToDo(stallUpInfo.getTodayToDo() + sweepFloorData.getTodayToDo());
-		response.setMonthDone(stallUpInfo.getMonthDone() + sweepFloorData.getMonthDone());
-		response.setWeekToDo(stallUpInfo.getWeekToDo() + sweepFloorData.getWeekToDo());
-		response.setSweepFloorActivityVO(sweepFloorData.getSweepFloorActivityVO());
+        // 查询扫楼相关信息
+        ApiResult<IndexInfoResponse> sweepFloorServiceIndexInfo = sweepFloorService.getIndexInfo(uid);
+        if (sweepFloorServiceIndexInfo == null || !sweepFloorServiceIndexInfo.isSuccess()) {
+            log.error("[getIndex] failed call sweepFloorService.getIndexInfo, uid:{}", uid);
+            throw new ApiException(StallUpErrorCodes.BASE_ERROR);
+        }
+        ApiResult<SweepFloorBusinessCountAndHouseCountVO> businessCountAndHouseCount = sweepFloorService
+                .getBusinessCountAndHouseCount(1);
+        SweepFloorBizTotal sweepFloorBizTotal = new SweepFloorBizTotal();
+        if (businessCountAndHouseCount != null && businessCountAndHouseCount.isSuccess()) {
+            SweepFloorBusinessCountAndHouseCountVO countData = businessCountAndHouseCount.getData();
+            sweepFloorBizTotal.setBusinessCount(countData.getBusinessCount());
+            sweepFloorBizTotal.setHouseCount(countData.getHouseCount());
+            response.setSweepFloorBizTotal(sweepFloorBizTotal);
+        } else {
+            sweepFloorBizTotal.setBusinessCount(0);
+            sweepFloorBizTotal.setHouseCount(0);
+        }
+        IndexInfoResponse sweepFloorData = sweepFloorServiceIndexInfo.getData();
+        // 加上扫楼
+        response.setTodayToDo(stallUpInfo.getTodayToDo() + sweepFloorData.getTodayToDo());
+        response.setMonthDone(stallUpInfo.getMonthDone() + sweepFloorData.getMonthDone());
+        response.setWeekToDo(stallUpInfo.getWeekToDo() + sweepFloorData.getWeekToDo());
+        response.setSweepFloorActivityVO(sweepFloorData.getSweepFloorActivityVO());
         // 首页
         List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(uid + "").stream()
                 .map(i -> toBizTypeVO(stallUpConfig.getConfig().getMap().get(i))).collect(Collectors.toList());
         response.setHomePageBizList(homePageBizList);
-		//督导
-		response.setDuDaoTopId(24L);
-		response.setDuDaoBottomId(25L);
-		UrlRedirectHandlerRequest request = new UrlRedirectHandlerRequest();
-		request.setId(26L);
-		request.setUserPhone(SmartGridContext.getMobile());
-		ApiResult<String> urlResult = huaWeiService.getRedirectUrl(request);
-		if(urlResult.isSuccess()) {
-			try {
-				String json = HttpUtil.get(urlResult.getData(), true, 2000);
-				GetSimpleInfoResponse.DuDaoQueryResult result = GsonUtils.fromGson2Obj(json, GetSimpleInfoResponse.DuDaoQueryResult.class);
-				GetSimpleInfoResponse.DuDaoQueryResultVO resultVO = new GetSimpleInfoResponse.DuDaoQueryResultVO();
-				if (result != null && result.getStatus() == 0) {
-					resultVO.setTaskTotal(result.getTaskTotal());
-					JsonElement taskInfo = result.getTaskInfo();
-					if (taskInfo.isJsonObject()) {
-						GetSimpleInfoResponse.TaskInfo value = GsonUtils.fromGson2Obj(taskInfo.getAsJsonObject().toString(), GetSimpleInfoResponse.TaskInfo.class);
-						resultVO.setTaskInfo(value);
-					}
-					response.setDuDaoResult(resultVO);
-				}
-			} catch (Exception e) {
-				log.error("[getIndex] throw exception", e);
-			}
-		}
-		return ApiResult.of(0, response);
-	}
+        // 督导
+        response.setDuDaoTopId(24L);
+        response.setDuDaoBottomId(25L);
+        UrlRedirectHandlerRequest request = new UrlRedirectHandlerRequest();
+        request.setId(26L);
+        request.setUserPhone(SmartGridContext.getMobile());
+        ApiResult<String> urlResult = huaWeiService.getRedirectUrl(request);
+        if (urlResult.isSuccess()) {
+            try {
+                String json = HttpUtil.get(urlResult.getData(), true, 2000);
+                GetSimpleInfoResponse.DuDaoQueryResult result = GsonUtils.fromGson2Obj(json,
+                        GetSimpleInfoResponse.DuDaoQueryResult.class);
+                GetSimpleInfoResponse.DuDaoQueryResultVO resultVO = new GetSimpleInfoResponse.DuDaoQueryResultVO();
+                if (result != null && result.getStatus() == 0) {
+                    resultVO.setTaskTotal(result.getTaskTotal());
+                    JsonElement taskInfo = result.getTaskInfo();
+                    if (taskInfo.isJsonObject()) {
+                        GetSimpleInfoResponse.TaskInfo value = GsonUtils.fromGson2Obj(
+                                taskInfo.getAsJsonObject().toString(), GetSimpleInfoResponse.TaskInfo.class);
+                        resultVO.setTaskInfo(value);
+                    }
+                    response.setDuDaoResult(resultVO);
+                }
+            } catch (Exception e) {
+                log.error("[getIndex] throw exception", e);
+            }
+        }
+        return ApiResult.of(0, response);
+    }
 
     /**
      * 查询场外营销扫楼、摆摊数量
@@ -145,74 +153,73 @@ public class IndexController {
     @GetMapping("/getOutsideMarketing")
     @SmIgnore
     public ApiResult<List<OutsideMarketingNumVO>> getOutsideMarketing() {
-		String mobile = SmartGridContext.getMobile();
+        String mobile = SmartGridContext.getMobile();
         ApiResult<List<GridUserRoleDetail>> gridUserInfo = null;
-		try {
-            gridUserInfo = huaWeiService.getGridUserInfo(HuaWeiRequest.builder()
-                    .mobile(mobile)
-                    .build());
-        }catch (ApiException e) {
-		    log.error("[getOutsideMarketing]getGridUserInfo error,mobile = {}",mobile);
-		    return ApiResult.of(0,new ArrayList<>());
+        try {
+            gridUserInfo = huaWeiService.getGridUserInfo(HuaWeiRequest.builder().mobile(mobile).build());
+        } catch (ApiException e) {
+            log.error("[getOutsideMarketing]getGridUserInfo error,mobile = {}", mobile);
+            return ApiResult.of(0, new ArrayList<>());
         }
 
-		if (gridUserInfo == null || !gridUserInfo.isSuccess()) {
-			return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
-		}
-		List<GridUserRoleDetail> userInfoData = gridUserInfo.getData();
-//        List<GridUserRoleDetail> userInfoData = new ArrayList<>();
-//        GridUserRoleDetail detail = new GridUserRoleDetail();
-//        detail.setId("783_A2417_06");
-//        detail.setName("浙江网格");
-//        GridUserRoleDetail detail02 = new GridUserRoleDetail();
-//        detail02.setId("783_A2417_061");
-//        detail02.setName("广西网格");
-//        userInfoData.add(detail);
-//        userInfoData.add(detail02);
+        if (gridUserInfo == null || !gridUserInfo.isSuccess()) {
+            return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
+        }
+        List<GridUserRoleDetail> userInfoData = gridUserInfo.getData();
+        // List<GridUserRoleDetail> userInfoData = new ArrayList<>();
+        // GridUserRoleDetail detail = new GridUserRoleDetail();
+        // detail.setId("783_A2417_06");
+        // detail.setName("浙江网格");
+        // GridUserRoleDetail detail02 = new GridUserRoleDetail();
+        // detail02.setId("783_A2417_061");
+        // detail02.setName("广西网格");
+        // userInfoData.add(detail);
+        // userInfoData.add(detail02);
         if (CollectionUtils.isEmpty(userInfoData)) {
             return ApiResult.of(0, new ArrayList<>());
         }
         List<String> gridIds = userInfoData.stream().map(GridUserRoleDetail::getId).collect(Collectors.toList());
 
-        //查询扫楼相关
-        ApiResult<ListVO<SmartGridVO>> sweepFloorResult = sweepFloorService.getSweepFloorActivityByGridIds(gridIds, false, null, null);
+        // 查询扫楼相关
+        ApiResult<ListVO<SmartGridVO>> sweepFloorResult = sweepFloorService.getSweepFloorActivityByGridIds(gridIds,
+                false, null, null);
         if (!sweepFloorResult.isSuccess()) {
             return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
         }
         ListVO<SmartGridVO> gridVOListVO = sweepFloorResult.getData();
         List<SmartGridVO> smartGridVOS = gridVOListVO.getRows();
-        //查询摆摊相关
-	    ApiResult<GetParentSimpleResponse> stallUpResult = stallUpService.getParentSimple(gridIds);
-	    if(!stallUpResult.isSuccess()){
-		    return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
-	    }
-	    Map<String, Long> prepareMap = stallUpResult.getData().getPrepareMap();
-	    Map<String, Long> startMap = stallUpResult.getData().getStartMap();
-	    Map<String, Long> endMap = stallUpResult.getData().getEndMap();
-	    List<OutsideMarketingNumVO> numVOS = new ArrayList<>();
+        // 查询摆摊相关
+        ApiResult<GetParentSimpleResponse> stallUpResult = stallUpService.getParentSimple(gridIds);
+        if (!stallUpResult.isSuccess()) {
+            return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
+        }
+        Map<String, Long> prepareMap = stallUpResult.getData().getPrepareMap();
+        Map<String, Long> startMap = stallUpResult.getData().getStartMap();
+        Map<String, Long> endMap = stallUpResult.getData().getEndMap();
+        List<OutsideMarketingNumVO> numVOS = new ArrayList<>();
         for (GridUserRoleDetail gridUserRoleDetail : userInfoData) {
             OutsideMarketingNumVO outsideMarketingNumVO = new OutsideMarketingNumVO();
-	        String gridId = gridUserRoleDetail.getId();
-	        outsideMarketingNumVO.setGridId(gridId);
+            String gridId = gridUserRoleDetail.getId();
+            outsideMarketingNumVO.setGridId(gridId);
             outsideMarketingNumVO.setGridName(gridUserRoleDetail.getName());
             if (CollectionUtils.isEmpty(smartGridVOS)) {
                 outsideMarketingNumVO.setSweepFloorEndCount(0);
                 outsideMarketingNumVO.setSweepFloorNotStartCount(0);
                 outsideMarketingNumVO.setSweepFloorStartedCount(0);
             } else {
-                buildSweepFloorCount(smartGridVOS,gridUserRoleDetail,outsideMarketingNumVO);
+                buildSweepFloorCount(smartGridVOS, gridUserRoleDetail, outsideMarketingNumVO);
             }
-            //拼装摆摊数据
-			outsideMarketingNumVO.setStallUpNotStartCount(Math.toIntExact(prepareMap.getOrDefault(gridId,0L)));
-			outsideMarketingNumVO.setStallUpStartedCount(Math.toIntExact(startMap.getOrDefault(gridId,0L)));
-			outsideMarketingNumVO.setStallUpEndCount(Math.toIntExact(endMap.getOrDefault(gridId,0L)));
+            // 拼装摆摊数据
+            outsideMarketingNumVO.setStallUpNotStartCount(Math.toIntExact(prepareMap.getOrDefault(gridId, 0L)));
+            outsideMarketingNumVO.setStallUpStartedCount(Math.toIntExact(startMap.getOrDefault(gridId, 0L)));
+            outsideMarketingNumVO.setStallUpEndCount(Math.toIntExact(endMap.getOrDefault(gridId, 0L)));
             numVOS.add(outsideMarketingNumVO);
         }
 
         return ApiResult.of(0, numVOS);
 
     }
-    
+
     @GetMapping("/getAllHomePageBizList")
     @SmIgnore
     public ApiResult<GetSimpleInfoResponse> getAllHomePageBizList() {
@@ -226,15 +233,16 @@ public class IndexController {
         response.setQuickAccessList(quickAccessList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
         return ApiResult.success(response);
     }
-    
+
     @PostMapping("/configHomePageBiz")
     @SmIgnore
-    public ApiResult<Void> configHomePageBiz(@RequestBody List<Long> bizIdList) {
-        if(bizIdList == null || bizIdList.isEmpty()) {
+    public ApiResult<Void> configHomePageBiz(@RequestBody ConfigHomePageBizRequest request) {
+        List<Long> bizIdList = request.getIds();
+        if (bizIdList == null || bizIdList.isEmpty()) {
             throw new ApiException(StallUpErrorCodes.PARAM_ERROR);
         }
-        bizIdList.forEach(i->{
-            if(!stallUpConfig.getConfig().getMap().containsKey(i)) {
+        bizIdList.forEach(i -> {
+            if (!stallUpConfig.getConfig().getMap().containsKey(i)) {
                 throw new ApiException(StallUpErrorCodes.PARAM_ERROR);
             }
         });
@@ -243,11 +251,13 @@ public class IndexController {
 
     /**
      * 拼装扫楼场外营销数量
+     * 
      * @param smartGridVOS
      * @param gridUserRoleDetail
      * @param outsideMarketingNumVO
      */
-    private void buildSweepFloorCount(List<SmartGridVO> smartGridVOS,GridUserRoleDetail gridUserRoleDetail,OutsideMarketingNumVO outsideMarketingNumVO) {
+    private void buildSweepFloorCount(List<SmartGridVO> smartGridVOS, GridUserRoleDetail gridUserRoleDetail,
+            OutsideMarketingNumVO outsideMarketingNumVO) {
         int sweepFloorNotStartCount = 0;
         int sweepFloorStartedCount = 0;
         int sweepFloorEndCount = 0;
@@ -260,15 +270,17 @@ public class IndexController {
                     for (SweepFloorActivityVO activityVO : activityVOList) {
                         if (activityVO.getGridId().equals(gridUserRoleDetail.getId())) {
                             if (SweepFloorStatusEnum.NOT_START.getId() == activityVO.getStatus()) {
-                                if (dayStartTime.before(activityVO.getGmtCreate()) && dayEndTime.after(activityVO.getGmtCreate())) {
+                                if (dayStartTime.before(activityVO.getGmtCreate())
+                                        && dayEndTime.after(activityVO.getGmtCreate())) {
                                     sweepFloorNotStartCount++;
                                 }
                             } else if (SweepFloorStatusEnum.PROCESSING.getId() == activityVO.getStatus()) {
                                 sweepFloorStartedCount++;
-                            } else if (SweepFloorStatusEnum.END.getId() == activityVO.getStatus() ||
-                                    SweepFloorStatusEnum.ABNORMAL_END.getId() == activityVO.getStatus() ||
-                                    SweepFloorStatusEnum.CANCEL.getId() == activityVO.getStatus()) {
-                                if (activityVO.getEndTime() != null && dayStartTime.before(activityVO.getEndTime()) && dayEndTime.after(activityVO.getEndTime())) {
+                            } else if (SweepFloorStatusEnum.END.getId() == activityVO.getStatus()
+                                    || SweepFloorStatusEnum.ABNORMAL_END.getId() == activityVO.getStatus()
+                                    || SweepFloorStatusEnum.CANCEL.getId() == activityVO.getStatus()) {
+                                if (activityVO.getEndTime() != null && dayStartTime.before(activityVO.getEndTime())
+                                        && dayEndTime.after(activityVO.getEndTime())) {
                                     sweepFloorEndCount++;
                                 }
                             }
@@ -295,6 +307,12 @@ public class IndexController {
             stallUpBizType.setUrl(v.getUrl());
         }
         return stallUpBizType;
+    }
+
+    @Setter
+    @Getter
+    public static class ConfigHomePageBizRequest {
+        private List<Long> ids;
     }
 
 }
