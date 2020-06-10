@@ -697,6 +697,8 @@ public class StallUpServiceImpl implements StallUpService {
         }
         response.setLocation(stallUpActivity.getLocation());
         response.setCommunityId(stallUpActivity.getCommunityId());
+        response.setAddress(stallUpActivity.getAddress());
+        response.setTitle(stallUpActivity.getTitle());
         return ApiResult.of(0, response);
     }
 

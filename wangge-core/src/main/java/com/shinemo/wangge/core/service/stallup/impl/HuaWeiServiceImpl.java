@@ -264,6 +264,9 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 					GridUserRoleDetail detail = new GridUserRoleDetail();
 					detail.setId(v.getAreaCode());
 					detail.setName(v.getAreaName());
+					detail.setCityCode(v.getCityCode());
+					detail.setCityName(v.getCityName());
+					detail.setCountyName(v.getCountyName());
 					List<GetGridUserInfoResult.DataBean.GridListBean.RoleListBean> roleList = v.getRoleList();
 					if(!CollectionUtils.isEmpty(roleList)) {
 						detail.setRoleList(roleList.stream().map(v1->{
