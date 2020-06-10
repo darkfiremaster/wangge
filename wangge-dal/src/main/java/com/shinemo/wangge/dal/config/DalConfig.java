@@ -18,6 +18,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.shinemo.ds.ConfProxy;
+import com.shinemo.ds.Database;
 
 /**
  * @author htdong
@@ -37,12 +39,12 @@ public class DalConfig {
 
     @Primary
     @Bean(name = "dataSource", initMethod = "init", destroyMethod = "close")
-    public DruidDataSource dataSource(@Value("${jdbc.url}") String jdbcUrl,
-            @Value("${jdbc.username}") String jdbcUsername, @Value("${jdbc.password}") String jdbcPassword) {
+    public DruidDataSource dataSource(@Value("${jdbc.dataName}") String dataName) {
+        Database database = ConfProxy.get(dataName);
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setUrl(jdbcUrl);
-        dataSource.setUsername(jdbcUsername);
-        dataSource.setPassword(jdbcPassword);
+        dataSource.setUsername(database.getUser());
+        dataSource.setPassword(database.getPasswd());
+        dataSource.setUrl(database.getJdbcUrl());
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setInitialSize(5);
         dataSource.setMinIdle(1);

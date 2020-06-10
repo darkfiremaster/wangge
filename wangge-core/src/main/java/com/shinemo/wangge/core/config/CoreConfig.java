@@ -8,9 +8,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.shinemo.client.async.InternalEventBus;
 import com.shinemo.jce.common.config.CenterConfig;
 import com.shinemo.jce.common.config.ProviderConfig;
-import com.shinemo.my.redis.domain.RedisSentinelNode;
-import com.shinemo.my.redis.service.RedisService;
-import com.shinemo.my.redis.service.impl.RedisServiceImpl;
 
 /**
  * @author htdong
@@ -51,17 +48,4 @@ public class CoreConfig {
         InternalEventBus eventBus = new InternalEventBus();
         return eventBus;
     }
-
-    @Bean(name = "redisService")
-    public RedisService redisService(@Value("${shinemo.redis.database}") Integer database,
-            @Value("${shinemo.redis.sentinel.nodes}") String redisIp,
-            @Value("${shinemo.redis.sentinel.master}") String masterName,
-            @Value("${shinemo.redis.password}") String pwd) {
-        RedisSentinelNode node = new RedisSentinelNode(redisIp, masterName);
-        node.setDatabase(database);
-        node.setPassword(pwd);
-        return new RedisServiceImpl(node);
-    }
-
-
 }
