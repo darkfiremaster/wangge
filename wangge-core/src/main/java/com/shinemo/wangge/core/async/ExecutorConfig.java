@@ -22,7 +22,7 @@ public class ExecutorConfig {
     /** 线程池名前缀 */
     private static final String threadNamePrefix = "Async-Service-";
 
-    @Bean
+    @Bean(name = "asyncServiceExecutor")
     public Executor asyncServiceExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);

@@ -11,4 +11,10 @@ import lombok.Data;
 public class UserOperateLogVO {
 
     private Integer type;
+
+    private String mobile;
+
+    private String userName;
+
+    private String uid;
 }

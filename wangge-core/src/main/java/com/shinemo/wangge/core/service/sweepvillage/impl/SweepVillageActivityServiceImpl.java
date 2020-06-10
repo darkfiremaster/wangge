@@ -78,7 +78,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     @Override
     public ApiResult<Void> startActivity(Long id) {
         //校验参数
-        Assert.isNull(id, "id is null");
+        Assert.notNull(id, "id is null");
 
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(id);
@@ -103,7 +103,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     @Override
     public ApiResult<Void> finishActivity(SweepVillageActivityFinishVO sweepVillageActivityFinishVO) {
         //todo 校验参数
-        Assert.isNull(sweepVillageActivityFinishVO.getId(), "id is null");
+        Assert.notNull(sweepVillageActivityFinishVO.getId(), "id is null");
 
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageActivityFinishVO.getId());

@@ -30,8 +30,10 @@ import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
+import com.shinemo.wangge.core.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -54,6 +56,11 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
     private HuaWeiService huaWeiService;
     @Resource
     private RedisService redisService;
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private ThreadPoolTaskExecutor asyncServiceExecutor;
 
     public static final int EXPIRE_TIME = 60 * 60 * 24;
 
@@ -82,6 +89,12 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             }
             gridInfoCache = GsonUtils.toJson(gridUserRole);
             redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
+
+            //更新用户网格角色关系
+            asyncServiceExecutor.submit(() -> {
+                userService.updateUserGridRoleRelation(gridUserRole, mobile);
+            });
+
         }
         SmartGridContext.setGridInfo(gridInfoCache);
         return true;

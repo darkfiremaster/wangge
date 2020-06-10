@@ -11,5 +11,6 @@ import com.shinemo.operate.query.UserGridRoleQuery;
  */
 public interface UserGridRoleMapper extends BaseMapper<UserGridRoleQuery, UserGridRoleDO> {
 
-    void delete(UserGridRoleQuery userGridRoleQuery);
+
+    void deleteByMobile(UserGridRoleQuery userGridRoleQuery);
 }
