@@ -39,23 +39,24 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
 
     @Override
     @Transactional
-    public ApiResult<List<LoginInfoResultDO>> saveTodayLoginInfoResult() {
+    public ApiResult<List<LoginInfoResultDO>> saveYesterdayLoginInfoResult() {
         LoginInfoResultQuery loginInfoResultQuery = new LoginInfoResultQuery();
         DateTime yesterday = DateUtil.yesterday();
         loginInfoResultQuery.setStartTime(DateUtil.beginOfDay(yesterday));
         loginInfoResultQuery.setEndTime(DateUtil.endOfDay(yesterday));
         List<LoginInfoResultDO> loginInfoResultDOList = loginInfoResultMapper.getLoginInfoResultDOList(loginInfoResultQuery);
 
-        Map<String, LoginInfoResultDO> yesterdayLoginInfoResultMap = getYesterdayLoginInfoResultMap();
+        //获取前天登录信息结果集
+        Map<String, LoginInfoResultDO> beforeYesterdayLoginInfoResultMap = getBeforeYesterdayLoginInfoResultMap();
 
         for (LoginInfoResultDO loginInfoResultDO : loginInfoResultDOList) {
             //统计的日期是昨天
             loginInfoResultDO.setStatisticsTime(LocalDateTime.now().minusDays(1));
             //获取前天登录结果
-            LoginInfoResultDO yesterdayLoginInfoResult = yesterdayLoginInfoResultMap.get(loginInfoResultDO.getCityCode() + loginInfoResultDO.getCountyCode());
-            if (yesterdayLoginInfoResult != null && !Objects.equals(0, yesterdayLoginInfoResult.getLoginTotalCount()) && Objects.equals(0, yesterdayLoginInfoResult.getLoginPersonTotalCount())) {
-                Integer oldLoginTotalCount = yesterdayLoginInfoResult.getLoginTotalCount();
-                Integer oldLoginPersonTotalCount = yesterdayLoginInfoResult.getLoginPersonTotalCount();
+            LoginInfoResultDO beforeYesterdayLoginInfoResult = beforeYesterdayLoginInfoResultMap.get(loginInfoResultDO.getCityCode() + loginInfoResultDO.getCountyCode());
+            if (dataIsValid(beforeYesterdayLoginInfoResult)) {
+                Integer oldLoginTotalCount = beforeYesterdayLoginInfoResult.getLoginTotalCount();
+                Integer oldLoginPersonTotalCount = beforeYesterdayLoginInfoResult.getLoginPersonTotalCount();
                 //计算日环比: (今日-昨日)/昨日
                 BigDecimal todayLoginCountDayPercent = NumberUtil.div(String.valueOf(loginInfoResultDO.getLoginTotalCount() - oldLoginTotalCount), String.valueOf(oldLoginTotalCount), 2);
                 loginInfoResultDO.setLoginCountDayPercent(todayLoginCountDayPercent.doubleValue());
@@ -71,15 +72,19 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
         return ApiResult.of(0, loginInfoResultDOList);
     }
 
-    private Map<String, LoginInfoResultDO> getYesterdayLoginInfoResultMap() {
-        List<LoginInfoResultDO> yesterdayLoginInfoResultDOList = getYesterdayLoginInfoResultList();
-
-        return yesterdayLoginInfoResultDOList.stream()
-                .collect(Collectors.toMap(v -> v.getCityCode() + v.getCityCode(), a -> a, (k1, k2) -> k1));
+    private boolean dataIsValid(LoginInfoResultDO yesterdayLoginInfoResult) {
+        return yesterdayLoginInfoResult != null && !Objects.equals(0, yesterdayLoginInfoResult.getLoginTotalCount()) && !Objects.equals(0, yesterdayLoginInfoResult.getLoginPersonTotalCount());
     }
 
-    private List<LoginInfoResultDO> getYesterdayLoginInfoResultList() {
-        List<LoginInfoResultDO> loginInfoResultDOS = loginInfoResultMapper.getYesterdayLoginInfoResultList();
+    private Map<String, LoginInfoResultDO> getBeforeYesterdayLoginInfoResultMap() {
+        List<LoginInfoResultDO> beforeYesterdayLoginInfoResultDOList = getBeforeYesterdayLoginInfoResultList();
+
+        return beforeYesterdayLoginInfoResultDOList.stream()
+                .collect(Collectors.toMap(v -> v.getCityCode() + v.getCountyCode(), a -> a, (k1, k2) -> k2));
+    }
+
+    private List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList() {
+        List<LoginInfoResultDO> loginInfoResultDOS = loginInfoResultMapper.getBeforeYesterdayLoginInfoResultList();
         return loginInfoResultDOS;
     }
 

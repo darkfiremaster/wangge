@@ -484,7 +484,7 @@
         a.city_code, a.county_code
 
     </select>
-    <select id="getYesterdayLoginInfoResultList" resultType="com.shinemo.operate.domain.LoginInfoResultDO">
+    <select id="getBeforeYesterdayLoginInfoResultList" resultType="com.shinemo.operate.domain.LoginInfoResultDO">
         select
         <include refid="columns"/>
         from

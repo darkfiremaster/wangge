@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface LoginStatisticsService {
 
-    ApiResult<List<LoginInfoResultDO>> saveTodayLoginInfoResult();
+    ApiResult<List<LoginInfoResultDO>> saveYesterdayLoginInfoResult();
 
 
     ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList();

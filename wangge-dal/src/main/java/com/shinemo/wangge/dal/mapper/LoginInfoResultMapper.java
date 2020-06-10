@@ -17,6 +17,6 @@ public interface LoginInfoResultMapper extends BaseMapper<LoginInfoResultQuery, 
 
     Long insertBatch(List<LoginInfoResultDO> loginInfoResultDOList);
 
-    List<LoginInfoResultDO> getYesterdayLoginInfoResultList();
+    List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList();
 
 }

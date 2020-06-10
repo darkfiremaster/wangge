@@ -18,6 +18,6 @@ public class LoginInfoSchedule {
     private LoginStatisticsService loginStatisticsService;
 
     public void generateLoginInfoResult() {
-       loginStatisticsService.saveTodayLoginInfoResult();
+       loginStatisticsService.saveYesterdayLoginInfoResult();
     }
 }
