@@ -1242,8 +1242,12 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     public ApiResult<ListVO<SweepFloorActivityVO>> getOutsideActivityList(Integer status, Integer pageSize, Integer currentPage, Long startTime, Long endTime, String mobile, String gridId) {
         SweepFloorActivityQuery sweepFloorActivityQuery = new SweepFloorActivityQuery();
         sweepFloorActivityQuery.setStatus(status);
-        sweepFloorActivityQuery.setStartTime(new Date(startTime));
-        sweepFloorActivityQuery.setEndTime(new Date(endTime));
+        if (startTime != null) {
+            sweepFloorActivityQuery.setStartTime(new Date(startTime));
+        }
+        if (endTime != null) {
+            sweepFloorActivityQuery.setEndTime(new Date(endTime));
+        }
         sweepFloorActivityQuery.setGridId(gridId);
         sweepFloorActivityQuery.setQueryTotal(true);
         sweepFloorActivityQuery.setCurrentPage(currentPage);
