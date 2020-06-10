@@ -15,6 +15,7 @@ import com.shinemo.stallup.domain.model.SweepFloorBizDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.CommonFlagEnum;
+import com.shinemo.sweepfloor.common.enums.HuaweiSweepFloorUrlEnum;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.common.enums.SweepFloorStatusEnum;
 import com.shinemo.sweepfloor.common.error.SweepFloorErrorCodes;
@@ -29,6 +30,7 @@ import com.shinemo.sweepfloor.domain.vo.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -71,6 +73,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     private StallUpConfig stallUpConfig;
     @Resource
     private SmartGridActivityMapper smartGridActivityMapper;
+    @Resource
+    private ThirdApiMappingService thirdApiMappingService;
 
     @Value("${smartgrid.huawei.aesKey}")
     public String aeskey;
@@ -143,6 +147,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         add('Z');
     }};
 
+    private static final String ID_PREFIX = "SL_";
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult<Long> create(SweepFloorActivityVO request) {
@@ -198,7 +204,23 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             smartGridActivityMapper.insert(smartGridActivityDO);
         }
 
+        synchronizeSweepingData(activityDO);
+
         return ApiResult.of(0, activityDO.getId());
+    }
+
+    private void synchronizeSweepingData(SweepFloorActivityDO activityDO) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",ID_PREFIX + activityDO.getId());
+        map.put("communityName",activityDO.getCommunityName());
+        map.put("communityId",activityDO.getCommunityId());
+        map.put("location",activityDO.getLocation());
+        map.put("address",activityDO.getAddress());
+        map.put("creatorName",activityDO.getCreatorName());
+        map.put("mobile",activityDO.getMobile());
+        map.put("gmtCreate",DateUtils.dateToString(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        map.put("status",SweepFloorStatusEnum.NOT_START.getId());
+        thirdApiMappingService.dispatch(map, HuaweiSweepFloorUrlEnum.SYNCHRONIZE_SWEEPING_DATA.getMethod());
     }
 
     @Override

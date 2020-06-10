@@ -18,6 +18,7 @@ public enum HuaweiSweepFloorUrlEnum {
     ADD_BUILDING_TENANTS("/CMCC_GX_market/api/v2/addBuildingTenants", "添加住户","addBuildingTenants"),
     EDIT_BUILDING_TENANTS("/CMCC_GX_market/api/v2/editBuildingTenants", "编辑住户","editBuildingTenants"),
     QUERY_BUILDING_DETAIL_LIST("/CMCC_GX_market/api/v2/queryBuildingDetailList", "楼栋信息查询（楼栋、单元、住户）","queryBuildingDetailList"),
+    SYNCHRONIZE_SWEEPING_DATA("CMCC_GX_market/api/v2/synchronizeSweepingData", "同步扫楼数据至华为","synchronizeSweepingData"),
     ;
     private String url;
     private String desc;

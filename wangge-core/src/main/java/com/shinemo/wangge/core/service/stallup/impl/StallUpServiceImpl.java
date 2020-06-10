@@ -13,7 +13,9 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.model.UserConfigDO;
 import com.shinemo.smartgrid.domain.query.UserConfigQuery;
 import com.shinemo.smartgrid.utils.AESUtil;
+import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.common.enums.HuaweiStallUpUrlEnum;
 import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.domain.enums.StallUpExceptionEnum;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
@@ -31,6 +33,7 @@ import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
 import com.shinemo.wangge.dal.mapper.SignRecordMapper;
 import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
@@ -113,6 +116,11 @@ public class StallUpServiceImpl implements StallUpService {
     @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
     private String defaultBiz;
 
+    private static final String STALL_UP_ID_PREFIX = "SL_";
+
+    @Resource
+    private ThirdApiMappingService thirdApiMappingService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(StallUpRequest stallUpRequest) {
@@ -142,13 +150,13 @@ public class StallUpServiceImpl implements StallUpService {
         String bizTypeListJson = toJson.apply(request.getBizTypeList());
         Map<String, String> nameMap = new HashMap<>();
         List<GridUserDetail> list = partnerList.stream().filter(v -> {
-            String mobile = AESUtil.decrypt(v.getSeMobile(), aeskey);
-            if (mobile == null) {
-                log.error("[create] AESUtil.decrypt mobile error, request:{}, mobile:{}", request, v.getSeMobile());
-                return false;
-            }
-            v.setMobile(mobile);
-            nameMap.put(mobile, v.getName());
+//            String mobile = AESUtil.decrypt(v.getSeMobile(), aeskey);
+//            if (mobile == null) {
+//                log.error("[create] AESUtil.decrypt mobile error, request:{}, mobile:{}", request, v.getSeMobile());
+//                return false;
+//            }
+            v.setMobile(v.getSeMobile());
+            nameMap.put(v.getSeMobile(), v.getName());
             return true;
         }).collect(Collectors.toList());
         String partnerListJson = toJson.apply(list);
@@ -188,6 +196,29 @@ public class StallUpServiceImpl implements StallUpService {
             // 批量插入子摆摊
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
+            Map<String,Object> map = new HashMap<>();
+            map.put("id",STALL_UP_ID_PREFIX + parent.getId());
+            map.put("gmtCreate", DateUtils.dateToString(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            map.put("communityName",parent.getCommunityName());
+            map.put("communityId",parent.getCommunityId());
+            map.put("address",parent.getAddress());
+            map.put("location",parent.getLocation());
+            map.put("mobile",parent.getMobile());
+            map.put("name",parent.getName());
+            map.put("title",parent.getTitle());
+            map.put("startTime",DateUtils.dateToString(parent.getStartTime(),"yyyy-MM-dd HH:mm:ss"));
+            map.put("endTime",DateUtils.dateToString(parent.getEndTime(),"yyyy-MM-dd HH:mm:ss"));
+            map.put("status",StallUpStatusEnum.PREPARE.getId());
+            map.put("gridId",parent.getGridId());
+            List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
+            for (GridUserDetail detail: partnerList) {
+                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getSeMobile()).
+                        name(detail.getName()).role(detail.getRole()).build();
+                simpleList.add(detailSimple);
+            }
+            map.put("partners",simpleList);
+            map.put("custIdList",request.getCustList());
+            thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod());
         }
     }
 
