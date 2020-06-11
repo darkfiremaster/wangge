@@ -223,153 +223,61 @@
     </insert>
 
     <!-- 插入 -->
-    <insert id="insertBatch" parameterType="java.util.List" >
+    <insert id="insertBatch" parameterType="com.shinemo.operate.domain.LoginInfoResultDO" >
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
             gmt_create,
             gmt_modified,
-            <if test="statisticsTime != null">
-                statistics_time,
-            </if>
-
-            <if test="cityName != null">
-                city_name,
-            </if>
-            <if test="countyName != null">
-                county_name,
-            </if>
-            <if test="gridCaptainLoginPersonCount != null">
-                grid_captain_login_person_count,
-            </if>
-            <if test="gridCaptainLoginCount != null">
-                grid_captain_login_count,
-            </if>
-            <if test="gridManagerLoginPersonCount != null">
-                grid_manager_login_person_count,
-            </if>
-            <if test="gridManagerLoginCount != null">
-                grid_manager_login_count,
-            </if>
-            <if test="directSellerLoginPersonCount != null">
-                direct_seller_login_person_count,
-            </if>
-            <if test="directSellerLoginCount != null">
-                direct_seller_login_count,
-            </if>
-            <if test="decoratorLoginPersonCount != null">
-                decorator_login_person_count,
-            </if>
-            <if test="decoratorLoginCount != null">
-                decorator_login_count,
-            </if>
-            <if test="businessHallLoginPersonCount != null">
-                business_hall_login_person_count,
-            </if>
-            <if test="businessHallLoginCount != null">
-                business_hall_login_count,
-            </if>
-            <if test="agentBusinessLoginPersonCount != null">
-                agent_business_login_person_count,
-            </if>
-            <if test="agentBusinessLoginCount != null">
-                agent_business_login_count,
-            </if>
-            <if test="operatingPersonnelLoginPersonCount != null">
-                operating_personnel_login_person_count,
-            </if>
-            <if test="operatingPersonnelLoginCount != null">
-                operating_personnel_login_count,
-            </if>
-            <if test="loginPersonTotalCount != null">
-                login_person_total_count,
-            </if>
-            <if test="loginTotalCount != null">
-                login_total_count,
-            </if>
-            <if test="loginPersonDayPercent != null">
-                login_person_day_percent,
-            </if>
-            <if test="loginCountDayPercent != null">
-                login_count_day_percent,
-            </if>
+            statistics_time,
+            city_name,
+            county_name,
+            grid_captain_login_person_count,
+            grid_captain_login_count,
+            grid_manager_login_person_count,
+            grid_manager_login_count,
+            direct_seller_login_person_count,
+            direct_seller_login_count,
+            decorator_login_person_count,
+            decorator_login_count,
+            business_hall_login_person_count,
+            business_hall_login_count,
+            agent_business_login_person_count,
+            agent_business_login_count,
+            operating_personnel_login_person_count,
+            operating_personnel_login_count,
+            login_person_total_count,
+            login_total_count,
+            login_person_day_percent,
+            login_count_day_percent,
         </trim>
         values
-        <foreach collection="list" separator="," item="entity" >
-            (
-            <if test="entity.id != null">
-                #{entity.id, jdbcType=BIGINT},
-            </if>
+        <foreach collection="loginInfoResultDOList" separator="," item="entity" >
+            <trim prefix="(" suffix=")" suffixOverrides=",">
             now(),
             now(),
-            <if test="entity.statisticsTime != null">
-                #{entity.statisticsTime, jdbcType=TIMESTAMP},
-            </if>
-
-            <if test="cityName != null">
-                #{cityName, jdbcType=VARCHAR},
-            </if>
-            <if test="countyName != null">
-                #{countyName, jdbcType=VARCHAR},
-            </if>
-            <if test="gridCaptainLoginPersonCount != null">
-                #{gridCaptainLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="gridCaptainLoginCount != null">
-                #{gridCaptainLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="gridManagerLoginPersonCount != null">
-                #{gridManagerLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="gridManagerLoginCount != null">
-                #{gridManagerLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="directSellerLoginPersonCount != null">
-                #{directSellerLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="directSellerLoginCount != null">
-                #{directSellerLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="decoratorLoginPersonCount != null">
-                #{decoratorLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="decoratorLoginCount != null">
-                #{decoratorLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="businessHallLoginPersonCount != null">
-                #{businessHallLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="businessHallLoginCount != null">
-                #{businessHallLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="agentBusinessLoginPersonCount != null">
-                #{agentBusinessLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="agentBusinessLoginCount != null">
-                #{agentBusinessLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="operatingPersonnelLoginPersonCount != null">
-                #{operatingPersonnelLoginPersonCount, jdbcType=INTEGER},
-            </if>
-            <if test="operatingPersonnelLoginCount != null">
-                #{operatingPersonnelLoginCount, jdbcType=INTEGER},
-            </if>
-            <if test="loginPersonTotalCount != null">
-                #{loginPersonTotalCount, jdbcType=INTEGER},
-            </if>
-            <if test="loginTotalCount != null">
-                #{loginTotalCount, jdbcType=INTEGER},
-            </if>
-            <if test="loginPersonDayPercent != null">
-                #{loginPersonDayPercent, jdbcType=DECIMAL},
-            </if>
-            <if test="loginCountDayPercent != null">
-                #{loginCountDayPercent, jdbcType=DECIMAL}
-            </if>
-            )
+            #{entity.statisticsTime, jdbcType=TIMESTAMP},
+            #{entity.cityName, jdbcType=VARCHAR},
+            #{entity.countyName, jdbcType=VARCHAR},
+            #{entity.gridCaptainLoginPersonCount, jdbcType=INTEGER},
+            #{entity.gridCaptainLoginCount, jdbcType=INTEGER},
+            #{entity.gridManagerLoginPersonCount, jdbcType=INTEGER},
+            #{entity.gridManagerLoginCount, jdbcType=INTEGER},
+            #{entity.directSellerLoginPersonCount, jdbcType=INTEGER},
+            #{entity.directSellerLoginCount, jdbcType=INTEGER},
+            #{entity.decoratorLoginPersonCount, jdbcType=INTEGER},
+            #{entity.decoratorLoginCount, jdbcType=INTEGER},
+            #{entity.businessHallLoginPersonCount, jdbcType=INTEGER},
+            #{entity.businessHallLoginCount, jdbcType=INTEGER},
+            #{entity.agentBusinessLoginPersonCount, jdbcType=INTEGER},
+            #{entity.agentBusinessLoginCount, jdbcType=INTEGER},
+            #{entity.operatingPersonnelLoginPersonCount, jdbcType=INTEGER},
+            #{entity.operatingPersonnelLoginCount, jdbcType=INTEGER},
+            #{entity.loginPersonTotalCount, jdbcType=INTEGER},
+            #{entity.loginTotalCount, jdbcType=INTEGER},
+            #{entity.loginPersonDayPercent, jdbcType=DECIMAL},
+            #{entity.loginCountDayPercent, jdbcType=DECIMAL}
+            </trim>
         </foreach>
     </insert>
 

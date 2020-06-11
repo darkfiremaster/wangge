@@ -1,14 +1,17 @@
 package com.shinemo.wangge.web.controller.common;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
+import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("backdoor")
+@Slf4j
 public class BackdoorController {
 
     @Resource
@@ -43,6 +47,9 @@ public class BackdoorController {
 
     @Resource
     private LoginStatisticsService loginStatisticsService;
+
+    @Resource
+    private RedisService redisService;
 
     @GetMapping("stallUp/config/flush")
     public String flushConfig() {
@@ -102,5 +109,12 @@ public class BackdoorController {
     @GetMapping("/getLoginInfoExcelDTOList")
     public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
         return loginStatisticsService.getLoginInfoExcelDTOList();
+    }
+
+    @GetMapping("/clearUserGridInfoCache")
+    public ApiResult<Void> clearUserGridInfoCache(String mobile) {
+        redisService.del(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
+        log.info("[clearUserGridInfoCache] 清空用户网格信息缓存成功,mobile:{}", mobile);
+        return ApiResult.of(0);
     }
 }

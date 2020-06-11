@@ -286,13 +286,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyCode("xihu")
                         .countyName("西湖")
                         .roleList(Lists.newArrayList(
-                        		new GridUserRoleDetail.GridRole("1", "网格长"),
-                                new GridUserRoleDetail.GridRole("2", "网格经理"),
-                                new GridUserRoleDetail.GridRole("3", "营业厅人员"),
-                                new GridUserRoleDetail.GridRole("4", "装维人员"),
-                                new GridUserRoleDetail.GridRole("5", "直销员"),
-                                new GridUserRoleDetail.GridRole("6", "代理商人"),
-                                new GridUserRoleDetail.GridRole("7", "运营人员")))
+                        		new GridUserRoleDetail.GridRole("1", "网格长")))
 										.build(),
 				GridUserRoleDetail.builder()
 						.id("shinemo2")
@@ -301,19 +295,10 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 						.cityName("杭州")
 						.countyCode("yuhang")
 						.countyName("余杭")
-						.roleList(Lists.newArrayList(new GridUserRoleDetail.GridRole("1", "网格长"),
-								new GridUserRoleDetail.GridRole("2", "网格经理"),
-								new GridUserRoleDetail.GridRole("3", "营业厅人员"),
-								new GridUserRoleDetail.GridRole("4", "装维人员"),
-								new GridUserRoleDetail.GridRole("5", "直销员"),
-								new GridUserRoleDetail.GridRole("6", "代理商人"),
-								new GridUserRoleDetail.GridRole("7", "运营人员")))
-										.build()
-                                                //GridUserRoleDetail.builder()
-                                                //	.id("shinemo3")
-                                                //	.name("测试网格3")
-                                                //	.build()
-                                        );
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("2", "网格经理")))
+                        .build()
+        );
     }
 
     @Override

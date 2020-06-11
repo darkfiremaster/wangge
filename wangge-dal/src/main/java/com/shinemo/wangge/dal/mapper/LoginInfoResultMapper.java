@@ -3,6 +3,7 @@ package com.shinemo.wangge.dal.mapper;
 import com.shinemo.common.db.dao.BaseMapper;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.operate.query.LoginInfoResultQuery;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface LoginInfoResultMapper extends BaseMapper<LoginInfoResultQuery, 
 
     List<LoginInfoResultDO> getLoginInfoResultDOList(LoginInfoResultQuery loginInfoResultQuery);
 
-    Long insertBatch(List<LoginInfoResultDO> loginInfoResultDOList);
+    Long insertBatch(@Param("loginInfoResultDOList") List<LoginInfoResultDO> loginInfoResultDOList);
 
     List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList();
 

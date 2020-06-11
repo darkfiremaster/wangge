@@ -11,7 +11,7 @@
         <result property="gridName" column="grid_name"/>
         <result property="gridId" column="grid_id"/>
         <result property="cityCode" column="city_code"/>
-        <result property="countyName" column="city_name"/>
+        <result property="cityName" column="city_name"/>
         <result property="countyCode" column="county_code"/>
         <result property="countyName" column="county_name"/>
     </resultMap>

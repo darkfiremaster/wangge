@@ -67,13 +67,9 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
             }
         }
 
-        for (LoginInfoResultDO loginInfoResultDO : loginInfoResultDOList) {
-            loginInfoResultMapper.insert(loginInfoResultDO);
+        for (int i = 0; i < loginInfoResultDOList.size(); i += 50) {
+            loginInfoResultMapper.insertBatch(loginInfoResultDOList.subList(i, Math.min(i + 50, loginInfoResultDOList.size())));
         }
-
-        //for (int i = 0; i < loginInfoResultDOList.size(); i += 50) {
-        //    loginInfoResultMapper.insertBatch(loginInfoResultDOList.subList(i, Math.min(i + 50, loginInfoResultDOList.size())));
-        //}
 
         return ApiResult.of(0, loginInfoResultDOList);
     }

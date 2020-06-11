@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ApiResult<Void> updateUserGridRoleRelation(List<GridUserRoleDetail> gridUserRoleDetailList, String mobile) {
+        log.info("[updateUserGridRoleRelation] 开始更新用户网格信息,mobile:{}", mobile);
         UserGridRoleQuery userGridRoleQuery = new UserGridRoleQuery();
         userGridRoleQuery.setMobile(mobile);
         userGridRoleMapper.deleteByMobile(userGridRoleQuery);
@@ -44,12 +45,12 @@ public class UserServiceImpl implements UserService {
             if (existRole(gridUserRoleDetail)) {
                 //角色不为空
                 for (GridUserRoleDetail.GridRole gridRole : gridUserRoleDetail.getRoleList()) {
-                    UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, gridRole,mobile);
+                    UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, gridRole, mobile);
                     userGridRoleMapper.insert(userGridRoleDO);
                 }
             } else {
                 //角色为空
-                UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, null,mobile);
+                UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, null, mobile);
                 userGridRoleMapper.insert(userGridRoleDO);
             }
         }
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
         return CollUtil.isNotEmpty(gridUserRoleDetail.getRoleList());
     }
 
-    private UserGridRoleDO getUserGridRoleDO(GridUserRoleDetail gridUserRoleDetail, GridUserRoleDetail.GridRole gridRole,String mobile) {
+    private UserGridRoleDO getUserGridRoleDO(GridUserRoleDetail gridUserRoleDetail, GridUserRoleDetail.GridRole gridRole, String mobile) {
         UserGridRoleDO userGridRoleDO = new UserGridRoleDO();
         userGridRoleDO.setMobile(mobile);
         //如果华为数据为空,则调接口自己设值,否则的话直接用华为的数据
