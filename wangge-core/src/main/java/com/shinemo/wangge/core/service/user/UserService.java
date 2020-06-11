@@ -14,4 +14,5 @@ public interface UserService {
 
     ApiResult<Void> updateUserGridRoleRelation(List<GridUserRoleDetail> gridUserRoleDetailList, String mobile);
 
+    List<GridUserRoleDetail> getMockUserRoleDetail();
 }

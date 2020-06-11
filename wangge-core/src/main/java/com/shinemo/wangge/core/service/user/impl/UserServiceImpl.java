@@ -58,6 +58,22 @@ public class UserServiceImpl implements UserService {
         return ApiResult.of(0);
     }
 
+    @Override
+    public List<GridUserRoleDetail> getMockUserRoleDetail() {
+        GridUserRoleDetail gridUserRoleDetail = new GridUserRoleDetail();
+        gridUserRoleDetail.setId("771_A2107_30");
+        gridUserRoleDetail.setName("东区江南网格");
+        //gridUserRoleDetail.setCityName("杭州");
+        //gridUserRoleDetail.setCityCode("hangzhou");
+        //gridUserRoleDetail.setCountyName("西湖取");
+        //gridUserRoleDetail.setCountyCode("xihu");
+        GridUserRoleDetail.GridRole gridRole = new GridUserRoleDetail.GridRole();
+        gridRole.setId("1");
+        gridRole.setName("网格长");
+        gridUserRoleDetail.setRoleList(Lists.newArrayList(gridRole));
+        return Lists.newArrayList(gridUserRoleDetail);
+    }
+
     private boolean existRole(GridUserRoleDetail gridUserRoleDetail) {
         return CollUtil.isNotEmpty(gridUserRoleDetail.getRoleList());
     }
@@ -66,7 +82,7 @@ public class UserServiceImpl implements UserService {
         UserGridRoleDO userGridRoleDO = new UserGridRoleDO();
         userGridRoleDO.setMobile(mobile);
         //如果华为数据为空,则调接口自己设值,否则的话直接用华为的数据
-        if (StringUtils.isBlank(gridUserRoleDetail.getCityCode())) {
+        if (StringUtils.isBlank(gridUserRoleDetail.getCityCode()) || StringUtils.isBlank(gridUserRoleDetail.getCountyCode())) {
             ApiResult<SmartGridInfoDO> smartGridInfoDOResult = smartGridInfoService.getByGridId(gridUserRoleDetail.getId());
             if (smartGridInfoDOResult.isSuccess()) {
                 SmartGridInfoDO smartGridInfoDO = smartGridInfoDOResult.getData();
@@ -75,6 +91,11 @@ public class UserServiceImpl implements UserService {
                     userGridRoleDO.setCityName(smartGridInfoDO.getCityName());
                     userGridRoleDO.setCountyCode(smartGridInfoDO.getCountyCode());
                     userGridRoleDO.setCountyName(smartGridInfoDO.getCountyName());
+                } else {
+                    userGridRoleDO.setCityCode("未知");
+                    userGridRoleDO.setCityName("未知");
+                    userGridRoleDO.setCountyCode("未知");
+                    userGridRoleDO.setCountyName("未知");
                 }
             }
         } else {
@@ -96,18 +117,5 @@ public class UserServiceImpl implements UserService {
         return userGridRoleDO;
     }
 
-    private List<GridUserRoleDetail> getMockGridUserRoleDetailList(String mobile) {
-        GridUserRoleDetail gridUserRoleDetail = new GridUserRoleDetail();
-        gridUserRoleDetail.setId("1");
-        gridUserRoleDetail.setName("网格A");
-        gridUserRoleDetail.setCityName("杭州");
-        gridUserRoleDetail.setCityCode("hangzhou");
-        gridUserRoleDetail.setCountyName("西湖取");
-        gridUserRoleDetail.setCountyCode("xihu");
-        GridUserRoleDetail.GridRole gridRole = new GridUserRoleDetail.GridRole();
-        gridRole.setId("1");
-        gridRole.setName("网格长");
-        gridUserRoleDetail.setRoleList(Lists.newArrayList(gridRole));
-        return Lists.newArrayList(gridUserRoleDetail);
-    }
+
 }
