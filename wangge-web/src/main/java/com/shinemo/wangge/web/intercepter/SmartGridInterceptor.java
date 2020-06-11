@@ -18,7 +18,6 @@ import com.shinemo.wangge.core.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -44,7 +43,7 @@ import static com.shinemo.util.WebUtils.getValueFromCookies;
 @Component
 public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
-	@Autowired
+	@Resource
 	private RedisService redisService;
 
 	@Resource
@@ -94,6 +93,10 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 		}
 		if (mobile == null) {
 			mobile = getValueFromCookies("mobile", cookies);
+			if (mobile == null) {
+				 //从debugInterceptor中获取到的手机号
+				 mobile = SmartGridContext.getMobile();
+			}
 		}
 		if (mobile != null) {
 			SmartGridContext.setMobile(mobile);
@@ -138,7 +141,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 			}
 			return apiResult.getData();
 		} catch (ApiException e) {
-			log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getLogMsg(), mobile);
+			log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getMessage(), mobile);
 			return null;
 		}
 	}

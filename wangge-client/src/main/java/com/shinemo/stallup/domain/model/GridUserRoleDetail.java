@@ -27,6 +27,8 @@ public class GridUserRoleDetail {
 	private List<GridRole> roleList;
 
 	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class GridRole{
 		private String id;
 		private String name;

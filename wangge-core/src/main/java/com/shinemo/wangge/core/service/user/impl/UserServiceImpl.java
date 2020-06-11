@@ -58,10 +58,12 @@ public class UserServiceImpl implements UserService {
     private UserGridRoleDO getUserGridRoleDO(GridUserRoleDetail gridUserRoleDetail, GridUserRoleDetail.GridRole gridRole,String mobile) {
         UserGridRoleDO userGridRoleDO = new UserGridRoleDO();
         userGridRoleDO.setMobile(mobile);
+        //todo 如果cityName为空,则从excel表中获取
         userGridRoleDO.setCityName(gridUserRoleDetail.getCityName());
         userGridRoleDO.setCityCode(gridUserRoleDetail.getCityCode());
         userGridRoleDO.setCountyName(gridUserRoleDetail.getCountyName());
         userGridRoleDO.setCountyCode(gridUserRoleDetail.getCountyCode());
+
         userGridRoleDO.setGridName(gridUserRoleDetail.getName());
         userGridRoleDO.setGridId(gridUserRoleDetail.getId());
         if (gridRole == null) {

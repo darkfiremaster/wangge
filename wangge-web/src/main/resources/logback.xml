@@ -176,6 +176,11 @@
     <logger name="org.springframework.jdbc.datasource.DataSourceUtils" level="ERROR" />
     <logger name="org.mybatis.spring.transaction.SpringManagedTransaction" level="ERROR" />
 
+    <logger name="com.shinemo.wangge" additivity="false">
+        <level value="debug" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
     <logger name="mapper" additivity="false">
         <level value="debug" />
         <appender-ref ref="SQL" />

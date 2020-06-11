@@ -25,7 +25,6 @@ import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
-import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
