@@ -48,7 +48,7 @@ public class SmartGridInfoServiceImpl implements SmartGridInfoService {
         if(smartGridInfoDO == null){
             log.error("[getByGridId] gridinfo not exits, gridId:{}",gridId);
         }
-        return ApiResult.success(smartGridInfoDO);
+        return ApiResult.of(0,smartGridInfoDO);
 
     }
 }

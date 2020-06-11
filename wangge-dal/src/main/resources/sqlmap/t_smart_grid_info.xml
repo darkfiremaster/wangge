@@ -31,7 +31,7 @@
             <choose>
                 <when test="id != null">and id = #{id}</when>
                 <otherwise>
-                    <if test="gridCode != null">and grid_id = #{gridId}</if>
+                    <if test="gridId != null">and grid_id = #{gridId}</if>
                 </otherwise>
             </choose>
         </where>
