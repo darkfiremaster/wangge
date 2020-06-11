@@ -9,7 +9,6 @@ import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -36,7 +35,6 @@ public class OperateServiceImpl implements OperateService {
 
 
     @Override
-    @Async
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
         Assert.notNull(userOperateLogVO.getType(), "type is null");
         Assert.notNull(userOperateLogVO.getMobile(), "mobile is null");
@@ -46,11 +44,11 @@ public class OperateServiceImpl implements OperateService {
 
 
     private void insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
-        //if (userOperateLogVO.getType() == 1 && !isGridUser(userOperateLogVO)) {
-        //    //非网格用户不统计登录信息
-        //    log.info("[insertUserOperateLog] user is not gridUser, request:{}",userOperateLogVO);
-        //    return;
-        //}
+        if (userOperateLogVO.getType() == 1 && !isGridUser(userOperateLogVO)) {
+            //非网格用户不统计登录信息
+            log.info("[insertUserOperateLog] user is not gridUser, request:{}",userOperateLogVO);
+            return;
+        }
 
 
         UserOperateLogDO userOperateLogDO = getUserOperateLogDO(userOperateLogVO);
