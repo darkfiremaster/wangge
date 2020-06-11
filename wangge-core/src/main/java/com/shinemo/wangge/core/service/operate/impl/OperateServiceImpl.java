@@ -1,20 +1,20 @@
 package com.shinemo.wangge.core.service.operate.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.UserOperateLogDO;
 import com.shinemo.operate.vo.UserOperateLogVO;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
+import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -35,8 +35,6 @@ public class OperateServiceImpl implements OperateService {
 
 
     @Override
-    @Transactional
-    @Async
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
         Assert.notNull(userOperateLogVO.getType(), "type is null");
         Assert.notNull(userOperateLogVO.getMobile(), "mobile is null");
@@ -46,10 +44,12 @@ public class OperateServiceImpl implements OperateService {
 
 
     private void insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
-        if (userOperateLogVO.getType() == 1) {
+        if (userOperateLogVO.getType() == 1 && !isGridUser(userOperateLogVO)) {
             //非网格用户不统计登录信息
-            if (!isGridUser(userOperateLogVO)) return;
+            log.info("[insertUserOperateLog] user is not gridUser, request:{}",userOperateLogVO);
+            return;
         }
+
 
         UserOperateLogDO userOperateLogDO = getUserOperateLogDO(userOperateLogVO);
         userOperateLogMapper.insert(userOperateLogDO);
@@ -57,15 +57,18 @@ public class OperateServiceImpl implements OperateService {
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {
         String userGridInfo = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(userOperateLogVO.getMobile()));
-        if (StrUtil.isBlank(userGridInfo)) {
+        if (StringUtils.isEmpty(userGridInfo)) {
             return false;
+        } else {
+            return true;
         }
-        return true;
+
     }
 
 
     private UserOperateLogDO getUserOperateLogDO(UserOperateLogVO userOperateLogVO) {
         UserOperateLogDO userOperateLogDO = new UserOperateLogDO();
+        userOperateLogDO.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now()));
         userOperateLogDO.setMobile(userOperateLogVO.getMobile());
         userOperateLogDO.setUsername(userOperateLogVO.getUserName());
         userOperateLogDO.setUid(userOperateLogVO.getUid());

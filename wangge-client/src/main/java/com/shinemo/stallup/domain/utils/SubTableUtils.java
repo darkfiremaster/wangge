@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class SubTableUtils {
 	private static final DateTimeFormatter yyyyMM = DateTimeFormatter.ofPattern("yyyyMM");
+	private static final DateTimeFormatter MM = DateTimeFormatter.ofPattern("MM");
 	private static final String INDEX_FORMAT = "_month_%s";
 
 	public static String getTableIndexByMonth() {
@@ -19,5 +20,9 @@ public class SubTableUtils {
 
 	public static String getTableIndexByMonth(LocalDate localDate) {
 		return String.format(INDEX_FORMAT, localDate.format(yyyyMM));
+	}
+
+	public static String getTableIndexByOnlyMonth(LocalDate localDate) {
+		return String.format(INDEX_FORMAT, localDate.format(MM));
 	}
 }

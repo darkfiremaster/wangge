@@ -5,6 +5,7 @@ import com.shinemo.operate.vo.UserOperateLogVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +26,16 @@ public class OperateController {
     @Resource
     private OperateService operateService;
 
+    @Resource
+    private ThreadPoolTaskExecutor asyncServiceExecutor;
+
     @PostMapping("/addUserOperateLog")
     public ApiResult addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO) {
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
-        return operateService.addUserOperateLog(userOperateLogVO);
+        asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
+        return ApiResult.of(0);
     }
 
 

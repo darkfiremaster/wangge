@@ -7,6 +7,8 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.operate.query.LoginInfoResultQuery;
+import com.shinemo.operate.query.UserOperateLogQuery;
+import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.dal.mapper.LoginInfoResultMapper;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
         DateTime yesterday = DateUtil.yesterday();
         loginInfoResultQuery.setStartTime(DateUtil.beginOfDay(yesterday));
         loginInfoResultQuery.setEndTime(DateUtil.endOfDay(yesterday));
+        loginInfoResultQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
         List<LoginInfoResultDO> loginInfoResultDOList = loginInfoResultMapper.getLoginInfoResultDOList(loginInfoResultQuery);
 
         //获取前天登录信息结果集
@@ -91,7 +95,9 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
 
     @Override
     public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
-        List<LoginInfoExcelDTO> loginInfoExcelDTOList = userOperateLogMapper.getLoginInfoExcelDTOList();
+        UserOperateLogQuery userOperateLogQuery = new UserOperateLogQuery();
+        userOperateLogQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
+        List<LoginInfoExcelDTO> loginInfoExcelDTOList = userOperateLogMapper.getLoginInfoExcelDTOList(userOperateLogQuery);
         return ApiResult.of(0, loginInfoExcelDTOList);
     }
 }

@@ -476,7 +476,7 @@
         from
         (select mobile, city_name,city_code, county_name, county_code, grid_name, grid_id,role_name, role_id from t_user_grid_role) a
         LEFT OUTER JOIN
-        (select mobile, count(*) as login_cnt  from t_user_operate_log where
+        (select mobile, count(*) as login_cnt  from t_user_operate_log${tableIndex} where
         type = 1 and operate_time <![CDATA[>=]]> #{startTime} and operate_time <![CDATA[<=]]> #{endTime}
         group by mobile)b
         on a.mobile = b.mobile
@@ -484,6 +484,7 @@
         a.city_code, a.county_code
 
     </select>
+
     <select id="getBeforeYesterdayLoginInfoResultList" resultType="com.shinemo.operate.domain.LoginInfoResultDO">
         select
         <include refid="columns"/>
