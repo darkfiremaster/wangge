@@ -21,21 +21,14 @@ package com.shinemo.wangge.web.intercepter;
 
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.exception.ErrorCode;
-import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.common.GridIdChecker;
 import com.shinemo.smartgrid.domain.SmartGridContext;
-import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
-import com.shinemo.stallup.domain.model.GridUserRoleDetail;
-import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
-import com.shinemo.wangge.core.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -43,7 +36,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * zz
@@ -53,16 +45,7 @@ import java.util.List;
 public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
 
     @Resource
-    private HuaWeiService huaWeiService;
-    @Resource
     private RedisService redisService;
-    @Resource
-    private UserService userService;
-
-    @Resource
-    private ThreadPoolTaskExecutor asyncServiceExecutor;
-
-    public static final int EXPIRE_TIME = 60 * 60 * 24;
 
     ErrorCode INVALID_MOBILE = new ErrorCode(411, "手机号为空");
     ErrorCode NOT_GRID_USER = new ErrorCode(412, "非网格人员");
@@ -82,37 +65,9 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
         }
         String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
         if (StringUtils.isBlank(gridInfoCache)) {
-            List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
-            if (CollectionUtils.isEmpty(gridUserRole)) {
-                log.error("[preHandle] user not grid user,mobile = {}", mobile);
-                throw new ApiException(NOT_GRID_USER);
-            }
-            gridInfoCache = GsonUtils.toJson(gridUserRole);
-            redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
-
-            //更新用户网格角色关系
-            asyncServiceExecutor.submit(() -> {
-                userService.updateUserGridRoleRelation(gridUserRole, mobile);
-            });
-
+            log.error("[preHandle] user not grid user,mobile = {}", mobile);
+            throw new ApiException(NOT_GRID_USER);
         }
-        SmartGridContext.setGridInfo(gridInfoCache);
         return true;
-    }
-
-    private List<GridUserRoleDetail> getGridUserRole(String mobile) {
-        HuaWeiRequest huaWeiRequest = HuaWeiRequest.builder().mobile(mobile).build();
-        try {
-            ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
-            if (!apiResult.isSuccess()) {
-                log.error("[getGridUserRole] huaWeiService.getGridUserInfo not success,apiResult = {}," +
-                        "mobile = {}", apiResult, mobile);
-                return null;
-            }
-            return apiResult.getData();
-        } catch (ApiException e) {
-            log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getLogMsg(), mobile);
-            return null;
-        }
     }
 }

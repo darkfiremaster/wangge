@@ -4,16 +4,31 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
+import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.log.Logs;
+import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.smartgrid.utils.RedisKeyUtil;
+import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.stallup.domain.request.HuaWeiRequest;
+import com.shinemo.wangge.core.service.stallup.HuaWeiService;
+import com.shinemo.wangge.core.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 import static com.shinemo.Aace.RetCode.RET_SUCCESS;
@@ -26,7 +41,24 @@ import static com.shinemo.util.WebUtils.getValueFromCookies;
  * @date 2020-04-07
  */
 @Slf4j
+@Component
 public class SmartGridInterceptor extends HandlerInterceptorAdapter {
+
+	@Autowired
+	private RedisService redisService;
+
+	@Resource
+	private HuaWeiService huaWeiService;
+
+	@Resource
+	private UserService userService;
+
+	@Resource
+	private ThreadPoolTaskExecutor asyncServiceExecutor;
+
+	public static final int EXPIRE_TIME = 60 * 60 * 24;
+
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		//todo 线上去除
@@ -72,7 +104,43 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 		if (userName != null) {
 			SmartGridContext.setUserName(userName);
 		}
+
+		// 查询用户网格信息,并更新
+		String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
+		if (StringUtils.isBlank(gridInfoCache)) {
+			List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
+			if (CollectionUtils.isEmpty(gridUserRole)) {
+				return true;
+			}
+
+			//更新用户网格角色关系
+			String finalMobile = mobile;
+			asyncServiceExecutor.submit(() -> {
+				userService.updateUserGridRoleRelation(gridUserRole, finalMobile);
+			});
+
+			gridInfoCache = GsonUtils.toJson(gridUserRole);
+			redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
+		}
+
+		SmartGridContext.setGridInfo(gridInfoCache);
 		return true;
+	}
+
+	private List<GridUserRoleDetail> getGridUserRole(String mobile) {
+		HuaWeiRequest huaWeiRequest = HuaWeiRequest.builder().mobile(mobile).build();
+		try {
+			ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
+			if (!apiResult.isSuccess()) {
+				log.error("[getGridUserRole] huaWeiService.getGridUserInfo not success,apiResult = {}," +
+						"mobile = {}", apiResult, mobile);
+				return null;
+			}
+			return apiResult.getData();
+		} catch (ApiException e) {
+			log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getLogMsg(), mobile);
+			return null;
+		}
 	}
 
 	public boolean checkAuth(HttpServletRequest request) {

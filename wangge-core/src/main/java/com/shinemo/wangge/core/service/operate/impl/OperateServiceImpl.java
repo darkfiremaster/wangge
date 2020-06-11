@@ -33,6 +33,7 @@ public class OperateServiceImpl implements OperateService {
     @Resource
     private RedisService redisService;
 
+    private static final Integer EXPIRETIME = 15*60;
 
     @Override
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
@@ -46,14 +47,24 @@ public class OperateServiceImpl implements OperateService {
     private void insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
         if (userOperateLogVO.getType() == 1 && !isGridUser(userOperateLogVO)) {
             //非网格用户不统计登录信息
-            log.info("[insertUserOperateLog] user is not gridUser, request:{}",userOperateLogVO);
+            log.debug("[insertUserOperateLog] user is not gridUser, request:{}",userOperateLogVO);
             return;
         }
 
+        //15分钟内只算一次登录
+        String loginFlag = redisService.get(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()));
+        if (!StringUtils.isEmpty(loginFlag)) {
+            log.debug("[insertUserOperateLog] user has login , request:{}",userOperateLogVO);
+            return;
+        }
 
         UserOperateLogDO userOperateLogDO = getUserOperateLogDO(userOperateLogVO);
         userOperateLogMapper.insert(userOperateLogDO);
+
+        redisService.set(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()), "true", EXPIRETIME);
     }
+
+
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {
         String userGridInfo = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(userOperateLogVO.getMobile()));
@@ -62,7 +73,6 @@ public class OperateServiceImpl implements OperateService {
         } else {
             return true;
         }
-
     }
 
 

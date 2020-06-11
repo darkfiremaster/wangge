@@ -7,7 +7,10 @@ package com.shinemo.smartgrid.utils;
  */
 public class RedisKeyUtil {
 
-    private static final String USER_GRID_INFO_PREFIX = "smartGrid-info-";
+    private static final String USER_GRID_INFO_PREFIX = "smartGrid-info-%s";
+
+    private static final String USER_LOGIN_FLAG_PREFIX = "smartGrid-user-login-flag-%s";
+
 
     /**
      * 获取用户网格信息key
@@ -15,7 +18,12 @@ public class RedisKeyUtil {
      * @return
      */
     public static String getUserGridInfoPrefixKey(String mobile) {
-        return USER_GRID_INFO_PREFIX + mobile;
+        return String.format(USER_GRID_INFO_PREFIX, mobile);
+    }
+
+
+    public static String getUserLoginFlagPrefixKey(String mobile) {
+        return String.format(USER_LOGIN_FLAG_PREFIX, mobile);
     }
 
 }
