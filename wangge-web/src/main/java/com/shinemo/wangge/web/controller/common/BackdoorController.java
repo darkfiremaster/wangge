@@ -1,8 +1,5 @@
 package com.shinemo.wangge.web.controller.common;
 
-import com.alibaba.excel.support.ExcelTypeEnum;
-import com.shinemo.client.easyexcel.ExcelException;
-import com.shinemo.client.easyexcel.ExcelUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
@@ -110,19 +107,19 @@ public class BackdoorController {
         return loginStatisticsService.saveYesterdayLoginInfoResult();
     }
 
-    @GetMapping("/exportUserLoginInfoExcel")
-    public ApiResult<Void> exportUserLoginInfoExcel(HttpServletResponse response) {
+    @PostMapping(value = "/exportUserLoginInfoExcel")
+    public ApiResult<List<LoginInfoExcelDTO>> exportUserLoginInfoExcel(HttpServletResponse response) {
         ApiResult<List<LoginInfoExcelDTO>> result = loginStatisticsService.getLoginInfoExcelDTOList();
-        try {
-            ExcelUtil.writeExcel(response, result.getData(), "userLoginInfo", "sheet1", ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
-        } catch (ExcelException e) {
-            log.error("导出excel异常", e);
-            return ApiResult.of(500);
-        }
-        return ApiResult.of(0);
+        //try {
+        //    ExcelUtil.writeExcel(response, result.getData(), "userLoginInfo", "sheet1", ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
+        //} catch (ExcelException e) {
+        //    log.error("导出excel异常", e);
+        //    return ApiResult.of(500);
+        //}
+        return ApiResult.of(0,result.getData());
     }
 
-    @GetMapping("/clearUserGridInfoCache")
+    @GetMapping(value = "/clearUserGridInfoCache")
     public ApiResult<Void> clearUserGridInfoCache(String mobile) {
         redisService.del(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
         log.info("[clearUserGridInfoCache] 清空用户网格信息缓存成功,mobile:{}", mobile);

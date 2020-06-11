@@ -94,6 +94,8 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
     @Override
     public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
         UserOperateLogQuery userOperateLogQuery = new UserOperateLogQuery();
+        userOperateLogQuery.setStartTime(DateUtil.beginOfDay(DateUtil.yesterday()));
+        userOperateLogQuery.setEndTime(DateUtil.endOfDay(DateUtil.yesterday()));
         userOperateLogQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
         List<LoginInfoExcelDTO> loginInfoExcelDTOList = userOperateLogMapper.getLoginInfoExcelDTOList(userOperateLogQuery);
         return ApiResult.of(0, loginInfoExcelDTOList);

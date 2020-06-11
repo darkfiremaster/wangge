@@ -154,14 +154,15 @@
             t1.id,
             t1.mobile,
             t1.username,
-            t1.operate_time as operateTime,
+            t1.operate_time as loginTime,
             GROUP_CONCAT( DISTINCT ( t2.city_name ) ORDER BY t2.city_name ) as cityName,
             GROUP_CONCAT( DISTINCT ( t2.county_name ) ORDER BY t2.county_name ) as countyName,
-            GROUP_CONCAT( DISTINCT ( t2.role_name ) ORDER BY t2.role_name ) as roleName
+            GROUP_CONCAT( DISTINCT ( t2.role_name ) ORDER BY t2.role_name ) as roleName,
+            GROUP_CONCAT( DISTINCT ( t2.grid_name ) ORDER BY t2.grid_name ) as gridName
         from
-            <include refid="table"/> t1
-            left join t_user_grid_role t2 on t1.mobile = t2.mobile
-        where t1.type=1
+            <include refid="table"/> as  t1
+            left join t_user_grid_role as t2 on t1.mobile = t2.mobile
+        where t1.type=1 and t1.operate_time <![CDATA[>=]]> #{startTime} and t1.operate_time <![CDATA[<=]]> #{endTime}
         GROUP BY
             t1.id;
     </select>
