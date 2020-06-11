@@ -1,7 +1,9 @@
 package com.shinemo.smartgrid.utils;
 
+import com.shinemo.client.ftp.FTPUtil;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -43,29 +45,6 @@ public class FileExceportUtil {
         export(content, charset, exportUrl);
     }
 
-    /**
-     * 传入linkedhashmap，编码字符集 产生对应的流文件
-     * @param list
-     * @param charset
-     * @return
-     */
-    public static InputStream exportInputStreamFromMap(List<LinkedHashMap<Object, Object>> list,
-                                                       String charset) {
-        String content = getExportStringFromMap(list);
-        return getInputStream(content, charset);
-    }
-
-    /**
-     * 传入linkedhashmap、编码字符集、导出路径 自动生成文件到指定路径
-     * @param list
-     * @param charset
-     * @param exportUrl
-     */
-    public static void exportFileFromMap(List<LinkedHashMap<Object, Object>> list, String charset,
-                                         String exportUrl) {
-        String content = getExportStringFromMap(list);
-        export(content, charset, exportUrl);
-    }
 
     public static void export(String content, String charset, String exportUrl) {
         FileOutputStream out = null;
@@ -93,12 +72,9 @@ public class FileExceportUtil {
 		exportFile(TxtDemo.class, txtDemos, null, urlString);
 		 List<LinkedHashMap<Object, Object>> lists=TxtDemo.generatorMap();
 		 export(getExportStringFromMap(lists), null, urlString);*/
-        String path = "D:/tmp/billDownload/";
-        String urlString = "D:/tmp/billDownload/" + fileName + ".avl";
-        File file = new File(path);
-        file.mkdirs();
-        File file02 = new File(urlString);
-        file02.createNewFile();
+        //ftp地址 10.0.10.157:21 用户名shinemo 密码vQ1ip3UY273Cq2q
+        FTPClient ftpClient = FTPUtil.getFTPClient("10.0.10.157", 21, "shinemo", "vQ1ip3UY273Cq2q");
+
         SweepFloorActivityVO vo = new SweepFloorActivityVO();
         vo.setStatus(1);
         vo.setCommunityName("小区名1");
@@ -106,7 +82,7 @@ public class FileExceportUtil {
         vo.setAddress("小区1地址");
 
         SweepFloorActivityVO vo02 = new SweepFloorActivityVO();
-        vo02.setStatus(1);
+        vo02.setStatus(2);
         vo02.setCommunityName("小区名2");
         vo02.setCommunityId("小区id2");
         vo02.setAddress("小区2地址");
@@ -115,7 +91,20 @@ public class FileExceportUtil {
         vos.add(vo);
         vos.add(vo02);
 
-        exportFileFromClass(SweepFloorActivityVO.class,vos,null,urlString,",");
+        InputStream inputStream = exportInputStreamFromClass(SweepFloorActivityVO.class, vos, null, "|");
+        FTPUtil.makeDir(ftpClient,"/wangge/test");
+        boolean uploadFile = FTPUtil.uploadFile(ftpClient, "/wangge/test", "test.avl", inputStream);
+        System.out.println(uploadFile);
+//        String path = "D:/tmp/billDownload/";
+//
+//        String urlString = "D:/tmp/billDownload/" + fileName + ".avl";
+//        File file = new File(path);
+//        file.mkdirs();
+//        File file02 = new File(urlString);
+//        file02.createNewFile();
+
+
+        //exportFileFromClass(SweepFloorActivityVO.class,vos,null,urlString,",");
 
     }
 
@@ -153,35 +142,6 @@ public class FileExceportUtil {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-            }
-        }
-        return sb.toString();
-    }
-
-    /**遍历 拼接value值
-     * @param list
-     * @return
-     */
-    public static String getExportStringFromMap(List<LinkedHashMap<Object,Object>> list) {
-        StringBuffer sb = new StringBuffer();
-        for(int i=0;i<list.size();i++){
-            LinkedHashMap<Object,Object> linkMap=list.get(i);
-            int index=0;
-            for(Object obj:linkMap.values()){
-                if(obj==null){
-                    if(index==linkMap.values().size()-1){
-                        sb.append(""+newLine);
-                    }else{
-                        sb.append(",");
-                    }
-                }else{
-                    if(index==linkMap.values().size()-1){
-                        sb.append(obj.toString()+newLine);
-                    }else{
-                        sb.append(obj.toString()+",");
-                    }
-                }
-                index++;
             }
         }
         return sb.toString();
