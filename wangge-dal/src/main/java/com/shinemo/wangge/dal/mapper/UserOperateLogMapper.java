@@ -13,6 +13,6 @@ import java.util.List;
  * @Desc
  */
 public interface UserOperateLogMapper extends BaseMapper<UserOperateLogQuery, UserOperateLogDO> {
-    List<LoginInfoExcelDTO> getLoginInfoExcelDTOList();
+    List<LoginInfoExcelDTO> getLoginInfoExcelDTOList(UserOperateLogQuery userOperateLogQuery);
 
 }

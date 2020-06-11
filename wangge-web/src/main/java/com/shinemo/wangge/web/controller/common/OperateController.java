@@ -30,7 +30,8 @@ public class OperateController {
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
-        return operateService.addUserOperateLog(userOperateLogVO);
+        operateService.addUserOperateLog(userOperateLogVO);
+        return ApiResult.of(0);
     }
 
 

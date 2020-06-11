@@ -15,6 +15,7 @@ public class UserOperateLogDO {
     private Long id;
     private Date gmtCreate;
     private Date gmtModified;
+    private String tableIndex;
 
     private String mobile;
 
@@ -25,4 +26,5 @@ public class UserOperateLogDO {
     private Date operateTime;
 
     private Integer type;
+
 }

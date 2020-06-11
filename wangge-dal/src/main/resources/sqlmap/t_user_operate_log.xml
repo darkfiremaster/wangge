@@ -19,7 +19,7 @@
     </sql>
 
     <sql id="table">
-        t_user_operate_log
+        t_user_operate_log${tableIndex}
     </sql>
 
     <!-- 查询条件 -->
@@ -80,6 +80,8 @@
             <if test="id != null">
                 id,
             </if>
+            gmt_create,
+            gmt_modified,
             <if test="mobile != null">
                 mobile,
             </if>
@@ -100,6 +102,8 @@
             <if test="id != null">
                 #{id, jdbcType=BIGINT},
             </if>
+            now(),
+            now(),
             <if test="mobile != null">
                 #{mobile, jdbcType=VARCHAR},
             </if>
@@ -123,6 +127,7 @@
         UPDATE
         <include refid="table"/>
         <set>
+            gmt_modified = now(),
             <if test="mobile != null">
                 mobile = #{mobile, jdbcType=VARCHAR},
             </if>
@@ -143,20 +148,21 @@
         id = #{id}
     </update>
 
-    <select id="getLoginInfoExcelDTOList" resultType="com.shinemo.operate.excel.LoginInfoExcelDTO">
+    <select id="getLoginInfoExcelDTOList" parameterType="com.shinemo.operate.query.UserOperateLogQuery"
+            resultType="com.shinemo.operate.excel.LoginInfoExcelDTO">
         select
-            a.id,
-            a.mobile,
-            a.username,
-            a.login_time as loginTime,
-            GROUP_CONCAT( DISTINCT ( b.city_name ) ORDER BY b.city_name ) as cityName,
-            GROUP_CONCAT( DISTINCT ( b.county_name ) ORDER BY b.county_name ) as countyName,
-            GROUP_CONCAT( DISTINCT ( b.role_name ) ORDER BY b.role_name ) as roleName
+            t1.id,
+            t1.mobile,
+            t1.username,
+            t1.login_time as loginTime,
+            GROUP_CONCAT( DISTINCT ( t2.city_name ) ORDER BY t2.city_name ) as cityName,
+            GROUP_CONCAT( DISTINCT ( t2.county_name ) ORDER BY t2.county_name ) as countyName,
+            GROUP_CONCAT( DISTINCT ( t2.role_name ) ORDER BY t2.role_name ) as roleName
         from
-            t_user_operate_log t1
+            <include refid="table"/> t1
             left join t_user_grid_role t2 on t1.mobile = t2.mobile
         where t1.type=1
         GROUP BY
-            a.id;
+            t1.id;
     </select>
 </mapper>

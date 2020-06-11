@@ -16,4 +16,5 @@ public class LoginInfoResultQuery extends QueryBase {
     private Date startTime;
     private Date endTime;
     private String statisticsTime;
+    private String tableIndex;
 }

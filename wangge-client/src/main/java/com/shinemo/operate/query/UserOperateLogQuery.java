@@ -13,4 +13,6 @@ public class UserOperateLogQuery extends QueryBase {
 
     private Long id;
 
+    private String tableIndex;
+
 }
