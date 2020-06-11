@@ -3,12 +3,15 @@ package com.shinemo.wangge.core.service.user.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.google.common.collect.Lists;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.gridinfo.domain.model.SmartGridInfoDO;
 import com.shinemo.operate.domain.UserGridRoleDO;
 import com.shinemo.operate.query.UserGridRoleQuery;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.user.UserService;
 import com.shinemo.wangge.dal.mapper.UserGridRoleMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserGridRoleMapper userGridRoleMapper;
+
+    @Resource
+    private SmartGridInfoService smartGridInfoService;
 
     @Override
     @Transactional
@@ -58,11 +64,24 @@ public class UserServiceImpl implements UserService {
     private UserGridRoleDO getUserGridRoleDO(GridUserRoleDetail gridUserRoleDetail, GridUserRoleDetail.GridRole gridRole,String mobile) {
         UserGridRoleDO userGridRoleDO = new UserGridRoleDO();
         userGridRoleDO.setMobile(mobile);
-        //todo 如果cityName为空,则从excel表中获取
-        userGridRoleDO.setCityName(gridUserRoleDetail.getCityName());
-        userGridRoleDO.setCityCode(gridUserRoleDetail.getCityCode());
-        userGridRoleDO.setCountyName(gridUserRoleDetail.getCountyName());
-        userGridRoleDO.setCountyCode(gridUserRoleDetail.getCountyCode());
+        //如果华为数据为空,则调接口自己设值,否则的话直接用华为的数据
+        if (StringUtils.isBlank(gridUserRoleDetail.getCityCode())) {
+            ApiResult<SmartGridInfoDO> smartGridInfoDOResult = smartGridInfoService.getByGridId(gridUserRoleDetail.getId());
+            if (smartGridInfoDOResult.isSuccess()) {
+                SmartGridInfoDO smartGridInfoDO = smartGridInfoDOResult.getData();
+                if (smartGridInfoDO != null) {
+                    userGridRoleDO.setCityCode(smartGridInfoDO.getCityCode());
+                    userGridRoleDO.setCityName(smartGridInfoDO.getCityName());
+                    userGridRoleDO.setCountyCode(smartGridInfoDO.getCountyCode());
+                    userGridRoleDO.setCountyName(smartGridInfoDO.getCountyName());
+                }
+            }
+        } else {
+            userGridRoleDO.setCityCode(gridUserRoleDetail.getCityCode());
+            userGridRoleDO.setCityName(gridUserRoleDetail.getCityName());
+            userGridRoleDO.setCountyCode(gridUserRoleDetail.getCountyCode());
+            userGridRoleDO.setCountyName(gridUserRoleDetail.getCountyName());
+        }
 
         userGridRoleDO.setGridName(gridUserRoleDetail.getName());
         userGridRoleDO.setGridId(gridUserRoleDetail.getId());

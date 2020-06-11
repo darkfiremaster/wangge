@@ -14,7 +14,6 @@ import com.shinemo.wangge.dal.mapper.LoginInfoResultMapper;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -41,7 +40,6 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
     private LoginInfoResultMapper loginInfoResultMapper;
 
     @Override
-    @Transactional
     public ApiResult<List<LoginInfoResultDO>> saveYesterdayLoginInfoResult() {
         LoginInfoResultQuery loginInfoResultQuery = new LoginInfoResultQuery();
         DateTime yesterday = DateUtil.yesterday();
@@ -57,7 +55,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
             //统计的日期是昨天
             loginInfoResultDO.setStatisticsTime(LocalDateTime.now().minusDays(1));
             //获取前天登录结果
-            LoginInfoResultDO beforeYesterdayLoginInfoResult = beforeYesterdayLoginInfoResultMap.get(loginInfoResultDO.getCityCode() + loginInfoResultDO.getCountyCode());
+            LoginInfoResultDO beforeYesterdayLoginInfoResult = beforeYesterdayLoginInfoResultMap.get(loginInfoResultDO.getCityName() + loginInfoResultDO.getCountyName());
             if (dataIsValid(beforeYesterdayLoginInfoResult)) {
                 Integer oldLoginTotalCount = beforeYesterdayLoginInfoResult.getLoginTotalCount();
                 Integer oldLoginPersonTotalCount = beforeYesterdayLoginInfoResult.getLoginPersonTotalCount();
@@ -69,9 +67,13 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
             }
         }
 
-        for (int i = 0; i < loginInfoResultDOList.size(); i += 50) {
-            loginInfoResultMapper.insertBatch(loginInfoResultDOList.subList(i, Math.min(i + 50, loginInfoResultDOList.size())));
+        for (LoginInfoResultDO loginInfoResultDO : loginInfoResultDOList) {
+            loginInfoResultMapper.insert(loginInfoResultDO);
         }
+
+        //for (int i = 0; i < loginInfoResultDOList.size(); i += 50) {
+        //    loginInfoResultMapper.insertBatch(loginInfoResultDOList.subList(i, Math.min(i + 50, loginInfoResultDOList.size())));
+        //}
 
         return ApiResult.of(0, loginInfoResultDOList);
     }
@@ -84,7 +86,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
         List<LoginInfoResultDO> beforeYesterdayLoginInfoResultDOList = getBeforeYesterdayLoginInfoResultList();
 
         return beforeYesterdayLoginInfoResultDOList.stream()
-                .collect(Collectors.toMap(v -> v.getCityCode() + v.getCountyCode(), a -> a, (k1, k2) -> k2));
+                .collect(Collectors.toMap(v -> v.getCityName() + v.getCountyName(), a -> a, (k1, k2) -> k2));
     }
 
     private List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList() {

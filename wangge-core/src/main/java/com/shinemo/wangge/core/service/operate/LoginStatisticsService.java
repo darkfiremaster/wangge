@@ -15,6 +15,5 @@ public interface LoginStatisticsService {
 
     ApiResult<List<LoginInfoResultDO>> saveYesterdayLoginInfoResult();
 
-
     ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList();
 }

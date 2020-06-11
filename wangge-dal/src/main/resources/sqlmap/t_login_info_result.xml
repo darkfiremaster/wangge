@@ -223,8 +223,7 @@
     </insert>
 
     <!-- 插入 -->
-    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.shinemo.operate.domain.LoginInfoResultDO">
+    <insert id="insertBatch" parameterType="java.util.List" >
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -301,13 +300,13 @@
         values
         <foreach collection="list" separator="," item="entity" >
             (
-            <if test="id != null">
-                #{id, jdbcType=BIGINT},
+            <if test="entity.id != null">
+                #{entity.id, jdbcType=BIGINT},
             </if>
             now(),
             now(),
-            <if test="statisticsTime != null">
-                #{statisticsTime, jdbcType=TIMESTAMP},
+            <if test="entity.statisticsTime != null">
+                #{entity.statisticsTime, jdbcType=TIMESTAMP},
             </if>
 
             <if test="cityName != null">
@@ -453,7 +452,7 @@
 
     <select id="getLoginInfoResultDOList" resultType="com.shinemo.operate.domain.LoginInfoResultDO"
             parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
-        select a.city_name, a.city_code,a.county_name, a.county_code,a.grid_name, a.grid_id,
+        select a.city_name as cityName, a.city_code as cityCode,a.county_name as countyName, a.county_code as countyCode,a.grid_name as gridName, a.grid_id as gridId,
 
         IFNULL(sum(b.login_cnt),0) as loginTotalCount,
         count(DISTINCT(b.mobile)) as loginPersonTotalCount,
@@ -485,7 +484,7 @@
 
     </select>
 
-    <select id="getBeforeYesterdayLoginInfoResultList" resultType="com.shinemo.operate.domain.LoginInfoResultDO">
+    <select id="getBeforeYesterdayLoginInfoResultList" resultMap="result">
         select
         <include refid="columns"/>
         from
