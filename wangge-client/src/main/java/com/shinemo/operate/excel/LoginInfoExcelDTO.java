@@ -1,6 +1,7 @@
 package com.shinemo.operate.excel;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.metadata.BaseRowModel;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
  * @Desc
  */
 @Data
-public class LoginInfoExcelDTO {
+public class LoginInfoExcelDTO extends BaseRowModel {
 
     @ExcelProperty(value = "账号")
     private String mobile;

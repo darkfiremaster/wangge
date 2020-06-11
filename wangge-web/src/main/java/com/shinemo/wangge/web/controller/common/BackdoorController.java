@@ -1,5 +1,8 @@
 package com.shinemo.wangge.web.controller.common;
 
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.shinemo.client.easyexcel.ExcelException;
+import com.shinemo.client.easyexcel.ExcelUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
@@ -17,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -106,9 +110,16 @@ public class BackdoorController {
         return loginStatisticsService.saveYesterdayLoginInfoResult();
     }
 
-    @GetMapping("/getLoginInfoExcelDTOList")
-    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
-        return loginStatisticsService.getLoginInfoExcelDTOList();
+    @GetMapping("/exportUserLoginInfoExcel")
+    public ApiResult<Void> exportUserLoginInfoExcel(HttpServletResponse response) {
+        ApiResult<List<LoginInfoExcelDTO>> result = loginStatisticsService.getLoginInfoExcelDTOList();
+        try {
+            ExcelUtil.writeExcel(response, result.getData(), "userLoginInfo", "sheet1", ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
+        } catch (ExcelException e) {
+            log.error("导出excel异常", e);
+            return ApiResult.of(500);
+        }
+        return ApiResult.of(0);
     }
 
     @GetMapping("/clearUserGridInfoCache")
