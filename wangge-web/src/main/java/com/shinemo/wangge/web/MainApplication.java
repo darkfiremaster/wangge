@@ -57,7 +57,7 @@ public class MainApplication implements WebMvcConfigurer {
     }
 
     @Bean
-    public SmartGridInterceptor getSmartGridInterceptor(){
+    public SmartGridInterceptor getSmartGridInterceptor() {
         return new SmartGridInterceptor();
     }
 
@@ -85,7 +85,7 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/thirdapi/**")
                 .addPathPatterns("/sweepvillage/**")
                 .addPathPatterns("/operate/**")
-                .excludePathPatterns("/backdoor/**", "/error")
+                .excludePathPatterns("/backdoor/**", "/error", properties.getCheckStatusPath())
                 .order(1);
     }
 }

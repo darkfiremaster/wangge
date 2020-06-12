@@ -31,6 +31,7 @@ public class OperateController {
 
     @PostMapping("/addUserOperateLog")
     public ApiResult addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO) {
+        log.info("[addUserOperateLog] 新增操作日志");
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
@@ -38,5 +39,10 @@ public class OperateController {
         return ApiResult.of(0);
     }
 
-
+    @PostMapping("/test")
+    public ApiResult test() {
+        log.info("[test]controller");
+        operateService.test();
+        return ApiResult.of(0);
+    }
 }
