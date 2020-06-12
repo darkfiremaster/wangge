@@ -39,8 +39,16 @@ public class OperateServiceImpl implements OperateService {
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
         Assert.notNull(userOperateLogVO.getType(), "type is null");
         Assert.notNull(userOperateLogVO.getMobile(), "mobile is null");
+        log.info("[addUserOperateLog].....");
+
         insertUserOperateLog(userOperateLogVO);
         return ApiResult.of(0);
+    }
+
+    @Override
+    public void test() {
+        log.info("[test]service.....");
+
     }
 
 
