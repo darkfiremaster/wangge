@@ -100,7 +100,12 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 		}
 		if (mobile != null) {
 			SmartGridContext.setMobile(mobile);
+		}else {
+			log.error("[preHandle] mobile is null");
+			return false;
 		}
+
+
 		if (userName == null) {
 			userName = getValueFromCookies("username", cookies);
 		}
