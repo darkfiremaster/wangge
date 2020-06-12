@@ -212,11 +212,11 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public ApiResult<List<GridUserRoleDetail>> getGridUserInfo(HuaWeiRequest request) {
 
         //todo mock待删除
-        List<String> list = Arrays.asList("15958032925", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023");
-        if (list.contains(request.getMobile())) {
-            List<GridUserRoleDetail> detailList = getMockGridUser();
-            return ApiResult.of(0, detailList);
-        }
+        //List<String> list = Arrays.asList("15958032925", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023");
+        //if (list.contains(request.getMobile())) {
+        //    List<GridUserRoleDetail> detailList = getMockGridUser();
+        //    return ApiResult.of(0, detailList);
+        //}
 
         GetGridUserInfoRequest getGridUserInfoRequest = new GetGridUserInfoRequest();
         getGridUserInfoRequest.setUserTel(request.getMobile());
