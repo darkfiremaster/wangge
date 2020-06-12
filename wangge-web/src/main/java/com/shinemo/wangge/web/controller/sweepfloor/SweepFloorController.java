@@ -408,15 +408,16 @@ public class SweepFloorController {
             bizListVO.setSweepFloorBizList(sweepFloorBizList);
         }
         List<StallUpBizType> marketToolList = new ArrayList<>();
-        List<StallUpBizType> sweepFloorList = config.getSweepFloorList();
-        if (!CollectionUtils.isEmpty(sweepFloorList)) {
+        List<StallUpBizType> sweepFloorList = new ArrayList<>();
+        List<StallUpBizType> sweepFloorListConfig = config.getSweepFloorList();
+        if (!CollectionUtils.isEmpty(sweepFloorListConfig)) {
 
-            for (int i = 0;i < sweepFloorList.size();i++) {
-                StallUpBizType bizType = sweepFloorList.get(i);
+            for (int i = 0;i < sweepFloorListConfig.size();i++) {
+                StallUpBizType bizType = sweepFloorListConfig.get(i);
                 if (bizType.getId().equals(16L)) {
                     marketToolList.add(bizType);
-                    sweepFloorList.remove(i);
-                    break;
+                }else {
+                    sweepFloorList.add(bizType);
                 }
             }
             bizListVO.setSweepFloorList(sweepFloorList);
