@@ -44,12 +44,14 @@ public class UserServiceImpl implements UserService {
         for (GridUserRoleDetail gridUserRoleDetail : gridUserRoleDetailList) {
             if (existRole(gridUserRoleDetail)) {
                 //角色不为空
+                log.info("[updateUserGridRoleRelation] user role is exist, mobile:{}, gridUserRoleDetail:{}", mobile, gridUserRoleDetail);
                 for (GridUserRoleDetail.GridRole gridRole : gridUserRoleDetail.getRoleList()) {
                     UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, gridRole, mobile);
                     userGridRoleMapper.insert(userGridRoleDO);
                 }
             } else {
                 //角色为空
+                log.info("[updateUserGridRoleRelation] user role is null, mobile:{}, gridUserRoleDetail:{}", mobile, gridUserRoleDetail);
                 UserGridRoleDO userGridRoleDO = getUserGridRoleDO(gridUserRoleDetail, null, mobile);
                 userGridRoleMapper.insert(userGridRoleDO);
             }

@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,9 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        if (handler instanceof ResourceHttpRequestHandler) {
+            return true;
+        }
         final Method method = ((HandlerMethod) handler).getMethod();
         final GridIdChecker gridIdChecker = method.getAnnotation(GridIdChecker.class);
         if (null == gridIdChecker) {
