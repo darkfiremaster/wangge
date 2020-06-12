@@ -6,10 +6,7 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -39,10 +36,4 @@ public class OperateController {
         return ApiResult.of(0);
     }
 
-    @PostMapping("/test")
-    public ApiResult test() {
-        log.info("[test]controller");
-        operateService.test();
-        return ApiResult.of(0);
-    }
 }
