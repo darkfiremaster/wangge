@@ -407,9 +407,21 @@ public class SweepFloorController {
         if (!CollectionUtils.isEmpty(sweepFloorBizList)) {
             bizListVO.setSweepFloorBizList(sweepFloorBizList);
         }
-        List<StallUpBizType> sweepFloorList = config.getSweepFloorList();
-        if (!CollectionUtils.isEmpty(sweepFloorList)) {
+        List<StallUpBizType> marketToolList = new ArrayList<>();
+        List<StallUpBizType> sweepFloorList = new ArrayList<>();
+        List<StallUpBizType> sweepFloorListConfig = config.getSweepFloorList();
+        if (!CollectionUtils.isEmpty(sweepFloorListConfig)) {
+
+            for (int i = 0;i < sweepFloorListConfig.size();i++) {
+                StallUpBizType bizType = sweepFloorListConfig.get(i);
+                if (bizType.getId().equals(16L)) {
+                    marketToolList.add(bizType);
+                }else {
+                    sweepFloorList.add(bizType);
+                }
+            }
             bizListVO.setSweepFloorList(sweepFloorList);
+            bizListVO.setMarketToolList(marketToolList);
         }
         return ApiResult.of(0,bizListVO);
     }
