@@ -121,7 +121,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             log.info("[preHandle] gridInfoCache is null, start query gridinfo,mobile:{}", mobile);
             List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
             if (CollectionUtils.isEmpty(gridUserRole)) {
-                log.error("[preHandle] gridUserRoleList is null,mobile:{}", mobile);
+                log.info("[preHandle] gridUserRoleList is null,mobile:{}", mobile);
                 return true;
             }
 

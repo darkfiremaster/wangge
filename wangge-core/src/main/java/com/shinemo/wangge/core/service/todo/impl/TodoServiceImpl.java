@@ -9,19 +9,18 @@ import com.github.pagehelper.PageHelper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.shinemo.client.common.ListVO;
-import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.domain.TodoLogDO;
-import com.shinemo.todo.domain.TodoTypeDO;
+import com.shinemo.todo.dto.TodoTypeDTO;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoMethodOperateEnum;
+import com.shinemo.todo.enums.TodoStatusEnum;
 import com.shinemo.todo.enums.TodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoQuery;
-import com.shinemo.todo.query.TodoTypeQuery;
 import com.shinemo.todo.vo.*;
 import com.shinemo.wangge.core.aop.TodoLog;
 import com.shinemo.wangge.core.service.todo.TodoService;
@@ -97,8 +96,7 @@ public class TodoServiceImpl implements TodoService {
         }
     }
 
-    @Override
-    public ApiResult<Void> createTodo(TodoDTO todoDTO) {
+    private ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
         Assert.notNull(todoDTO.getTitle(), "title is null");
         Assert.notNull(todoDTO.getRemark(), "remark is null");
@@ -118,26 +116,39 @@ public class TodoServiceImpl implements TodoService {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            log.info("[createTodo] create todo success");
+            log.info("[createTodo] create todo success, todoDTO:{}", todoDTO);
         }
 
         return ApiResult.of(0);
 
     }
 
-    @Override
-    public ApiResult<Void> updateTodo(TodoDTO todoDTO) {
+    private ApiResult<Void> updateTodo(TodoDTO todoDTO) {
+
+        //先查再改
+        TodoQuery todoQuery = new TodoQuery();
+        todoQuery.setThirdId(todoDTO.getThirdId());
+        todoQuery.setThirdType(todoDTO.getThirdType());
+        todoQuery.setMobile(todoDTO.getOperatorMobile());
+
+        TodoDO todoDOFromDB = thirdTodoMapper.get(todoQuery);
+        if (todoDOFromDB == null) {
+            return ApiResultWrapper.fail(TodoErrorCodes.DATA_NOT_EXIST);
+        }
+
         //转换对象
         TodoDO todoDO = getTodoDO(todoDTO);
+        todoDO.setId(todoDOFromDB.getId());
+
         //修改
         thirdTodoMapper.update(todoDO);
 
-        log.info("[updateTodo] update todo success");
+        log.info("[updateTodo] update todo success, todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
-    @Override
-    public ApiResult<Void> deleteTodo(TodoDTO todoDTO) {
+    private ApiResult<Void> deleteTodo(TodoDTO todoDTO) {
+
 
         //先查再删
         TodoQuery todoQuery = new TodoQuery();
@@ -153,47 +164,47 @@ public class TodoServiceImpl implements TodoService {
         //删除
         thirdTodoMapper.delete(todoDO.getId());
 
-        log.info("[deleteTodo] delete todo success");
+        log.info("[deleteTodo] delete todo success, todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
-    @Override
-    public ApiResult<TodoTypeVO> getTypeList() {
-        TodoTypeVO todoTypeVO = todoTypeCache.get(TODO_TYPE_CACHE_KEY);
-        if (todoTypeVO != null) {
-            return ApiResult.of(0, todoTypeVO);
-        }
-
-        TodoTypeQuery todoTypeQuery = new TodoTypeQuery();
-        todoTypeQuery.setPageEnable(false);
-        todoTypeQuery.setStatus(StatusEnum.NORMAL.getId());
-        List<TodoTypeDO> todoTypeDOS = todoTypeMapper.find(todoTypeQuery);
-
-        //组装VO
-        Multimap<Integer, TodoTypeDO> multimap = ArrayListMultimap.create();
-        for (TodoTypeDO todoTypeDO : todoTypeDOS) {
-            multimap.put(todoTypeDO.getType(), todoTypeDO);
-        }
-        todoTypeVO = new TodoTypeVO();
-        List<TodoTypeVO.TodoTypeListBean> todoTypeList = new ArrayList<>();
-        TodoTypeEnum[] values = TodoTypeEnum.values();
-        for (TodoTypeEnum todoTypeEnum : values) {
-            Collection<TodoTypeDO> typeDOList = multimap.get(todoTypeEnum.getId());
-            TodoTypeVO.TodoTypeListBean toDoTypeListBean = new TodoTypeVO.TodoTypeListBean();
-            toDoTypeListBean.setName(todoTypeEnum.getName());
-            List<TodoTypeVO.TodoTypeListBean.ChildListBean> childListBeanList =
-                    typeDOList.stream()
-                            .map(todoTypeDO -> new TodoTypeVO.TodoTypeListBean.ChildListBean(todoTypeDO.getName(), todoTypeDO.getTodoType()))
-                            .collect(Collectors.toList());
-            toDoTypeListBean.setChildList(childListBeanList);
-            todoTypeList.add(toDoTypeListBean);
-        }
-        todoTypeVO.setToDoTypeList(todoTypeList);
-
-        todoTypeCache.put(TODO_TYPE_CACHE_KEY, todoTypeVO);
-
-        return ApiResult.of(0, todoTypeVO);
-    }
+    //@Override
+    //public ApiResult<TodoTypeVO> getTypeList() {
+    //    TodoTypeVO todoTypeVO = todoTypeCache.get(TODO_TYPE_CACHE_KEY);
+    //    if (todoTypeVO != null) {
+    //        return ApiResult.of(0, todoTypeVO);
+    //    }
+    //
+    //    TodoTypeQuery todoTypeQuery = new TodoTypeQuery();
+    //    todoTypeQuery.setPageEnable(false);
+    //    todoTypeQuery.setStatus(StatusEnum.NORMAL.getId());
+    //    List<TodoTypeDO> todoTypeDOS = todoTypeMapper.find(todoTypeQuery);
+    //
+    //    //组装VO
+    //    Multimap<Integer, TodoTypeDO> multimap = ArrayListMultimap.create();
+    //    for (TodoTypeDO todoTypeDO : todoTypeDOS) {
+    //        multimap.put(todoTypeDO.getType(), todoTypeDO);
+    //    }
+    //    todoTypeVO = new TodoTypeVO();
+    //    List<TodoTypeVO.TodoTypeListBean> todoTypeList = new ArrayList<>();
+    //    TodoTypeEnum[] values = TodoTypeEnum.values();
+    //    for (TodoTypeEnum todoTypeEnum : values) {
+    //        Collection<TodoTypeDO> typeDOList = multimap.get(todoTypeEnum.getId());
+    //        TodoTypeVO.TodoTypeListBean toDoTypeListBean = new TodoTypeVO.TodoTypeListBean();
+    //        toDoTypeListBean.setName(todoTypeEnum.getName());
+    //        List<TodoTypeVO.TodoTypeListBean.ChildListBean> childListBeanList =
+    //                typeDOList.stream()
+    //                        .map(todoTypeDO -> new TodoTypeVO.TodoTypeListBean.ChildListBean(todoTypeDO.getName(), todoTypeDO.getTodoType(),null))
+    //                        .collect(Collectors.toList());
+    //        toDoTypeListBean.setChildList(childListBeanList);
+    //        todoTypeList.add(toDoTypeListBean);
+    //    }
+    //    todoTypeVO.setToDoTypeList(todoTypeList);
+    //
+    //    todoTypeCache.put(TODO_TYPE_CACHE_KEY, todoTypeVO);
+    //
+    //    return ApiResult.of(0, todoTypeVO);
+    //}
 
     @Override
     public ApiResult<Void> clearTypeListCache() {
@@ -206,11 +217,13 @@ public class TodoServiceImpl implements TodoService {
         Assert.notNull(todoQuery, "todoQuery is null");
         Assert.notNull(SmartGridContext.getMobile(), "mobile is null");
         Assert.notNull(todoQuery.getTimeType(), "timeType is null");
-        Assert.notNull(todoQuery.getStatus(), "status is null");
         Assert.notNull(todoQuery.getPageSize(), "pageSize is null");
         Assert.notNull(todoQuery.getCurrentPage(), "currentPage is null");
         todoQuery.setMobile(SmartGridContext.getMobile());
         Page<TodoDO> page = PageHelper.startPage(todoQuery.getCurrentPage().intValue(), todoQuery.getPageSize().intValue());
+        todoQuery.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+        todoQuery.setOrderByEnable(true);
+        todoQuery.putOrderBy("operator_time", false);
         List<TodoDO> todoDOS = thirdTodoMapper.find(todoQuery);
         ListVO<TodoVO> listVO = new ListVO();
         listVO.setTotalCount(page.getTotal());
@@ -229,8 +242,12 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public ApiResult<TodoIndexVO> getIndexInfo() {
-        //todo 等产品确认
-        return ApiResult.of(0);
+        Integer todayTodoCount = thirdTodoMapper.getTodayTodoCount(SmartGridContext.getMobile());
+        Integer allTodoCount = thirdTodoMapper.getAllTodoCount(SmartGridContext.getMobile());
+        TodoIndexVO todoIndexVO = new TodoIndexVO();
+        todoIndexVO.setTodayTodoCount(todayTodoCount);
+        todoIndexVO.setAllTodoCount(allTodoCount);
+        return ApiResult.of(0, todoIndexVO);
     }
 
     @Async
@@ -238,6 +255,48 @@ public class TodoServiceImpl implements TodoService {
     public ApiResult<Void> insertTodoLog(TodoLogDO todoLogDO) {
         todoLogMapper.insert(todoLogDO);
         return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<TodoThirdRequest> getTodoThirdRequest(TodoDTO todoDTO) {
+        TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
+        todoThirdRequest.setTimeStamp(System.currentTimeMillis());
+        todoThirdRequest.setMethod("operateTodoThing");
+        todoThirdRequest.setSign("");
+        todoThirdRequest.setPostBody(todoDTO);
+        todoThirdRequest.setIgnoreCheckSign(true);
+        return ApiResult.of(0, todoThirdRequest);
+    }
+
+    @Override
+    public ApiResult<TodoTypeVO> getAllTodoTypeList() {
+        TodoQuery todoQuery = new TodoQuery();
+        todoQuery.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+        todoQuery.setMobile(SmartGridContext.getMobile());
+        List<TodoTypeDTO> todoTypeDTOList = thirdTodoMapper.getAllTodoTypeList(todoQuery);
+
+        //组装VO
+        Multimap<Integer, TodoTypeDTO> multimap = ArrayListMultimap.create();
+        for (TodoTypeDTO todoTypeDTO : todoTypeDTOList) {
+            multimap.put(todoTypeDTO.getType(), todoTypeDTO);
+        }
+        TodoTypeVO todoTypeVO = new TodoTypeVO();
+        List<TodoTypeVO.TodoTypeListBean> todoTypeList = new ArrayList<>();
+        TodoTypeEnum[] values = TodoTypeEnum.values();
+        for (TodoTypeEnum todoTypeEnum : values) {
+            Collection<TodoTypeDTO> typeDTOList = multimap.get(todoTypeEnum.getId());
+            TodoTypeVO.TodoTypeListBean toDoTypeListBean = new TodoTypeVO.TodoTypeListBean();
+            toDoTypeListBean.setName(todoTypeEnum.getName());
+            List<TodoTypeVO.TodoTypeListBean.ChildListBean> childListBeanList =
+                    typeDTOList.stream()
+                            .map(todoTypeDTO -> new TodoTypeVO.TodoTypeListBean.ChildListBean(todoTypeDTO.getName(), todoTypeDTO.getTodoType(), todoTypeDTO.getTodoCount()))
+                            .collect(Collectors.toList());
+            toDoTypeListBean.setChildList(childListBeanList);
+            todoTypeList.add(toDoTypeListBean);
+        }
+        todoTypeVO.setToDoTypeList(todoTypeList);
+
+        return ApiResult.of(0, todoTypeVO);
     }
 
     private TodoDO getTodoDO(TodoDTO todoDTO) {

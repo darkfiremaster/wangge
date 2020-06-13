@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -63,8 +62,6 @@ public class TodoLogAspect {
         todoService.insertTodoLog(todoLogDO);
     }
 
-
-    @Async
     @AfterReturning(value = "point()", returning = "result")
     public void afterReturn(JoinPoint joinPoint, Object result) {
         TodoThirdRequest todoThirdRequest = getRequestArgs(joinPoint);

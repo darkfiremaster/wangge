@@ -15,17 +15,13 @@ public interface TodoService {
 
     ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest);
 
-    ApiResult<Void> createTodo(TodoDTO todoDTO);
 
-    ApiResult<Void> updateTodo(TodoDTO todoDTO);
-
-    ApiResult<Void> deleteTodo(TodoDTO todoDTO);
 
     /**
      * 获取全部类别列表
      * @return
      */
-    ApiResult<TodoTypeVO> getTypeList();
+    //ApiResult<TodoTypeVO> getTypeList();
 
     ApiResult<Void> clearTypeListCache();
 
@@ -38,4 +34,9 @@ public interface TodoService {
     ApiResult<TodoIndexVO> getIndexInfo();
 
     ApiResult<Void> insertTodoLog(TodoLogDO todoLogDO);
+
+    ApiResult<TodoThirdRequest> getTodoThirdRequest(TodoDTO todoDTO);
+
+    ApiResult<TodoTypeVO> getAllTodoTypeList();
+
 }
