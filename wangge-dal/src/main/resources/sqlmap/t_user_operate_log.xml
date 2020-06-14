@@ -6,6 +6,8 @@
     <!-- 结果集对应关系 -->
     <resultMap id="result" type="com.shinemo.operate.domain.UserOperateLogDO" >
         <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
         <result property="mobile" column="mobile"/>
         <result property="username" column="username"/>
         <result property="uid" column="uid"/>
@@ -15,7 +17,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, mobile, username, operate_time,type
+        id,gmt_create,gmt_modified, mobile,uid, username, operate_time,type
     </sql>
 
     <sql id="table">
@@ -120,6 +122,31 @@
                 #{type},
             </if>
         </trim>
+    </insert>
+    <insert id="insertBatch" parameterType="com.shinemo.operate.domain.UserOperateLogDO">
+        insert into
+        t_user_operate_log${tableIndex}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            mobile,
+            uid,
+            username,
+            operate_time,
+            type
+        </trim>
+        values
+        <foreach collection="logDOList" separator="," item="entity">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                now(),
+                now(),
+                #{entity.mobile},
+                #{entity.uid},
+                #{entity.username},
+                #{entity.operateTime},
+                #{entity.type}
+            </trim>
+        </foreach>
     </insert>
 
     <!-- 更新 -->

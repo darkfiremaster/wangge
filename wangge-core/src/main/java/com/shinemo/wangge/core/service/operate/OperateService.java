@@ -12,6 +12,7 @@ public interface OperateService {
 
     ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO);
 
+    ApiResult<Void> addUserOperateLogToRedis(UserOperateLogVO userOperateLogVO);
 
-    void test();
+    ApiResult<Void> syncLogFromRedisToDB();
 }

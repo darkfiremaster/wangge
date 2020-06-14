@@ -4,6 +4,7 @@ import com.shinemo.common.db.dao.BaseMapper;
 import com.shinemo.operate.domain.UserOperateLogDO;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.operate.query.UserOperateLogQuery;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ import java.util.List;
 public interface UserOperateLogMapper extends BaseMapper<UserOperateLogQuery, UserOperateLogDO> {
     List<LoginInfoExcelDTO> getLoginInfoExcelDTOList(UserOperateLogQuery userOperateLogQuery);
 
+    Long insertBatch(@Param("logDOList") List<UserOperateLogDO> logDOList, @Param("tableIndex") String tableIndex);
 }

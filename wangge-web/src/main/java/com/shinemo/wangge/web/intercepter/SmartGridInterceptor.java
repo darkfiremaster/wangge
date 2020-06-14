@@ -74,6 +74,11 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             if (uid == null) {
                 uid = getValueFromCookies("uid", cookies);
             }
+            if (uid == null) {
+                //从debugInterceptor中获取到uid
+                uid = SmartGridContext.getUid();
+            }
+
         }
         if (uid != null) {
             SmartGridContext.setUid(uid);
