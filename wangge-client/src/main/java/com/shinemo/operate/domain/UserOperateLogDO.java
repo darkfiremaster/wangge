@@ -1,7 +1,9 @@
 package com.shinemo.operate.domain;
 
+import com.shinemo.stallup.domain.utils.SubTableUtils;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -15,7 +17,7 @@ public class UserOperateLogDO {
     private Long id;
     private Date gmtCreate;
     private Date gmtModified;
-    private String tableIndex;
+    private String tableIndex = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now());
 
     private String mobile;
 
@@ -26,5 +28,6 @@ public class UserOperateLogDO {
     private Date operateTime;
 
     private Integer type;
-
 }
+
+
