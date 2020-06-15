@@ -96,7 +96,6 @@ public class DalConfig {
         return config;
     }
 
-    @Primary
     @Bean(name = "slaveDataSource", initMethod = "init", destroyMethod = "close")
     public DruidDataSource slaveDataSource(@Value("${jdbc.slaveDataName}") String dataName) {
         Database database = ConfProxy.get(dataName);
