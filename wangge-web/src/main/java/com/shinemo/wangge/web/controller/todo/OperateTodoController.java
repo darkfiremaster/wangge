@@ -4,11 +4,12 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * @Author shangkaihui
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OperateTodoController {
 
-    @Autowired
+    @Resource
     private TodoService todoService;
 
 
