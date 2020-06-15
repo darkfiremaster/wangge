@@ -11,6 +11,7 @@ import com.shinemo.wangge.web.intercepter.TokenAuthChecker;
 import com.shinemo.wangge.web.intercepter.WanggeIdCheckerInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.Ordered;
 import org.springframework.retry.annotation.EnableRetry;
@@ -55,6 +56,11 @@ public class MainApplication implements WebMvcConfigurer {
         SpringApplication.run(MainApplication.class, args);
     }
 
+    @Bean
+    public SmartGridInterceptor getSmartGridInterceptor() {
+        return new SmartGridInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         SmCommonProperties properties = authCheckerAutoConfiguration.getProperties();
@@ -72,13 +78,15 @@ public class MainApplication implements WebMvcConfigurer {
         registry.addInterceptor(wanggeIdCheckerInterceptor)
                 .addPathPatterns("/**")
                 .order(Ordered.LOWEST_PRECEDENCE);
-        registry.addInterceptor(new SmartGridInterceptor())
+        registry.addInterceptor(getSmartGridInterceptor())
                 .addPathPatterns("/stallUp/**")
                 .addPathPatterns("/smartGrid/**")
                 .addPathPatterns("/sweepFloor/**")
                 .addPathPatterns("/thirdapi/**")
                 .addPathPatterns("/sweepvillage/**")
-                .excludePathPatterns("/backdoor/**", "/error")
+                .addPathPatterns("/operate/**")
+                .addPathPatterns("/todo/thing//**")
+                .excludePathPatterns("/backdoor/**", "/error","/todo/operateTodoThing",properties.getCheckStatusPath())
                 .order(1);
     }
 }

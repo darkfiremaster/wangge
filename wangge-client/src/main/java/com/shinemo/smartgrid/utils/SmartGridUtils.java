@@ -64,23 +64,20 @@ public class SmartGridUtils {
     }
 
     public static void main(String[] args) {
-        //System.out.println(genUuid());
         Map<String,Object> map = new TreeMap<>();
         TodoDTO request = new TodoDTO();
         request.setThirdId("123");
         request.setThirdType(1);
-        request.setOperateType(3);
+        request.setOperateType(2);
         request.setOperatorMobile("123");
         long l = System.currentTimeMillis();
-        System.out.println("l = " + l);
         map.put("timeStamp",l);
         map.put("postBody",request);
-        map.put("method","authUser");
+        map.put("method","operateTodo");
         map.put("key", "34b18faa-0424-41ad-b73b-80fc02d4be55");
         System.out.println("map = " + map);
         String sign = genSign(map);
         System.out.println(sign);
-
     }
 
 }

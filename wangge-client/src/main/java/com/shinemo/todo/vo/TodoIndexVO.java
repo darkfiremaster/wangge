@@ -9,5 +9,13 @@ import lombok.Data;
  */
 @Data
 public class TodoIndexVO {
+    /**
+     * 今日代办数量
+     */
+    private Integer todayTodoCount;
 
+    /**
+     * 全部代办数量
+     */
+    private Integer allTodoCount;
 }

@@ -1,9 +1,11 @@
 package com.shinemo.todo.query;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shinemo.client.common.QueryBase;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @Author shangkaihui
@@ -17,17 +19,26 @@ public class TodoQuery  extends QueryBase {
 
     private String thirdId;
 
+    /**
+     * 代办类型
+     * @see com.shinemo.todo.enums.ThirdTodoTypeEnum
+     */
     private Integer thirdType;
 
     private String mobile;
 
-    private Integer timeType;
-
     private Integer status;
 
-    private Integer todoType;
+    /**
+     * 1:今日代办 2:全部代办
+     */
+    private Integer timeType;
 
-    private LocalDateTime startTime;
 
-    private LocalDateTime endTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
 }

@@ -40,5 +40,4 @@ public class TodoTypeDO {
      * 排序
      */
     private Integer sort;
-
 }

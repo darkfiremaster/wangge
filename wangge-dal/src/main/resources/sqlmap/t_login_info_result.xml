@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.LoginInfoResultMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.operate.domain.LoginInfoResultDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="statisticsTime" column="statistics_time"/>
+        <result property="cityName" column="city_name"/>
+        <result property="countyName" column="county_name"/>
+        <result property="gridCaptainLoginPersonCount" column="grid_captain_login_person_count"/>
+        <result property="gridCaptainLoginCount" column="grid_captain_login_count"/>
+        <result property="gridManagerLoginPersonCount" column="grid_manager_login_person_count"/>
+        <result property="gridManagerLoginCount" column="grid_manager_login_count"/>
+        <result property="directSellerLoginPersonCount" column="direct_seller_login_person_count"/>
+        <result property="directSellerLoginCount" column="direct_seller_login_count"/>
+        <result property="decoratorLoginPersonCount" column="decorator_login_person_count"/>
+        <result property="decoratorLoginCount" column="decorator_login_count"/>
+        <result property="businessHallLoginPersonCount" column="business_hall_login_person_count"/>
+        <result property="businessHallLoginCount" column="business_hall_login_count"/>
+        <result property="agentBusinessLoginPersonCount" column="agent_business_login_person_count"/>
+        <result property="agentBusinessLoginCount" column="agent_business_login_count"/>
+        <result property="operatingPersonnelLoginPersonCount" column="operating_personnel_login_person_count"/>
+        <result property="operatingPersonnelLoginCount" column="operating_personnel_login_count"/>
+        <result property="loginPersonTotalCount" column="login_person_total_count"/>
+        <result property="loginTotalCount" column="login_total_count"/>
+        <result property="loginPersonDayPercent" column="login_person_day_percent"/>
+        <result property="loginCountDayPercent" column="login_count_day_percent"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, statistics_time, city_name, county_name, grid_captain_login_person_count, grid_captain_login_count, grid_manager_login_person_count, grid_manager_login_count, direct_seller_login_person_count, direct_seller_login_count, decorator_login_person_count, decorator_login_count, business_hall_login_person_count, business_hall_login_count, agent_business_login_person_count, agent_business_login_count, operating_personnel_login_person_count, operating_personnel_login_count, login_person_total_count, login_total_count, login_person_day_percent, login_count_day_percent
+    </sql>
+
+    <sql id="table">
+        t_login_info_result
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.operate.domain.LoginInfoResultDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="statisticsTime != null">
+                statistics_time,
+            </if>
+
+            <if test="cityName != null">
+                city_name,
+            </if>
+            <if test="countyName != null">
+                county_name,
+            </if>
+            <if test="gridCaptainLoginPersonCount != null">
+                grid_captain_login_person_count,
+            </if>
+            <if test="gridCaptainLoginCount != null">
+                grid_captain_login_count,
+            </if>
+            <if test="gridManagerLoginPersonCount != null">
+                grid_manager_login_person_count,
+            </if>
+            <if test="gridManagerLoginCount != null">
+                grid_manager_login_count,
+            </if>
+            <if test="directSellerLoginPersonCount != null">
+                direct_seller_login_person_count,
+            </if>
+            <if test="directSellerLoginCount != null">
+                direct_seller_login_count,
+            </if>
+            <if test="decoratorLoginPersonCount != null">
+                decorator_login_person_count,
+            </if>
+            <if test="decoratorLoginCount != null">
+                decorator_login_count,
+            </if>
+            <if test="businessHallLoginPersonCount != null">
+                business_hall_login_person_count,
+            </if>
+            <if test="businessHallLoginCount != null">
+                business_hall_login_count,
+            </if>
+            <if test="agentBusinessLoginPersonCount != null">
+                agent_business_login_person_count,
+            </if>
+            <if test="agentBusinessLoginCount != null">
+                agent_business_login_count,
+            </if>
+            <if test="operatingPersonnelLoginPersonCount != null">
+                operating_personnel_login_person_count,
+            </if>
+            <if test="operatingPersonnelLoginCount != null">
+                operating_personnel_login_count,
+            </if>
+            <if test="loginPersonTotalCount != null">
+                login_person_total_count,
+            </if>
+            <if test="loginTotalCount != null">
+                login_total_count,
+            </if>
+            <if test="loginPersonDayPercent != null">
+                login_person_day_percent,
+            </if>
+            <if test="loginCountDayPercent != null">
+                login_count_day_percent,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="statisticsTime != null">
+                #{statisticsTime, jdbcType=TIMESTAMP},
+            </if>
+
+            <if test="cityName != null">
+                #{cityName, jdbcType=VARCHAR},
+            </if>
+            <if test="countyName != null">
+                #{countyName, jdbcType=VARCHAR},
+            </if>
+            <if test="gridCaptainLoginPersonCount != null">
+                #{gridCaptainLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridCaptainLoginCount != null">
+                #{gridCaptainLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridManagerLoginPersonCount != null">
+                #{gridManagerLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridManagerLoginCount != null">
+                #{gridManagerLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="directSellerLoginPersonCount != null">
+                #{directSellerLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="directSellerLoginCount != null">
+                #{directSellerLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="decoratorLoginPersonCount != null">
+                #{decoratorLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="decoratorLoginCount != null">
+                #{decoratorLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="businessHallLoginPersonCount != null">
+                #{businessHallLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="businessHallLoginCount != null">
+                #{businessHallLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="agentBusinessLoginPersonCount != null">
+                #{agentBusinessLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="agentBusinessLoginCount != null">
+                #{agentBusinessLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="operatingPersonnelLoginPersonCount != null">
+                #{operatingPersonnelLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="operatingPersonnelLoginCount != null">
+                #{operatingPersonnelLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginPersonTotalCount != null">
+                #{loginPersonTotalCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginTotalCount != null">
+                #{loginTotalCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginPersonDayPercent != null">
+                #{loginPersonDayPercent, jdbcType=DECIMAL},
+            </if>
+            <if test="loginCountDayPercent != null">
+                #{loginCountDayPercent, jdbcType=DECIMAL},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 插入 -->
+    <insert id="insertBatch" parameterType="com.shinemo.operate.domain.LoginInfoResultDO" >
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            statistics_time,
+            city_name,
+            county_name,
+            grid_captain_login_person_count,
+            grid_captain_login_count,
+            grid_manager_login_person_count,
+            grid_manager_login_count,
+            direct_seller_login_person_count,
+            direct_seller_login_count,
+            decorator_login_person_count,
+            decorator_login_count,
+            business_hall_login_person_count,
+            business_hall_login_count,
+            agent_business_login_person_count,
+            agent_business_login_count,
+            operating_personnel_login_person_count,
+            operating_personnel_login_count,
+            login_person_total_count,
+            login_total_count,
+            login_person_day_percent,
+            login_count_day_percent,
+        </trim>
+        values
+        <foreach collection="loginInfoResultDOList" separator="," item="entity" >
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+            now(),
+            now(),
+            #{entity.statisticsTime, jdbcType=TIMESTAMP},
+            #{entity.cityName, jdbcType=VARCHAR},
+            #{entity.countyName, jdbcType=VARCHAR},
+            #{entity.gridCaptainLoginPersonCount, jdbcType=INTEGER},
+            #{entity.gridCaptainLoginCount, jdbcType=INTEGER},
+            #{entity.gridManagerLoginPersonCount, jdbcType=INTEGER},
+            #{entity.gridManagerLoginCount, jdbcType=INTEGER},
+            #{entity.directSellerLoginPersonCount, jdbcType=INTEGER},
+            #{entity.directSellerLoginCount, jdbcType=INTEGER},
+            #{entity.decoratorLoginPersonCount, jdbcType=INTEGER},
+            #{entity.decoratorLoginCount, jdbcType=INTEGER},
+            #{entity.businessHallLoginPersonCount, jdbcType=INTEGER},
+            #{entity.businessHallLoginCount, jdbcType=INTEGER},
+            #{entity.agentBusinessLoginPersonCount, jdbcType=INTEGER},
+            #{entity.agentBusinessLoginCount, jdbcType=INTEGER},
+            #{entity.operatingPersonnelLoginPersonCount, jdbcType=INTEGER},
+            #{entity.operatingPersonnelLoginCount, jdbcType=INTEGER},
+            #{entity.loginPersonTotalCount, jdbcType=INTEGER},
+            #{entity.loginTotalCount, jdbcType=INTEGER},
+            #{entity.loginPersonDayPercent, jdbcType=DECIMAL},
+            #{entity.loginCountDayPercent, jdbcType=DECIMAL}
+            </trim>
+        </foreach>
+    </insert>
+
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.operate.domain.LoginInfoResultDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="statisticsTime != null">
+                statistics_time = #{statisticsTime, jdbcType=TIMESTAMP},
+            </if>
+
+            <if test="cityName != null">
+                city_name = #{cityName, jdbcType=VARCHAR},
+            </if>
+            <if test="countyName != null">
+                county_name = #{countyName, jdbcType=VARCHAR},
+            </if>
+            <if test="gridCaptainLoginPersonCount != null">
+                grid_captain_login_person_count = #{gridCaptainLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridCaptainLoginCount != null">
+                grid_captain_login_count = #{gridCaptainLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridManagerLoginPersonCount != null">
+                grid_manager_login_person_count = #{gridManagerLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="gridManagerLoginCount != null">
+                grid_manager_login_count = #{gridManagerLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="directSellerLoginPersonCount != null">
+                direct_seller_login_person_count = #{directSellerLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="directSellerLoginCount != null">
+                direct_seller_login_count = #{directSellerLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="decoratorLoginPersonCount != null">
+                decorator_login_person_count = #{decoratorLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="decoratorLoginCount != null">
+                decorator_login_count = #{decoratorLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="businessHallLoginPersonCount != null">
+                business_hall_login_person_count = #{businessHallLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="businessHallLoginCount != null">
+                business_hall_login_count = #{businessHallLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="agentBusinessLoginPersonCount != null">
+                agent_business_login_person_count = #{agentBusinessLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="agentBusinessLoginCount != null">
+                agent_business_login_count = #{agentBusinessLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="operatingPersonnelLoginPersonCount != null">
+                operating_personnel_login_person_count = #{operatingPersonnelLoginPersonCount, jdbcType=INTEGER},
+            </if>
+            <if test="operatingPersonnelLoginCount != null">
+                operating_personnel_login_count = #{operatingPersonnelLoginCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginPersonTotalCount != null">
+                login_person_total_count = #{loginPersonTotalCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginTotalCount != null">
+                login_total_count = #{loginTotalCount, jdbcType=INTEGER},
+            </if>
+            <if test="loginPersonDayPercent != null">
+                login_person_day_percent = #{loginPersonDayPercent, jdbcType=DECIMAL},
+            </if>
+            <if test="loginCountDayPercent != null">
+                login_count_day_percent = #{loginCountDayPercent, jdbcType=DECIMAL}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+
+    <select id="getLoginInfoResultDOList" resultType="com.shinemo.operate.domain.LoginInfoResultDO"
+            parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
+        select a.city_name as cityName, a.city_code as cityCode,a.county_name as countyName, a.county_code as countyCode,a.grid_name as gridName, a.grid_id as gridId,
+
+        IFNULL(sum(b.login_cnt),0) as loginTotalCount,
+        count(DISTINCT(b.mobile)) as loginPersonTotalCount,
+
+        sum(if(a.role_id = 1, b.login_cnt, 0)) as gridCaptainLoginCount,
+        count(DISTINCT(if(a.role_id = 1, b.mobile, NULL))) as gridCaptainLoginPersonCount,
+        sum(if(a.role_id = 2, b.login_cnt, 0)) as gridManagerLoginCount,
+        count(DISTINCT(if(a.role_id = 2, b.mobile, NULL))) as gridManagerLoginPersonCount,
+        sum(if(a.role_id = 3, b.login_cnt, 0)) as businessHallLoginCount,
+        count(DISTINCT(if(a.role_id = 3, b.mobile, NULL))) as businessHallLoginPersonCount,
+        sum(if(a.role_id = 4, b.login_cnt, 0)) as decoratorLoginCount,
+        count(DISTINCT(if(a.role_id = 4, b.mobile, NULL))) as decoratorLoginPersonCount,
+        sum(if(a.role_id = 5, b.login_cnt, 0)) as directSellerLoginCount,
+        count(DISTINCT(if(a.role_id = 5, b.mobile, NULL))) as directSellerLoginPersonCount,
+        sum(if(a.role_id = 6, b.login_cnt, 0)) as agentBusinessLoginCount,
+        count(DISTINCT(if(a.role_id = 6, b.mobile, NULL))) as agentBusinessLoginPersonCount,
+        sum(if(a.role_id = 7, b.login_cnt, 0)) as operatingPersonnelLoginCount,
+        count(DISTINCT(if(a.role_id = 7, b.mobile, NULL))) as operatingPersonnelLoginPersonCount
+
+        from
+        (select mobile, city_name,city_code, county_name, county_code, grid_name, grid_id,role_name, role_id from t_user_grid_role) a
+        LEFT OUTER JOIN
+        (select mobile, count(*) as login_cnt  from t_user_operate_log${tableIndex} where
+        type = 1 and operate_time <![CDATA[>=]]> #{startTime} and operate_time <![CDATA[<=]]> #{endTime}
+        group by mobile)b
+        on a.mobile = b.mobile
+        group by
+        a.city_code, a.county_code
+
+    </select>
+
+    <select id="getBeforeYesterdayLoginInfoResultList" resultMap="result">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        where statistics_time = DATE_SUB(CURRENT_DATE,INTERVAL 2 day)
+    </select>
+
+
+</mapper>

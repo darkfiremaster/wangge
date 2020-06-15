@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.UserOperateLogMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.operate.domain.UserOperateLogDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="mobile" column="mobile"/>
+        <result property="username" column="username"/>
+        <result property="uid" column="uid"/>
+        <result property="operateTime" column="operate_time"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id,gmt_create,gmt_modified, mobile,uid, username, operate_time,type
+    </sql>
+
+    <sql id="table">
+        t_user_operate_log${tableIndex}
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.operate.query.UserOperateLogQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.operate.query.UserOperateLogQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.operate.query.UserOperateLogQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.operate.domain.UserOperateLogDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="uid != null">
+                uid,
+            </if>
+            <if test="operateTime != null">
+                operate_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                #{username, jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                #{uid, jdbcType=VARCHAR},
+            </if>
+            <if test="operateTime != null">
+                #{operateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertBatch" parameterType="com.shinemo.operate.domain.UserOperateLogDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            gmt_create,
+            gmt_modified,
+            mobile,
+            uid,
+            username,
+            operate_time,
+            type
+        </trim>
+        values
+        <foreach collection="logDOList" separator="," item="entity">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                now(),
+                now(),
+                #{entity.mobile},
+                #{entity.uid},
+                #{entity.username},
+                #{entity.operateTime},
+                #{entity.type}
+            </trim>
+        </foreach>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.operate.domain.UserOperateLogDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                username = #{username, jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                uid = #{uid, jdbcType=VARCHAR},
+            </if>
+            <if test="operateTime != null">
+                operate_time = #{operateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="type != null">
+                type = #{type}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <select id="getLoginInfoExcelDTOList" parameterType="com.shinemo.operate.query.UserOperateLogQuery"
+            resultType="com.shinemo.operate.excel.LoginInfoExcelDTO">
+        select
+            t1.id,
+            t1.mobile,
+            t1.username,
+            t1.operate_time as loginTime,
+            GROUP_CONCAT( DISTINCT ( t2.city_name) ) as cityName,
+            GROUP_CONCAT( DISTINCT ( t2.county_name )) as countyName,
+            GROUP_CONCAT( DISTINCT ( t2.role_name )) as roleName,
+            GROUP_CONCAT( DISTINCT ( t2.grid_name )) as gridName
+        from
+            <include refid="table"/> as  t1
+            left join t_user_grid_role as t2 on t1.mobile = t2.mobile
+        where t1.type=1 and t1.operate_time <![CDATA[>=]]> #{startTime} and t1.operate_time <![CDATA[<=]]> #{endTime}
+        GROUP BY
+            t1.id;
+    </select>
+</mapper>

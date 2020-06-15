@@ -7,6 +7,8 @@ import java.util.List;
 
 @Data
 public class SweepFloorBizListVO {
+    private List<StallUpBizType> marketToolList;
+
     private List<StallUpBizType> sweepFloorBizList;
 
     private List<StallUpBizType> sweepFloorList;

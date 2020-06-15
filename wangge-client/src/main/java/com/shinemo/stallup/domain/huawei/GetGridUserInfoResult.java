@@ -50,6 +50,7 @@ public class GetGridUserInfoResult {
 			private String cityName;
 			private String cityCode;
 			private String countyName;
+			private String countyCode;
 			private List<RoleListBean> roleList;
 
 			@Data

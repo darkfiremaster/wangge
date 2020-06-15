@@ -24,6 +24,9 @@ public class DebugConfig implements WebMvcConfigurer {
 			.addPathPatterns("/smartGrid/**")
 			.addPathPatterns("/sweepFloor/**")
 			.addPathPatterns("/thirdapi/**")
+			.addPathPatterns("/operate/**")
+			.addPathPatterns("/todo/thing/**")
+				.excludePathPatterns("/todo/operateTodoThing")
 			.order(Ordered.HIGHEST_PRECEDENCE);
 	}
 }

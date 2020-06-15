@@ -1,11 +1,9 @@
 package com.shinemo.wangge.web.controller.todo;
 
 import com.shinemo.client.common.ListVO;
-import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.vo.TodoIndexVO;
-import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.service.todo.TodoService;
@@ -15,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author shangkaihui
- * @Date 2020/6/3 10:07
+ * @Date 2020/6/13 18:04
  * @Desc
  */
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/todo/thing/")
 @Slf4j
 public class TodoController {
 
@@ -27,34 +25,59 @@ public class TodoController {
     private TodoService todoService;
 
 
-    @PostMapping("/operateTodoThing")
-    @SmIgnore
-    public ApiResult<Void> operateTodoThing(@RequestBody TodoThirdRequest todoThirdRequest) {
-        return todoService.operateTodoThing(todoThirdRequest);
-    }
-
+    /**
+     * 获取全部类别
+     * @return
+     */
     @PostMapping("/getTypeList")
-    @SmIgnore
     public ApiResult<TodoTypeVO> getTypeList() {
         return todoService.getTypeList();
     }
 
+    /**
+     * 清空全部类别缓存
+     * @return
+     */
     @GetMapping("/clearTypeListCache")
-    @SmIgnore
     public ApiResult<Void> clearTypeListCache() {
         return todoService.clearTypeListCache();
     }
 
+
+    /**
+     * 查询代办事项列表
+     * @param todoQuery
+     * @return
+     */
     @PostMapping("/getTodoList")
-    @SmIgnore
     public ApiResult<ListVO<TodoVO>> getTodoList(@RequestBody TodoQuery todoQuery) {
         return todoService.getTodoList(todoQuery);
     }
 
+    /**
+     * 获取全部代办事项列表
+     * @return
+     */
+    @PostMapping("/getAllTodoTypeList")
+    public ApiResult<TodoTypeVO>  getAllTodoTypeList() {
+        return todoService.getAllTodoTypeList();
+    }
+
+    /**
+     * 首页展示
+     * @return
+     */
     @PostMapping("/getIndexInfo")
-    @SmIgnore
     public ApiResult<TodoIndexVO> getIndexInfo() {
         return todoService.getIndexInfo();
     }
 
+    /**
+     * 获取详情页跳转url参数
+     * @return
+     */
+    @PostMapping("/getDetailRedirectUrl")
+    public ApiResult<String> getDetailRedirectUrl(@RequestBody TodoQuery todoQuery) {
+        return todoService.getDetailRedirectUrl(todoQuery);
+    }
 }

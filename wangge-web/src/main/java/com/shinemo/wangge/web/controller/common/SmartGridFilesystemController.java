@@ -6,7 +6,6 @@ import com.shinemo.Aace.MutableByteArray;
 import com.shinemo.Aace.MutableLong;
 import com.shinemo.Aace.RetCode;
 import com.shinemo.Aace.context.AaceContext;
-import com.shinemo.Aace.tinyfs.client.TinyfsClient;
 import com.shinemo.client.ace.tinyfs.TinyfsService;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.exception.ApiException;
