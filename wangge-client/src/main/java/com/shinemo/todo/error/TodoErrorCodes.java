@@ -13,5 +13,6 @@ public interface TodoErrorCodes {
     ErrorCode SIGN_ERROR = new ErrorCode(501, "签名错误");
     ErrorCode OPERATE_TYPE_ERROR = new ErrorCode(1001, "操作类型错误");
     ErrorCode DATA_NOT_EXIST = new ErrorCode(1002, "数据不存在");
+    ErrorCode DATE_PARSE_ERROR = new ErrorCode(1003, "日期参数解析异常");
 
 }

@@ -21,7 +21,7 @@ public interface TodoService {
      * 获取全部类别列表
      * @return
      */
-    //ApiResult<TodoTypeVO> getTypeList();
+    ApiResult<TodoTypeVO> getTypeList();
 
     ApiResult<Void> clearTypeListCache();
 
@@ -39,4 +39,5 @@ public interface TodoService {
 
     ApiResult<TodoTypeVO> getAllTodoTypeList();
 
+    ApiResult<String> getDetailRedirectUrl(TodoQuery todoQuery);
 }

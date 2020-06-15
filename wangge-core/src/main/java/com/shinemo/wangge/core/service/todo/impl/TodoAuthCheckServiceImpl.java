@@ -29,8 +29,8 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
     public void initSignKeyMap() {
         signKeyMap.put("华为", "34b18faa-0424-41ad-b73b-80fc02d4be55");
         signKeyMap.put("亚信", "7095f283-4d05-4c5d-ad7c-0bb8879ce506");
-        signKeyMap.put("装维", "e0d349cb-e98f-45e5-bf98-3a89d46d0671");
-        signKeyMap.put("督导", "4313e55f-8234-4a0c-8cc6-6ed084a61df9");
+        signKeyMap.put("浩鲸", "e0d349cb-e98f-45e5-bf98-3a89d46d0671");
+        signKeyMap.put("年华", "4313e55f-8234-4a0c-8cc6-6ed084a61df9");
     }
 
 
