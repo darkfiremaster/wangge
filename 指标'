@@ -1,0 +1,18 @@
+[develop-0619 f32d019] '查询目标客户-
+ 16 files changed, 544 insertions(+)
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/model/TargetCustomersIndexDO.java
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/model/TargetIndexCommunityDO.java
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/model/TargetIndexMobileDO.java
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/query/TargetCustomersIndexQuery.java
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/query/TargetIndexCommunityQuery.java
+ create mode 100644 wangge-client/src/main/java/com/shinemo/targetcustomer/domain/query/TargetIndexMobileQuery.java
+ create mode 100644 wangge-core/src/main/java/com/shinemo/wangge/core/service/targetcommunity/TargetIndexCommunityService.java
+ create mode 100644 wangge-core/src/main/java/com/shinemo/wangge/core/service/targetcommunity/TargetIndexMobileService.java
+ create mode 100644 wangge-core/src/main/java/com/shinemo/wangge/core/service/targetcommunity/impl/TargetIndexCommunityServiceImpl.java
+ create mode 100644 wangge-core/src/main/java/com/shinemo/wangge/core/service/targetcommunity/impl/TargetIndexMobileServiceImpl.java
+ create mode 100644 wangge-dal/src/main/java/com/shinemo/wangge/dal/mapper/TargetCustomersIndexMapper.java
+ create mode 100644 wangge-dal/src/main/java/com/shinemo/wangge/dal/mapper/TargetIndexCommunityMapper.java
+ create mode 100644 wangge-dal/src/main/java/com/shinemo/wangge/dal/mapper/TargetIndexMobileMapper.java
+ create mode 100644 wangge-dal/src/main/resources/sqlmap/t_target_customers_index.xml
+ create mode 100644 wangge-dal/src/main/resources/sqlmap/t_target_customers_index_community.xml
+ create mode 100644 wangge-dal/src/main/resources/sqlmap/t_target_customers_index_mobile.xml
