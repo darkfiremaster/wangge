@@ -88,18 +88,16 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             log.error("[preHandle] mobile is null");
             return true;
         }
-        
-        if (mobile != null) {
-            BackdoorLoginQuery qbl = new BackdoorLoginQuery();
-            qbl.setMobile(mobile);
-            BackdoorLoginDO bl = backdoorLoginMapper.get(qbl);
-            if (bl != null) {
-                uid = bl.getCUid();
-                orgId = bl.getCOrgId();
-                orgName = bl.getCOrgName();
-                mobile = bl.getCMobile();
-                userName = bl.getCUserName();
-            }
+
+        BackdoorLoginQuery qbl = new BackdoorLoginQuery();
+        qbl.setMobile(mobile);
+        BackdoorLoginDO bl = backdoorLoginMapper.get(qbl);
+        if (bl != null) {
+            uid = bl.getCUid();
+            orgId = bl.getCOrgId();
+            orgName = bl.getCOrgName();
+            mobile = bl.getCMobile();
+            userName = bl.getCUserName();
         }
 
         if (uid == null) {
