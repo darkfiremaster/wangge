@@ -150,13 +150,13 @@ public class StallUpServiceImpl implements StallUpService {
         String bizTypeListJson = toJson.apply(request.getBizTypeList());
         Map<String, String> nameMap = new HashMap<>();
         List<GridUserDetail> list = partnerList.stream().filter(v -> {
-//            String mobile = AESUtil.decrypt(v.getSeMobile(), aeskey);
-//            if (mobile == null) {
-//                log.error("[create] AESUtil.decrypt mobile error, request:{}, mobile:{}", request, v.getSeMobile());
-//                return false;
-//            }
-            v.setMobile(v.getSeMobile());
-            nameMap.put(v.getSeMobile(), v.getName());
+            String mobile = AESUtil.decrypt(v.getSeMobile(), aeskey);
+            if (mobile == null) {
+                log.error("[create] AESUtil.decrypt mobile error, request:{}, mobile:{}", request, v.getSeMobile());
+                return false;
+            }
+            v.setMobile(mobile);
+            nameMap.put(mobile, v.getName());
             return true;
         }).collect(Collectors.toList());
         String partnerListJson = toJson.apply(list);
