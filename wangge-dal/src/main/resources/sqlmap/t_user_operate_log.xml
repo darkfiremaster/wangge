@@ -125,7 +125,7 @@
     </insert>
     <insert id="insertBatch" parameterType="com.shinemo.operate.domain.UserOperateLogDO">
         insert into
-        t_user_operate_log${tableIndex}
+        <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
             gmt_create,
             gmt_modified,

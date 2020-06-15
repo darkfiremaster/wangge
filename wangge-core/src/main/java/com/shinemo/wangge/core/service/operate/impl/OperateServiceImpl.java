@@ -51,7 +51,7 @@ public class OperateServiceImpl implements OperateService {
     private static final String SYNC_USER_OPERATE_LOG_LIST = "sync_user_operate_log_list";
 
     @NacosValue(value = "${wangge.operatelog.sync.count}", autoRefreshed = true)
-    private Integer LOG_COUNT_SISE=50;
+    private Integer LOG_COUNT_SISE=10;
 
     @Override
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {

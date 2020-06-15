@@ -25,28 +25,59 @@ public class TodoController {
     private TodoService todoService;
 
 
-    //@PostMapping("/getTypeList")
-    //public ApiResult<TodoTypeVO> getTypeList() {
-    //    return todoService.getTypeList();
-    //}
+    /**
+     * 获取全部类别
+     * @return
+     */
+    @PostMapping("/getTypeList")
+    public ApiResult<TodoTypeVO> getTypeList() {
+        return todoService.getTypeList();
+    }
 
+    /**
+     * 清空全部类别缓存
+     * @return
+     */
     @GetMapping("/clearTypeListCache")
     public ApiResult<Void> clearTypeListCache() {
         return todoService.clearTypeListCache();
     }
 
+
+    /**
+     * 查询代办事项列表
+     * @param todoQuery
+     * @return
+     */
     @PostMapping("/getTodoList")
     public ApiResult<ListVO<TodoVO>> getTodoList(@RequestBody TodoQuery todoQuery) {
         return todoService.getTodoList(todoQuery);
     }
 
+    /**
+     * 获取全部代办事项列表
+     * @return
+     */
     @PostMapping("/getAllTodoTypeList")
     public ApiResult<TodoTypeVO>  getAllTodoTypeList() {
         return todoService.getAllTodoTypeList();
     }
 
+    /**
+     * 首页展示
+     * @return
+     */
     @PostMapping("/getIndexInfo")
     public ApiResult<TodoIndexVO> getIndexInfo() {
         return todoService.getIndexInfo();
+    }
+
+    /**
+     * 获取详情页跳转url参数
+     * @return
+     */
+    @PostMapping("/getDetailRedirectUrl")
+    public ApiResult<String> getDetailRedirectUrl(@RequestBody TodoQuery todoQuery) {
+        return todoService.getDetailRedirectUrl(todoQuery);
     }
 }
