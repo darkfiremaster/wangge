@@ -1,5 +1,23 @@
 package com.shinemo.wangge.web.intercepter;
 
+import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.util.WebUtils.getValueFromCookies;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
@@ -9,29 +27,17 @@ import com.shinemo.common.tools.log.Logs;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
+import com.shinemo.smartgrid.domain.query.BackdoorLoginQuery;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
+import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-
-import static com.shinemo.Aace.RetCode.RET_SUCCESS;
-import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * debug拦截
@@ -55,12 +61,14 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     @Resource
     private ThreadPoolTaskExecutor asyncServiceExecutor;
 
-    public static final int EXPIRE_TIME = 60 * 60 * 24;
+    @Resource
+    private BackdoorLoginMapper backdoorLoginMapper;
 
+    public static final int EXPIRE_TIME = 60 * 60 * 24;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        //todo 线上去除
+        // todo 线上去除
         checkAuth(request);
 
         Cookie[] cookies = request.getCookies();
@@ -69,13 +77,38 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         String orgName = LoginContext.getOrgName();
         String mobile = LoginContext.getMobile();
         String userName = LoginContext.getUserName();
+        if (mobile == null) {
+            mobile = getValueFromCookies("mobile", cookies);
+            if (mobile == null) {
+                // 从debugInterceptor中获取到的手机号
+                mobile = SmartGridContext.getMobile();
+            }
+        }
+        if (mobile == null) {
+            log.error("[preHandle] mobile is null");
+            return true;
+        }
+        
+        if (mobile != null) {
+            BackdoorLoginQuery qbl = new BackdoorLoginQuery();
+            qbl.setMobile(mobile);
+            BackdoorLoginDO bl = backdoorLoginMapper.get(qbl);
+            if (bl != null) {
+                uid = bl.getCUid();
+                orgId = bl.getCOrgId();
+                orgName = bl.getCOrgName();
+                mobile = bl.getCMobile();
+                userName = bl.getCUserName();
+            }
+        }
+
         if (uid == null) {
             uid = getValueFromCookies("userId", cookies);
             if (uid == null) {
                 uid = getValueFromCookies("uid", cookies);
             }
             if (uid == null) {
-                //从debugInterceptor中获取到uid
+                // 从debugInterceptor中获取到uid
                 uid = SmartGridContext.getUid();
             }
 
@@ -83,7 +116,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (uid != null) {
             SmartGridContext.setUid(uid);
         }
-
         if (orgId == null) {
             orgId = getValueFromCookies("orgId", cookies);
         }
@@ -96,17 +128,9 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (orgName != null) {
             SmartGridContext.setOrgName(orgName);
         }
-        if (mobile == null) {
-            mobile = getValueFromCookies("mobile", cookies);
-            if (mobile == null) {
-                //从debugInterceptor中获取到的手机号
-                mobile = SmartGridContext.getMobile();
-            }
-        }
         if (mobile != null) {
             SmartGridContext.setMobile(mobile);
         }
-
 
         if (userName == null) {
             userName = getValueFromCookies("username", cookies);
@@ -114,12 +138,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (userName != null) {
             SmartGridContext.setUserName(userName);
         }
-
-        if (mobile == null) {
-            log.error("[preHandle] mobile is null");
-            return true;
-        }
-
         // 查询用户网格信息,并更新
         String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
         if (StringUtils.isBlank(gridInfoCache)) {
@@ -130,7 +148,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
                 return true;
             }
 
-            //更新用户网格角色关系
+            // 更新用户网格角色关系
             log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
             String finalMobile = mobile;
             asyncServiceExecutor.submit(() -> {
@@ -150,13 +168,14 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         try {
             ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
             if (!apiResult.isSuccess()) {
-                log.error("[getGridUserRole] huaWeiService.getGridUserInfo not success,apiResult = {}," +
-                        "mobile = {}", apiResult, mobile);
+                log.error("[getGridUserRole] huaWeiService.getGridUserInfo not success,apiResult = {}," + "mobile = {}",
+                        apiResult, mobile);
                 return null;
             }
             return apiResult.getData();
         } catch (ApiException e) {
-            log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getMessage(), mobile);
+            log.error("[getGridUserRole] huaWeiService.getGridUserInfo error,msg = {},mobile = {}", e.getMessage(),
+                    mobile);
             return null;
         }
     }
@@ -215,15 +234,15 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         }
 
         int ret = RET_SUCCESS;
-//        MutableBoolean isSuccess = new MutableBoolean();
-//        try {
-//            ret = imLoginClient.verifyToken(uid, token, timestamp, isSuccess);
-//        } catch (Exception ex) {
-//            Logs.error("check token fail, ret={}, token={}", ret, token, ex);
-//        }
+        // MutableBoolean isSuccess = new MutableBoolean();
+        // try {
+        // ret = imLoginClient.verifyToken(uid, token, timestamp, isSuccess);
+        // } catch (Exception ex) {
+        // Logs.error("check token fail, ret={}, token={}", ret, token, ex);
+        // }
 
         if (ret == RET_SUCCESS) {
-            //特殊场景下cookie里没有orgId
+            // 特殊场景下cookie里没有orgId
             if (Utils.isEmpty(orgId)) {
                 orgId = request.getParameter("orgId");
             }
@@ -231,7 +250,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             if (Utils.isNotEmpty(userInfo)) {
                 Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
                 if (Utils.isNotEmpty(map)) {
-                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name"};
+                    String[] keys = new String[] { "orgId", "mobile", "orgName", "name" };
                     for (String key : keys) {
                         Object value = map.get(key);
                         if (value != null) {
@@ -253,7 +272,8 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
         SmartGridContext.remove();
         super.afterCompletion(request, response, handler, ex);
     }
