@@ -4,6 +4,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.util.DateUtil;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -30,16 +31,17 @@ import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.stallup.domain.utils.LocalDateTimeUtils;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.todo.enums.ThirdTodoTypeEnum;
+import com.shinemo.todo.enums.TodoMethodOperateEnum;
+import com.shinemo.todo.enums.TodoStatusEnum;
+import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
-import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
-import com.shinemo.wangge.dal.mapper.SignRecordMapper;
-import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
-import com.shinemo.wangge.dal.mapper.StallUpMarketingNumberMapper;
-import com.shinemo.wangge.dal.mapper.UserConfigMapper;
-
+import com.shinemo.wangge.core.service.todo.TodoService;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,7 +114,7 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private HuaWeiService huaWeiService;
-    
+
     @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
     private String defaultBiz;
 
@@ -120,6 +122,10 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+    private static final String ID_PREFIX = "BT_";
+
+    @Resource
+    private TodoService todoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -160,6 +166,7 @@ public class StallUpServiceImpl implements StallUpService {
             return true;
         }).collect(Collectors.toList());
         String partnerListJson = toJson.apply(list);
+
         for (GridUserDetail detail : list) {
             StallUpActivity stallUpActivity = StallUpActivity.builder().communityId(request.getCommunityId())
                     .communityName(request.getCommunityName()).address(request.getAddress()).creatorId(request.getUid())
@@ -191,35 +198,59 @@ public class StallUpServiceImpl implements StallUpService {
                 name = SmartGridContext.getUserName();
             }
             parent.setName(name);
+
             parent.setFlag(0);
             parentStallUpActivityMapper.insert(parent);
             // 批量插入子摆摊
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
-            Map<String,Object> map = new HashMap<>();
-            map.put("id",STALL_UP_ID_PREFIX + parent.getId());
-            map.put("gmtCreate", DateUtils.dateToString(new Date(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("communityName",parent.getCommunityName());
-            map.put("communityId",parent.getCommunityId());
-            map.put("address",parent.getAddress());
-            map.put("location",parent.getLocation());
-            map.put("mobile",parent.getMobile());
-            map.put("name",parent.getName());
-            map.put("title",parent.getTitle());
-            map.put("startTime",DateUtils.dateToString(parent.getStartTime(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("endTime",DateUtils.dateToString(parent.getEndTime(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("status",StallUpStatusEnum.PREPARE.getId());
-            map.put("gridId",parent.getGridId());
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", STALL_UP_ID_PREFIX + parent.getId());
+            map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("communityName", parent.getCommunityName());
+            map.put("communityId", parent.getCommunityId());
+            map.put("address", parent.getAddress());
+            map.put("location", parent.getLocation());
+            map.put("mobile", parent.getMobile());
+            map.put("name", parent.getName());
+            map.put("title", parent.getTitle());
+            map.put("startTime", DateUtils.dateToString(parent.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("endTime", DateUtils.dateToString(parent.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("status", StallUpStatusEnum.PREPARE.getId());
+            map.put("gridId", parent.getGridId());
             List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
             for (GridUserDetail detail: partnerList) {
-                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getSeMobile()).
+                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
                         name(detail.getName()).role(detail.getRole()).build();
                 simpleList.add(detailSimple);
             }
-            map.put("partners",simpleList);
-            map.put("custIdList",request.getCustList());
+            map.put("partners", simpleList);
+            map.put("custIdList", request.getCustList());
             thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod());
+
+
+            //同步代办事项
+            for (StallUpActivity stallUpActivity : insertList) {
+                syncTodoCreate(stallUpActivity);
+            }
         }
+    }
+
+    private void syncTodoCreate(StallUpActivity stallUpActivity) {
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
+        todoDTO.setTitle(stallUpActivity.getTitle());
+        todoDTO.setRemark(stallUpActivity.getAddress());
+        todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+        todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
+        todoDTO.setOperatorMobile(stallUpActivity.getMobile());
+        todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
+        todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
+        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
     }
 
     @Override
@@ -239,9 +270,26 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, null, new Date());
+
+            //同步代办事项
+            syncTodoUpdate(status, request.getId());
+
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
+    }
+
+    private void syncTodoUpdate(int status, Long id) {
+        StallUpActivity stallUp = getStallUp(id);
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(id));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
+        todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
+        todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
+        todoDTO.setOperatorMobile(stallUp.getMobile());
+        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
     }
 
     @Override
@@ -281,6 +329,9 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, startTime, null);
+            //同步代办事项
+            syncTodoUpdate(status, request.getId());
+
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
@@ -363,6 +414,9 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, null, endTime);
+
+            //同步代办事项
+            syncTodoUpdate(status, request.getId());
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
@@ -420,6 +474,8 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, null, endTime);
+
+            syncTodoUpdate(status, request.getId());
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
@@ -484,7 +540,7 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public ApiResult<GetEndListResponse> getEndList(String mobile, Integer page, Integer pageSize, Long startTime,
-            Long endTime) {
+                                                    Long endTime) {
         Page result = PageHelper.startPage(page, pageSize, true);
         // 实际结束时间倒序
         PageHelper.orderBy("real_end_time desc");
@@ -986,7 +1042,7 @@ public class StallUpServiceImpl implements StallUpService {
         }
         return GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class);
     }
-    
+
     @Override
     public ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz) {
         UserConfigQuery query = new UserConfigQuery();
@@ -1004,6 +1060,16 @@ public class StallUpServiceImpl implements StallUpService {
             userConfigMapper.update(upd);
         }
         return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<Map<String, Object>> getSmsHot(Long activityId) {
+        List<String> activityList = new ArrayList<>();
+        activityList.add(ID_PREFIX + activityId);
+        Map<String,Object> map = new HashMap<>();
+        map.put("activityList",activityList);
+        ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
+        return dispatch;
     }
 
     /**

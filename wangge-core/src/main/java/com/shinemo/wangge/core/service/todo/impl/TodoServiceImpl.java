@@ -234,7 +234,6 @@ public class TodoServiceImpl implements TodoService {
             BeanUtils.copyProperties(todoDO, todoVO);
             todoVO.setThirdTypeName(ThirdTodoTypeEnum.getById(todoVO.getThirdType()).getName());
             return todoVO;
-
         }).collect(Collectors.toList());
         listVO.setRows(todoVOList);
         listVO.setCurrentPage(todoQuery.getCurrentPage());
@@ -317,7 +316,9 @@ public class TodoServiceImpl implements TodoService {
         //转换时间
         try {
             String operatorTime = todoDTO.getOperatorTime();
-            todoDO.setOperatorTime(DateUtil.parse(operatorTime, "yyyy-MM-dd HH:mm:ss"));
+            if (!StringUtils.isEmpty(operatorTime)) {
+                todoDO.setOperatorTime(DateUtil.parse(operatorTime, "yyyy-MM-dd HH:mm:ss"));
+            }
             if (!StringUtils.isEmpty(todoDTO.getStartTime())) {
                 todoDO.setStartTime(DateUtil.parse(todoDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
             }

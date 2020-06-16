@@ -59,6 +59,7 @@ public class DalConfig {
         return dataSource;
     }
 
+    @Primary
     @Bean(name = "mybatisSqlSessionFactory")
     @DependsOn("dataSource")
     public SqlSessionFactoryBean mybatisSqlSessionFactory(@Qualifier("dataSource") DataSource dataSource)
@@ -72,6 +73,7 @@ public class DalConfig {
         return sqlSessionFactoryBean;
     }
 
+    @Primary
     @Bean
     @DependsOn("mybatisSqlSessionFactory")
     public SqlSessionTemplate sqlSession(
@@ -80,6 +82,7 @@ public class DalConfig {
         return sqlSessionTemplate;
     }
 
+    @Primary
     @Bean
     @DependsOn("dataSource")
     public DataSourceTransactionManager dataSourceTransactionManager(@Qualifier("dataSource") DataSource dataSource) {

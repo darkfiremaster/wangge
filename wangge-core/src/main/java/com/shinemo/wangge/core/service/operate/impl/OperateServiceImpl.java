@@ -51,7 +51,7 @@ public class OperateServiceImpl implements OperateService {
     private static final String SYNC_USER_OPERATE_LOG_LIST = "sync_user_operate_log_list";
 
     @NacosValue(value = "${wangge.operatelog.sync.count}", autoRefreshed = true)
-    private Integer LOG_COUNT_SISE=10;
+    private Integer LOG_COUNT_SISE = 10;
 
     @Override
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
@@ -61,6 +61,7 @@ public class OperateServiceImpl implements OperateService {
         insertUserOperateLog(userOperateLogVO);
         return ApiResult.of(0);
     }
+
 
     @Override
     public ApiResult<Void> addUserOperateLogToRedis(UserOperateLogVO userOperateLogVO) {
@@ -73,6 +74,13 @@ public class OperateServiceImpl implements OperateService {
             syncLogFromRedisToDB();
         }
 
+        return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<Void> addUserOperateLogToDB(UserOperateLogVO userOperateLogVO) {
+        UserOperateLogDO userOperateLogDO = getUserOperateLogDO(userOperateLogVO);
+        userOperateLogMapper.insert(userOperateLogDO);
         return ApiResult.of(0);
     }
 
@@ -111,13 +119,11 @@ public class OperateServiceImpl implements OperateService {
             //登录类型
             if (!isGridUser(userOperateLogVO)) {
                 //非网格用户不统计登录信息
-                log.debug("[insertUserOperateLog] user is not gridUser, request:{}", userOperateLogVO);
                 return;
             }
             //15分钟内只算一次登录
             String loginFlag = redisService.get(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()));
             if (!StringUtils.isEmpty(loginFlag)) {
-                log.debug("[insertUserOperateLog] user has login , request:{}", userOperateLogVO);
                 return;
             }
 
@@ -125,10 +131,8 @@ public class OperateServiceImpl implements OperateService {
             redisService.set(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()), "true", LOGIN_EXPIRE_TIME);
         }
 
-        addUserOperateLogToRedis(userOperateLogVO);
+        addUserOperateLogToDB(userOperateLogVO);
     }
-
-
 
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {

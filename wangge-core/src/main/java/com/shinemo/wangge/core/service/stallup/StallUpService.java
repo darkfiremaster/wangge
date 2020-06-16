@@ -7,8 +7,10 @@ import com.shinemo.stallup.domain.request.StallUpEndRequest;
 import com.shinemo.stallup.domain.request.StallUpRequest;
 import com.shinemo.stallup.domain.response.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 智慧网格 摆摊活动服务
@@ -163,4 +165,6 @@ public interface StallUpService {
 	List<Long> getGridBiz(String uid);
 	
 	ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz);
+
+	ApiResult<Map<String, Object>> getSmsHot(Long activityId);
 }
