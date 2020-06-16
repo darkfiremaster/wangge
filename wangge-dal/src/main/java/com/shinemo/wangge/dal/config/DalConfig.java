@@ -80,6 +80,7 @@ public class DalConfig {
         return sqlSessionTemplate;
     }
 
+    @Primary
     @Bean
     @DependsOn("dataSource")
     public DataSourceTransactionManager dataSourceTransactionManager(@Qualifier("dataSource") DataSource dataSource) {

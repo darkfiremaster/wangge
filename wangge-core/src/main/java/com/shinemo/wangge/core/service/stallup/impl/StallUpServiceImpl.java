@@ -114,7 +114,7 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private HuaWeiService huaWeiService;
-    
+
     @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
     private String defaultBiz;
 
@@ -165,6 +165,7 @@ public class StallUpServiceImpl implements StallUpService {
             return true;
         }).collect(Collectors.toList());
         String partnerListJson = toJson.apply(list);
+
         for (GridUserDetail detail : list) {
             StallUpActivity stallUpActivity = StallUpActivity.builder().communityId(request.getCommunityId())
                     .communityName(request.getCommunityName()).address(request.getAddress()).creatorId(request.getUid())
@@ -196,53 +197,59 @@ public class StallUpServiceImpl implements StallUpService {
                 name = SmartGridContext.getUserName();
             }
             parent.setName(name);
+
             parent.setFlag(0);
             parentStallUpActivityMapper.insert(parent);
             // 批量插入子摆摊
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
-            Map<String,Object> map = new HashMap<>();
-            map.put("id",STALL_UP_ID_PREFIX + parent.getId());
-            map.put("gmtCreate", DateUtils.dateToString(new Date(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("communityName",parent.getCommunityName());
-            map.put("communityId",parent.getCommunityId());
-            map.put("address",parent.getAddress());
-            map.put("location",parent.getLocation());
-            map.put("mobile",parent.getMobile());
-            map.put("name",parent.getName());
-            map.put("title",parent.getTitle());
-            map.put("startTime",DateUtils.dateToString(parent.getStartTime(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("endTime",DateUtils.dateToString(parent.getEndTime(),"yyyy-MM-dd HH:mm:ss"));
-            map.put("status",StallUpStatusEnum.PREPARE.getId());
-            map.put("gridId",parent.getGridId());
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", STALL_UP_ID_PREFIX + parent.getId());
+            map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("communityName", parent.getCommunityName());
+            map.put("communityId", parent.getCommunityId());
+            map.put("address", parent.getAddress());
+            map.put("location", parent.getLocation());
+            map.put("mobile", parent.getMobile());
+            map.put("name", parent.getName());
+            map.put("title", parent.getTitle());
+            map.put("startTime", DateUtils.dateToString(parent.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("endTime", DateUtils.dateToString(parent.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+            map.put("status", StallUpStatusEnum.PREPARE.getId());
+            map.put("gridId", parent.getGridId());
             List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
-            for (GridUserDetail detail: partnerList) {
+            for (GridUserDetail detail : partnerList) {
                 GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getSeMobile()).
                         name(detail.getName()).role(detail.getRole()).build();
                 simpleList.add(detailSimple);
             }
-            map.put("partners",simpleList);
-            map.put("custIdList",request.getCustList());
+            map.put("partners", simpleList);
+            map.put("custIdList", request.getCustList());
             thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod());
 
 
             //同步代办事项
             for (StallUpActivity stallUpActivity : insertList) {
-                TodoDTO todoDTO = new TodoDTO();
-                todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
-                todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-                todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
-                todoDTO.setTitle(stallUpActivity.getTitle());
-                todoDTO.setRemark(stallUpActivity.getAddress());
-                todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
-                todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
-                todoDTO.setOperatorMobile(stallUpActivity.getMobile());
-                todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
-                todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
-                ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-                todoService.operateTodoThing(todoRequest.getData());
+                syncTodoCreate(stallUpActivity);
             }
         }
+    }
+
+    private void syncTodoCreate(StallUpActivity stallUpActivity) {
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
+        todoDTO.setTitle(stallUpActivity.getTitle());
+        todoDTO.setRemark(stallUpActivity.getAddress());
+        todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+        todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
+        todoDTO.setOperatorMobile(stallUpActivity.getMobile());
+        todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
+        todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
+        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
     }
 
     @Override
@@ -264,20 +271,24 @@ public class StallUpServiceImpl implements StallUpService {
             updateParent(child, null, new Date());
 
             //同步代办事项
-            StallUpActivity stallUp = getStallUp(request.getId());
-            TodoDTO todoDTO = new TodoDTO();
-            todoDTO.setThirdId(String.valueOf(request.getId()));
-            todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-            todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
-            todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
-            todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
-            todoDTO.setOperatorMobile(stallUp.getMobile());
-            ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-            todoService.operateTodoThing(todoRequest.getData());
+            syncTodoUpdate(status, request.getId());
 
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
+    }
+
+    private void syncTodoUpdate(int status, Long id) {
+        StallUpActivity stallUp = getStallUp(id);
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(id));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
+        todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
+        todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
+        todoDTO.setOperatorMobile(stallUp.getMobile());
+        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
     }
 
     @Override
@@ -317,18 +328,8 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, startTime, null);
-
             //同步代办事项
-            StallUpActivity stallUp = getStallUp(request.getId());
-            TodoDTO todoDTO = new TodoDTO();
-            todoDTO.setThirdId(String.valueOf(request.getId()));
-            todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-            todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
-            todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
-            todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
-            todoDTO.setOperatorMobile(stallUp.getMobile());
-            ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-            todoService.operateTodoThing(todoRequest.getData());
+            syncTodoUpdate(status, request.getId());
 
         } finally {
             redisLock.unlock(LockContext.create(key));
@@ -414,16 +415,7 @@ public class StallUpServiceImpl implements StallUpService {
             updateParent(child, null, endTime);
 
             //同步代办事项
-            StallUpActivity stallUp = getStallUp(request.getId());
-            TodoDTO todoDTO = new TodoDTO();
-            todoDTO.setThirdId(String.valueOf(request.getId()));
-            todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-            todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
-            todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
-            todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
-            todoDTO.setOperatorMobile(stallUp.getMobile());
-            ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-            todoService.operateTodoThing(todoRequest.getData());
+            syncTodoUpdate(status, request.getId());
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
@@ -482,16 +474,7 @@ public class StallUpServiceImpl implements StallUpService {
         try {
             updateParent(child, null, endTime);
 
-            StallUpActivity stallUp = getStallUp(request.getId());
-            TodoDTO todoDTO = new TodoDTO();
-            todoDTO.setThirdId(String.valueOf(request.getId()));
-            todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-            todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
-            todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
-            todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
-            todoDTO.setOperatorMobile(stallUp.getMobile());
-            ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-            todoService.operateTodoThing(todoRequest.getData());
+            syncTodoUpdate(status, request.getId());
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
@@ -556,7 +539,7 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public ApiResult<GetEndListResponse> getEndList(String mobile, Integer page, Integer pageSize, Long startTime,
-            Long endTime) {
+                                                    Long endTime) {
         Page result = PageHelper.startPage(page, pageSize, true);
         // 实际结束时间倒序
         PageHelper.orderBy("real_end_time desc");
@@ -1058,7 +1041,7 @@ public class StallUpServiceImpl implements StallUpService {
         }
         return GsonUtil.fromJsonToList(uc.getGridBiz(), Long[].class);
     }
-    
+
     @Override
     public ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz) {
         UserConfigQuery query = new UserConfigQuery();
