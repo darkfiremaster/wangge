@@ -37,7 +37,8 @@ public class SmsHotReverseAuthController {
 
         if (request.getMobile().equals("13396631940") ||
                 request.getMobile().equals("18790513853") ||
-                request.getMobile().equals("18817350871") || request.getMobile().equals("13557710513")) {
+                request.getMobile().equals("18817350871") || request.getMobile().equals("13557710513")
+                || request.getMobile().equals("13607713224")) {
             response.setMobile(request.getMobile());
             return response;
         }
