@@ -75,6 +75,9 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
             //调华为接口
             String mobile = getMobile();
+            if (!thirdApiMappingDO.isIgnoreMobile()) {
+                requestData.put("mobile", mobile);
+            }
             String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, new HashMap<>());
 
@@ -104,7 +107,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     }
 
     private String getRequestParam(Map<String, Object> requestData, String method, String mobile) {
-        requestData.put("mobile", mobile);
+        //requestData.put("mobile", mobile);
         return SmartGridUtils.buildRequestParam(method, requestData, signkey);
     }
 

@@ -120,6 +120,7 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+    private static final String ID_PREFIX = "BT_";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -212,7 +213,7 @@ public class StallUpServiceImpl implements StallUpService {
             map.put("gridId",parent.getGridId());
             List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
             for (GridUserDetail detail: partnerList) {
-                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getSeMobile()).
+                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
                         name(detail.getName()).role(detail.getRole()).build();
                 simpleList.add(detailSimple);
             }
@@ -1004,6 +1005,16 @@ public class StallUpServiceImpl implements StallUpService {
             userConfigMapper.update(upd);
         }
         return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<Map<String, Object>> getSmsHot(Long activityId) {
+        List<String> activityList = new ArrayList<>();
+        activityList.add(ID_PREFIX + activityId);
+        Map<String,Object> map = new HashMap<>();
+        map.put("activityList",activityList);
+        ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
+        return dispatch;
     }
 
     /**
