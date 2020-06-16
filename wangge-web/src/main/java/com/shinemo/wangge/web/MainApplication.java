@@ -85,7 +85,7 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/thirdapi/**")
                 .addPathPatterns("/sweepvillage/**")
                 .addPathPatterns("/operate/**")
-                .addPathPatterns("/todo/thing//**")
+                .addPathPatterns("/todo/thing/**")
                 .excludePathPatterns("/backdoor/**", "/error","/todo/operateTodoThing",properties.getCheckStatusPath())
                 .order(1);
     }
