@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 摆摊
@@ -364,6 +365,12 @@ public class StallUpController {
 	public ApiResult<GetParentDetailResponse> getParentDetail(@RequestParam Long id) {
 		Assert.notNull(id, "id is null");
 		return stallUpService.getParentDetail(id);
+	}
+
+	@GetMapping("getSmsHot")
+	public ApiResult<Map<String, Object>> getSmsHot(@RequestParam Long activityId) {
+		Assert.notNull(activityId, "id is null");
+		return stallUpService.getSmsHot(activityId);
 	}
 
 	private Long getUid() {

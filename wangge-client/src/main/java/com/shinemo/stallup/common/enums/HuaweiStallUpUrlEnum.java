@@ -18,6 +18,7 @@ public enum HuaweiStallUpUrlEnum {
     QUERY_BELONG_GRID_USER("/CMCC_GX_market/api/v2/queryBelongGridUser", "查询网格人员信息","queryBelongGridUser"),
     QUERY_CELL_CUST_GROUP_DETAIL("/CMCC_GX_market/api/v2/queryCellCustGroupDetail", "获取客户群详情","queryCellCustGroupDetail"),
     SYNCHRONIZE_STALL_DATA("/CMCC_GX_market/api/v2/synchronizeStallData", "创建摆摊，同步华为","synchronizeStallData"),
+    QUERY_ACTIVITY_ORDER("/CMCC_GX_market/api/v2/queryActivityOrder", "查询短信预热结果","queryActivityOrder"),
     ;
     private String url;
     private String desc;
