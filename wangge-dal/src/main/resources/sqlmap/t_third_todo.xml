@@ -96,39 +96,39 @@
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
+            <if test="id != null ">
                 id,
             </if>
             gmt_create,
             gmt_modified,
-            <if test="thirdId != null">
+            <if test="thirdId != null and thirdId != ''">
                 third_id,
             </if>
             <if test="thirdType != null">
                 third_type,
             </if>
-            <if test="title != null">
+            <if test="title != null and title != ''">
                 title,
             </if>
-            <if test="remark != null">
+            <if test="remark != null and remark != '' ">
                 remark,
             </if>
             <if test="status != null">
                 status,
             </if>
-            <if test="label != null">
+            <if test="label != null and label != '' ">
                 label,
             </if>
-            <if test="operatorTime != null">
+            <if test="operatorTime != null and operatorTime != ''">
                 operator_time,
             </if>
-            <if test="operatorMobile != null">
+            <if test="operatorMobile != null and operatorMobile!='' ">
                 operator_mobile,
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime!='' ">
                 start_time,
             </if>
-            <if test="extend != null">
+            <if test="extend != null and extend!='' ">
                 extend,
             </if>
         </trim>
@@ -138,34 +138,34 @@
             </if>
             now(),
             now(),
-            <if test="thirdId != null">
+            <if test="thirdId != null and thirdId != '' ">
                 #{thirdId, jdbcType=VARCHAR},
             </if>
             <if test="thirdType != null">
                 #{thirdType, jdbcType=INTEGER},
             </if>
-            <if test="title != null">
+            <if test="title != null and title !='' ">
                 #{title, jdbcType=VARCHAR},
             </if>
-            <if test="remark != null">
+            <if test="remark != null and remark!='' ">
                 #{remark, jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 #{status, jdbcType=INTEGER},
             </if>
-            <if test="label != null">
+            <if test="label != null  and label !='' ">
                 #{label, jdbcType=VARCHAR},
             </if>
-            <if test="operatorTime != null">
+            <if test="operatorTime != null and operatorTime!='' ">
                 #{operatorTime},
             </if>
-            <if test="operatorMobile != null">
+            <if test="operatorMobile != null and operatorMobile!='' ">
                 #{operatorMobile, jdbcType=VARCHAR},
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime!='' ">
                 #{startTime},
             </if>
-            <if test="extend != null">
+            <if test="extend != null and extend!=''">
                 #{extend, jdbcType=LONGVARCHAR},
             </if>
         </trim>
@@ -177,34 +177,34 @@
         <include refid="table"/>
         <set>
             gmt_modified = now(),
-            <if test="thirdId != null">
+            <if test="thirdId != null and thirdId!='' ">
                 third_id = #{thirdId, jdbcType=VARCHAR},
             </if>
             <if test="thirdType != null">
                 third_type = #{thirdType, jdbcType=INTEGER},
             </if>
-            <if test="title != null">
+            <if test="title != null and title!=''">
                 title = #{title, jdbcType=VARCHAR},
             </if>
-            <if test="remark != null">
+            <if test="remark != null and remark!=''">
                 remark = #{remark, jdbcType=VARCHAR},
             </if>
             <if test="status != null">
                 status = #{status, jdbcType=INTEGER},
             </if>
-            <if test="label != null">
+            <if test="label != null and label!=''">
                 label = #{label, jdbcType=VARCHAR},
             </if>
-            <if test="operatorTime != null">
+            <if test="operatorTime != null and operatorTime!=''">
                 operator_time = #{operatorTime},
             </if>
-            <if test="operatorMobile != null">
+            <if test="operatorMobile != null and operatorMobile!=''">
                 operator_mobile = #{operatorMobile, jdbcType=VARCHAR},
             </if>
-            <if test="startTime != null">
+            <if test="startTime != null and startTime!=''">
                 start_time = #{startTime},
             </if>
-            <if test="extend != null">
+            <if test="extend != null and extend!=''">
                 extend = #{extend, jdbcType=LONGVARCHAR}
             </if>
         </set>
