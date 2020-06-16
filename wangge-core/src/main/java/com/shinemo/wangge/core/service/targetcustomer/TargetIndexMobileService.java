@@ -1,7 +1,8 @@
-package com.shinemo.wangge.core.service.targetcommunity;
+package com.shinemo.wangge.core.service.targetcustomer;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.targetcustomer.domain.model.TargetIndexMobileDO;
+import com.shinemo.targetcustomer.domain.response.TargetCustomerResponse;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface TargetIndexMobileService {
      * @param mobile
      * @return
      */
-    ApiResult<List<TargetIndexMobileDO>> findByMobile(String mobile);
+    ApiResult<TargetCustomerResponse> findByMobile(String mobile);
 }

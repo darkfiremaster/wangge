@@ -21,6 +21,29 @@
         t_target_customers_index_bak
     </sql>
 
+	<!-- 查询条件 -->
+	<sql id="conditions">
+		<where>
+			<choose>
+				<when test="id != null">
+					and id = #{id}
+				</when>
+				<otherwise>
+					<if test="indexCode != null">and index_code = #{indexCode}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
 
+
+	<!-- 查询某条记录 -->
+	<select id="get" resultMap="result" parameterType="com.shinemo.targetcustomer.domain.query.TargetIndexCommunityQuery">
+		select
+		<include refid="columns"/>
+		from
+		<include refid="table"/>
+		<include refid="conditions"/>
+		limit 1
+	</select>
 
 </mapper>
