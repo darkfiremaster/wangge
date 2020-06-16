@@ -14,10 +14,6 @@ import java.util.List;
  */
 public interface LoginInfoResultMapper extends BaseMapper<LoginInfoResultQuery, LoginInfoResultDO> {
 
-    List<LoginInfoResultDO> getLoginInfoResultDOList(LoginInfoResultQuery loginInfoResultQuery);
-
     Long insertBatch(@Param("loginInfoResultDOList") List<LoginInfoResultDO> loginInfoResultDOList);
-
-    List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList();
 
 }

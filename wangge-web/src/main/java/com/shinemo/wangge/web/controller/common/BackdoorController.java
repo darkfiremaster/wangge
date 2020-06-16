@@ -3,7 +3,6 @@ package com.shinemo.wangge.web.controller.common;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
-import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
@@ -17,7 +16,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -102,21 +100,13 @@ public class BackdoorController {
         return "success\n";
     }
 
+    /**
+     * 生成昨日登录统计结果
+     * @return
+     */
     @GetMapping("/generateLoginInfoResult")
     public ApiResult<List<LoginInfoResultDO>> generateLoginInfoResult() {
         return loginStatisticsService.saveYesterdayLoginInfoResult();
-    }
-
-    @PostMapping(value = "/exportUserLoginInfoExcel")
-    public ApiResult<List<LoginInfoExcelDTO>> exportUserLoginInfoExcel(HttpServletResponse response) {
-        ApiResult<List<LoginInfoExcelDTO>> result = loginStatisticsService.getLoginInfoExcelDTOList();
-        //try {
-        //    ExcelUtil.writeExcel(response, result.getData(), "userLoginInfo", "sheet1", ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
-        //} catch (ExcelException e) {
-        //    log.error("导出excel异常", e);
-        //    return ApiResult.of(500);
-        //}
-        return ApiResult.of(0,result.getData());
     }
 
     @GetMapping(value = "/clearUserGridInfoCache")
