@@ -27,7 +27,6 @@ public class OperateTodoController {
 
     @PostMapping("/operateTodoThing")
     public ApiResult<Void> operateTodoThing(@RequestBody TodoThirdRequest todoThirdRequest) {
-        log.info("[operateTodoThing] invoke, reuquest:{}", todoThirdRequest);
         return todoService.operateTodoThing(todoThirdRequest);
     }
 
