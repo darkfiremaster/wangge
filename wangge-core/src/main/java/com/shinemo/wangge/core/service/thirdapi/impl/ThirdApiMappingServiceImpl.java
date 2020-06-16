@@ -75,6 +75,10 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
             //调华为接口
             String mobile = getMobile();
+            if (StringUtils.isBlank(mobile)) {
+                //当异步调用时,会无法从SmartGridContext获取到手机号,所以从请求参数中获取
+                mobile = (String) requestData.get("mobile");
+            }
             String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, new HashMap<>());
 
@@ -91,13 +95,14 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             backoff = @Backoff(delay = 3000, multiplier = 2))
     @Async
     @Override
-    public ApiResult<Map<String, Object>> asyncDispatch(Map<String, Object> requestData, String apiName) {
+    public ApiResult<Map<String, Object>> asyncDispatch(Map<String, Object> requestData, String apiName,String mobile) {
+        requestData.put("mobile", mobile);
         return dispatch(requestData, apiName);
     }
 
 
     @Recover
-    public ApiResult<Map<String, Object>> asyncDispatchRecover(Exception e, Map<String, Object> map, String apiName) {
+    public ApiResult<Map<String, Object>> asyncDispatchRecover(Exception e, Map<String, Object> map, String apiName,String mobile) {
         log.error("[asyncDispatchRecover] request:{},apiName:{},exception:{}", map, apiName, e.getMessage());
         //todo 补偿处理
         return ApiResultWrapper.fail(ThirdApiErrorCodes.BASE_ERROR);

@@ -4,6 +4,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.util.DateUtil;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -30,16 +31,17 @@ import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.stallup.domain.utils.LocalDateTimeUtils;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.todo.enums.ThirdTodoTypeEnum;
+import com.shinemo.todo.enums.TodoMethodOperateEnum;
+import com.shinemo.todo.enums.TodoStatusEnum;
+import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
-import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
-import com.shinemo.wangge.dal.mapper.SignRecordMapper;
-import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
-import com.shinemo.wangge.dal.mapper.StallUpMarketingNumberMapper;
-import com.shinemo.wangge.dal.mapper.UserConfigMapper;
-
+import com.shinemo.wangge.core.service.todo.TodoService;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -120,6 +122,9 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+
+    @Resource
+    private TodoService todoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -219,6 +224,24 @@ public class StallUpServiceImpl implements StallUpService {
             map.put("partners",simpleList);
             map.put("custIdList",request.getCustList());
             thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod());
+
+
+            //同步代办事项
+            for (StallUpActivity stallUpActivity : insertList) {
+                TodoDTO todoDTO = new TodoDTO();
+                todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
+                todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+                todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
+                todoDTO.setTitle(stallUpActivity.getTitle());
+                todoDTO.setRemark(stallUpActivity.getAddress());
+                todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+                todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
+                todoDTO.setOperatorMobile(stallUpActivity.getMobile());
+                todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
+                todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
+                ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+                todoService.operateTodoThing(todoRequest.getData());
+            }
         }
     }
 
