@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TodoStatusEnum {
     NOT_FINISH(0, "未完成"),
-    FINISH(1, "其他");
+    OTHER(1, "其他");
 
     private int id;
     private String desc;
