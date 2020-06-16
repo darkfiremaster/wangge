@@ -1064,8 +1064,10 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public ApiResult<Map<String, Object>> getSmsHot(Long activityId) {
-        List<String> activityList = new ArrayList<>();
-        activityList.add(ID_PREFIX + activityId);
+        List<GetHuaWeiSmsHotRequest> activityList = new ArrayList<>();
+        GetHuaWeiSmsHotRequest request = new GetHuaWeiSmsHotRequest();
+        request.setActivityId(ID_PREFIX + activityId);
+        activityList.add(request);
         Map<String,Object> map = new HashMap<>();
         map.put("activityList",activityList);
         ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
