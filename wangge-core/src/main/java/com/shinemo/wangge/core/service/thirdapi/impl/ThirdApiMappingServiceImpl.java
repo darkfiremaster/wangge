@@ -79,6 +79,9 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
                 //当异步调用时,会无法从SmartGridContext获取到手机号,所以从请求参数中获取
                 mobile = (String) requestData.get("mobile");
             }
+            if (!thirdApiMappingDO.isIgnoreMobile()) {
+                requestData.put("mobile", mobile);
+            }
             String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, new HashMap<>());
 
