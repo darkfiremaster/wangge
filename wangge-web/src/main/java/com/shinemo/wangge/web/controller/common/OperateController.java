@@ -34,14 +34,4 @@ public class OperateController {
         asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
         return ApiResult.of(0);
     }
-
-    @PostMapping("/addUserOperateLogToRedis")
-    public ApiResult addUserOperateLogToRedis(@RequestBody UserOperateLogVO userOperateLogVO) {
-        userOperateLogVO.setMobile(SmartGridContext.getMobile());
-        userOperateLogVO.setUid(SmartGridContext.getUid());
-        userOperateLogVO.setUserName(SmartGridContext.getUserName());
-        operateService.addUserOperateLogToRedis(userOperateLogVO);
-        return ApiResult.of(0);
-    }
-
 }

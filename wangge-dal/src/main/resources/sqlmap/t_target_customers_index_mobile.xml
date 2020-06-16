@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.TargetIndexMobileMapper">
+	<!-- 结果集对应关系 -->
+	<resultMap id="result" type="com.shinemo.targetcustomer.domain.model.TargetIndexMobileDO" >
+		<id column="id" property="id"/>
+		<result property="gmtCreate" column="gmt_create"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="mobile" column="mobile"/>
+		<result property="indexId" column="index_id"/>
+		<result property="deadlineTime" column="deadline_time"/>
+
+    </resultMap>
+
+	<!-- 数据库字段 -->
+	<sql id="columns">
+		id, gmt_create, gmt_modified, mobile, index_id, deadline_time
+	</sql>
+
+    <sql id="table">
+        t_target_customers_index_mobile_bak
+    </sql>
+
+
+	<!-- 查询条件 -->
+	<sql id="conditions">
+		<where>
+			<choose>
+				<when test="id != null">
+					and id = #{id}
+				</when>
+				<otherwise>
+					<if test="mobile != null">and mobile = #{mobile}</if>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+
+	<!-- 查询结果集 -->
+	<select id="find" resultMap="result" parameterType="com.shinemo.targetcustomer.domain.query.TargetIndexMobileQuery">
+		select
+		<include refid="columns" />
+		from
+		<include refid="table" />
+		<include refid="conditions" />
+		<if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+			order by
+			<foreach collection="orderByList" item="orderBy" separator=",">
+				${orderBy.column} ${orderBy.sort}
+			</foreach>
+		</if>
+		<if test="pageEnable">
+			limit #{startRow}, #{pageSize}
+		</if>
+	</select>
+
+
+</mapper>
