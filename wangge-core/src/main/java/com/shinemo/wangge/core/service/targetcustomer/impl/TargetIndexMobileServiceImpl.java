@@ -20,8 +20,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 类说明:
@@ -43,7 +42,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
 
     @Override
     public ApiResult<TargetCustomerResponse> findByMobile(String mobile) {
-        Assert.hasText(mobile,"mobile is null");
+        Assert.hasText(mobile, "mobile is null");
 
         TargetCustomerResponse targetCustomerResponse = new TargetCustomerResponse();
         //1.获取指标列表
@@ -52,16 +51,27 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
         query.setPageEnable(false);
 
         List<TargetIndexMobileDO> targetIndexMobileDOS = targetIndexMobileMapper.find(query);
-        if(CollectionUtils.isEmpty(targetIndexMobileDOS)){
-            log.error("[findByMobile] error,mobile:{}",mobile);
+        if (CollectionUtils.isEmpty(targetIndexMobileDOS)) {
+            log.error("[findByMobile] error,mobile:{}", mobile);
             return ApiResult.of(0);
         }
         targetCustomerResponse.setMobile(mobile);
 
 
-
         List<TargetIndexResponse> targetIndexResponseList = new ArrayList<>(targetIndexMobileDOS.size());
+
+        //去除mobile对应的重复的indexId
+        Set<Long> indexIdSet = new HashSet<>();
+        for(TargetIndexMobileDO mobileDO : targetIndexMobileDOS){
+            indexIdSet.add(mobileDO.getIndexId());
+
+        }
+
         for(TargetIndexMobileDO targetIndexMobileDO : targetIndexMobileDOS){
+            if(!indexIdSet.contains(targetIndexMobileDO.getIndexId())){
+                continue;
+            }
+            indexIdSet.remove(targetIndexMobileDO.getIndexId());
             TargetIndexResponse  targetIndexResponse = new TargetIndexResponse();
             targetIndexResponse.setDeadlineTime(targetIndexMobileDO.getDeadlineTime());
             targetIndexResponse.setIndexId(targetIndexMobileDO.getIndexId());

@@ -198,7 +198,7 @@ public class TodoServiceImpl implements TodoService {
                     typeDOList.stream()
                             .map(todoTypeDO -> new TodoTypeVO.TodoTypeListBean.ChildListBean(todoTypeDO.getName(), todoTypeDO.getTodoType(), null))
                             .collect(Collectors.toList());
-            toDoTypeListBean.setChildList(childListBeanList);
+            toDoTypeListBean.setChildren(childListBeanList);
             todoTypeList.add(toDoTypeListBean);
         }
         todoTypeVO.setToDoTypeList(todoTypeList);
@@ -294,7 +294,7 @@ public class TodoServiceImpl implements TodoService {
                     typeDTOList.stream()
                             .map(todoTypeDTO -> new TodoTypeVO.TodoTypeListBean.ChildListBean(todoTypeDTO.getName(), todoTypeDTO.getTodoType(), todoTypeDTO.getTodoCount()))
                             .collect(Collectors.toList());
-            toDoTypeListBean.setChildList(childListBeanList);
+            toDoTypeListBean.setChildren(childListBeanList);
             todoTypeList.add(toDoTypeListBean);
         }
         todoTypeVO.setToDoTypeList(todoTypeList);
