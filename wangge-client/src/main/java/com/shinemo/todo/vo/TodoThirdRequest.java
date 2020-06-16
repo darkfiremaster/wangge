@@ -37,13 +37,13 @@ public class TodoThirdRequest {
 
         TodoDTO todoDTO = new TodoDTO();
         todoDTO.setThirdId("123");
-        todoDTO.setThirdType(1);
+        todoDTO.setThirdType(7);
         todoDTO.setOperateType(1);
         todoDTO.setTitle("测试");
         todoDTO.setRemark("备注");
         todoDTO.setStatus(0);
         todoDTO.setLabel("待开始");
-        todoDTO.setOperatorMobile("13588039023");
+        todoDTO.setOperatorMobile("13617712720");
         todoDTO.setOperatorTime(DateUtil.format(new Date()));
         todoDTO.setStartTime(DateUtil.format(new Date()));
         todoThirdRequest.setPostBody(todoDTO);
@@ -52,7 +52,8 @@ public class TodoThirdRequest {
         map.put("timeStamp", time);
         map.put("postBody", todoDTO);
         map.put("method", method);
-        map.put("key", "34b18faa-0424-41ad-b73b-80fc02d4be55");
+        //注意:这里要换成相应thirdType的公司的秘钥,不然的话,签名会报错
+        map.put("key", "4313e55f-8234-4a0c-8cc6-6ed084a61df9");
         String sign = SmartGridUtils.genSign(map);
         System.out.println(sign);
         todoThirdRequest.setSign(sign);
