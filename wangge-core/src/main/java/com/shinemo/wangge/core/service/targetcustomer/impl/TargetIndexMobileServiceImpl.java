@@ -41,7 +41,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
     private TargetIndexCommunityMapper targetIndexCommunityMapper;
 
 
-    private final Integer COMMUNITY_SIZE = 5;
+    private final Long COMMUNITY_SIZE = 5L;
 
     @Override
     public ApiResult<TargetCustomerResponse> findByMobile(String mobile) {
@@ -103,7 +103,8 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             query.setOrderByEnable(true);
             query.putOrderBy("upper_limit",true);
             query.putOrderBy("lower_limit",true);
-            query.setPageEnable(false);
+            query.setPageEnable(true);
+            query.setPageSize(COMMUNITY_SIZE);
 
 
             List<TargetIndexCommunityDO> targetIndexCommunityDOS = targetIndexCommunityMapper.find(communityQuery);
