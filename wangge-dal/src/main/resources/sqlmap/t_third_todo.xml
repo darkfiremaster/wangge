@@ -37,6 +37,7 @@
                 <otherwise>
                     <if test="thirdId != null">and third_id = #{thirdId}</if>
                     <if test="thirdType != null">and third_type = #{thirdType}</if>
+                    <if test="title != null">and title LIKE CONCAT('%', '${title}', '%')</if>
                     <if test="mobile != null">and operator_mobile = #{mobile}</if>
                     <if test="status != null">and status = #{status}</if>
                     <if test="startTime != null"><![CDATA[and operator_time >= #{startTime}]]></if>
@@ -119,13 +120,13 @@
             <if test="label != null and label != '' ">
                 label,
             </if>
-            <if test="operatorTime != null and operatorTime != ''">
+            <if test="operatorTime != null">
                 operator_time,
             </if>
             <if test="operatorMobile != null and operatorMobile!='' ">
                 operator_mobile,
             </if>
-            <if test="startTime != null and startTime!='' ">
+            <if test="startTime != null ">
                 start_time,
             </if>
             <if test="extend != null and extend!='' ">
@@ -156,13 +157,13 @@
             <if test="label != null  and label !='' ">
                 #{label, jdbcType=VARCHAR},
             </if>
-            <if test="operatorTime != null and operatorTime!='' ">
+            <if test="operatorTime != null">
                 #{operatorTime},
             </if>
             <if test="operatorMobile != null and operatorMobile!='' ">
                 #{operatorMobile, jdbcType=VARCHAR},
             </if>
-            <if test="startTime != null and startTime!='' ">
+            <if test="startTime != null">
                 #{startTime},
             </if>
             <if test="extend != null and extend!=''">
@@ -195,13 +196,13 @@
             <if test="label != null and label!=''">
                 label = #{label, jdbcType=VARCHAR},
             </if>
-            <if test="operatorTime != null and operatorTime!=''">
+            <if test="operatorTime != null">
                 operator_time = #{operatorTime},
             </if>
             <if test="operatorMobile != null and operatorMobile!=''">
                 operator_mobile = #{operatorMobile, jdbcType=VARCHAR},
             </if>
-            <if test="startTime != null and startTime!=''">
+            <if test="startTime != null">
                 start_time = #{startTime},
             </if>
             <if test="extend != null and extend!=''">

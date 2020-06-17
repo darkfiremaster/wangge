@@ -47,6 +47,8 @@ public class BackdoorController {
     @Resource
     private LoginStatisticsService loginStatisticsService;
 
+
+
     @Resource
     private RedisService redisService;
 
@@ -109,10 +111,19 @@ public class BackdoorController {
         return loginStatisticsService.saveYesterdayLoginInfoResult();
     }
 
+    /**
+     * 清空用户网格信息缓存
+     * @param mobile
+     * @return
+     */
     @GetMapping(value = "/clearUserGridInfoCache")
     public ApiResult<Void> clearUserGridInfoCache(String mobile) {
         redisService.del(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
         log.info("[clearUserGridInfoCache] 清空用户网格信息缓存成功,mobile:{}", mobile);
         return ApiResult.of(0);
     }
+
+
+
+
 }
