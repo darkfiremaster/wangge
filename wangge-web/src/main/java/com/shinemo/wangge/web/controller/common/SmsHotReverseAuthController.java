@@ -8,7 +8,6 @@ import com.shinemo.stallup.domain.response.SmsHotReverseAuthResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,13 +34,13 @@ public class SmsHotReverseAuthController {
         SmsHotReverseAuthResponse response = new SmsHotReverseAuthResponse();
         response.setCode(200);
 
-        if (request.getMobile().equals("13396631940") ||
-                request.getMobile().equals("18790513853") ||
-                request.getMobile().equals("18817350871") || request.getMobile().equals("13557710513")
-                || request.getMobile().equals("13607713224")) {
-            response.setMobile(request.getMobile());
-            return response;
-        }
+        //if (request.getMobile().equals("13396631940") ||
+        //        request.getMobile().equals("18790513853") ||
+        //        request.getMobile().equals("18817350871") || request.getMobile().equals("13557710513")
+        //        || request.getMobile().equals("13607713224")) {
+        //    response.setMobile(request.getMobile());
+        //    return response;
+        //}
 
         try {
             if (request == null) {
