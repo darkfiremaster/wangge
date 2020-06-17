@@ -17,7 +17,7 @@ public class SmsHotResponse {
 
     @Getter
     @Setter
-    private class SmsData {
+    public class SmsData {
         /** 申请时间 */
         private String applyTime;
         /** 发送时间 */
