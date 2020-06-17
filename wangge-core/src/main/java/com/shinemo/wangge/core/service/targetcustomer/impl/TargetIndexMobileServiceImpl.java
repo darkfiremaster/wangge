@@ -40,6 +40,9 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
     @Resource
     private TargetIndexCommunityMapper targetIndexCommunityMapper;
 
+
+    private final Integer COMMUNITY_SIZE = 5;
+
     @Override
     public ApiResult<TargetCustomerResponse> findByMobile(String mobile) {
         Assert.hasText(mobile, "mobile is null");
@@ -102,6 +105,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             query.putOrderBy("lower_limit",true);
             query.setPageEnable(false);
 
+
             List<TargetIndexCommunityDO> targetIndexCommunityDOS = targetIndexCommunityMapper.find(communityQuery);
             if(CollectionUtils.isEmpty(targetIndexCommunityDOS)){
                 log.error("[findByIndexId] error,indexId:{}",communityQuery.getIndexId());
@@ -110,7 +114,12 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
 
             //初始化TargetCommunityResponseList
             List<TargetCommunityResponse> targetCommunityResponseList = new ArrayList<>(targetIndexCommunityDOS.size());
+
+            int size = 0;
             for(TargetIndexCommunityDO targetIndexCommunityDO : targetIndexCommunityDOS){
+                if(size >= COMMUNITY_SIZE){
+                    continue;
+                }
                 TargetCommunityResponse targetCommunityResponse = new TargetCommunityResponse();
                 targetCommunityResponse.setCommunityId(targetIndexCommunityDO.getCommunityId());
                 targetCommunityResponse.setCommunityName(targetIndexCommunityDO.getCommunityName());
@@ -119,6 +128,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
                 targetCommunityResponse.setUpperLimit(targetIndexCommunityDO.getUpperLimit());
                 targetCommunityResponse.setLowerLimit(targetIndexCommunityDO.getLowerLimit());
                 targetCommunityResponseList.add(targetCommunityResponse);
+                size++;
             }
 
 
