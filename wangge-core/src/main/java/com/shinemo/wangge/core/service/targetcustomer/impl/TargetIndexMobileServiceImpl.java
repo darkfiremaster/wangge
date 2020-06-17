@@ -101,7 +101,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             communityQuery.setIndexId(targetIndexMobileDO.getIndexId());
 
             query.setOrderByEnable(true);
-            query.putOrderBy("sort",true);
+            query.putOrderBy("sort",false);
             query.setPageEnable(true);
             query.setPageSize(COMMUNITY_SIZE);
 
