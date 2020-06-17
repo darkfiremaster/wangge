@@ -19,7 +19,7 @@
 	</sql>
 
     <sql id="table">
-        t_target_customers_index_mobile_bak
+        t_target_customers_index_mobile
     </sql>
 
 

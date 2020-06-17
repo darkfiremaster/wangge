@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.slave.mapper.SlaveLoginInfoResultMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.operate.domain.LoginInfoResultDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="statisticsTime" column="statistics_time"/>
+        <result property="cityName" column="city_name"/>
+        <result property="countyName" column="county_name"/>
+        <result property="gridCaptainLoginPersonCount" column="grid_captain_login_person_count"/>
+        <result property="gridCaptainLoginCount" column="grid_captain_login_count"/>
+        <result property="gridManagerLoginPersonCount" column="grid_manager_login_person_count"/>
+        <result property="gridManagerLoginCount" column="grid_manager_login_count"/>
+        <result property="directSellerLoginPersonCount" column="direct_seller_login_person_count"/>
+        <result property="directSellerLoginCount" column="direct_seller_login_count"/>
+        <result property="decoratorLoginPersonCount" column="decorator_login_person_count"/>
+        <result property="decoratorLoginCount" column="decorator_login_count"/>
+        <result property="businessHallLoginPersonCount" column="business_hall_login_person_count"/>
+        <result property="businessHallLoginCount" column="business_hall_login_count"/>
+        <result property="agentBusinessLoginPersonCount" column="agent_business_login_person_count"/>
+        <result property="agentBusinessLoginCount" column="agent_business_login_count"/>
+        <result property="operatingPersonnelLoginPersonCount" column="operating_personnel_login_person_count"/>
+        <result property="operatingPersonnelLoginCount" column="operating_personnel_login_count"/>
+        <result property="loginPersonTotalCount" column="login_person_total_count"/>
+        <result property="loginTotalCount" column="login_total_count"/>
+        <result property="loginPersonDayPercent" column="login_person_day_percent"/>
+        <result property="loginCountDayPercent" column="login_count_day_percent"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, statistics_time, city_name, county_name, grid_captain_login_person_count, grid_captain_login_count, grid_manager_login_person_count, grid_manager_login_count, direct_seller_login_person_count, direct_seller_login_count, decorator_login_person_count, decorator_login_count, business_hall_login_person_count, business_hall_login_count, agent_business_login_person_count, agent_business_login_count, operating_personnel_login_person_count, operating_personnel_login_count, login_person_total_count, login_total_count, login_person_day_percent, login_count_day_percent
+    </sql>
+
+    <sql id="table">
+        t_login_info_result
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getLoginInfoResultDOList" resultType="com.shinemo.operate.domain.LoginInfoResultDO"
+            parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
+        select a.city_name as cityName, a.city_code as cityCode,a.county_name as countyName, a.county_code as countyCode,a.grid_name as gridName, a.grid_id as gridId,
+
+        IFNULL(sum(b.login_cnt),0) as loginTotalCount,
+        count(DISTINCT(b.mobile)) as loginPersonTotalCount,
+
+        sum(if(a.role_id = 1, b.login_cnt, 0)) as gridCaptainLoginCount,
+        count(DISTINCT(if(a.role_id = 1, b.mobile, NULL))) as gridCaptainLoginPersonCount,
+        sum(if(a.role_id = 2, b.login_cnt, 0)) as gridManagerLoginCount,
+        count(DISTINCT(if(a.role_id = 2, b.mobile, NULL))) as gridManagerLoginPersonCount,
+        sum(if(a.role_id = 3, b.login_cnt, 0)) as businessHallLoginCount,
+        count(DISTINCT(if(a.role_id = 3, b.mobile, NULL))) as businessHallLoginPersonCount,
+        sum(if(a.role_id = 4, b.login_cnt, 0)) as decoratorLoginCount,
+        count(DISTINCT(if(a.role_id = 4, b.mobile, NULL))) as decoratorLoginPersonCount,
+        sum(if(a.role_id = 5, b.login_cnt, 0)) as directSellerLoginCount,
+        count(DISTINCT(if(a.role_id = 5, b.mobile, NULL))) as directSellerLoginPersonCount,
+        sum(if(a.role_id = 6, b.login_cnt, 0)) as agentBusinessLoginCount,
+        count(DISTINCT(if(a.role_id = 6, b.mobile, NULL))) as agentBusinessLoginPersonCount,
+        sum(if(a.role_id = 7, b.login_cnt, 0)) as operatingPersonnelLoginCount,
+        count(DISTINCT(if(a.role_id = 7, b.mobile, NULL))) as operatingPersonnelLoginPersonCount
+
+        from
+        (select mobile, city_name,city_code, county_name, county_code, grid_name, grid_id,role_name, role_id from t_user_grid_role) a
+        LEFT OUTER JOIN
+        (select mobile, count(*) as login_cnt  from t_user_operate_log${tableIndex} where
+        type = 1 and operate_time <![CDATA[>=]]> #{startTime} and operate_time <![CDATA[<=]]> #{endTime}
+        group by mobile)b
+        on a.mobile = b.mobile
+        group by
+        a.city_code, a.county_code
+
+    </select>
+
+    <select id="getBeforeYesterdayLoginInfoResultList" resultMap="result">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        where statistics_time = DATE_SUB(CURRENT_DATE,INTERVAL 2 day)
+    </select>
+
+
+    <select id="getLoginInfoExcelDTOList" parameterType="com.shinemo.operate.query.UserOperateLogQuery"
+            resultType="com.shinemo.operate.excel.LoginInfoExcelDTO">
+        select
+        t1.id,
+        t1.mobile,
+        t1.username,
+        t1.operate_time as loginTime,
+        GROUP_CONCAT( DISTINCT ( t2.city_name) ) as cityName,
+        GROUP_CONCAT( DISTINCT ( t2.county_name )) as countyName,
+        GROUP_CONCAT( DISTINCT ( t2.role_name )) as roleName,
+        GROUP_CONCAT( DISTINCT ( t2.grid_name )) as gridName
+        from
+         t_user_operate_log${tableIndex} as  t1
+        left join t_user_grid_role as t2 on t1.mobile = t2.mobile
+        where t1.type=1 and t1.operate_time <![CDATA[>=]]> #{startTime} and t1.operate_time <![CDATA[<=]]> #{endTime}
+        GROUP BY
+        t1.id;
+    </select>
+
+</mapper>

@@ -25,7 +25,7 @@ public class TodoTypeVO implements Serializable {
 
         private static final long serialVersionUID = -645282461480703833L;
         private String name;
-        private List<ChildListBean> childList;
+        private List<ChildListBean> children;
 
         @Data
         @AllArgsConstructor

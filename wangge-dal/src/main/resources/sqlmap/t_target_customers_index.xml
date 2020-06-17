@@ -18,7 +18,7 @@
 	</sql>
 
     <sql id="table">
-        t_target_customers_index_bak
+        t_target_customers_index
     </sql>
 
 	<!-- 查询条件 -->

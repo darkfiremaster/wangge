@@ -29,6 +29,39 @@
         t_todo_log
     </sql>
 
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="company != null">and company = #{company}</if>
+                    <if test="thirdType != null">and third_type = #{thirdType}</if>
+                    <if test="thirdId != null">and third_id = #{thirdId}</if>
+                    <if test="operatorMobile != null">and operator_mobile = #{operatorMobile}</if>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="startTime != null"><![CDATA[and gmt_create >= #{startTime}]]></if>
+                    <if test="endTime != null"><![CDATA[and gmt_create <= #{endTime}]]></if>
+                    <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+                        order by
+                        <foreach collection="orderByList" item="orderBy" separator=",">
+                            ${orderBy.column} ${orderBy.sort}
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.todo.query.TodoLogQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
 
     <!-- 插入 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"

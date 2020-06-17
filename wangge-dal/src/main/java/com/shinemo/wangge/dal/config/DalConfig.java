@@ -143,12 +143,4 @@ public class DalConfig {
         return sqlSessionTemplate;
     }
 
-    @Bean
-    @DependsOn("slaveDataSource")
-    public DataSourceTransactionManager slaveDataSourceTransactionManager(
-            @Qualifier("slaveDataSource") DataSource dataSource) {
-        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
-        dataSourceTransactionManager.setDataSource(dataSource);
-        return dataSourceTransactionManager;
-    }
 }
