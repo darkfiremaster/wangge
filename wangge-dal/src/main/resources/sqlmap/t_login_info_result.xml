@@ -356,49 +356,4 @@
         WHERE
         id = #{id}
     </update>
-
-
-    <select id="getLoginInfoResultDOList" resultType="com.shinemo.operate.domain.LoginInfoResultDO"
-            parameterType="com.shinemo.operate.query.LoginInfoResultQuery">
-        select a.city_name as cityName, a.city_code as cityCode,a.county_name as countyName, a.county_code as countyCode,a.grid_name as gridName, a.grid_id as gridId,
-
-        IFNULL(sum(b.login_cnt),0) as loginTotalCount,
-        count(DISTINCT(b.mobile)) as loginPersonTotalCount,
-
-        sum(if(a.role_id = 1, b.login_cnt, 0)) as gridCaptainLoginCount,
-        count(DISTINCT(if(a.role_id = 1, b.mobile, NULL))) as gridCaptainLoginPersonCount,
-        sum(if(a.role_id = 2, b.login_cnt, 0)) as gridManagerLoginCount,
-        count(DISTINCT(if(a.role_id = 2, b.mobile, NULL))) as gridManagerLoginPersonCount,
-        sum(if(a.role_id = 3, b.login_cnt, 0)) as businessHallLoginCount,
-        count(DISTINCT(if(a.role_id = 3, b.mobile, NULL))) as businessHallLoginPersonCount,
-        sum(if(a.role_id = 4, b.login_cnt, 0)) as decoratorLoginCount,
-        count(DISTINCT(if(a.role_id = 4, b.mobile, NULL))) as decoratorLoginPersonCount,
-        sum(if(a.role_id = 5, b.login_cnt, 0)) as directSellerLoginCount,
-        count(DISTINCT(if(a.role_id = 5, b.mobile, NULL))) as directSellerLoginPersonCount,
-        sum(if(a.role_id = 6, b.login_cnt, 0)) as agentBusinessLoginCount,
-        count(DISTINCT(if(a.role_id = 6, b.mobile, NULL))) as agentBusinessLoginPersonCount,
-        sum(if(a.role_id = 7, b.login_cnt, 0)) as operatingPersonnelLoginCount,
-        count(DISTINCT(if(a.role_id = 7, b.mobile, NULL))) as operatingPersonnelLoginPersonCount
-
-        from
-        (select mobile, city_name,city_code, county_name, county_code, grid_name, grid_id,role_name, role_id from t_user_grid_role) a
-        LEFT OUTER JOIN
-        (select mobile, count(*) as login_cnt  from t_user_operate_log${tableIndex} where
-        type = 1 and operate_time <![CDATA[>=]]> #{startTime} and operate_time <![CDATA[<=]]> #{endTime}
-        group by mobile)b
-        on a.mobile = b.mobile
-        group by
-        a.city_code, a.county_code
-
-    </select>
-
-    <select id="getBeforeYesterdayLoginInfoResultList" resultMap="result">
-        select
-        <include refid="columns"/>
-        from
-        <include refid="table"/>
-        where statistics_time = DATE_SUB(CURRENT_DATE,INTERVAL 2 day)
-    </select>
-
-
 </mapper>

@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.Assert;
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.CreateCache;
@@ -36,11 +37,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -75,10 +78,10 @@ public class TodoServiceImpl implements TodoService {
     public ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest) {
         Assert.notNull(todoThirdRequest, "param is null");
         TodoDTO todoDTO = todoThirdRequest.getPostBody();
-        Assert.notNull(todoDTO.getThirdId(), "thirdId is null");
+        Assert.notBlank(todoDTO.getThirdId(), "thirdId is null");
         Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
         Assert.notNull(todoDTO.getOperateType(), "operateType is null");
-        Assert.notNull(todoDTO.getOperatorMobile(), "operatorMobile is null");
+        Assert.notBlank(todoDTO.getOperatorMobile(), "operatorMobile is null");
 
         if (!todoThirdRequest.getIgnoreCheckSign()) {
             Boolean checkSuccess = todoAuthCheckService.checkSign(todoThirdRequest);
@@ -100,11 +103,11 @@ public class TodoServiceImpl implements TodoService {
 
     private ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
-        Assert.notNull(todoDTO.getTitle(), "title is null");
-        Assert.notNull(todoDTO.getRemark(), "remark is null");
+        Assert.notBlank(todoDTO.getTitle(), "title is null");
+        Assert.notBlank(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
-        Assert.notNull(todoDTO.getLabel(), "label is null");
-        Assert.notNull(todoDTO.getOperatorTime(), "operatorTime is null");
+        Assert.notBlank(todoDTO.getLabel(), "label is null");
+        Assert.notBlank(todoDTO.getOperatorTime(), "operatorTime is null");
 
         TodoQuery todoQuery = new TodoQuery();
         todoQuery.setThirdId(todoDTO.getThirdId());
@@ -316,10 +319,10 @@ public class TodoServiceImpl implements TodoService {
         //转换时间
         try {
             String operatorTime = todoDTO.getOperatorTime();
-            if (!StringUtils.isEmpty(operatorTime)) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(operatorTime)) {
                 todoDO.setOperatorTime(DateUtil.parse(operatorTime, "yyyy-MM-dd HH:mm:ss"));
             }
-            if (!StringUtils.isEmpty(todoDTO.getStartTime())) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(todoDTO.getStartTime())) {
                 todoDO.setStartTime(DateUtil.parse(todoDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
             }
         } catch (Exception e) {

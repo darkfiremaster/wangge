@@ -17,6 +17,7 @@ public class TodoDO implements Model {
     protected static final long serialVersionUID = 4753810862868386037L;
 
     private Long id;
+
     private Date gmtCreate;
     private Date gmtModified;
     /**

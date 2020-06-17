@@ -11,7 +11,7 @@ import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.dal.mapper.LoginInfoResultMapper;
-import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
+import com.shinemo.wangge.dal.slave.mapper.SlaveLoginInfoResultMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 public class LoginStatisticsServiceImpl implements LoginStatisticsService {
 
     @Resource
-    private UserOperateLogMapper userOperateLogMapper;
+    private LoginInfoResultMapper loginInfoResultMapper;
 
     @Resource
-    private LoginInfoResultMapper loginInfoResultMapper;
+    private SlaveLoginInfoResultMapper slaveLoginInfoResultMapper;
 
     @Override
     public ApiResult<List<LoginInfoResultDO>> saveYesterdayLoginInfoResult() {
@@ -46,7 +46,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
         loginInfoResultQuery.setStartTime(DateUtil.beginOfDay(yesterday));
         loginInfoResultQuery.setEndTime(DateUtil.endOfDay(yesterday));
         loginInfoResultQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
-        List<LoginInfoResultDO> loginInfoResultDOList = loginInfoResultMapper.getLoginInfoResultDOList(loginInfoResultQuery);
+        List<LoginInfoResultDO> loginInfoResultDOList = slaveLoginInfoResultMapper.getLoginInfoResultDOList(loginInfoResultQuery);
 
         //获取前天登录信息结果集
         Map<String, LoginInfoResultDO> beforeYesterdayLoginInfoResultMap = getBeforeYesterdayLoginInfoResultMap();
@@ -86,7 +86,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
     }
 
     private List<LoginInfoResultDO> getBeforeYesterdayLoginInfoResultList() {
-        List<LoginInfoResultDO> loginInfoResultDOS = loginInfoResultMapper.getBeforeYesterdayLoginInfoResultList();
+        List<LoginInfoResultDO> loginInfoResultDOS = slaveLoginInfoResultMapper.getBeforeYesterdayLoginInfoResultList();
         return loginInfoResultDOS;
     }
 
@@ -97,7 +97,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
         userOperateLogQuery.setStartTime(DateUtil.beginOfDay(DateUtil.yesterday()));
         userOperateLogQuery.setEndTime(DateUtil.endOfDay(DateUtil.yesterday()));
         userOperateLogQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
-        List<LoginInfoExcelDTO> loginInfoExcelDTOList = userOperateLogMapper.getLoginInfoExcelDTOList(userOperateLogQuery);
+        List<LoginInfoExcelDTO> loginInfoExcelDTOList = slaveLoginInfoResultMapper.getLoginInfoExcelDTOList(userOperateLogQuery);
         return ApiResult.of(0, loginInfoExcelDTOList);
     }
 }

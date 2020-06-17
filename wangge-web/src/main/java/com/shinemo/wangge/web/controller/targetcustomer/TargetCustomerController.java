@@ -1,6 +1,7 @@
 package com.shinemo.wangge.web.controller.targetcustomer;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.targetcustomer.domain.request.TargetCustomerRequest;
 import com.shinemo.targetcustomer.domain.response.TargetCustomerResponse;
 import com.shinemo.wangge.core.service.targetcustomer.TargetIndexMobileService;
@@ -21,12 +22,10 @@ public class TargetCustomerController {
     @Resource
     private TargetIndexMobileService targetIndexMobileService;
 
-    @PostMapping("/getByMobile")
-    public ApiResult<TargetCustomerResponse> getByMobile(@RequestBody TargetCustomerRequest request){
-        Assert.notNull(request,"request is null");
-        Assert.hasText(request.getMobile(),"mobile is null");
-
-        return targetIndexMobileService.findByMobile(request.getMobile());
+    @GetMapping("/getByMobile")
+    public ApiResult<TargetCustomerResponse> getByMobile(){
+        String mobile = SmartGridContext.getMobile();
+        return targetIndexMobileService.findByMobile(mobile);
     }
 
 
