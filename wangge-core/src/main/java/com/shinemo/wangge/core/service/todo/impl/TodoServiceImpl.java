@@ -319,10 +319,10 @@ public class TodoServiceImpl implements TodoService {
         //转换时间
         try {
             String operatorTime = todoDTO.getOperatorTime();
-            if (!StringUtils.isEmpty(operatorTime)) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(operatorTime)) {
                 todoDO.setOperatorTime(DateUtil.parse(operatorTime, "yyyy-MM-dd HH:mm:ss"));
             }
-            if (!StringUtils.isEmpty(todoDTO.getStartTime())) {
+            if (!org.apache.commons.lang3.StringUtils.isBlank(todoDTO.getStartTime())) {
                 todoDO.setStartTime(DateUtil.parse(todoDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
             }
         } catch (Exception e) {
