@@ -56,7 +56,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
         List<TargetIndexMobileDO> targetIndexMobileDOS = targetIndexMobileMapper.find(query);
         if (CollectionUtils.isEmpty(targetIndexMobileDOS)) {
             log.error("[findByMobile] error,mobile:{}", mobile);
-            return ApiResult.of(0);
+            return ApiResult.of(0,null);
         }
         targetCustomerResponse.setMobile(mobile);
 
@@ -101,8 +101,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             communityQuery.setIndexId(targetIndexMobileDO.getIndexId());
 
             query.setOrderByEnable(true);
-            query.putOrderBy("upper_limit",true);
-            query.putOrderBy("lower_limit",true);
+            query.putOrderBy("sort",true);
             query.setPageEnable(true);
             query.setPageSize(COMMUNITY_SIZE);
 
