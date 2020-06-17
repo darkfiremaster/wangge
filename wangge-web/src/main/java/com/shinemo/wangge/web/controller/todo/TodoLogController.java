@@ -7,7 +7,8 @@ import com.shinemo.todo.query.TodoLogQuery;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.wangge.core.service.todo.TodoLogService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,13 +29,13 @@ public class TodoLogController {
     private TodoLogService todoLogService;
 
 
-    @GetMapping("/getTodoLogList")
-    public ApiResult<List<TodoLogDO>> getTodoLogList(TodoLogQuery todoLogQuery) {
+    @PostMapping("/getTodoLogList")
+    public ApiResult<List<TodoLogDO>> getTodoLogList(@RequestBody TodoLogQuery todoLogQuery) {
         return todoLogService.getTodoLogList(todoLogQuery);
     }
 
-    @GetMapping("/getTodoList")
-    public ApiResult<List<TodoDO>> getTodoList(TodoQuery todoQuery) {
+    @PostMapping("/getTodoList")
+    public ApiResult<List<TodoDO>> getTodoList(@RequestBody TodoQuery todoQuery) {
         return todoLogService.getTodoList(todoQuery);
     }
 
