@@ -27,12 +27,12 @@ public class TodoLogController {
 
 
     @GetMapping("/getTodoLogList")
-    public ApiResult<List<TodoLogDO>> getTodoLogList( TodoLogQuery todoLogQuery) {
+    public ApiResult<List<TodoLogDO>> getTodoLogList(TodoLogQuery todoLogQuery) {
         return todoLogService.getTodoLogList(todoLogQuery);
     }
 
     @GetMapping("/getTodoList")
-    public ApiResult<List<TodoDO>> getTodoList( TodoQuery todoQuery) {
+    public ApiResult<List<TodoDO>> getTodoList(TodoQuery todoQuery) {
         return todoLogService.getTodoList(todoQuery);
     }
 
