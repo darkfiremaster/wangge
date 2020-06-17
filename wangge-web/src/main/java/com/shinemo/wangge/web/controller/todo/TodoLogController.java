@@ -7,9 +7,7 @@ import com.shinemo.todo.query.TodoLogQuery;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.wangge.core.service.todo.TodoLogService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;

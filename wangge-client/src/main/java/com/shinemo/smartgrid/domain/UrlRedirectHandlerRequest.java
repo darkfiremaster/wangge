@@ -35,6 +35,8 @@ public class UrlRedirectHandlerRequest {
 	 * 小区id
 	 */
 	private String communityId;
+	/** 任务id */
+	private Long activityId;
 
 	public <T extends BizParams> T getBizParams() {
 		if (bizParams != null) {
