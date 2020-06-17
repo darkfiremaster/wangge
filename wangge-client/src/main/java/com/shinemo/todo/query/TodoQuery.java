@@ -25,6 +25,8 @@ public class TodoQuery  extends QueryBase {
      */
     private Integer thirdType;
 
+    private String title;
+
     private String mobile;
 
     private Integer status;

@@ -37,6 +37,7 @@
                 <otherwise>
                     <if test="thirdId != null">and third_id = #{thirdId}</if>
                     <if test="thirdType != null">and third_type = #{thirdType}</if>
+                    <if test="title != null">and title LIKE CONCAT('%', '${title}', '%')</if>
                     <if test="mobile != null">and operator_mobile = #{mobile}</if>
                     <if test="status != null">and status = #{status}</if>
                     <if test="startTime != null"><![CDATA[and operator_time >= #{startTime}]]></if>

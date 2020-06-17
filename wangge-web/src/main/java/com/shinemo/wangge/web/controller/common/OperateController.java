@@ -27,11 +27,12 @@ public class OperateController {
     private ThreadPoolTaskExecutor asyncServiceExecutor;
 
     @PostMapping("/addUserOperateLog")
-    public ApiResult addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO) {
+    public ApiResult<Void> addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO) {
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
         asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
         return ApiResult.of(0);
     }
+
 }
