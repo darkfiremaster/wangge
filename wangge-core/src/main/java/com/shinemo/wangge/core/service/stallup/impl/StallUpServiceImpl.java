@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -1071,6 +1072,12 @@ public class StallUpServiceImpl implements StallUpService {
         Map<String,Object> map = new HashMap<>();
         map.put("activityList",activityList);
         ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
+        Map<String, Object> data = dispatch.getData();
+        List smsHotResultList = (List)data.get("smsHotResultList");
+        System.out.println(JSON.toJSON(smsHotResultList));
+        if (CollectionUtils.isEmpty(smsHotResultList)) {
+
+        }
         return dispatch;
     }
 
