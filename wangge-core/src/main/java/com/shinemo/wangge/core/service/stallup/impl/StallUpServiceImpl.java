@@ -1064,7 +1064,7 @@ public class StallUpServiceImpl implements StallUpService {
     }
 
     @Override
-    public ApiResult<Map<String, Object>> getSmsHot(Long activityId) {
+    public ApiResult<SmsHotResponse> getSmsHot(Long activityId) {
         List<GetHuaWeiSmsHotRequest> activityList = new ArrayList<>();
         GetHuaWeiSmsHotRequest request = new GetHuaWeiSmsHotRequest();
         request.setActivityId(ID_PREFIX + activityId);
@@ -1073,12 +1073,12 @@ public class StallUpServiceImpl implements StallUpService {
         map.put("activityList",activityList);
         ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
         Map<String, Object> data = dispatch.getData();
-        List smsHotResultList = (List)data.get("smsHotResultList");
+        List<SmsHotResponse> smsHotResultList = (List<SmsHotResponse>)data.get("smsHotResultList");
         System.out.println(JSON.toJSON(smsHotResultList));
         if (CollectionUtils.isEmpty(smsHotResultList)) {
-
+            return ApiResult.of(0);
         }
-        return dispatch;
+        return ApiResult.of(0,smsHotResultList.get(0));
     }
 
     /**
