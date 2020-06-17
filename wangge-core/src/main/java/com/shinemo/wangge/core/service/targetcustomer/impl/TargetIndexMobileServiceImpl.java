@@ -100,10 +100,10 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             TargetIndexCommunityQuery communityQuery = new TargetIndexCommunityQuery();
             communityQuery.setIndexId(targetIndexMobileDO.getIndexId());
 
-            query.setOrderByEnable(true);
-            query.putOrderBy("sort",false);
-            query.setPageEnable(true);
-            query.setPageSize(COMMUNITY_SIZE);
+            communityQuery.setOrderByEnable(true);
+            communityQuery.putOrderBy("sort",false);
+            communityQuery.setPageEnable(true);
+            communityQuery.setPageSize(COMMUNITY_SIZE);
 
 
             List<TargetIndexCommunityDO> targetIndexCommunityDOS = targetIndexCommunityMapper.find(communityQuery);
