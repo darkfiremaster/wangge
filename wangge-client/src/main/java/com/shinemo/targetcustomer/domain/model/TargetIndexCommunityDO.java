@@ -64,4 +64,6 @@ public class TargetIndexCommunityDO extends BaseDO {
      * 小区对象的指标ID
      */
     private Long indexId;
+
+    private Integer sort;
 }
