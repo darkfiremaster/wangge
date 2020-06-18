@@ -56,7 +56,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
         List<TargetIndexMobileDO> targetIndexMobileDOS = targetIndexMobileMapper.find(query);
         if (CollectionUtils.isEmpty(targetIndexMobileDOS)) {
             log.error("[findByMobile] error,mobile:{}", mobile);
-            return ApiResult.of(0,null);
+            return ApiResult.of(0,new TargetCustomerResponse());
         }
         targetCustomerResponse.setMobile(mobile);
 
