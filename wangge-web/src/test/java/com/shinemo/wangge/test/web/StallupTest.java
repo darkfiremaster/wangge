@@ -87,4 +87,5 @@ public class StallupTest {
             throw new ApiException(ErrorCodes.BASE_ERROR);
         }
     }
+
 }
