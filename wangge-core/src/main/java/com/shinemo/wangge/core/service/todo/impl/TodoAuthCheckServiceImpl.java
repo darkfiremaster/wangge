@@ -8,7 +8,6 @@ import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.vo.TodoDTO;
-import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
 
 
     @Override
-    public ApiResult<TodoThirdRequest> checkSign(TreeMap<String, Object> treeMap) {
+    public ApiResult<TodoDTO> checkSign(TreeMap<String, Object> treeMap) {
         //校验签名
         TodoDTO todoDTO = MapUtil.get(treeMap, "postBody", TodoDTO.class);
         if (todoDTO == null || todoDTO.getThirdType() == null) {
@@ -51,9 +50,7 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
         Boolean ignoreCheckSign = MapUtil.getBool(treeMap, "ignoreCheckSign");
         //本地方法不需要校验签名
         if (ignoreCheckSign != null && ignoreCheckSign) {
-            TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
-            todoThirdRequest.setPostBody(todoDTO);
-            return ApiResult.of(0, todoThirdRequest);
+            return ApiResult.of(0, todoDTO);
         }
 
         String oldSign = MapUtil.getStr(treeMap, "sign");
@@ -76,12 +73,6 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
             throw new ApiException(TodoErrorCodes.SIGN_ERROR);
         }
 
-        TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
-        todoThirdRequest.setTimeStamp(timeStamp);
-        todoThirdRequest.setMethod(method);
-        todoThirdRequest.setSign(oldSign);
-        todoThirdRequest.setPostBody(todoDTO);
-
-        return ApiResult.of(0, todoThirdRequest);
+        return ApiResult.of(0, todoDTO);
     }
 }

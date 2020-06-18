@@ -72,14 +72,13 @@ public class TodoServiceImpl implements TodoService {
     @TodoLog
     @Override
     public ApiResult<Void> operateTodoThing(TreeMap<String, Object> treeMap) {
-        ApiResult<TodoThirdRequest> result = todoAuthCheckService.checkSign(treeMap);
+        ApiResult<TodoDTO> result = todoAuthCheckService.checkSign(treeMap);
         if (!result.isSuccess()) {
             log.error("[operateTodoThing] check sign error, request:{},result:{}", treeMap, result);
             return ApiResult.fail(result.getMsg(), result.getCode());
         }
 
-        TodoThirdRequest todoThirdRequest = result.getData();
-        TodoDTO todoDTO = todoThirdRequest.getPostBody();
+        TodoDTO todoDTO = result.getData();
         Assert.notBlank(todoDTO.getThirdId(), "thirdId is null");
         Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
         Assert.notNull(todoDTO.getOperateType(), "operateType is null");
