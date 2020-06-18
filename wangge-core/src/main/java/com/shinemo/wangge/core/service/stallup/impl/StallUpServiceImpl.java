@@ -35,7 +35,6 @@ import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoMethodOperateEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import com.shinemo.todo.vo.TodoDTO;
-import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
@@ -237,21 +236,7 @@ public class StallUpServiceImpl implements StallUpService {
         }
     }
 
-    private void syncTodoCreate(StallUpActivity stallUpActivity) {
-        TodoDTO todoDTO = new TodoDTO();
-        todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
-        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-        todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
-        todoDTO.setTitle(stallUpActivity.getTitle());
-        todoDTO.setRemark(stallUpActivity.getAddress());
-        todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
-        todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
-        todoDTO.setOperatorMobile(stallUpActivity.getMobile());
-        todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
-        todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
-        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-        todoService.operateTodoThing(todoRequest.getData());
-    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -279,18 +264,7 @@ public class StallUpServiceImpl implements StallUpService {
         }
     }
 
-    private void syncTodoUpdate(int status, Long id) {
-        StallUpActivity stallUp = getStallUp(id);
-        TodoDTO todoDTO = new TodoDTO();
-        todoDTO.setThirdId(String.valueOf(id));
-        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
-        todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
-        todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
-        todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
-        todoDTO.setOperatorMobile(stallUp.getMobile());
-        ApiResult<TodoThirdRequest> todoRequest = todoService.getTodoThirdRequest(todoDTO);
-        todoService.operateTodoThing(todoRequest.getData());
-    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1220,6 +1194,34 @@ public class StallUpServiceImpl implements StallUpService {
         if (update) {
             parentStallUpActivityMapper.update(updateParent);
         }
+    }
+
+    private void syncTodoCreate(StallUpActivity stallUpActivity) {
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(stallUpActivity.getId()));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.CREATE.getId());
+        todoDTO.setTitle(stallUpActivity.getTitle());
+        todoDTO.setRemark(stallUpActivity.getAddress());
+        todoDTO.setStatus(TodoStatusEnum.NOT_FINISH.getId());
+        todoDTO.setLabel(StallUpStatusEnum.PREPARE.getName());
+        todoDTO.setOperatorMobile(stallUpActivity.getMobile());
+        todoDTO.setOperatorTime(DateUtil.format(stallUpActivity.getEndTime()));
+        todoDTO.setStartTime(DateUtil.format(stallUpActivity.getStartTime()));
+        ApiResult<TreeMap> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
+    }
+    private void syncTodoUpdate(int status, Long id) {
+        StallUpActivity stallUp = getStallUp(id);
+        TodoDTO todoDTO = new TodoDTO();
+        todoDTO.setThirdId(String.valueOf(id));
+        todoDTO.setThirdType(ThirdTodoTypeEnum.BAI_TAN_PLAN.getId());
+        todoDTO.setOperateType(TodoMethodOperateEnum.UPDATE.getId());
+        todoDTO.setStatus(TodoStatusEnum.OTHER.getId());
+        todoDTO.setLabel(StallUpStatusEnum.getById(status).getName());
+        todoDTO.setOperatorMobile(stallUp.getMobile());
+        ApiResult<TreeMap> todoRequest = todoService.getTodoThirdRequest(todoDTO);
+        todoService.operateTodoThing(todoRequest.getData());
     }
 
 }

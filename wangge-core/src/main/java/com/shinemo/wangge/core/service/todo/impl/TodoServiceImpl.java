@@ -28,22 +28,18 @@ import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoTypeQuery;
 import com.shinemo.todo.vo.*;
 import com.shinemo.wangge.core.aop.TodoLog;
+import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
 import com.shinemo.wangge.dal.mapper.TodoLogMapper;
 import com.shinemo.wangge.dal.mapper.TodoTypeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -64,10 +60,10 @@ public class TodoServiceImpl implements TodoService {
     @Resource
     private TodoLogMapper todoLogMapper;
 
-    @Autowired
-    private TodoAuthCheckServiceImpl todoAuthCheckService;
+    @Resource
+    private TodoAuthCheckService todoAuthCheckService;
 
-    @CreateCache(name = "TodoServiceImpl.todoTypeCache-", cacheType = CacheType.LOCAL, expire = 60*60)
+    @CreateCache(name = "TodoServiceImpl.todoTypeCache-", cacheType = CacheType.LOCAL, expire = 60 * 60)
     private Cache<String, TodoTypeVO> todoTypeCache;
 
     private static final String TODO_TYPE_CACHE_KEY = "todo_type_list";
@@ -75,20 +71,19 @@ public class TodoServiceImpl implements TodoService {
 
     @TodoLog
     @Override
-    public ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest) {
-        Assert.notNull(todoThirdRequest, "param is null");
+    public ApiResult<Void> operateTodoThing(TreeMap<String, Object> treeMap) {
+        ApiResult<TodoThirdRequest> result = todoAuthCheckService.checkSign(treeMap);
+        if (!result.isSuccess()) {
+            log.error("[operateTodoThing] check sign error, request:{},result:{}", treeMap, result);
+            return ApiResult.fail(result.getMsg(), result.getCode());
+        }
+
+        TodoThirdRequest todoThirdRequest = result.getData();
         TodoDTO todoDTO = todoThirdRequest.getPostBody();
         Assert.notBlank(todoDTO.getThirdId(), "thirdId is null");
         Assert.notNull(todoDTO.getThirdType(), "thirdType is null");
         Assert.notNull(todoDTO.getOperateType(), "operateType is null");
         Assert.notBlank(todoDTO.getOperatorMobile(), "operatorMobile is null");
-
-        if (!todoThirdRequest.getIgnoreCheckSign()) {
-            Boolean checkSuccess = todoAuthCheckService.checkSign(todoThirdRequest);
-            if (!checkSuccess) {
-                return ApiResultWrapper.fail(TodoErrorCodes.SIGN_ERROR);
-            }
-        }
 
         if (Objects.equals(todoDTO.getOperateType(), TodoMethodOperateEnum.CREATE.getId())) {
             return createTodo(todoDTO);
@@ -99,6 +94,14 @@ public class TodoServiceImpl implements TodoService {
         } else {
             return ApiResultWrapper.fail(TodoErrorCodes.OPERATE_TYPE_ERROR);
         }
+    }
+
+    @Override
+    public ApiResult<TreeMap> getTodoThirdRequest(TodoDTO todoDTO) {
+        TreeMap<String, Object> treeMap = new TreeMap<>();
+        treeMap.put("ignoreCheckSign", true);
+        treeMap.put("postBody", todoDTO);
+        return ApiResult.of(0, treeMap);
     }
 
     private ApiResult<Void> createTodo(TodoDTO todoDTO) {
@@ -121,7 +124,7 @@ public class TodoServiceImpl implements TodoService {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            log.info("[createTodo] create todo success, todoDTO:{}", todoDTO);
+            log.info("[createTodo] create todo success,  todoDTO:{}", todoDTO);
         }
 
         return ApiResult.of(0);
@@ -148,7 +151,7 @@ public class TodoServiceImpl implements TodoService {
         //修改
         thirdTodoMapper.update(todoDO);
 
-        log.info("[updateTodo] update todo success, todoDTO:{}", todoDTO);
+        log.info("[updateTodo] update todo success,todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
@@ -245,7 +248,6 @@ public class TodoServiceImpl implements TodoService {
     }
 
 
-
     @Override
     public ApiResult<TodoIndexVO> getIndexInfo() {
         Integer todayTodoCount = thirdTodoMapper.getTodayTodoCount(SmartGridContext.getMobile());
@@ -263,16 +265,6 @@ public class TodoServiceImpl implements TodoService {
         return ApiResult.of(0);
     }
 
-    @Override
-    public ApiResult<TodoThirdRequest> getTodoThirdRequest(TodoDTO todoDTO) {
-        TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
-        todoThirdRequest.setTimeStamp(System.currentTimeMillis());
-        todoThirdRequest.setMethod("operateTodoThing");
-        todoThirdRequest.setSign("");
-        todoThirdRequest.setPostBody(todoDTO);
-        todoThirdRequest.setIgnoreCheckSign(true);
-        return ApiResult.of(0, todoThirdRequest);
-    }
 
     @Override
     public ApiResult<TodoTypeVO> getAllTodoTypeList() {

@@ -1,7 +1,13 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
+import com.shinemo.common.tools.exception.ApiException;
+import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
+import com.shinemo.todo.error.TodoErrorCodes;
+import com.shinemo.todo.vo.TodoDTO;
 import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,23 +41,45 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
 
 
     @Override
-    public Boolean checkSign(TodoThirdRequest todoThirdRequest) {
-        //根据类型id,获取signKey
-        Integer thirdTypeId = todoThirdRequest.getPostBody().getThirdType();
-        String company = ThirdTodoTypeEnum.getById(thirdTypeId).getCompany();
-        String signKey = signKeyMap.get(company);
-
-        TreeMap<String, Object> map = new TreeMap<>();
-        map.put("timeStamp", todoThirdRequest.getTimeStamp());
-        map.put("method", todoThirdRequest.getMethod());
-        map.put("postBody", todoThirdRequest.getPostBody());
-        map.put("key", signKey);
-        String sign = SmartGridUtils.genSign(map);
-        if (!Objects.equals(sign, todoThirdRequest.getSign())) {
-            log.error("[checkSign] 签名校验错误, request:{},result:{}", todoThirdRequest, sign);
-            return false;
+    public ApiResult<TodoThirdRequest> checkSign(TreeMap<String, Object> treeMap) {
+        //校验签名
+        TodoDTO todoDTO = MapUtil.get(treeMap, "postBody", TodoDTO.class);
+        if (todoDTO == null || todoDTO.getThirdType() == null) {
+            throw new ApiException("thirdType is null", 500);
         }
 
-        return true;
+        String oldSign = MapUtil.getStr(treeMap, "sign");
+        String method = MapUtil.getStr(treeMap, "method");
+        Long timeStamp = MapUtil.getLong(treeMap, "timeStamp");
+        Boolean ignoreCheckSign = MapUtil.getBool(treeMap, "ignoreCheckSign");
+        Assert.notNull(oldSign, "sign is null");
+        Assert.notNull(method, "method is null");
+        Assert.notNull(timeStamp, "timeStamp is null");
+
+        if (ignoreCheckSign != null && ignoreCheckSign) {
+            TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
+            todoThirdRequest.setPostBody(todoDTO);
+            return ApiResult.of(0, todoThirdRequest);
+        }
+        //根据类型id,获取signKey
+        Integer thirdTypeId = todoDTO.getThirdType();
+        String company = ThirdTodoTypeEnum.getById(thirdTypeId).getCompany();
+        String signKey = signKeyMap.get(company);
+        treeMap.remove("sign");
+        treeMap.put("key", signKey);
+        String newSign = SmartGridUtils.genSign(treeMap);
+
+        if (!Objects.equals(newSign, oldSign)) {
+            log.error("[checkSign] 签名校验错误, request:{},oldSign:{},newSign:{}", treeMap, oldSign, newSign);
+            throw new ApiException(TodoErrorCodes.SIGN_ERROR);
+        }
+
+        TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
+        todoThirdRequest.setTimeStamp(timeStamp);
+        todoThirdRequest.setMethod(method);
+        todoThirdRequest.setSign(oldSign);
+        todoThirdRequest.setPostBody(todoDTO);
+
+        return ApiResult.of(0, todoThirdRequest);
     }
 }

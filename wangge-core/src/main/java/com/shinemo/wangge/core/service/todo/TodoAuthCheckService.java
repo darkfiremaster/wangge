@@ -1,6 +1,9 @@
 package com.shinemo.wangge.core.service.todo;
 
+import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.vo.TodoThirdRequest;
+
+import java.util.TreeMap;
 
 /**
  * @Author shangkaihui
@@ -9,5 +12,5 @@ import com.shinemo.todo.vo.TodoThirdRequest;
  */
 public interface TodoAuthCheckService {
 
-     Boolean checkSign(TodoThirdRequest todoThirdRequest);
+     ApiResult<TodoThirdRequest>  checkSign(TreeMap<String,Object> treeMap);
 }

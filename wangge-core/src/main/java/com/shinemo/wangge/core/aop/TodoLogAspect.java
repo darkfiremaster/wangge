@@ -1,17 +1,19 @@
 package com.shinemo.wangge.core.aop;
 
+import cn.hutool.core.map.MapUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.vo.TodoDTO;
-import com.shinemo.todo.vo.TodoThirdRequest;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.TreeMap;
 
 /**
  * @Author shangkaihui
@@ -32,12 +34,13 @@ public class TodoLogAspect {
     @Autowired
     private TodoService todoService;
 
+    private String request="";
+
 
     @Pointcut("@annotation(com.shinemo.wangge.core.aop.TodoLog)")
     public void point() {
 
     }
-
 
     /**
      * @param joinPoint
@@ -46,43 +49,42 @@ public class TodoLogAspect {
      */
     @Before("point()")
     public void before(JoinPoint joinPoint) {
-        TodoThirdRequest todoThirdRequest = getRequestArgs(joinPoint);
-        log.info("[todo-before] todoThirdRequest:[{}]", todoThirdRequest);
+        TreeMap<String, Object> request = getRequestArgs(joinPoint);
+        this.request = GsonUtils.toJson(request);
+        log.info("[todo-before] todoThirdRequest:[{}]", this.request);
         startTimeMillis = System.currentTimeMillis();
     }
 
 
     @AfterThrowing(pointcut = "point()", throwing = "exception")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable exception) {
-        TodoThirdRequest todoThirdRequest = getRequestArgs(joinPoint);
-
-        log.info("[todo-doAfterThrowing] todoThirdRequest:[{}], exception:[{}]", todoThirdRequest, exception.getMessage());
-
+        log.info("[todo-doAfterThrowing] todoThirdRequest:[{}], exception:[{}]",  this.request, exception.getMessage());
         TodoLogDO todoLogDO = getTodoDO(joinPoint, null, exception);
         todoService.insertTodoLog(todoLogDO);
     }
 
     @AfterReturning(value = "point()", returning = "result")
     public void afterReturn(JoinPoint joinPoint, Object result) {
-        TodoThirdRequest todoThirdRequest = getRequestArgs(joinPoint);
-
-        log.info("[todo-afterReturn] todoThirdRequest:[{}], result:[{}]", todoThirdRequest, result.toString());
-
+        log.info("[todo-afterReturn] todoThirdRequest:[{}], result:[{}]",  this.request, result.toString());
         TodoLogDO todoLogDO = getTodoDO(joinPoint, result, null);
         todoService.insertTodoLog(todoLogDO);
     }
 
 
     private TodoLogDO getTodoDO(JoinPoint joinPoint, Object result, Throwable exception) {
-        TodoThirdRequest todoThirdRequest = getRequestArgs(joinPoint);
-        TodoDTO todoDTO = todoThirdRequest.getPostBody();
+        TreeMap<String, Object> treeMap = getRequestArgs(joinPoint);
+        TodoDTO todoDTO = MapUtil.get(treeMap, "postBody", TodoDTO.class);
         TodoLogDO todoLog = new TodoLogDO();
-        todoLog.setCompany(ThirdTodoTypeEnum.getById(todoDTO.getThirdType()).getCompany());
+        if (todoDTO.getThirdType() == null) {
+            todoLog.setCompany("");
+        } else {
+            todoLog.setCompany(ThirdTodoTypeEnum.getById(todoDTO.getThirdType()).getCompany());
+        }
         todoLog.setThirdType(todoDTO.getThirdType());
         todoLog.setThirdId(todoDTO.getThirdId());
         todoLog.setOperatorMobile(todoDTO.getOperatorMobile());
         todoLog.setCostTime(System.currentTimeMillis() - startTimeMillis);
-        todoLog.setRequest(GsonUtils.toJson(todoThirdRequest));
+        todoLog.setRequest( this.request);
         setStatus(result, todoLog);
 
         if (result != null) {
@@ -94,9 +96,12 @@ public class TodoLogAspect {
         return todoLog;
     }
 
-    private TodoThirdRequest getRequestArgs(JoinPoint joinPoint) {
-        return (TodoThirdRequest) joinPoint.getArgs()[0];
+
+    private TreeMap<String, Object> getRequestArgs(JoinPoint joinPoint) {
+        TreeMap<String, Object> treeMap = (TreeMap<String, Object>) joinPoint.getArgs()[0];
+        return treeMap;
     }
+
 
     private void setStatus(Object result, TodoLogDO todoLog) {
         if (result == null) {

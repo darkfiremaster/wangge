@@ -6,6 +6,8 @@ import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.vo.*;
 
+import java.util.TreeMap;
+
 /**
  * @Author shangkaihui
  * @Date 2020/6/3 10:25
@@ -13,9 +15,9 @@ import com.shinemo.todo.vo.*;
  */
 public interface TodoService {
 
-    ApiResult<Void> operateTodoThing(TodoThirdRequest todoThirdRequest);
+    ApiResult<Void> operateTodoThing(TreeMap<String, Object> treeMap);
 
-
+    ApiResult<TreeMap> getTodoThirdRequest(TodoDTO todoDTO);
 
     /**
      * 获取全部类别列表
@@ -34,8 +36,6 @@ public interface TodoService {
     ApiResult<TodoIndexVO> getIndexInfo();
 
     ApiResult<Void> insertTodoLog(TodoLogDO todoLogDO);
-
-    ApiResult<TodoThirdRequest> getTodoThirdRequest(TodoDTO todoDTO);
 
     ApiResult<TodoTypeVO> getAllTodoTypeList();
 

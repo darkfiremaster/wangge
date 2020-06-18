@@ -27,9 +27,9 @@ public class MaDianIntelligentHandler extends MaDianCommonHandler {
 		String requestBody = String.format(body, request.getUserPhone(), StringUtils.hasText(queryMobile) ? queryMobile : "", appId);
 		StringBuilder url = new StringBuilder();
 		url.append(domain)
-			.append(path)
-			.append("?sign=").append(DigestUtils.md5Hex(requestBody + key))
-			.append("&reqdata=").append(URLEncodedUtils.encodePath(requestBody, Charset.forName("utf8")));
+				.append(path)
+				.append("?sign=").append(DigestUtils.md5Hex(requestBody + key))
+				.append("&reqdata=").append(URLEncodedUtils.encodePath(requestBody, Charset.forName("utf8")));
 		return url.toString();
 	}
 
