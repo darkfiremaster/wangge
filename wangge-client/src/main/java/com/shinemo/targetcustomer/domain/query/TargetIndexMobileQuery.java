@@ -1,6 +1,7 @@
 package com.shinemo.targetcustomer.domain.query;
 
-import com.shinemo.client.common.QueryBase;
+
+import com.shinemo.smartgrid.domain.QueryBase;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

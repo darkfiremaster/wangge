@@ -25,7 +25,7 @@ public class DebugConfig implements WebMvcConfigurer {
 			.addPathPatterns("/sweepFloor/**")
 			.addPathPatterns("/thirdapi/**")
 			.addPathPatterns("/operate/**")
-			.addPathPatterns("/todo/thing/**")
+			.addPathPatterns("/todo/thing/**").addPathPatterns("/targetcustomer/**")
 				.excludePathPatterns("/todo/operateTodoThing")
 			.order(Ordered.HIGHEST_PRECEDENCE);
 	}

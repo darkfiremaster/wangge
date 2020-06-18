@@ -5,6 +5,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepfloor.domain.query.SweepFloorBuildingQuery;
 import com.shinemo.sweepfloor.domain.query.UpdateSweepFloorStatusQuery;
+import com.shinemo.sweepfloor.domain.response.HuaWeiAddTenantsResponse;
 import com.shinemo.sweepfloor.domain.response.IndexInfoResponse;
 import com.shinemo.sweepfloor.domain.vo.*;
 
@@ -42,7 +43,7 @@ public interface SweepFloorService {
 
     ApiResult<Void> updateBuilding(BuildingVO request);
 
-    ApiResult<Void> addHousehold(HouseholdVO request);
+    ApiResult<HouseholdVO> addHousehold(HouseholdVO request);
 
     ApiResult<Void> updateHousehold(HouseholdVO request);
 

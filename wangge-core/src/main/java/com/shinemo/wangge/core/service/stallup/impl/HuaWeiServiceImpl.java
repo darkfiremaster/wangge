@@ -30,10 +30,7 @@ import com.shinemo.sweepfloor.domain.request.HuaweiBuildingDetailListRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiBuildingRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiCellAndBuildingsRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiTenantRequest;
-import com.shinemo.sweepfloor.domain.response.HuaweiBuildingDetailsListResponse;
-import com.shinemo.sweepfloor.domain.response.HuaweiBuildingDetailsListResponseWrapper;
-import com.shinemo.sweepfloor.domain.response.HuaweiCellsAndBuildingsResponse;
-import com.shinemo.sweepfloor.domain.response.HuaweiCellsAndBuildingsResponseWrapper;
+import com.shinemo.sweepfloor.domain.response.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.handler.UrlRedirectHandler;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
@@ -212,11 +209,11 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public ApiResult<List<GridUserRoleDetail>> getGridUserInfo(HuaWeiRequest request) {
 
         //todo mock待删除
-        //List<String> list = Arrays.asList("15958032925", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023");
-        //if (list.contains(request.getMobile())) {
-        //    List<GridUserRoleDetail> detailList = getMockGridUser();
-        //    return ApiResult.of(0, detailList);
-        //}
+        List<String> list = Arrays.asList("15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
+        if (list.contains(request.getMobile())) {
+            List<GridUserRoleDetail> detailList = getMockGridUser();
+            return ApiResult.of(0, detailList);
+        }
 
         GetGridUserInfoRequest getGridUserInfoRequest = new GetGridUserInfoRequest();
         getGridUserInfoRequest.setUserTel(request.getMobile());
@@ -557,8 +554,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     }
 
     @Override
-    public ApiResult<Void> addBuildingTenants(HuaweiTenantRequest request) {
-        //todo
+    public ApiResult<HuaWeiAddTenantsResponse> addBuildingTenants(HuaweiTenantRequest request) {
         String method = HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getMethod();
         String param = SmartGridUtils.buildRequestParam(method, request, signkey);
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getUrl(), param, new HashMap<>());

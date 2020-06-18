@@ -166,5 +166,5 @@ public interface StallUpService {
 	
 	ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz);
 
-	ApiResult<Map<String, Object>> getSmsHot(Long activityId);
+	ApiResult<SmsHotResponse> getSmsHot(Long activityId);
 }

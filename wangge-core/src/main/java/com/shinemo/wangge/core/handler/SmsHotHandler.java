@@ -53,9 +53,10 @@ public class SmsHotHandler implements UrlRedirectHandler{
 				append(request.getCommunityId()).
 				append("&mobile=").
 				append(request.getUserPhone()).
-				append("&templateType=").append(1).
-				append("&authKey=").append(authKey)
-				.append("&activityId=").append("BT_" + request.getActivityId());//todo
+				append("&templateType=").append(1).append("&authKey=").append(authKey);
+		if (request.getActivityId() != null) {
+			url.append("&activityId=").append("BT_" + request.getActivityId());
+		}
 		return url.toString();
 	}
 

@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -1037,13 +1038,36 @@ public class StallUpServiceImpl implements StallUpService {
     }
 
     @Override
-    public ApiResult<Map<String, Object>> getSmsHot(Long activityId) {
-        List<String> activityList = new ArrayList<>();
-        activityList.add(ID_PREFIX + activityId);
+    public ApiResult<SmsHotResponse> getSmsHot(Long activityId) {
+        List<GetHuaWeiSmsHotRequest> activityList = new ArrayList<>();
+        GetHuaWeiSmsHotRequest request = new GetHuaWeiSmsHotRequest();
+        request.setActivityId(ID_PREFIX + activityId);
+        activityList.add(request);
         Map<String,Object> map = new HashMap<>();
         map.put("activityList",activityList);
         ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
-        return dispatch;
+        Map<String, Object> data = dispatch.getData();
+        Object o = data.get("smsHotResultList");
+        List<SmsHotResponse> smsHotResultList = GsonUtils.fromJsonToList(GsonUtils.toJson(o), SmsHotResponse[].class);
+        System.out.println(JSON.toJSON(smsHotResultList));
+        if (CollectionUtils.isEmpty(smsHotResultList)) {
+            return ApiResult.of(0);
+        }
+        SmsHotResponse smsHotResponse = smsHotResultList.get(0);
+        List<SmsHotResponse.SmsData> smsActivityList = smsHotResponse.getSmsActivityList();
+        if (CollectionUtils.isEmpty(smsActivityList)) {
+            smsHotResponse.setClientCountTotal(0L);
+            smsHotResponse.setSmsActivityList(new ArrayList<>());
+        }else {
+            Long total = 0L;
+            for (SmsHotResponse.SmsData smsData: smsActivityList) {
+                if (smsData.getClientCount() != null) {
+                    total +=Long.valueOf(smsData.getClientCount());
+                }
+            }
+            smsHotResponse.setClientCountTotal(total);
+        }
+        return ApiResult.of(0,smsHotResultList.get(0));
     }
 
     /**

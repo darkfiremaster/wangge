@@ -307,7 +307,7 @@ public class StallUpController {
 	@PostMapping("redirect")
 	@SmIgnore
 	public ApiResult<String> redirect(@RequestBody UrlRedirectHandlerRequest request) {
-		//request.setUserPhone(getMobile());
+		request.setUserPhone(getMobile());
 		return huaWeiService.getRedirectUrl(request);
 	}
 
@@ -368,7 +368,7 @@ public class StallUpController {
 	}
 
 	@GetMapping("getSmsHot")
-	public ApiResult<Map<String, Object>> getSmsHot(@RequestParam Long activityId) {
+	public ApiResult<SmsHotResponse> getSmsHot(@RequestParam Long activityId) {
 		Assert.notNull(activityId, "id is null");
 		return stallUpService.getSmsHot(activityId);
 	}

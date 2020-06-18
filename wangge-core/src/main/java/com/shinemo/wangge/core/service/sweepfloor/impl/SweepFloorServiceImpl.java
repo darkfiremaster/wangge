@@ -791,10 +791,22 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<Void> addHousehold(HouseholdVO request) {
+    public ApiResult<HouseholdVO> addHousehold(HouseholdVO request) {
         HuaweiTenantRequest huaweiRequest = new HuaweiTenantRequest();
         householdVOToHuawei(huaweiRequest, request);
-        return huaWeiService.addBuildingTenants(huaweiRequest);
+        ApiResult<HuaWeiAddTenantsResponse> apiResult = huaWeiService.addBuildingTenants(huaweiRequest);
+        if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }
+        HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
+        HouseholdVO householdVO = new HouseholdVO();
+        //householdVO.setHouseId(apiResultData.getHouseId());
+        householdVO.setBuildingName(request.getBuildingName());
+        householdVO.setBuildingId(request.getBuildingId());
+        householdVO.setHouseNumber(request.getHouseNumber());
+        householdVO.setUnitId(request.getUnitId());
+        householdVO.setUnitName(request.getUnitName());
+        return ApiResult.of(0,householdVO);
     }
 
     @Override
