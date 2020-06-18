@@ -48,19 +48,21 @@ public class TodoAuthCheckServiceImpl implements TodoAuthCheckService {
             throw new ApiException("thirdType is null", 500);
         }
 
-        String oldSign = MapUtil.getStr(treeMap, "sign");
-        String method = MapUtil.getStr(treeMap, "method");
-        Long timeStamp = MapUtil.getLong(treeMap, "timeStamp");
         Boolean ignoreCheckSign = MapUtil.getBool(treeMap, "ignoreCheckSign");
-        Assert.notNull(oldSign, "sign is null");
-        Assert.notNull(method, "method is null");
-        Assert.notNull(timeStamp, "timeStamp is null");
-
+        //本地方法不需要校验签名
         if (ignoreCheckSign != null && ignoreCheckSign) {
             TodoThirdRequest todoThirdRequest = new TodoThirdRequest();
             todoThirdRequest.setPostBody(todoDTO);
             return ApiResult.of(0, todoThirdRequest);
         }
+
+        String oldSign = MapUtil.getStr(treeMap, "sign");
+        String method = MapUtil.getStr(treeMap, "method");
+        Long timeStamp = MapUtil.getLong(treeMap, "timeStamp");
+        Assert.notNull(oldSign, "sign is null");
+        Assert.notNull(method, "method is null");
+        Assert.notNull(timeStamp, "timeStamp is null");
+
         //根据类型id,获取signKey
         Integer thirdTypeId = todoDTO.getThirdType();
         String company = ThirdTodoTypeEnum.getById(thirdTypeId).getCompany();
