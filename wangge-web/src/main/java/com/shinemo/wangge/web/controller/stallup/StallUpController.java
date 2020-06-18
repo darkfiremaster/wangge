@@ -307,7 +307,7 @@ public class StallUpController {
 	@PostMapping("redirect")
 	@SmIgnore
 	public ApiResult<String> redirect(@RequestBody UrlRedirectHandlerRequest request) {
-		//request.setUserPhone(getMobile());
+		request.setUserPhone(getMobile());
 		return huaWeiService.getRedirectUrl(request);
 	}
 
