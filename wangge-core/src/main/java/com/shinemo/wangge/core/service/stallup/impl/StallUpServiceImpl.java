@@ -204,7 +204,7 @@ public class StallUpServiceImpl implements StallUpService {
             // 批量插入子摆摊
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
-
+            //同步华为数据
             Map<String, Object> map = new HashMap<>();
             map.put("id", STALL_UP_ID_PREFIX + parent.getId());
             map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
@@ -227,7 +227,7 @@ public class StallUpServiceImpl implements StallUpService {
             }
             map.put("partners", simpleList);
             map.put("custIdList", request.getCustList());
-            thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod());
+            thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(),parent.getMobile());
 
 
             //同步代办事项

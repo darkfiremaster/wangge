@@ -220,7 +220,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         map.put("mobile",activityDO.getMobile());
         map.put("gmtCreate",DateUtils.dateToString(new Date(),"yyyy-MM-dd HH:mm:ss"));
         map.put("status",SweepFloorStatusEnum.NOT_START.getId());
-        thirdApiMappingService.dispatch(map, HuaweiSweepFloorUrlEnum.SYNCHRONIZE_SWEEPING_DATA.getMethod());
+        thirdApiMappingService.asyncDispatch(map, HuaweiSweepFloorUrlEnum.SYNCHRONIZE_SWEEPING_DATA.getMethod(),activityDO.getMobile());
     }
 
     @Override
