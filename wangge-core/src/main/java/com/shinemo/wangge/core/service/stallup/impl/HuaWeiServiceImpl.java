@@ -554,7 +554,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     }
 
     @Override
-    public ApiResult<HuaWeiAddTenantsResponse> addBuildingTenants(HuaweiTenantRequest request) {
+    public ApiResult<Void> addBuildingTenants(HuaweiTenantRequest request) {
         String method = HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getMethod();
         String param = SmartGridUtils.buildRequestParam(method, request, signkey);
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getUrl(), param, new HashMap<>());

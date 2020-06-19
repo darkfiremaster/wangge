@@ -115,7 +115,7 @@ public interface HuaWeiService {
 	 * @param request
 	 * @return
 	 */
-	ApiResult<HuaWeiAddTenantsResponse> addBuildingTenants(HuaweiTenantRequest request);
+	ApiResult<Void> addBuildingTenants(HuaweiTenantRequest request);
 	/**
 	 * 编辑住户
 	 * @param request
