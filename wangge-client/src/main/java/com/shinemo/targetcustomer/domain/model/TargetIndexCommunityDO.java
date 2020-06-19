@@ -66,4 +66,6 @@ public class TargetIndexCommunityDO extends BaseDO {
     private Long indexId;
 
     private Integer sort;
+
+    private String mobile;
 }

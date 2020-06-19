@@ -99,6 +99,7 @@ public class TargetIndexMobileServiceImpl implements TargetIndexMobileService {
             //3.获取指标下的小区详情
             TargetIndexCommunityQuery communityQuery = new TargetIndexCommunityQuery();
             communityQuery.setIndexId(targetIndexMobileDO.getIndexId());
+            communityQuery.setMobile(targetIndexMobileDO.getMobile());
 
             communityQuery.setOrderByEnable(true);
             communityQuery.putOrderBy("sort",false);
