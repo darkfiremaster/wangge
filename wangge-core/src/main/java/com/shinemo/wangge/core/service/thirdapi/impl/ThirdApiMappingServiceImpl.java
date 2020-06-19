@@ -100,15 +100,15 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             backoff = @Backoff(delay = 3000, multiplier = 2))
     @Async
     @Override
-    public ApiResult<Map<String, Object>> asyncDispatch(Map<String, Object> requestData, String apiName,String mobile) {
+    public ApiResult<Map<String, Object>> asyncDispatch(Map<String, Object> requestData, String apiName, String mobile) {
         requestData.put("mobile", mobile);
         return dispatch(requestData, apiName);
     }
 
 
     @Recover
-    public ApiResult<Map<String, Object>> asyncDispatchRecover(Exception e, Map<String, Object> map, String apiName,String mobile) {
-        log.error("[asyncDispatchRecover] request:{},apiName:{},exception:{}", map, apiName, e.getMessage());
+    public ApiResult<Map<String, Object>> asyncDispatchRecover(Exception e, Map<String, Object> map, String apiName, String mobile) {
+        log.error("[asyncDispatchRecover] request:{},apiName:{},mobile:{},exception:{}", map, apiName, mobile, e.getMessage());
         //todo 补偿处理
         return ApiResultWrapper.fail(ThirdApiErrorCodes.BASE_ERROR);
     }
