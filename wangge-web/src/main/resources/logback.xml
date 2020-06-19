@@ -212,7 +212,7 @@
         <appender-ref ref="ACCESS_LOG" />
     </logger>
 
-    <logger name="com.shinemo.client.http.HttpConnectionUtil" additivity="false">
+    <logger name="http" additivity="false">
         <level value="${loglevel}" />
         <appender-ref ref="HTTP" />
     </logger>

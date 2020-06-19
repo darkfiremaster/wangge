@@ -18,4 +18,6 @@ public class TargetIndexCommunityQuery extends QueryBase {
     private Long id;
 
     private Long indexId;
+
+    private String mobile;
 }

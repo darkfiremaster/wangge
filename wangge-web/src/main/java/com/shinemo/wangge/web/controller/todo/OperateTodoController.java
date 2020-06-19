@@ -1,7 +1,6 @@
 package com.shinemo.wangge.web.controller.todo;
 
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +23,6 @@ public class OperateTodoController {
 
     @Resource
     private TodoService todoService;
-
-    @Resource
-    private TodoAuthCheckService todoAuthCheckService;
-
 
     @PostMapping("/operateTodoThing")
     public ApiResult<Void> operateTodoThing(@RequestBody TreeMap<String, Object> treeMap) {
