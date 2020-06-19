@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
         } else {
+            log.info("[getUserGridRoleDO] 华为地区信息不为空");
             userGridRoleDO.setCityCode(gridUserRoleDetail.getCityCode());
             userGridRoleDO.setCityName(gridUserRoleDetail.getCityName());
             userGridRoleDO.setCountyCode(gridUserRoleDetail.getCountyCode());

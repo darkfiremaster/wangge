@@ -81,4 +81,55 @@ public class StaticTest {
 
     }
 
+    @Test
+    public void sign1() throws NoSuchAlgorithmException {
+        //key为双方约定的key
+        String key = "7095f283-4d05-4c5d-ad7c-0bb8879ce506";
+        //请求参数
+        Map<String,Object> postBody = new HashMap<>();
+        postBody.put("thirdId", "6c5127a3-9f1c-11ea-a34d-5254001a0735");
+        postBody.put("thirdType", 1);
+        postBody.put("operateType",1);
+        postBody.put("title", "申诉测试001");
+        postBody.put("remark", "申诉测试001");
+        postBody.put("status", 0);
+        postBody.put("label", "处理中");
+        postBody.put("operatorMobile", "15800000002");
+        postBody.put("operatorTime", "2020-06-18 17:30:00");
+        postBody.put("startTime", "2020-06-18 17:30:00");
+        //注意:参数顺序按照首字母正序排列
+        Map<String,Object> map =  new TreeMap<>();
+        map.put("timeStamp",1592489264615L);
+        map.put("postBody",postBody);
+        map.put("method","operateTodoThing");
+        //key为双方约定，参数不传递
+        map.put("key",key);
+
+        //将参数转化为json字符串进行md5加密
+        ObjectMapper objectMapper = new ObjectMapper();
+        String source = null;
+        try {
+            source = objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        byte[] bytes = MessageDigest.getInstance("MD5").digest(source.getBytes(Charset.forName("UTF-8")));
+        char[] result = new char[bytes.length * 2];
+        int c = 0;
+        char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        for (byte b : bytes) {
+            result[c++] = HEX_DIGITS[(b >> 4) & 0xf];
+            result[c++] = HEX_DIGITS[b & 0xf];
+        }
+
+        //将加密后的字符串转化为小写
+        String sign = new String(result).toLowerCase();
+        map.remove("key");
+        map.put("sign",sign);
+
+        String request = GsonUtils.toJson(map);
+        System.out.println("request = " + request);
+
+    }
 }
