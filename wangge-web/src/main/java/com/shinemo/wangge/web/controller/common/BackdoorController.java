@@ -3,6 +3,7 @@ package com.shinemo.wangge.web.controller.common;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
+import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
@@ -123,7 +124,14 @@ public class BackdoorController {
         return ApiResult.of(0);
     }
 
-
+    /**
+     * 获取昨日登录信息
+     * @return
+     */
+    @GetMapping("/getLoginInfoExcelDTOList")
+    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
+        return loginStatisticsService.getLoginInfoExcelDTOList();
+    }
 
 
 }
