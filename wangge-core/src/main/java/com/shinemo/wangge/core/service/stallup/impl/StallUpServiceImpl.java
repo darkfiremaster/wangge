@@ -1049,25 +1049,15 @@ public class StallUpServiceImpl implements StallUpService {
         Map<String, Object> data = dispatch.getData();
         Object o = data.get("smsHotResultList");
         List<SmsHotResponse> smsHotResultList = GsonUtils.fromJsonToList(GsonUtils.toJson(o), SmsHotResponse[].class);
-        System.out.println(JSON.toJSON(smsHotResultList));
         if (CollectionUtils.isEmpty(smsHotResultList)) {
             return ApiResult.of(0);
         }
         SmsHotResponse smsHotResponse = smsHotResultList.get(0);
         List<SmsHotResponse.SmsData> smsActivityList = smsHotResponse.getSmsActivityList();
         if (CollectionUtils.isEmpty(smsActivityList)) {
-            smsHotResponse.setClientCountTotal(0L);
             smsHotResponse.setSmsActivityList(new ArrayList<>());
-        }else {
-            Long total = 0L;
-            for (SmsHotResponse.SmsData smsData: smsActivityList) {
-                if (smsData.getClientCount() != null) {
-                    total +=Long.valueOf(smsData.getClientCount());
-                }
-            }
-            smsHotResponse.setClientCountTotal(total);
         }
-        return ApiResult.of(0,smsHotResultList.get(0));
+        return ApiResult.of(0,smsHotResponse);
     }
 
     /**
