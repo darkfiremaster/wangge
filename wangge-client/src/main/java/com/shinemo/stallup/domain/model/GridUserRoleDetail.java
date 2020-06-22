@@ -25,6 +25,8 @@ public class GridUserRoleDetail {
 	private String countyName;
 	private String countyCode;
 	private List<GridRole> roleList;
+	/** 类型：1已选择，0未选中 */
+	private Integer type = 0;
 
 	@Data
 	@NoArgsConstructor

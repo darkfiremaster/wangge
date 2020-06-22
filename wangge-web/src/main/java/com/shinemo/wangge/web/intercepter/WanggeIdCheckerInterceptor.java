@@ -66,8 +66,9 @@ public class WanggeIdCheckerInterceptor extends HandlerInterceptorAdapter {
             log.error("[preHandle] mobile is empty");
             throw new ApiException(INVALID_MOBILE);
         }
-        String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
-        if (StringUtils.isBlank(gridInfoCache)) {
+        //String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
+        String gridInfo = SmartGridContext.getGridInfo();
+        if (StringUtils.isBlank(gridInfo)) {
             log.error("[preHandle] user not grid user,mobile = {}", mobile);
             throw new ApiException(NOT_GRID_USER);
         }

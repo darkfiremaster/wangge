@@ -20,7 +20,8 @@ public class SmartGridContext {
 	public static String KEY_ORG_NAME = "orgName";
 	public static String KEY_NAME = "name";
 	public static String KEY_MOBILE = "mobile";
-	public static String KEY_GRID_ID = "gridInfo";
+	public static String KEY_GRID_INFO = "gridInfo";
+	public static String KEY_SELECT_GRID_INFO = "selectGridInfo";
 
 	private static final ThreadLocal<Map<String, Object>> local = new ThreadLocal<Map<String, Object>>() {
 		@Override
@@ -112,7 +113,15 @@ public class SmartGridContext {
 	}
 
 	public static void setGridInfo(String gridInfo) {
-		put(KEY_GRID_ID, gridInfo);
+		put(KEY_GRID_INFO, gridInfo);
+	}
+
+	public static void setSelectGridInfo(String selectGridInfo) {
+		put(KEY_SELECT_GRID_INFO, selectGridInfo);
+	}
+
+	public static String getSelectGridInfo() {
+		return (String) get(KEY_SELECT_GRID_INFO);
 	}
 
 	public static String getMobile() {
@@ -120,7 +129,7 @@ public class SmartGridContext {
 	}
 
 	public static String getGridInfo() {
-		return (String) get(KEY_GRID_ID);
+		return (String) get(KEY_GRID_INFO);
 	}
 
 }

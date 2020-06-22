@@ -3,6 +3,9 @@ package com.shinemo.wangge.core.service.gridinfo;
 import com.shinemo.client.common.Result;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.gridinfo.domain.model.SmartGridInfoDO;
+import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+
+import java.util.List;
 
 /**
  * 类说明: 网格信息接口
@@ -23,5 +26,12 @@ public interface SmartGridInfoService {
      * @return
      */
     ApiResult<SmartGridInfoDO> getByGridId(String gridId);
+
+    /**
+     * 根据手机号获取网格列表
+     * @param mobile
+     * @return
+     */
+    List<GridUserRoleDetail> getGridUserRole(String mobile);
 
 }

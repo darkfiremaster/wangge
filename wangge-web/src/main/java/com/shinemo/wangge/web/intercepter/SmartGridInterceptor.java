@@ -3,6 +3,7 @@ package com.shinemo.wangge.web.intercepter;
 import static com.shinemo.Aace.RetCode.RET_SUCCESS;
 import static com.shinemo.util.WebUtils.getValueFromCookies;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.client.util.GsonUtil;
+import com.shinemo.client.util.WebUtil;
+import com.shinemo.smartgrid.constants.SmartGridConstant;
+import com.shinemo.smartgrid.domain.GridInfoToken;
+import com.shinemo.wangge.core.service.operate.OperateService;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -64,7 +72,15 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     @Resource
     private BackdoorLoginMapper backdoorLoginMapper;
 
-    public static final int EXPIRE_TIME = 60 * 60 * 24;
+    @Resource
+    private OperateService operateService;
+
+   // public static final int EXPIRE_TIME = 60 * 60 * 24;
+
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "127.0.0.1";
+
+    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -137,28 +153,65 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             SmartGridContext.setUserName(userName);
         }
         // 查询用户网格信息,并更新
-        String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
-        if (StringUtils.isBlank(gridInfoCache)) {
-            log.info("[preHandle] gridInfoCache is null, start query gridinfo,mobile:{}", mobile);
-            List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
-            if (CollectionUtils.isEmpty(gridUserRole)) {
-                log.info("[preHandle] gridUserRoleList is null,mobile:{}", mobile);
-                return true;
-            }
-
+        String allGridInfo = getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, cookies);
+        if (StringUtils.isBlank(allGridInfo)) {
+            ApiResult<String> infoToken = operateService.genGridInfoToken(null);
+            allGridInfo = infoToken.getData();
+            GridInfoToken gridInfoToken = getToken(allGridInfo);
             // 更新用户网格角色关系
             log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
             String finalMobile = mobile;
             asyncServiceExecutor.submit(() -> {
-                userService.updateUserGridRoleRelation(gridUserRole, finalMobile);
+                userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
             });
-
-            gridInfoCache = GsonUtils.toJson(gridUserRole);
-            redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
         }
+        //所有网格信息
+        GridInfoToken gridInfoToken = getToken(allGridInfo);
+        List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
 
-        SmartGridContext.setGridInfo(gridInfoCache);
+        String selectGridInfo = getValueFromCookies(SmartGridConstant.SELECT_GRID_INFO_COOKIE, cookies);
+        if (StringUtils.isBlank(selectGridInfo)) {
+            GridUserRoleDetail detail = gridList.get(0);
+            ApiResult<String> stringApiResult = operateService.genGridInfoToken(detail);
+            selectGridInfo = stringApiResult.getData();
+        }
+        //所选网格信息
+        GridInfoToken selectToken = getToken(selectGridInfo);
+
+//        String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
+//        if (StringUtils.isBlank(gridInfoCache)) {
+//            log.info("[preHandle] gridInfoCache is null, start query gridinfo,mobile:{}", mobile);
+//            List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
+//            if (CollectionUtils.isEmpty(gridUserRole)) {
+//                log.info("[preHandle] gridUserRoleList is null,mobile:{}", mobile);
+//                return true;
+//            }
+//
+//            // 更新用户网格角色关系
+//            log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
+//            String finalMobile = mobile;
+//            asyncServiceExecutor.submit(() -> {
+//                userService.updateUserGridRoleRelation(gridUserRole, finalMobile);
+//            });
+//
+//            gridInfoCache = GsonUtils.toJson(gridUserRole);
+//            redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
+//        }
+
+        SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
+        SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
+        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
+                domain, "/", EXPIRE_TIME, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                domain, "/", EXPIRE_TIME, false);
         return true;
+    }
+
+    private GridInfoToken getToken(String gridInfo) {
+        String usableToken = new String(Base64.decodeBase64(gridInfo), StandardCharsets.UTF_8);
+        GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(usableToken, GridInfoToken.class);
+        return gridInfoToken;
     }
 
     private List<GridUserRoleDetail> getGridUserRole(String mobile) {
