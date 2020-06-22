@@ -163,46 +163,18 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         activityDO.setMobile(SmartGridContext.getMobile());
         activityDO.setGmtCreate(new Date());
         activityDO.setGmtModified(new Date());
-        //插入网格活动对应表
-        HuaWeiRequest huaWeiRequest = HuaWeiRequest.builder().mobile(SmartGridContext.getMobile()).build();
-        try {
-            ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
-            List<GridUserRoleDetail> details = apiResult.getData();
-            if (!CollectionUtils.isEmpty(details)) {
-                List<String> gridIds = details.stream().map(GridUserRoleDetail::getId).collect(Collectors.toList());
-                String join = String.join(",", gridIds);
-                activityDO.setGridId(join);
-                sweepFloorActivityMapper.insert(activityDO);
-                for (GridUserRoleDetail detail : details) {
-                    SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-                    smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-                    smartGridActivityDO.setActivityId(activityDO.getId());
-                    smartGridActivityDO.setGridId(detail.getId());
-                    smartGridActivityDO.setGridName(detail.getName());
-                    smartGridActivityMapper.insert(smartGridActivityDO);
-                }
-            }else {
-                activityDO.setGridId("0");
-                sweepFloorActivityMapper.insert(activityDO);
 
-                SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-                smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-                smartGridActivityDO.setActivityId(activityDO.getId());
-                smartGridActivityDO.setGridId("0");
-                smartGridActivityDO.setGridName("无网格");
-                smartGridActivityMapper.insert(smartGridActivityDO);
-            }
-        } catch (ApiException e) {
-            log.error("[create] create sweep floor not grid user,mobile = {}", SmartGridContext.getMobile());
-            SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-            smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-            smartGridActivityDO.setGridId("0");
-            smartGridActivityDO.setGridName("无网格");
-            activityDO.setGridId("0");
-            sweepFloorActivityMapper.insert(activityDO);
-            smartGridActivityDO.setActivityId(activityDO.getId());
-            smartGridActivityMapper.insert(smartGridActivityDO);
-        }
+        String selectGridInfo = SmartGridContext.getSelectGridInfo();
+        GridUserRoleDetail gridDetail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);
+        activityDO.setGridId(gridDetail.getId());
+        sweepFloorActivityMapper.insert(activityDO);
+
+        SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
+        smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
+        smartGridActivityDO.setActivityId(activityDO.getId());
+        smartGridActivityDO.setGridId(gridDetail.getId());
+        smartGridActivityDO.setGridName(gridDetail.getName());
+        smartGridActivityMapper.insert(smartGridActivityDO);
 
         synchronizeSweepingData(activityDO);
 

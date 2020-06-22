@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,10 +89,17 @@ public class OperateController {
 
         String gridInfo = SmartGridContext.getGridInfo();
         List<GridUserRoleDetail> gridUserRoleDetails = GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
+
         String selectGridInfo = SmartGridContext.getSelectGridInfo();
         if (StringUtils.isBlank(selectGridInfo)) {
             gridUserRoleDetails.get(0).setType(1);
         }else {
+            if (gridUserRoleDetails.size() == 1) {
+                GridUserRoleDetail detai2 = gridUserRoleDetails.get(0);
+                if (detai2.getId().equals("0")) {
+                    return ApiResult.of(0,new ArrayList<>());
+                }
+            }
             GridUserRoleDetail detail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);
             for (GridUserRoleDetail detail2: gridUserRoleDetails) {
                 if (detail.getId().equals(detail2.getId())) {
@@ -99,7 +107,6 @@ public class OperateController {
                 }
             }
         }
-
 
         return ApiResult.of(0,gridUserRoleDetails);
     }
