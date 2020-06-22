@@ -42,7 +42,7 @@ public class TodoTest {
         todoUrlQuery.setOperatorMobile("15800000002");
         todoUrlQuery.setThirdId("6c5127a3-9f1c-11ea-a34d-5254001a0735");
 
-        ApiResult<String> result = todoRedirectUrlService.getDetailRedirectUrl(todoUrlQuery);
+        ApiResult<String> result = todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
         System.out.println("result = " + result);
     }
 

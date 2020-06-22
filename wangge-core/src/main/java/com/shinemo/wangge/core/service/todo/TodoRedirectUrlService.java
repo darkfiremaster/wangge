@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Desc
  */
 public interface TodoRedirectUrlService {
-    ApiResult<String> getDetailRedirectUrl(TodoUrlQuery todoUrlQuery);
+    ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery);
 
     ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletResponse response);
 }

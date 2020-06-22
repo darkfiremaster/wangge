@@ -13,9 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 /**
  * @Author shangkaihui
  * @Date 2020/6/13 18:04
@@ -81,13 +78,12 @@ public class TodoController {
     }
 
     /**
-     * 获取详情页跳转url参数
+     * 获取代办事项或工单跳转url参数
      * @return
      */
-    @GetMapping("/getDetailRedirectUrl")
-    public ApiResult<String> getDetailRedirectUrl(TodoUrlQuery todoUrlQuery, HttpServletResponse response) throws IOException {
-        //response.sendRedirect("http://api.jituancaiyun.net/intelligent-grids/index.html");
-        return todoRedirectUrlService.getDetailRedirectUrl(todoUrlQuery);
+    @GetMapping("/getRedirectUrl")
+    public ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery)  {
+        return todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
 
 

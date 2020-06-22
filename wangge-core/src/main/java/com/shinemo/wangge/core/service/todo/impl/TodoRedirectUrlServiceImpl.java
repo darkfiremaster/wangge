@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
@@ -57,7 +58,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
 
     @Override
-    public ApiResult<String> getDetailRedirectUrl(TodoUrlQuery todoUrlQuery) {
+    public ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery) {
         Assert.notNull(todoUrlQuery, "request is null");
         Assert.notNull(todoUrlQuery.getThirdType(), "thirdType is null");
         Assert.notNull(todoUrlQuery.getOperatorMobile(), "mobile is null");
@@ -77,6 +78,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Assert.notNull(encryptData, "paramData is null");
         Assert.notNull(todoRedirectDTO.getSign(), "sign is null");
         Assert.notNull(todoRedirectDTO.getTimestamp(), "timestamp is null");
+        Assert.notNull(todoRedirectDTO.getThirdType(), "thirdType is null");
         String seed = seedMap.get(todoRedirectDTO.getThirdType());
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
         if (!sign.equals(todoRedirectDTO.getSign())) {
@@ -92,7 +94,6 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             Assert.notNull(todoRedirectDetailDTO.getThirdId(), "thirdId is null");
         }
 
-
         //todo 校验token
         String token = todoRedirectDetailDTO.getToken();
         //todo 写cookie
@@ -100,13 +101,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         //页面跳转
         try {
             if (redirectPage == null || redirectPage.equals(0)) {
-                //跳首页
+                log.info("[redirectPage] 跳转首页:{}", indexUrl);
                 response.sendRedirect(indexUrl);
             } else if (redirectPage.equals(1)) {
-                //跳新建摆摊页面
+                log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
                 response.sendRedirect(createStallupUrl);
             } else {
-                //跳首页
+                log.info("[redirectPage] 跳转首页:{}", indexUrl);
                 response.sendRedirect(indexUrl);
             }
         } catch (Exception e) {
@@ -126,7 +127,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", todoUrlQuery.getOperatorMobile());
         formData.put("timestamp", timestamp);
-        formData.put("orderId", todoUrlQuery.getThirdId());
+        //orderId为空,是跳列表页,不为空,是跳详情页
+        if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
+            formData.put("orderId", todoUrlQuery.getThirdId());
+        }
         //todo 加上token
 
         String paramStr = EncryptUtil.buildParameterString(formData);
@@ -154,7 +158,14 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", todoUrlQuery.getOperatorMobile());
         formData.put("timestamp", timestamp);
-        formData.put("id", todoUrlQuery.getThirdId());
+        //如果id为空,则跳列表页,不为空则跳详情页
+        if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
+            formData.put("id", todoUrlQuery.getThirdId());
+        } else {
+            //todo 从cookie中获取当前登录人选择的网格和角色id
+            formData.put("gridid", "");
+            formData.put("roleid", "");
+        }
         //todo 加上token
 
         String paramStr = EncryptUtil.buildParameterString(formData);
