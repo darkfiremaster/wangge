@@ -6,8 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TodoTypeEnum {
-    //todo 下周要开启
-    //WORK_ORDER(1, "工单"),
+    WORK_ORDER(1, "工单"),
     PLAN(2, "计划");
 
     private int id;

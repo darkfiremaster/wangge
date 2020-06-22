@@ -26,7 +26,10 @@ import com.shinemo.todo.enums.TodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoTypeQuery;
-import com.shinemo.todo.vo.*;
+import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoIndexVO;
+import com.shinemo.todo.vo.TodoTypeVO;
+import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.aop.TodoLog;
 import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import com.shinemo.wangge.core.service.todo.TodoService;
@@ -296,13 +299,8 @@ public class TodoServiceImpl implements TodoService {
         return ApiResult.of(0, todoTypeVO);
     }
 
-    @Override
-    public ApiResult<String> getDetailRedirectUrl(TodoQuery todoQuery) {
-        Assert.notNull(todoQuery, "request is null");
-        Assert.notNull(todoQuery.getThirdType(), "thirdType is null");
-        //todo
-        return ApiResult.of(0, "test");
-    }
+
+
 
     private TodoDO getTodoDO(TodoDTO todoDTO) {
         TodoDO todoDO = new TodoDO();
