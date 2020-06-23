@@ -27,4 +27,12 @@ public interface AuthService {
      * @return
      */
     String generateToken(Long uid , Long orgId , TreeMap<String,Object> map);
+
+    /**
+     * 生成shortToken
+     * @param userId
+     * @param timestamp
+     * @return
+     */
+    String generateShortToken(long userId,long timestamp);
 }

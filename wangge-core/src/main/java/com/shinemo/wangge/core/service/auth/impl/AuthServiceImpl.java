@@ -252,13 +252,26 @@ public class AuthServiceImpl implements AuthService {
 
     /**
      * 获得bizToken+userId+timestamp的md5串
-     * @param bizToken
      * @param userId
      * @param timestamp
      * @return
      */
-    private String genToken(String bizToken,long userId,long timestamp) {
-        //md5加密
+    @Override
+    public String generateShortToken(long userId,long timestamp) {
+        //根据key获得bizToken 本地缓存
+        String bizTokenKey = String.format(KEY_BIZ_TOKEN_FORMAT, userId,appType.getId());
+        //根据key获得bizToken
+        String bizToken = cache.asMap().get(bizTokenKey);
+        if(StringUtils.isNotBlank(bizToken)) {
+            return bizToken;
+        }
+        //缓存中不存在
+        bizToken = getUserBizToken(userId,appType);
+
+        return genToken(bizToken,userId,timestamp);
+    }
+
+    private String genToken(String bizToken,long userId,long timestamp){
         return DigestUtils.md5Hex(bizToken+userId+timestamp);
     }
 }
