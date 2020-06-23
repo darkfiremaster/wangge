@@ -1085,7 +1085,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         ApiResult<List<BuildingDetailsVO>> buildingPlan = getBuildingPlan(request);
         String redisValue02 = redisService.get(buildingId + houseNumber);
         if (!StringUtils.isBlank(redisValue02)) {
-            List<FamilyMember> list = GsonUtils.fromJsonToList(redisValue, FamilyMember[].class);
+            List<FamilyMember> list = GsonUtils.fromJsonToList(redisValue02, FamilyMember[].class);
             return ApiResult.of(0, list);
         } else {
             return ApiResult.of(0, new ArrayList<>());
