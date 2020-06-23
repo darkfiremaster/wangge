@@ -4,6 +4,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.dto.TodoRedirectDTO;
 import com.shinemo.todo.query.TodoUrlQuery;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -14,5 +15,5 @@ import javax.servlet.http.HttpServletResponse;
 public interface TodoRedirectUrlService {
     ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery);
 
-    ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletResponse response);
+    ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletRequest request, HttpServletResponse response);
 }

@@ -1,12 +1,18 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.Result;
 import com.shinemo.client.token.Token;
+import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
+import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.constants.SmartGridConstant;
+import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.todo.dto.TodoRedirectDTO;
@@ -25,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +59,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     @Autowired
     private AuthService authService;
 
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "127.0.0.1";
+
+    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
+
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
 
@@ -77,7 +89,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     }
 
     @Override
-    public ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletResponse response) {
+    public ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletRequest request, HttpServletResponse response) {
         Assert.notNull(todoRedirectDTO, "request is null");
         String encryptData = todoRedirectDTO.getParamData();
         Assert.notNull(encryptData, "paramData is null");
@@ -101,15 +113,55 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             Assert.notNull(todoRedirectDetailDTO.getThirdId(), "thirdId is null");
         }
 
-        //todo 校验token
+        //校验token
         String token = todoRedirectDetailDTO.getToken();
         Result<Token> tokenResult = authService.validateToken(token);
         if (!tokenResult.isSuccess()) {
+            log.error("[redirectPage] token校验失败,token:{}", token);
             throw new RuntimeException(tokenResult.getError().getMsg());
         }
+        //生成短token
+        Token longToken = tokenResult.getValue();
+        long uid = longToken.getUid();
+        long orgId = longToken.getOrgId();
+        String orgName = longToken.getOrgName();
+        String phone = longToken.getPhone();
+        String userName = longToken.getUserName();
+        long timestamp = System.currentTimeMillis();
+        String shortToken = authService.generateShortToken(uid, timestamp);
+        //生成userInfo
+        HashMap<String, Object> userInfoMap = new HashMap<>();
+        userInfoMap.put("orgId", orgId);
+        userInfoMap.put("mobile", phone);
+        userInfoMap.put("orgName", orgName);
+        userInfoMap.put("username", userName);
+        userInfoMap.put("name", userName);
+        String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
+        //写cookie
+        WebUtil.addCookie(request, response, "token", shortToken,
+                domain, "/", Integer.MAX_VALUE, false);
 
-        Token token1 = tokenResult.getValue();
-        //todo 写cookie
+        WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
+                domain, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
+                domain, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
+                domain, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "userInfo", userInfo,
+                domain, "/", Integer.MAX_VALUE, false);
+
+        //获取token中的网格信息
+        TreeMap<String, Object> map = longToken.getMap();
+        String selectGridInfo = (String)map.get("selectGridInfo");
+        String gridInfo = (String)map.get("gridInfo");
+        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
+                domain, "/", EXPIRE_TIME, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                domain, "/", EXPIRE_TIME, false);
 
         //页面跳转
         try {
@@ -146,6 +198,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         }
         String token = getToken();
         formData.put("token", token);
+        log.info("[getYujingTodoDetailUrl] formData:{}", formData);
+
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
         String encryptData = EncryptUtil.encrypt(paramStr, seed);
@@ -175,13 +229,23 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
             formData.put("id", todoUrlQuery.getThirdId());
         } else {
-            //todo 从cookie中获取当前登录人选择的网格和角色id
-            formData.put("gridid", "");
-            formData.put("roleid", "");
+            //获取当前登录人选择的网格和角色id
+            String selectGridInfo = SmartGridContext.getSelectGridInfo();
+            GridInfoToken gridInfoToken = GsonUtils.fromGson2Obj(selectGridInfo, GridInfoToken.class);
+            GridUserRoleDetail gridDetail = gridInfoToken.getGridDetail();
+            String gridId = gridDetail.getId();
+            String roleId = gridDetail.getRoleList().get(0).getId();
+            if (gridId.equals("0")) {
+                formData.put("gridid", "9990");
+                formData.put("roleid", "9990");
+            } else {
+                formData.put("gridid", gridId);
+                formData.put("roleid", roleId);
+            }
         }
-
         String token = getToken();
         formData.put("token", token);
+        log.info("[getDaosanjiaoTodoDetailUrl] formData:{}", formData);
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
@@ -201,9 +265,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String uid = SmartGridContext.getUid();
         String orgId = SmartGridContext.getOrgId();
         TreeMap<String, Object> map = new TreeMap<>();
-        //todo
-        map.put("gridId", 0L);
-        map.put("roleId", 0L);
+        String selectGridInfo = SmartGridContext.getSelectGridInfo();
+        String gridInfo = SmartGridContext.getGridInfo();
+        map.put("selectGridInfo", selectGridInfo);
+        map.put("gridInfo", gridInfo);
+        log.info("[getToken] 生成token的参数, uid:{},orgId:{},map:{}", uid, orgId, map);
         return authService.generateToken(Long.valueOf(uid), Long.valueOf(orgId), map);
     }
 }
