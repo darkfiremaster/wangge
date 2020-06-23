@@ -34,7 +34,8 @@ public class OperateTodoController {
 
     @GetMapping("/redirectPage")
     public void redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletResponse response) {
-        todoRedirectUrlService.redirectPage(todoRedirectDTO,response);
+        log.info("[redirectPage] 第三方跳转请求, request:{}", todoRedirectDTO);
+        todoRedirectUrlService.redirectPage(todoRedirectDTO, response);
     }
 
 }

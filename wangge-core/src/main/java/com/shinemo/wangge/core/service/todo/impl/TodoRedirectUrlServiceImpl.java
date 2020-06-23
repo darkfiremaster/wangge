@@ -52,8 +52,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
     @PostConstruct
     public void init() {
-        seedMap.put(1, daosanjiaoPropertity.getSeed());
-        seedMap.put(2, yujingPropertity.getSeed());
+        seedMap.put(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId(), daosanjiaoPropertity.getSeed());
+        seedMap.put(ThirdTodoTypeEnum.YU_JING_ORDER.getId(), yujingPropertity.getSeed());
     }
 
 
@@ -82,11 +82,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String seed = seedMap.get(todoRedirectDTO.getThirdType());
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
         if (!sign.equals(todoRedirectDTO.getSign())) {
+            log.error("[redirectPage]签名校验失败,请求签名:{},计算后的签名:{}", todoRedirectDTO.getSign(), sign);
             throw new RuntimeException("签名不正确");
         }
 
         String decryptData = EncryptUtil.decrypt(todoRedirectDTO.getParamData(), seed);
         TodoRedirectDetailDTO todoRedirectDetailDTO = GsonUtils.fromGson2Obj(decryptData, TodoRedirectDetailDTO.class);
+        log.info("[redirectPage]解密后的参数:{},{}", decryptData, todoRedirectDetailDTO);
         Integer redirectPage = todoRedirectDetailDTO.getRedirectPage();
 
         if (redirectPage.equals(1)) {
