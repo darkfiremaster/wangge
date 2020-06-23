@@ -1,25 +1,38 @@
 package com.shinemo.wangge.core.service.operate.impl;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.client.util.GsonUtil;
+import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
+import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.domain.LockContext;
 import com.shinemo.my.redis.service.RedisLock;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.UserOperateLogDO;
 import com.shinemo.operate.vo.UserOperateLogVO;
+import com.shinemo.smartgrid.constants.SmartGridConstant;
+import com.shinemo.smartgrid.domain.GridInfoToken;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
+import com.shinemo.stallup.common.error.StallUpErrorCodes;
+import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
+import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +56,9 @@ public class OperateServiceImpl implements OperateService {
 
     @Resource
     private RedisLock redisLock;
+
+    @Resource
+    private SmartGridInfoService smartGridInfoService;
 
     private static final Integer LOGIN_EXPIRE_TIME = 15 * 60;
     public static final Integer LOCK_EXPIRE_TIME = 1;
@@ -113,6 +129,49 @@ public class OperateServiceImpl implements OperateService {
         return ApiResult.of(0);
     }
 
+    @Override
+    public ApiResult<String> genGridInfoToken(GridUserRoleDetail request) {
+        String mobile = SmartGridContext.getMobile();
+        GridInfoToken gridInfoToken = new GridInfoToken();
+        if (request != null) {
+            gridInfoToken.setGridDetail(request);
+        }else {
+            List<GridUserRoleDetail> gridUserRole = smartGridInfoService.getGridUserRole(mobile);
+            if (CollectionUtils.isEmpty(gridUserRole)) {
+                gridUserRole = new ArrayList<>();
+                GridUserRoleDetail gridUserRoleDetail = new GridUserRoleDetail();
+                gridUserRoleDetail.setId("0");
+                gridUserRoleDetail.setName("无网格");
+                gridUserRole.add(gridUserRoleDetail);
+            }
+            gridInfoToken.setGridList(gridUserRole);
+        }
+        String stringToken = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
+
+        return ApiResult.of(0,stringToken);
+    }
+
+//    @Override
+//    public ApiResult<GridInfoToken> validateGridInfoToken(String token,Integer type) {
+//        Assert.notNull(token,"token is null");
+//        String mobile = SmartGridContext.getMobile();
+//        String usableToken = new String(Base64.decodeBase64(token), StandardCharsets.UTF_8);
+//        GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(usableToken, GridInfoToken.class);
+//        String requestToken = gridInfoToken.getToken();
+//        String checkToken = null;
+//        if (type == 1) {
+//            checkToken = Md5Util.getMD5Str(mobile + SmartGridConstant.TOKEN_KEY);
+//        }else if (type == 2) {
+//            GridUserRoleDetail detail = gridInfoToken.getGridDetail();
+//            checkToken = Md5Util.getMD5Str(mobile + SmartGridConstant.TOKEN_KEY + detail.getId());
+//        }
+//        if (!requestToken.equals(checkToken)) {
+//            throw new ApiException(StallUpErrorCodes.GRID_TOKEN_ERROR);
+//        }
+//
+//        return ApiResult.of(0,gridInfoToken);
+//    }
+
 
     private void insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
         if (userOperateLogVO.getType() == 1) {
@@ -136,8 +195,9 @@ public class OperateServiceImpl implements OperateService {
 
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {
-        String userGridInfo = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(userOperateLogVO.getMobile()));
-        if (StringUtils.isEmpty(userGridInfo)) {
+        //String userGridInfo = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(userOperateLogVO.getMobile()));
+        String gridInfo = SmartGridContext.getGridInfo();
+        if (StringUtils.isEmpty(gridInfo)) {
             return false;
         } else {
             return true;

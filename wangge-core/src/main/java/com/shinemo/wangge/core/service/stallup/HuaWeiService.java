@@ -13,6 +13,7 @@ import com.shinemo.sweepfloor.domain.request.HuaweiBuildingDetailListRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiBuildingRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiCellAndBuildingsRequest;
 import com.shinemo.sweepfloor.domain.request.HuaweiTenantRequest;
+import com.shinemo.sweepfloor.domain.response.HuaWeiAddBuildingResponse;
 import com.shinemo.sweepfloor.domain.response.HuaWeiAddTenantsResponse;
 import com.shinemo.sweepfloor.domain.response.HuaweiBuildingDetailsListResponse;
 import com.shinemo.sweepfloor.domain.response.HuaweiCellsAndBuildingsResponse;
@@ -101,7 +102,7 @@ public interface HuaWeiService {
 	 * @param request
 	 * @return
 	 */
-	ApiResult<Void> addBuilding(HuaweiBuildingRequest request);
+	ApiResult<HuaWeiAddBuildingResponse> addBuilding(HuaweiBuildingRequest request);
 
 	/**
 	 * 编辑楼栋
@@ -115,7 +116,7 @@ public interface HuaWeiService {
 	 * @param request
 	 * @return
 	 */
-	ApiResult<Void> addBuildingTenants(HuaweiTenantRequest request);
+	ApiResult<HuaWeiAddTenantsResponse> addBuildingTenants(HuaweiTenantRequest request);
 	/**
 	 * 编辑住户
 	 * @param request

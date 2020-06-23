@@ -39,11 +39,11 @@ public interface SweepFloorService {
 
     ApiResult<List<BuildingVO>> getBuildings(SweepFloorBuildingQuery request);
 
-    ApiResult<Void> addBuilding(BuildingVO request);
+    ApiResult<BuildingVO> addBuilding(BuildingVO request);
 
     ApiResult<Void> updateBuilding(BuildingVO request);
 
-    ApiResult<Void> addHousehold(HouseholdVO request);
+    ApiResult<HouseholdVO> addHousehold(HouseholdVO request);
 
     ApiResult<Void> updateHousehold(HouseholdVO request);
 

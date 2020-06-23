@@ -283,7 +283,7 @@ public class SweepFloorController {
      */
     @PostMapping("/addBuilding")
     @SmIgnore
-    public ApiResult<Void> addBuilding(@RequestBody BuildingVO request) {
+    public ApiResult<BuildingVO> addBuilding(@RequestBody BuildingVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getCommunityId(),"communityId is null");
         Assert.notNull(request.getBuildingName(),"buildingName is null");
@@ -318,7 +318,7 @@ public class SweepFloorController {
      */
     @PostMapping("/addHousehold")
     @SmIgnore
-    public ApiResult<Void> addHousehold(@RequestBody HouseholdVO request) {
+    public ApiResult<HouseholdVO> addHousehold(@RequestBody HouseholdVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getCommunityId(),"communityId is null");
         Assert.notNull(request.getBuildingId(),"buildingId is null");

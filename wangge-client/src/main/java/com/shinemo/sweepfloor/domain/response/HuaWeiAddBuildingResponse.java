@@ -3,19 +3,17 @@ package com.shinemo.sweepfloor.domain.response;
 import com.shinemo.smartgrid.domain.CommonHuaweiResponse;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 添加住户华为返回值
  */
 @Data
-public class HuaWeiAddTenantsResponse extends CommonHuaweiResponse {
+public class HuaWeiAddBuildingResponse extends CommonHuaweiResponse {
 
-    private Tenant data;
+    private Build data;
 
     @Data
-    public static class  Tenant{
+    public static class  Build{
 
-        private String houseId;
+        private String buildingId;
     }
 }

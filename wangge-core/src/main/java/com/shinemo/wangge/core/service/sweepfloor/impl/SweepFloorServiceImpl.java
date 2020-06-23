@@ -163,46 +163,18 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         activityDO.setMobile(SmartGridContext.getMobile());
         activityDO.setGmtCreate(new Date());
         activityDO.setGmtModified(new Date());
-        //插入网格活动对应表
-        HuaWeiRequest huaWeiRequest = HuaWeiRequest.builder().mobile(SmartGridContext.getMobile()).build();
-        try {
-            ApiResult<List<GridUserRoleDetail>> apiResult = huaWeiService.getGridUserInfo(huaWeiRequest);
-            List<GridUserRoleDetail> details = apiResult.getData();
-            if (!CollectionUtils.isEmpty(details)) {
-                List<String> gridIds = details.stream().map(GridUserRoleDetail::getId).collect(Collectors.toList());
-                String join = String.join(",", gridIds);
-                activityDO.setGridId(join);
-                sweepFloorActivityMapper.insert(activityDO);
-                for (GridUserRoleDetail detail : details) {
-                    SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-                    smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-                    smartGridActivityDO.setActivityId(activityDO.getId());
-                    smartGridActivityDO.setGridId(detail.getId());
-                    smartGridActivityDO.setGridName(detail.getName());
-                    smartGridActivityMapper.insert(smartGridActivityDO);
-                }
-            }else {
-                activityDO.setGridId("0");
-                sweepFloorActivityMapper.insert(activityDO);
 
-                SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-                smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-                smartGridActivityDO.setActivityId(activityDO.getId());
-                smartGridActivityDO.setGridId("0");
-                smartGridActivityDO.setGridName("无网格");
-                smartGridActivityMapper.insert(smartGridActivityDO);
-            }
-        } catch (ApiException e) {
-            log.error("[create] create sweep floor not grid user,mobile = {}", SmartGridContext.getMobile());
-            SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
-            smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-            smartGridActivityDO.setGridId("0");
-            smartGridActivityDO.setGridName("无网格");
-            activityDO.setGridId("0");
-            sweepFloorActivityMapper.insert(activityDO);
-            smartGridActivityDO.setActivityId(activityDO.getId());
-            smartGridActivityMapper.insert(smartGridActivityDO);
-        }
+        String selectGridInfo = SmartGridContext.getSelectGridInfo();
+        GridUserRoleDetail gridDetail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);
+        activityDO.setGridId(gridDetail.getId());
+        sweepFloorActivityMapper.insert(activityDO);
+
+        SmartGridActivityDO smartGridActivityDO = new SmartGridActivityDO();
+        smartGridActivityDO.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
+        smartGridActivityDO.setActivityId(activityDO.getId());
+        smartGridActivityDO.setGridId(gridDetail.getId());
+        smartGridActivityDO.setGridName(gridDetail.getName());
+        smartGridActivityMapper.insert(smartGridActivityDO);
 
         synchronizeSweepingData(activityDO);
 
@@ -391,7 +363,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         BeanUtils.copyProperties(request, visitRecordingDO);
         visitRecordingDO.setMarketingUserId(SmartGridContext.getUid());
         visitRecordingDO.setMarketingUserName(SmartGridContext.getUserName());
-        visitRecordingDO.setBusinessType(GsonUtils.toJson(request.getBusinessType()));
         visitRecordingDO.setGmtCreate(new Date());
         sweepFloorVisitRecordingMapper.insert(visitRecordingDO);
         return ApiResult.of(0);
@@ -418,7 +389,17 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             if (!StringUtils.isBlank(visitRecordingDO.getBusinessType())) {
                 String businessType = visitRecordingDO.getBusinessType();
-                visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                boolean jsonList = GsonUtils.isJsonList(businessType, StallUpBizType[].class);
+                if (jsonList) {
+                    List<StallUpBizType> bizTypeList = GsonUtils.fromJsonToList(businessType, StallUpBizType[].class);
+                    if (!CollectionUtils.isEmpty(bizTypeList)) {
+                        List<String> names = bizTypeList.stream().map(StallUpBizType::getName).collect(Collectors.toList());
+                        String name = names.stream().collect(Collectors.joining(","));
+                        visitRecordingVO.setBusinessType(name);
+                    }
+                }else {
+                    visitRecordingVO.setBusinessType(businessType);
+                }
             }
             //Integer status = activityMap.get(visitRecordingDO.getActivityId());
             if (activityId.equals(visitRecordingDO.getActivityId())) {
@@ -452,7 +433,18 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             if (!StringUtils.isBlank(visitRecordingDO.getBusinessType())) {
                 String businessType = visitRecordingDO.getBusinessType();
-                visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                //visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                boolean jsonList = GsonUtils.isJsonList(businessType, StallUpBizType[].class);
+                if (jsonList) {
+                    List<StallUpBizType> bizTypeList = GsonUtils.fromJsonToList(businessType, StallUpBizType[].class);
+                    if (!CollectionUtils.isEmpty(bizTypeList)) {
+                        List<String> names = bizTypeList.stream().map(StallUpBizType::getName).collect(Collectors.toList());
+                        String name = names.stream().collect(Collectors.joining(","));
+                        visitRecordingVO.setBusinessType(name);
+                    }
+                }else {
+                    visitRecordingVO.setBusinessType(businessType);
+                }
             }
 
             vos.add(visitRecordingVO);
@@ -777,10 +769,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<Void> addBuilding(BuildingVO request) {
+    public ApiResult<BuildingVO> addBuilding(BuildingVO request) {
         HuaweiBuildingRequest huaweiRequest = new HuaweiBuildingRequest();
         buildingVoToHuawei(huaweiRequest, request);
-        return huaWeiService.addBuilding(huaweiRequest);
+        ApiResult<HuaWeiAddBuildingResponse> apiResult = huaWeiService.addBuilding(huaweiRequest);
+        if (!apiResult.isSuccess() && apiResult.getCode() != 301) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }else if (apiResult.getCode() == 301) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_BUILDING_NAME_DUPLICATE);
+        }
+        BuildingVO buildingVO = new BuildingVO();
+        buildingVO.setBuildingId(apiResult.getData().getData().getBuildingId());
+        buildingVO.setBuildingName(request.getBuildingName());
+        buildingVO.setCommunityId(request.getCommunityId());
+        return ApiResult.of(0,buildingVO);
     }
 
     @Override
@@ -791,22 +793,25 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<Void> addHousehold(HouseholdVO request) {
+    public ApiResult<HouseholdVO> addHousehold(HouseholdVO request) {
         HuaweiTenantRequest huaweiRequest = new HuaweiTenantRequest();
         householdVOToHuawei(huaweiRequest, request);
-        return huaWeiService.addBuildingTenants(huaweiRequest);
-//        if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
-//            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
-//        }
-//        HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
-//        HouseholdVO householdVO = new HouseholdVO();
-//        householdVO.setHouseId(apiResultData.getHouseId());
-//        householdVO.setBuildingName(request.getBuildingName());
-//        householdVO.setBuildingId(request.getBuildingId());
-//        householdVO.setHouseNumber(request.getHouseNumber());
-//        householdVO.setUnitId(request.getUnitId());
-//        householdVO.setUnitName(request.getUnitName());
-//        return ApiResult.of(0,householdVO);
+        ApiResult<HuaWeiAddTenantsResponse> apiResult = huaWeiService.addBuildingTenants(huaweiRequest);
+
+        if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }else if (apiResult.getCode() == 302) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE);
+        }
+        HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
+        HouseholdVO householdVO = new HouseholdVO();
+        householdVO.setHouseId(apiResultData.getData().getHouseId());
+        householdVO.setBuildingName(request.getBuildingName());
+        householdVO.setBuildingId(request.getBuildingId());
+        householdVO.setHouseNumber(request.getHouseNumber());
+        householdVO.setUnitId(request.getUnitId());
+        householdVO.setUnitName(request.getUnitName());
+        return ApiResult.of(0,householdVO,apiResult.getMsg());
     }
 
     @Override

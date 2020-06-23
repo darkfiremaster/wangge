@@ -28,7 +28,7 @@ public class SweepFloorVisitRecordingVO {
     /** 住户id */
     private String houseId;
     /** 业务类型 */
-    private List<StallUpBizType> businessType;
+    private String businessType;
     /** 是否投诉敏感客户标识 */
     private Integer complaintSensitiveCustomersFlag;
     /** 是否成功标识 */
