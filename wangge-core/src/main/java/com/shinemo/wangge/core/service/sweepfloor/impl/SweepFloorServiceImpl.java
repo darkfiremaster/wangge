@@ -390,7 +390,17 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             if (!StringUtils.isBlank(visitRecordingDO.getBusinessType())) {
                 String businessType = visitRecordingDO.getBusinessType();
-                visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                boolean jsonList = GsonUtils.isJsonList(businessType, StallUpBizType[].class);
+                if (jsonList) {
+                    List<StallUpBizType> bizTypeList = GsonUtils.fromJsonToList(businessType, StallUpBizType[].class);
+                    if (!CollectionUtils.isEmpty(bizTypeList)) {
+                        List<String> names = bizTypeList.stream().map(StallUpBizType::getName).collect(Collectors.toList());
+                        String name = names.stream().collect(Collectors.joining(","));
+                        visitRecordingVO.setBusinessType(name);
+                    }
+                }else {
+                    visitRecordingVO.setBusinessType(businessType);
+                }
             }
             //Integer status = activityMap.get(visitRecordingDO.getActivityId());
             if (activityId.equals(visitRecordingDO.getActivityId())) {
@@ -424,7 +434,18 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             if (!StringUtils.isBlank(visitRecordingDO.getBusinessType())) {
                 String businessType = visitRecordingDO.getBusinessType();
-                visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                //visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(businessType, StallUpBizType[].class));
+                boolean jsonList = GsonUtils.isJsonList(businessType, StallUpBizType[].class);
+                if (jsonList) {
+                    List<StallUpBizType> bizTypeList = GsonUtils.fromJsonToList(businessType, StallUpBizType[].class);
+                    if (!CollectionUtils.isEmpty(bizTypeList)) {
+                        List<String> names = bizTypeList.stream().map(StallUpBizType::getName).collect(Collectors.toList());
+                        String name = names.stream().collect(Collectors.joining(","));
+                        visitRecordingVO.setBusinessType(name);
+                    }
+                }else {
+                    visitRecordingVO.setBusinessType(businessType);
+                }
             }
 
             vos.add(visitRecordingVO);
@@ -763,22 +784,23 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<Void> addHousehold(HouseholdVO request) {
+    public ApiResult<HouseholdVO> addHousehold(HouseholdVO request) {
         HuaweiTenantRequest huaweiRequest = new HuaweiTenantRequest();
         householdVOToHuawei(huaweiRequest, request);
-        return huaWeiService.addBuildingTenants(huaweiRequest);
-//        if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
-//            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
-//        }
-//        HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
-//        HouseholdVO householdVO = new HouseholdVO();
-//        householdVO.setHouseId(apiResultData.getHouseId());
-//        householdVO.setBuildingName(request.getBuildingName());
-//        householdVO.setBuildingId(request.getBuildingId());
-//        householdVO.setHouseNumber(request.getHouseNumber());
-//        householdVO.setUnitId(request.getUnitId());
-//        householdVO.setUnitName(request.getUnitName());
-//        return ApiResult.of(0,householdVO);
+        ApiResult<HuaWeiAddTenantsResponse> apiResult = huaWeiService.addBuildingTenants(huaweiRequest);
+
+        if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }
+        HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
+        HouseholdVO householdVO = new HouseholdVO();
+        householdVO.setHouseId(apiResultData.getData().getHouseId());
+        householdVO.setBuildingName(request.getBuildingName());
+        householdVO.setBuildingId(request.getBuildingId());
+        householdVO.setHouseNumber(request.getHouseNumber());
+        householdVO.setUnitId(request.getUnitId());
+        householdVO.setUnitName(request.getUnitName());
+        return ApiResult.of(0,householdVO,apiResult.getMsg());
     }
 
     @Override

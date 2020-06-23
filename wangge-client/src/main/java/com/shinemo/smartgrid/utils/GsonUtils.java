@@ -3,6 +3,7 @@ package com.shinemo.smartgrid.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.stallup.domain.model.StallUpBizType;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -62,6 +63,16 @@ public class GsonUtils {
 		return null;
 	}
 
+	public static <T> boolean isJsonList(String json, Class<T[]> type) {
+		try {
+			gson.fromJson(json, type);
+			return true;
+		} catch (Exception e) {
+			log.error("Jsons.fromJsonToList ex, json=" + json + ", type=" + type, e);
+		}
+		return false;
+	}
+
 
 	public static <T> T fromGson2Obj(String json, Type type) {
 		if (StringUtils.isBlank(json))
@@ -109,12 +120,14 @@ public class GsonUtils {
 
 	public static void main(String[] args) {
 
-		List<Map<String, String>> list = new ArrayList<>();
-		Map<String, String> map = new HashMap<>();
-		map.put("a", "1");
-		list.add(map);
-		list.add(map);
-		System.out.println(toJson(list));
+//		List<Map<String, String>> list = new ArrayList<>();
+//		Map<String, String> map = new HashMap<>();
+//		map.put("a", "1");
+//		list.add(map);
+//		list.add(map);
+//		System.out.println(toJson(list));
+		List list = new ArrayList();
+		boolean jsonList = isJsonList(GsonUtils.toJson(list), StallUpBizType[].class);
 
 	}
 }

@@ -43,7 +43,7 @@ public interface SweepFloorService {
 
     ApiResult<Void> updateBuilding(BuildingVO request);
 
-    ApiResult<Void> addHousehold(HouseholdVO request);
+    ApiResult<HouseholdVO> addHousehold(HouseholdVO request);
 
     ApiResult<Void> updateHousehold(HouseholdVO request);
 

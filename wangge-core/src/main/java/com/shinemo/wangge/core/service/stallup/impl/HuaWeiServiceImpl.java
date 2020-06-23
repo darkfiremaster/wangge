@@ -554,7 +554,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     }
 
     @Override
-    public ApiResult<Void> addBuildingTenants(HuaweiTenantRequest request) {
+    public ApiResult<HuaWeiAddTenantsResponse> addBuildingTenants(HuaweiTenantRequest request) {
         String method = HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getMethod();
         String param = SmartGridUtils.buildRequestParam(method, request, signkey);
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getUrl(), param, new HashMap<>());
@@ -562,20 +562,20 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         //todo手机号记录
         insertApiLog(HuaweiSweepFloorUrlEnum.ADD_BUILDING_TENANTS.getUrl(), httpResult, param, SmartGridContext.getMobile());
         if (httpResult != null && httpResult.success()) {
-            CommonHuaweiResponse huaweiResponse = httpResult.getResult(CommonHuaweiResponse.class);
+            HuaWeiAddTenantsResponse huaweiResponse = httpResult.getResult(HuaWeiAddTenantsResponse.class);
 
             if (huaweiResponse != null && huaweiResponse.getCode() == 302) {
                 log.error("[addBuildingTenants] houseNumber duplicate,request={},param={},httpResult = {}",
                         request, param, httpResult);
-                return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE);
+                return ApiResult.of(302,huaweiResponse,SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE.msg);
             }
 
-            if (huaweiResponse == null || huaweiResponse.getCode() != 200) {
+            if (huaweiResponse == null || (huaweiResponse.getCode() != 200 && huaweiResponse.getCode() != 302)) {
                 log.error("[addBuildingTenants] huawei addBuildingTenants error,request={},param={},httpResult = {}",
                         request, param, httpResult);
                 return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
             }
-            return ApiResult.success();
+            return ApiResult.success(huaweiResponse);
         }
         log.error("[addBuildingTenants] http error,request = {},param = {}", request, param);
         return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
