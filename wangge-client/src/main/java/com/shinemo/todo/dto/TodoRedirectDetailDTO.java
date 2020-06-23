@@ -12,14 +12,14 @@ public class TodoRedirectDetailDTO {
 
     private String mobile;
 
-    private String thirdId;
+    private String thirdid;
 
-    private Integer thirdType;
+    private Integer thirdtype;
 
     private String token;
 
     //默认为0,跳转首页
-    private Integer redirectPage=0;
+    private Integer redirectpage=0;
 
     private Long timestamp;
 }
