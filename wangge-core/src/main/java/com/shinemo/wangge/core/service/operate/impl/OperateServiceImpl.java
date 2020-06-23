@@ -137,7 +137,7 @@ public class OperateServiceImpl implements OperateService {
             gridInfoToken.setGridDetail(request);
         }else {
             List<GridUserRoleDetail> gridUserRole = smartGridInfoService.getGridUserRole(mobile);
-            if (gridUserRole == null) {
+            if (CollectionUtils.isEmpty(gridUserRole)) {
                 gridUserRole = new ArrayList<>();
                 GridUserRoleDetail gridUserRoleDetail = new GridUserRoleDetail();
                 gridUserRoleDetail.setId("0");

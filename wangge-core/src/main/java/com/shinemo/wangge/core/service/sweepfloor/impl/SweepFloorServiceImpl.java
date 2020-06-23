@@ -363,7 +363,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         BeanUtils.copyProperties(request, visitRecordingDO);
         visitRecordingDO.setMarketingUserId(SmartGridContext.getUid());
         visitRecordingDO.setMarketingUserName(SmartGridContext.getUserName());
-        visitRecordingDO.setBusinessType(GsonUtils.toJson(request.getBusinessType()));
         visitRecordingDO.setGmtCreate(new Date());
         sweepFloorVisitRecordingMapper.insert(visitRecordingDO);
         return ApiResult.of(0);

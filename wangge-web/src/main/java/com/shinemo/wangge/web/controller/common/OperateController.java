@@ -55,16 +55,19 @@ public class OperateController {
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
     @PostMapping("/addUserOperateLog")
-    public ApiResult<Void> addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO) {
+    public ApiResult<Void> addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO,
+                                             HttpServletRequest request, HttpServletResponse response) {
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
         asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
         //刷新用户所有网格信息
-//        ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-//
-//        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
-//                domain, "/", EXPIRE_TIME, false);
+        if (userOperateLogVO.getType() == 1) {
+            ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
+
+            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
+                    domain, "/", EXPIRE_TIME, false);
+        }
 
         return ApiResult.of(0);
     }
