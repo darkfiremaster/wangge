@@ -1,9 +1,11 @@
 package com.shinemo.wangge.core.service.todo.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.client.common.Result;
+import com.shinemo.client.token.Token;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
@@ -13,7 +15,9 @@ import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoUrlQuery;
 import com.shinemo.wangge.core.config.properties.DaosanjiaoPropertity;
+import com.shinemo.wangge.core.config.properties.SmartGridUrlPropertity;
 import com.shinemo.wangge.core.config.properties.YujingPropertity;
+import com.shinemo.wangge.core.service.auth.AuthService;
 import com.shinemo.wangge.core.service.todo.TodoRedirectUrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,13 +46,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     @Autowired
     private YujingPropertity yujingPropertity;
 
+    @Autowired
+    private SmartGridUrlPropertity smartGridUrlPropertity;
+
+    @Autowired
+    private AuthService authService;
+
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
-
-    @NacosValue(value = "${index.url}")
-    private String indexUrl;
-
-    @NacosValue(value = "${createStallup.url}")
-    private String createStallupUrl;
 
 
     @PostConstruct
@@ -98,19 +103,25 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         //todo 校验token
         String token = todoRedirectDetailDTO.getToken();
+        Result<Token> tokenResult = authService.validateToken(token);
+        if (!tokenResult.isSuccess()) {
+            throw new RuntimeException(tokenResult.getError().getMsg());
+        }
+
+        Token token1 = tokenResult.getValue();
         //todo 写cookie
 
         //页面跳转
         try {
             if (redirectPage == null || redirectPage.equals(0)) {
-                log.info("[redirectPage] 跳转首页:{}", indexUrl);
-                response.sendRedirect(indexUrl);
+                log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
+                response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             } else if (redirectPage.equals(1)) {
-                log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
-                response.sendRedirect(createStallupUrl);
+                log.info("[redirectPage] 跳新建摆摊页面:{}", smartGridUrlPropertity.getCreateStallupUrl());
+                response.sendRedirect(smartGridUrlPropertity.getCreateStallupUrl());
             } else {
-                log.info("[redirectPage] 跳转首页:{}", indexUrl);
-                response.sendRedirect(indexUrl);
+                log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
+                response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             }
         } catch (Exception e) {
             log.error("[redirectPage] 页面跳转异常,request:{},异常原因:{}", todoRedirectDTO, e.getMessage(), e);
@@ -133,8 +144,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
             formData.put("orderId", todoUrlQuery.getThirdId());
         }
-        //todo 加上token
-
+        String token = getToken();
+        formData.put("token", token);
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
         String encryptData = EncryptUtil.encrypt(paramStr, seed);
@@ -168,7 +179,9 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             formData.put("gridid", "");
             formData.put("roleid", "");
         }
-        //todo 加上token
+
+        String token = getToken();
+        formData.put("token", token);
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
@@ -182,5 +195,15 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 .append("&sign=").append(sign).toString();
         log.info("[getDaosanjiaoTodoDetailUrl] 生成跳转url:{}", url);
         return ApiResult.of(0, url);
+    }
+
+    private String getToken() {
+        String uid = SmartGridContext.getUid();
+        String orgId = SmartGridContext.getOrgId();
+        TreeMap<String, Object> map = new TreeMap<>();
+        //todo
+        map.put("gridId", 0L);
+        map.put("roleId", 0L);
+        return authService.generateToken(Long.valueOf(uid), Long.valueOf(orgId), map);
     }
 }
