@@ -3,9 +3,11 @@ package com.shinemo.wangge.web.controller.todo;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.query.TodoQuery;
+import com.shinemo.todo.query.TodoUrlQuery;
 import com.shinemo.todo.vo.TodoIndexVO;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
+import com.shinemo.wangge.core.service.todo.TodoRedirectUrlService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class TodoController {
 
     @Autowired
     private TodoService todoService;
+
+    @Autowired
+    private TodoRedirectUrlService todoRedirectUrlService;
 
 
     /**
@@ -73,11 +78,14 @@ public class TodoController {
     }
 
     /**
-     * 获取详情页跳转url参数
+     * 获取代办事项或工单跳转url参数
      * @return
      */
-    @PostMapping("/getDetailRedirectUrl")
-    public ApiResult<String> getDetailRedirectUrl(@RequestBody TodoQuery todoQuery) {
-        return todoService.getDetailRedirectUrl(todoQuery);
+    @GetMapping("/getRedirectUrl")
+    public ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery)  {
+        return todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
+
+
+
 }
