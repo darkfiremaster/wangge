@@ -791,6 +791,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
 
         if (!apiResult.isSuccess() && apiResult.getCode() != 302) {
             return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }else if (apiResult.getCode() == 302) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE);
         }
         HuaWeiAddTenantsResponse apiResultData = apiResult.getData();
         HouseholdVO householdVO = new HouseholdVO();

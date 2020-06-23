@@ -567,7 +567,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             if (huaweiResponse != null && huaweiResponse.getCode() == 302) {
                 log.error("[addBuildingTenants] houseNumber duplicate,request={},param={},httpResult = {}",
                         request, param, httpResult);
-                return ApiResult.of(302,huaweiResponse,SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE.msg);
+                return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_HOUSE_NUMBER_DUPLICATE);
             }
 
             if (huaweiResponse == null || (huaweiResponse.getCode() != 200 && huaweiResponse.getCode() != 302)) {
