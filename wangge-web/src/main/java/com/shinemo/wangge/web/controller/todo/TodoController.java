@@ -86,6 +86,4 @@ public class TodoController {
         return todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
 
-
-
 }
