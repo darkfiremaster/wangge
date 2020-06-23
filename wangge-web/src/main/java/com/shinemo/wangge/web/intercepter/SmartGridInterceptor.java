@@ -178,26 +178,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         //所选网格信息
         GridInfoToken selectToken = getToken(selectGridInfo);
 
-//        String gridInfoCache = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(mobile));
-//        if (StringUtils.isBlank(gridInfoCache)) {
-//            log.info("[preHandle] gridInfoCache is null, start query gridinfo,mobile:{}", mobile);
-//            List<GridUserRoleDetail> gridUserRole = getGridUserRole(mobile);
-//            if (CollectionUtils.isEmpty(gridUserRole)) {
-//                log.info("[preHandle] gridUserRoleList is null,mobile:{}", mobile);
-//                return true;
-//            }
-//
-//            // 更新用户网格角色关系
-//            log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
-//            String finalMobile = mobile;
-//            asyncServiceExecutor.submit(() -> {
-//                userService.updateUserGridRoleRelation(gridUserRole, finalMobile);
-//            });
-//
-//            gridInfoCache = GsonUtils.toJson(gridUserRole);
-//            redisService.set(RedisKeyUtil.getUserGridInfoPrefixKey(mobile), gridInfoCache, EXPIRE_TIME);
-//        }
-
         SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
         SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
