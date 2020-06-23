@@ -3,8 +3,12 @@ package com.shinemo.wangge.core.service.todo;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.domain.TodoLogDO;
+import com.shinemo.todo.dto.TodoRedirectDTO;
 import com.shinemo.todo.query.TodoQuery;
-import com.shinemo.todo.vo.*;
+import com.shinemo.todo.vo.TodoDTO;
+import com.shinemo.todo.vo.TodoIndexVO;
+import com.shinemo.todo.vo.TodoTypeVO;
+import com.shinemo.todo.vo.TodoVO;
 
 import java.util.TreeMap;
 
@@ -39,5 +43,4 @@ public interface TodoService {
 
     ApiResult<TodoTypeVO> getAllTodoTypeList();
 
-    ApiResult<String> getDetailRedirectUrl(TodoQuery todoQuery);
 }
