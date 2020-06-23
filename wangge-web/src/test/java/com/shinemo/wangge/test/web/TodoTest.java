@@ -78,7 +78,6 @@ public class TodoTest {
     public void testGetUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId());
-        todoUrlQuery.setOperatorMobile("15800000002");
         todoUrlQuery.setThirdId("6c5127a3-9f1c-11ea-a34d-5254001a0735");
 
         ApiResult<String> result = todoRedirectUrlService.getRedirectUrl(todoUrlQuery);

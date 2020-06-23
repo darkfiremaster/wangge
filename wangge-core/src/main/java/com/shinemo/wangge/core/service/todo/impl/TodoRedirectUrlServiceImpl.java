@@ -88,7 +88,6 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     public ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery) {
         Assert.notNull(todoUrlQuery, "request is null");
         Assert.notNull(todoUrlQuery.getThirdType(), "thirdType is null");
-        Assert.notNull(todoUrlQuery.getOperatorMobile(), "mobile is null");
         if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId())) {
             return getDaosanjiaoTodoDetailUrl(todoUrlQuery);
         } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.YU_JING_ORDER.getId())) {
@@ -220,7 +219,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", todoUrlQuery.getOperatorMobile());
+        formData.put("mobile", SmartGridContext.getMobile());
         formData.put("timestamp", timestamp);
         //orderId为空,是跳列表页,不为空,是跳详情页
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
@@ -257,7 +256,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", todoUrlQuery.getOperatorMobile());
+        formData.put("mobile", SmartGridContext.getMobile());
         formData.put("timestamp", timestamp);
         //如果id为空,则跳列表页,不为空则跳详情页
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
