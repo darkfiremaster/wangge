@@ -284,17 +284,17 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyName("东区")
                         .roleList(Lists.newArrayList(
                         		new GridUserRoleDetail.GridRole("1", "网格长")))
-										.build()
-				//GridUserRoleDetail.builder()
-				//		.id("shinemo2")
-				//		.name("测试网格2")
-				//		.cityCode("hangzhou")
-				//		.cityName("杭州")
-				//		.countyCode("yuhang")
-				//		.countyName("余杭")
-                //        .roleList(Lists.newArrayList(
-                //                new GridUserRoleDetail.GridRole("2", "网格经理")))
-                //        .build()
+										.build(),
+				GridUserRoleDetail.builder()
+						.id("shinemo2")
+						.name("测试网格2")
+						.cityCode("hangzhou")
+						.cityName("杭州")
+						.countyCode("yuhang")
+						.countyName("余杭")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("2", "网格经理")))
+                        .build()
         );
     }
 
