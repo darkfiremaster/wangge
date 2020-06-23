@@ -4,6 +4,7 @@ import com.shinemo.client.common.Result;
 import com.shinemo.client.token.Token;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.wangge.core.service.auth.AuthService;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.web.MainApplication;
@@ -45,6 +46,7 @@ public class AuthServiceTest {
         Result<Token> tokenResult = authService.validateToken(token);
         System.out.println("orgId:" + tokenResult.getValue().getOrgId());
         System.out.println("phone:" + tokenResult.getValue().getPhone());
+        System.out.println(GsonUtils.toJson(tokenResult));
 
     }
 }
