@@ -273,28 +273,28 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     }
 
     private List<GridUserRoleDetail> getMockGridUser() {
-
+        //return new ArrayList<>();
         return Arrays.asList(
                 GridUserRoleDetail.builder()
-                        .id("shinemo1")
-                        .name("测试网格1")
-                        .cityCode("hangzhou")
-                        .cityName("杭州")
-                        .countyCode("xihu")
-                        .countyName("西湖")
+                        .id("771_A2107_30")
+                        .name("东区江南网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
                         .roleList(Lists.newArrayList(
                         		new GridUserRoleDetail.GridRole("1", "网格长")))
-										.build(),
-				GridUserRoleDetail.builder()
-						.id("shinemo2")
-						.name("测试网格2")
-						.cityCode("hangzhou")
-						.cityName("杭州")
-						.countyCode("yuhang")
-						.countyName("余杭")
-                        .roleList(Lists.newArrayList(
-                                new GridUserRoleDetail.GridRole("2", "网格经理")))
-                        .build()
+										.build()
+				//GridUserRoleDetail.builder()
+				//		.id("shinemo2")
+				//		.name("测试网格2")
+				//		.cityCode("hangzhou")
+				//		.cityName("杭州")
+				//		.countyCode("yuhang")
+				//		.countyName("余杭")
+                //        .roleList(Lists.newArrayList(
+                //                new GridUserRoleDetail.GridRole("2", "网格经理")))
+                //        .build()
         );
     }
 

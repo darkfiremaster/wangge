@@ -19,12 +19,10 @@
 
 package com.shinemo.wangge.web.intercepter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.Aace.MutableBoolean;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.Imlogin.IMLoginService;
 import com.shinemo.client.order.AppTypeEnum;
-import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
@@ -131,7 +129,7 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
             if (Utils.isNotEmpty(userInfo)) {
                 Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
                 if (Utils.isNotEmpty(map)) {
-                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name"};
+                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name","username"};
                     for (String key : keys) {
                         Object value = map.get(key);
                         if (value != null) {

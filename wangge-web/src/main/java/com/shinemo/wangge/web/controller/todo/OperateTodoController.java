@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.TreeMap;
 
@@ -33,9 +34,9 @@ public class OperateTodoController {
     }
 
     @GetMapping("/redirectPage")
-    public void redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletResponse response) {
+    public void redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletRequest request, HttpServletResponse response) {
         log.info("[redirectPage] 第三方跳转请求, request:{}", todoRedirectDTO);
-        todoRedirectUrlService.redirectPage(todoRedirectDTO, response);
+        todoRedirectUrlService.redirectPage(todoRedirectDTO, request, response);
     }
 
 }

@@ -3,6 +3,8 @@ package com.shinemo.wangge.test.web;
 import cn.hutool.core.date.DateUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
+import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.domain.TodoLogDO;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
@@ -18,7 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author shangkaihui
@@ -36,10 +40,44 @@ public class TodoTest {
     private TodoRedirectUrlServiceImpl todoRedirectUrlService;
 
     @Test
+    public void testGetRedirectUrl() {
+        String seed = "ffd40e661eb946f48fd3c759e6b8ef0b";
+        String mobile = "13588039023";
+        String token = "xxxx";
+        String thirdId = "6c5127a3-9f1c-11ea-a34d-5254001a0735";
+        Integer thirdType=1;
+        Integer redirectPage=0;
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", mobile);
+        formData.put("thirdId", thirdId);
+        formData.put("timestamp", timestamp);
+        formData.put("token", token);
+        formData.put("thirdType", thirdType);
+        formData.put("redirectPage", redirectPage);
+        String paramStr = EncryptUtil.buildParameterString(formData);
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramStr, seed);
+        System.out.println("encrypt:"+encryptData);
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData+","+seed+","+timestamp);
+        System.out.println("sign:"+sign);
+
+        String url = "http://localhost:20014/cmgr-gx-smartgrid/todo/redirectPage?debug&";
+        StringBuilder sb = new StringBuilder(url);
+        url = sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign)
+                .append("&thirdType=").append(thirdType)
+                .toString();
+
+        System.out.println("url = " + url);
+    }
+
+    @Test
     public void testGetUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId());
-        todoUrlQuery.setOperatorMobile("15800000002");
         todoUrlQuery.setThirdId("6c5127a3-9f1c-11ea-a34d-5254001a0735");
 
         ApiResult<String> result = todoRedirectUrlService.getRedirectUrl(todoUrlQuery);

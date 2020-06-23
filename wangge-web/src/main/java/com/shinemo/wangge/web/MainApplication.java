@@ -5,10 +5,7 @@ import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import com.shinemo.wangge.web.config.AuthCheckerAutoConfiguration;
 import com.shinemo.wangge.web.config.SmCommonProperties;
-import com.shinemo.wangge.web.intercepter.IntranetInterceptor;
-import com.shinemo.wangge.web.intercepter.SmartGridInterceptor;
-import com.shinemo.wangge.web.intercepter.TokenAuthChecker;
-import com.shinemo.wangge.web.intercepter.WanggeIdCheckerInterceptor;
+import com.shinemo.wangge.web.intercepter.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +49,9 @@ public class MainApplication implements WebMvcConfigurer {
     @Resource
     private WanggeIdCheckerInterceptor wanggeIdCheckerInterceptor;
 
+    @Resource
+    private DebugInterceptor debugInterceptor;
+
     public static void main(String[] args) {
         SpringApplication.run(MainApplication.class, args);
     }
@@ -60,6 +60,13 @@ public class MainApplication implements WebMvcConfigurer {
     public SmartGridInterceptor getSmartGridInterceptor() {
         return new SmartGridInterceptor();
     }
+
+    @Bean
+    public DebugInterceptor getDebugInterceptor() {
+        return new DebugInterceptor();
+    }
+
+
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -89,5 +96,8 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/targetcustomer/getByMobile/**")
                 .excludePathPatterns("/backdoor/**", "/error","/todo/operateTodoThing","/todo/thing/log/**",properties.getCheckStatusPath())
                 .order(1);
+        registry.addInterceptor(getDebugInterceptor())
+                .addPathPatterns("/**")
+                .order(Ordered.HIGHEST_PRECEDENCE);
     }
 }

@@ -1,32 +1,9 @@
 package com.shinemo.wangge.web.intercepter;
 
-import static com.shinemo.Aace.RetCode.RET_SUCCESS;
-import static com.shinemo.util.WebUtils.getValueFromCookies;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
-import com.shinemo.smartgrid.constants.SmartGridConstant;
-import com.shinemo.smartgrid.domain.GridInfoToken;
-import com.shinemo.wangge.core.service.operate.OperateService;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
@@ -34,18 +11,36 @@ import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.log.Logs;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
+import com.shinemo.smartgrid.constants.SmartGridConstant;
+import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.smartgrid.domain.query.BackdoorLoginQuery;
 import com.shinemo.smartgrid.utils.GsonUtils;
-import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
+import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
 import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * debug拦截
@@ -158,7 +153,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             ApiResult<String> infoToken = operateService.genGridInfoToken(null);
             allGridInfo = infoToken.getData();
             GridInfoToken gridInfoToken = getToken(allGridInfo);
-            // 更新用户网格角色关系
+            // todo 更新用户网格角色关系
             log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
             String finalMobile = mobile;
             asyncServiceExecutor.submit(() -> {

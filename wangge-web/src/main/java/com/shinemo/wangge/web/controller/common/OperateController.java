@@ -2,13 +2,11 @@ package com.shinemo.wangge.web.controller.common;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
-import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.vo.UserOperateLogVO;
 import com.shinemo.smartgrid.constants.SmartGridConstant;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
-import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +57,7 @@ public class OperateController {
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
         asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
+
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
             ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
