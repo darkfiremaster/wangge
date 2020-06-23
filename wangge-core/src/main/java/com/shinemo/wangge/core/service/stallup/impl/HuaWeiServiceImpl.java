@@ -499,7 +499,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     }
 
     @Override
-    public ApiResult<Void> addBuilding(HuaweiBuildingRequest request) {
+    public ApiResult<HuaWeiAddBuildingResponse> addBuilding(HuaweiBuildingRequest request) {
         String method = HuaweiSweepFloorUrlEnum.ADD_BUILDING.getMethod();
         String param = SmartGridUtils.buildRequestParam(method, request, signkey);
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + HuaweiSweepFloorUrlEnum.ADD_BUILDING.getUrl(), param, new HashMap<>());
@@ -507,7 +507,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         //todo手机号记录
         insertApiLog(HuaweiSweepFloorUrlEnum.ADD_BUILDING.getUrl(), httpResult, param, SmartGridContext.getMobile());
         if (httpResult != null && httpResult.success()) {
-            CommonHuaweiResponse huaweiResponse = httpResult.getResult(CommonHuaweiResponse.class);
+            HuaWeiAddBuildingResponse huaweiResponse = httpResult.getResult(HuaWeiAddBuildingResponse.class);
             if (huaweiResponse != null && huaweiResponse.getCode() == 301) {
                 log.error("[addBuilding] buildingName duplicate,request={},param={},httpResult = {}",
                         request, param, httpResult);
@@ -518,7 +518,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         request, param, httpResult);
                 return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
             }
-            return ApiResult.success();
+            return ApiResult.success(huaweiResponse);
         }
         log.error("[addBuilding] http error,request = {},param = {}", request, param);
         return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);

@@ -770,10 +770,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     }
 
     @Override
-    public ApiResult<Void> addBuilding(BuildingVO request) {
+    public ApiResult<BuildingVO> addBuilding(BuildingVO request) {
         HuaweiBuildingRequest huaweiRequest = new HuaweiBuildingRequest();
         buildingVoToHuawei(huaweiRequest, request);
-        return huaWeiService.addBuilding(huaweiRequest);
+        ApiResult<HuaWeiAddBuildingResponse> apiResult = huaWeiService.addBuilding(huaweiRequest);
+        if (!apiResult.isSuccess() && apiResult.getCode() != 301) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }else if (apiResult.getCode() == 301) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_BUILDING_NAME_DUPLICATE);
+        }
+        BuildingVO buildingVO = new BuildingVO();
+        buildingVO.setBuildingId(apiResult.getData().getData().getBuildingId());
+        buildingVO.setBuildingName(request.getBuildingName());
+        buildingVO.setCommunityId(request.getCommunityId());
+        return ApiResult.of(0,buildingVO);
     }
 
     @Override
