@@ -209,7 +209,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public ApiResult<List<GridUserRoleDetail>> getGridUserInfo(HuaWeiRequest request) {
 
         //todo mock待删除
-        List<String> list = Arrays.asList("13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
+        List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
         if (list.contains(request.getMobile())) {
             List<GridUserRoleDetail> detailList = getMockGridUser();
             return ApiResult.of(0, detailList);
@@ -284,17 +284,17 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyName("东区")
                         .roleList(Lists.newArrayList(
                         		new GridUserRoleDetail.GridRole("1", "网格长")))
-										.build()
-				//GridUserRoleDetail.builder()
-				//		.id("shinemo2")
-				//		.name("测试网格2")
-				//		.cityCode("hangzhou")
-				//		.cityName("杭州")
-				//		.countyCode("yuhang")
-				//		.countyName("余杭")
-                //        .roleList(Lists.newArrayList(
-                //                new GridUserRoleDetail.GridRole("2", "网格经理")))
-                //        .build()
+										.build(),
+				GridUserRoleDetail.builder()
+						.id("shinemo2")
+						.name("测试网格2")
+						.cityCode("hangzhou")
+						.cityName("杭州")
+						.countyCode("yuhang")
+						.countyName("余杭")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("2", "网格经理")))
+                        .build()
         );
     }
 
