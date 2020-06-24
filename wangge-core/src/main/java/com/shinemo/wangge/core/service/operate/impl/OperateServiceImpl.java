@@ -2,22 +2,17 @@ package com.shinemo.wangge.core.service.operate.impl;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.GsonUtil;
-import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
-import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.domain.LockContext;
 import com.shinemo.my.redis.service.RedisLock;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.UserOperateLogDO;
 import com.shinemo.operate.vo.UserOperateLogVO;
-import com.shinemo.smartgrid.constants.SmartGridConstant;
 import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
-import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
-import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
@@ -135,7 +130,7 @@ public class OperateServiceImpl implements OperateService {
         GridInfoToken gridInfoToken = new GridInfoToken();
         if (request != null) {
             gridInfoToken.setGridDetail(request);
-        }else {
+        } else {
             List<GridUserRoleDetail> gridUserRole = smartGridInfoService.getGridUserRole(mobile);
             if (CollectionUtils.isEmpty(gridUserRole)) {
                 gridUserRole = new ArrayList<>();
@@ -148,7 +143,7 @@ public class OperateServiceImpl implements OperateService {
         }
         String stringToken = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
-        return ApiResult.of(0,stringToken);
+        return ApiResult.of(0, stringToken);
     }
 
 //    @Override
@@ -195,12 +190,12 @@ public class OperateServiceImpl implements OperateService {
 
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {
-        //String userGridInfo = redisService.get(RedisKeyUtil.getUserGridInfoPrefixKey(userOperateLogVO.getMobile()));
         String gridInfo = SmartGridContext.getGridInfo();
-        if (StringUtils.isEmpty(gridInfo)) {
-            return false;
-        } else {
+        List<GridUserRoleDetail> gridList = GsonUtil.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
+        if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
             return true;
+        } else {
+            return false;
         }
     }
 

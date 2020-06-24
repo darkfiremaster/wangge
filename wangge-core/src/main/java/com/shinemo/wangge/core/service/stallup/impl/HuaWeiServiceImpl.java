@@ -210,6 +210,27 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         //todo mock待删除
         List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
+
+        if (request.getMobile().equals("15000001172")) {
+            //6个网格
+            return ApiResult.of(0, getMockGridUserWithNum(6));
+        } else if (request.getMobile().equals("15958032925")) {
+            //3个网格
+            return ApiResult.of(0, getMockGridUserWithNum(3));
+
+        } else if (request.getMobile().equals("15000001171")) {
+            //2个网格
+            return ApiResult.of(0, getMockGridUserWithNum(2));
+
+        } else if (request.getMobile().equals("15226536886")) {
+            //1个网格
+            return ApiResult.of(0, getMockGridUserWithNum(1));
+
+        } else if (request.getMobile().equals("15000001170")) {
+            //无网格
+            return ApiResult.of(0, getMockGridUserWithNum(0));
+        }
+
         if (list.contains(request.getMobile())) {
             List<GridUserRoleDetail> detailList = getMockGridUser();
             return ApiResult.of(0, detailList);
@@ -270,6 +291,27 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         log.error("[getGridUserInfo] http error,request = {},param = {}", request, param);
         return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
+    }
+
+    private List<GridUserRoleDetail> getMockGridUserWithNum(int num) {
+        List<GridUserRoleDetail> gridUserRoleDetailList = new ArrayList<>();
+
+        for (int i = 0; i < num; i++) {
+            GridUserRoleDetail gridUser= GridUserRoleDetail.builder()
+                    .id("test"+i)
+                    .name("测试网格"+i)
+                    .cityCode("771")
+                    .cityName("南宁")
+                    .countyCode("A2107")
+                    .countyName("东区")
+                    .roleList(Lists.newArrayList(
+                            new GridUserRoleDetail.GridRole("1", "网格长")))
+                    .build();
+            gridUserRoleDetailList.add(gridUser);
+        }
+
+        return gridUserRoleDetailList;
+
     }
 
     private List<GridUserRoleDetail> getMockGridUser() {
