@@ -12,6 +12,7 @@ import com.shinemo.todo.query.TodoLogQuery;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoUrlQuery;
 import com.shinemo.wangge.core.service.todo.TodoLogService;
+import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.core.service.todo.impl.TodoRedirectUrlServiceImpl;
 import com.shinemo.wangge.web.MainApplication;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @Author shangkaihui
@@ -38,6 +40,9 @@ public class TodoTest {
 
     @Resource
     private TodoRedirectUrlServiceImpl todoRedirectUrlService;
+
+    @Resource
+    private TodoService todoService;
 
     @Test
     public void testGetRedirectUrl() {
@@ -91,6 +96,16 @@ public class TodoTest {
         todoUrlQuery.setOperatorMobile("17380571067");
         ApiResult<String> result = todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
         System.out.println("result = " + result);
+    }
+
+    @Test
+    public void testOperateTodoThing() {
+        TreeMap<String, Object> treeMap = new TreeMap<>();
+        treeMap.put("key","34b18faa-0424-41ad-b73b-80fc02d4be55");
+        treeMap.put("method","operateTodoThing");
+        treeMap.put("postBody","34b18faa-0424-41ad-b73b-80fc02d4be55");
+        treeMap.put("sign","34b18faa-0424-41ad-b73b-80fc02d4be55");
+
     }
 
     @Test

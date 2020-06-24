@@ -150,7 +150,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         // 查询用户网格信息,并更新
         String allGridInfo = getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, cookies);
         if (StringUtils.isBlank(allGridInfo)) {
-
             ApiResult<String> infoToken = operateService.genGridInfoToken(null);
             allGridInfo = infoToken.getData();
         }
