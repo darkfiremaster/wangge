@@ -76,27 +76,30 @@ public class OperateController {
                 ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
                 WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
                         domain, "/", EXPIRE_TIME, false);
-                String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
-                GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
-                List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
-                if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
-                    //存在网格信息
-                    log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
-                    String finalMobile = SmartGridContext.getMobile();
-                    asyncServiceExecutor.submit(() -> {
-                        userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
-                    });
-                }
             }
+
+
+            String token = new String(Base64.decodeBase64(valueFromCookies), StandardCharsets.UTF_8);
+            GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
+            List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
+            if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
+                //存在网格信息
+                log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
+                String finalMobile = SmartGridContext.getMobile();
+                asyncServiceExecutor.submit(() -> {
+                    userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
+                });
+            }
+
         }
 
         return ApiResult.of(0);
-        }
+    }
 
     @PostMapping("/refreshSelectGridInfo")
     public ApiResult<Void> refreshSelectGridInfo(@RequestBody GridUserRoleDetail gridDetail, HttpServletRequest request, HttpServletResponse response) {
 
-        Assert.notNull(gridDetail,"gridDetail is null");
+        Assert.notNull(gridDetail, "gridDetail is null");
 
         ApiResult<String> result = operateService.genGridInfoToken(gridDetail);
 
@@ -116,22 +119,22 @@ public class OperateController {
         String selectGridInfo = SmartGridContext.getSelectGridInfo();
         if (StringUtils.isBlank(selectGridInfo)) {
             gridUserRoleDetails.get(0).setType(1);
-        }else {
+        } else {
             if (gridUserRoleDetails.size() == 1) {
                 GridUserRoleDetail detai2 = gridUserRoleDetails.get(0);
                 if (detai2.getId().equals("0")) {
-                    return ApiResult.of(0,new ArrayList<>());
+                    return ApiResult.of(0, new ArrayList<>());
                 }
             }
             GridUserRoleDetail detail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);
-            for (GridUserRoleDetail detail2: gridUserRoleDetails) {
+            for (GridUserRoleDetail detail2 : gridUserRoleDetails) {
                 if (detail.getId().equals(detail2.getId())) {
                     detail2.setType(1);
                 }
             }
         }
 
-        return ApiResult.of(0,gridUserRoleDetails);
+        return ApiResult.of(0, gridUserRoleDetails);
     }
 
 
