@@ -167,6 +167,8 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         String selectGridInfo = getValueFromCookies(SmartGridConstant.SELECT_GRID_INFO_COOKIE, cookies);
         if (StringUtils.isBlank(selectGridInfo)) {
             GridUserRoleDetail detail = gridList.get(0);
+            //1-表示当前网格已选中
+            detail.setType(1);
             ApiResult<String> stringApiResult = operateService.genGridInfoToken(detail);
             selectGridInfo = stringApiResult.getData();
         }

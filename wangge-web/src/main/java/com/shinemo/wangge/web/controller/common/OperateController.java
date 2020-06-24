@@ -8,6 +8,7 @@ import com.shinemo.smartgrid.constants.SmartGridConstant;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.util.WebUtils;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
@@ -60,10 +61,12 @@ public class OperateController {
 
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
-            ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-
-            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
-                    domain, "/", EXPIRE_TIME, false);
+            String valueFromCookies = WebUtils.getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, request.getCookies());
+            if(StringUtils.isBlank(valueFromCookies)){
+                ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
+                WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
+                        domain, "/", EXPIRE_TIME, false);
+            }
         }
 
         return ApiResult.of(0);
