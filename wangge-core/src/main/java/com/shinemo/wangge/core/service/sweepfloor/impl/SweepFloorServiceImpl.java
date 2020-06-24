@@ -777,7 +777,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         HuaweiBuildingRequest huaweiRequest = new HuaweiBuildingRequest();
         buildingVoToHuawei(huaweiRequest, request);
         ApiResult<HuaWeiAddBuildingResponse> apiResult = huaWeiService.addBuilding(huaweiRequest);
-        log.info("[huawei addBuilding] result:{}",GsonUtils.toJson(apiResult));
         if (!apiResult.isSuccess() && apiResult.getCode() != 301) {
             return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
         }else if (apiResult.getCode() == 301) {
