@@ -75,6 +75,16 @@ public class TodoTest {
     }
 
     @Test
+    public void testGetYujingUrl() {
+        TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
+        todoUrlQuery.setThirdType(5);
+        todoUrlQuery.setOperatorMobile("13557710513");
+        todoUrlQuery.setThirdId("DK202006240707281\n");
+
+        todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
+    }
+
+    @Test
     public void testGetUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId());

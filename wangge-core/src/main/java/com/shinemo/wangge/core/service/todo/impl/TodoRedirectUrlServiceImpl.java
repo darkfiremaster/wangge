@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -109,7 +111,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         String seed = seedMap.get(todoRedirectDTO.getThirdType());
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
-        if (!sign.equals(todoRedirectDTO.getSign())) {
+        if (!sign.equalsIgnoreCase(todoRedirectDTO.getSign())) {
             log.error("[redirectPage]签名校验失败,请求签名:{},计算后的签名:{}", todoRedirectDTO.getSign(), sign);
             throw new ApiException(TodoErrorCodes.SIGN_ERROR);
         }
@@ -220,7 +222,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", SmartGridContext.getMobile());
+        if (!StringUtils.isEmpty(todoUrlQuery.getOperatorMobile())) {
+            formData.put("mobile", todoUrlQuery.getOperatorMobile());
+        } else {
+            formData.put("mobile", SmartGridContext.getMobile());
+        }
         formData.put("timestamp", timestamp);
         //orderId为空,是跳列表页,不为空,是跳详情页
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
@@ -337,8 +343,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     }
 
     public static void main(String[] args) {
-        String s = "mobile=13588039023&redirectpage=0&thirdid=6c5127a3-9f1c-11ea-a34d-5254001a0735&thirdtype=1&timestamp=1592903159834&token=xxxx";
-        Map<String, String> map = HttpUtil.decodeParamMap(s, CharsetUtil.charset("UTF-8"));
-        System.out.println("map = " + map);
+        String data = "yLTEzpz49P5ohfRyZ_MFGUlSoqmI_4zFa-TTL-QzJza7Oexg3tJh7tUrs1bYIw5YmpJNm3e8W4SKJqm6bdR5s5pGHpFA7T8oxfUuXBtuv8Dr1xZbdWIO9agfvYLan25c";
+        String sign = Md5Util.getMD5Str(data + "," + "ffd40e661eb946f48fd3c759e6b8ef0b" + "," + 1592979156924L);
+        System.out.println("sign = " + sign);
+        String s = DigestUtil.md5Hex(data + "," + "ffd40e661eb946f48fd3c759e6b8ef0b" + "," + 1592979156924L);
+        System.out.println("s = " + s);
     }
 }
