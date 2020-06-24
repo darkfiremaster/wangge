@@ -263,7 +263,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", SmartGridContext.getMobile());
+        if (!StringUtils.isEmpty(todoUrlQuery.getOperatorMobile())) {
+            formData.put("mobile", todoUrlQuery.getOperatorMobile());
+        } else {
+            formData.put("mobile", SmartGridContext.getMobile());
+        }
         formData.put("timestamp", timestamp);
         //如果id为空,则跳列表页,不为空则跳详情页
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {

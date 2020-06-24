@@ -46,7 +46,7 @@ public class TodoTest {
         String token = "xxxx";
         String thirdId = "6c5127a3-9f1c-11ea-a34d-5254001a0735";
         Integer thirdType=1;
-        Integer redirectPage=0;
+        Integer redirectPage=1;
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", mobile);
@@ -63,7 +63,7 @@ public class TodoTest {
         String sign = Md5Util.getMD5Str(encryptData+","+seed+","+timestamp);
         System.out.println("sign:"+sign);
 
-        String url = "http://localhost:20014/cmgr-gx-smartgrid/todo/redirectPage?debug&";
+        String url = "https://developer.e.uban360.com/cmgr-gx-smartgrid/todo/redirectPage?";
         StringBuilder sb = new StringBuilder(url);
         url = sb.append("paramData=").append(encryptData)
                 .append("&timestamp=").append(timestamp)
@@ -79,17 +79,16 @@ public class TodoTest {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(5);
         todoUrlQuery.setOperatorMobile("13557710513");
-        todoUrlQuery.setThirdId("DK202006240707281\n");
-
+        todoUrlQuery.setThirdId("DK202006240707281");
         todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
 
     @Test
-    public void testGetUrl() {
+    public void testGetDaosanjiaoUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId());
         todoUrlQuery.setThirdId("6c5127a3-9f1c-11ea-a34d-5254001a0735");
-
+        todoUrlQuery.setOperatorMobile("17380571067");
         ApiResult<String> result = todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
         System.out.println("result = " + result);
     }

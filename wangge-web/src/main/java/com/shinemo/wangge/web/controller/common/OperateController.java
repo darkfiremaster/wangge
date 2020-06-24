@@ -76,8 +76,8 @@ public class OperateController {
                 ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
                 WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
                         domain, "/", EXPIRE_TIME, false);
+                valueFromCookies = stringApiResult.getData();
             }
-
 
             String token = new String(Base64.decodeBase64(valueFromCookies), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
