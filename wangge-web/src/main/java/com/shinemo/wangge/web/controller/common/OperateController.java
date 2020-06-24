@@ -9,7 +9,6 @@ import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
-import com.shinemo.util.WebUtils;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
@@ -58,7 +57,7 @@ public class OperateController {
     //@NacosValue(value = "${domain}", autoRefreshed = true)
     //private String domain = "127.0.0.1";
 
-    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
+    public static final int EXPIRE_TIME =  60 * 60 * 1;
 
     @PostMapping("/addUserOperateLog")
     public ApiResult<Void> addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO,
@@ -70,14 +69,14 @@ public class OperateController {
 
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
-            String valueFromCookies = WebUtils.getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, request.getCookies());
-            if (StringUtils.isBlank(valueFromCookies)) {
-                ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-                WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
-                valueFromCookies = stringApiResult.getData();
-            }
+            //String valueFromCookies = WebUtils.getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, request.getCookies());
+            //if (StringUtils.isBlank(valueFromCookies)) {
+            ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
+            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
+            //valueFromCookies = stringApiResult.getData();
+            //}
 
-            String token = new String(Base64.decodeBase64(valueFromCookies), StandardCharsets.UTF_8);
+            String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
             List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
             if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
