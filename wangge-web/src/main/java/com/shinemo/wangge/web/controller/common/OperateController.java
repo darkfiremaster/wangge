@@ -80,7 +80,7 @@ public class OperateController {
             List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
             if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
                 //存在网格信息
-                log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
+                log.info("[addUserOperateLog]  start update gridinfo,mobile:{},", SmartGridContext.getMobile());
                 String finalMobile = SmartGridContext.getMobile();
                 asyncServiceExecutor.submit(() -> {
                     userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);

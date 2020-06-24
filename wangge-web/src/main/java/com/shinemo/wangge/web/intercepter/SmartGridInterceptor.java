@@ -152,13 +152,13 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (StringUtils.isBlank(allGridInfo)) {
             ApiResult<String> infoToken = operateService.genGridInfoToken(null);
             allGridInfo = infoToken.getData();
-            GridInfoToken gridInfoToken = getToken(allGridInfo);
-            // todo 更新用户网格角色关系
-            log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
-            String finalMobile = mobile;
-            asyncServiceExecutor.submit(() -> {
-                userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
-            });
+            //GridInfoToken gridInfoToken = getToken(allGridInfo);
+            //// todo 更新用户网格角色关系
+            //log.info("[preHandle]  start update gridinfo,mobile:{}", mobile);
+            //String finalMobile = mobile;
+            //asyncServiceExecutor.submit(() -> {
+            //    userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
+            //});
         }
         //所有网格信息
         GridInfoToken gridInfoToken = getToken(allGridInfo);

@@ -9,6 +9,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.Utils;
+import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.constants.SmartGridConstant;
@@ -110,7 +111,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
         if (!sign.equals(todoRedirectDTO.getSign())) {
             log.error("[redirectPage]签名校验失败,请求签名:{},计算后的签名:{}", todoRedirectDTO.getSign(), sign);
-            throw new RuntimeException("签名不正确");
+            throw new ApiException(TodoErrorCodes.SIGN_ERROR);
         }
 
         String decryptData = EncryptUtil.decrypt(todoRedirectDTO.getParamData(), seed);
