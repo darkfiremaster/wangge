@@ -783,7 +783,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             return ApiResultWrapper.fail(SweepFloorErrorCodes.SWEEP_FLOOR_BUILDING_NAME_DUPLICATE);
         }
         BuildingVO buildingVO = new BuildingVO();
-        buildingVO.setBuildingId(apiResult.getData().getData().getBuildingId());
+//        buildingVO.setBuildingId(apiResult.getData().getData().getBuildingId());
         buildingVO.setBuildingName(request.getBuildingName());
         buildingVO.setCommunityId(request.getCommunityId());
         return ApiResult.of(0,buildingVO);
