@@ -1,6 +1,5 @@
 package com.shinemo.wangge.web.controller.common;
 
-import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.result.ApiResult;
@@ -56,8 +55,8 @@ public class OperateController {
     @Resource
     private SmartGridInfoService smartGridInfoService;
 
-    @NacosValue(value = "${domain}", autoRefreshed = true)
-    private String domain = "127.0.0.1";
+    //@NacosValue(value = "${domain}", autoRefreshed = true)
+    //private String domain = "127.0.0.1";
 
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
@@ -74,8 +73,7 @@ public class OperateController {
             String valueFromCookies = WebUtils.getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, request.getCookies());
             if (StringUtils.isBlank(valueFromCookies)) {
                 ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-                WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
-                        domain, "/", EXPIRE_TIME, false);
+                WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
                 valueFromCookies = stringApiResult.getData();
             }
 
@@ -104,7 +102,7 @@ public class OperateController {
         ApiResult<String> result = operateService.genGridInfoToken(gridDetail);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, result.getData(),
-                domain, "/", EXPIRE_TIME, false);
+                null, "/", EXPIRE_TIME, false);
 
 
         return ApiResult.of(0);

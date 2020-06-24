@@ -6,7 +6,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.Utils;
@@ -70,8 +69,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     @Resource
     private RedisService redisService;
 
-    @NacosValue(value = "${domain}", autoRefreshed = true)
-    private String domain = "127.0.0.1";
+    //@NacosValue(value = "${domain}", autoRefreshed = true)
+    //private String domain = "127.0.0.1";
 
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
@@ -180,19 +179,19 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         //设置用户信息cookie
         WebUtil.addCookie(request, response, "token", shortToken,
-                domain, "/", Integer.MAX_VALUE, false);
+                null, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                domain, "/", Integer.MAX_VALUE, false);
+                null, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                domain, "/", Integer.MAX_VALUE, false);
+                null, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                domain, "/", Integer.MAX_VALUE, false);
+                null, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "userInfo", userInfo,
-                domain, "/", Integer.MAX_VALUE, false);
+                null, "/", Integer.MAX_VALUE, false);
     }
 
     private void setUserGridInfoCookie(HttpServletRequest request, HttpServletResponse response, UserInfoCache userInfoCache) {
@@ -208,10 +207,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                domain, "/", EXPIRE_TIME, false);
+                null, "/", EXPIRE_TIME, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME, false);
+                null, "/", EXPIRE_TIME, false);
     }
 
     //获取预警工单详情页url
