@@ -1,10 +1,12 @@
 package com.shinemo.wangge.web.controller.common;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.vo.UserOperateLogVO;
 import com.shinemo.smartgrid.constants.SmartGridConstant;
+import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
@@ -12,17 +14,22 @@ import com.shinemo.util.WebUtils;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
+import com.shinemo.wangge.core.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author shangkaihui
@@ -44,6 +51,9 @@ public class OperateController {
     private HuaWeiService huaWeiService;
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private SmartGridInfoService smartGridInfoService;
 
     @NacosValue(value = "${domain}", autoRefreshed = true)
@@ -62,19 +72,29 @@ public class OperateController {
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
             String valueFromCookies = WebUtils.getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, request.getCookies());
-            if(StringUtils.isBlank(valueFromCookies)){
+            if (StringUtils.isBlank(valueFromCookies)) {
                 ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
                 WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(),
                         domain, "/", EXPIRE_TIME, false);
+                String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
+                GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
+                List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
+                if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
+                    //存在网格信息
+                    log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
+                    String finalMobile = SmartGridContext.getMobile();
+                    asyncServiceExecutor.submit(() -> {
+                        userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
+                    });
+                }
             }
         }
 
         return ApiResult.of(0);
-    }
+        }
 
     @PostMapping("/refreshSelectGridInfo")
-    public ApiResult<Void> refreshSelectGridInfo(@RequestBody GridUserRoleDetail gridDetail,
-                                                 HttpServletRequest request, HttpServletResponse response) {
+    public ApiResult<Void> refreshSelectGridInfo(@RequestBody GridUserRoleDetail gridDetail, HttpServletRequest request, HttpServletResponse response) {
 
         Assert.notNull(gridDetail,"gridDetail is null");
 
