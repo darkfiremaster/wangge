@@ -109,6 +109,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Assert.notNull(todoRedirectDTO.getThirdType(), "thirdType is null");
 
         String seed = seedMap.get(todoRedirectDTO.getThirdType());
+
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
         if (!sign.equalsIgnoreCase(todoRedirectDTO.getSign())) {
             log.error("[redirectPage]签名校验失败,请求签名:{},计算后的签名:{}", todoRedirectDTO.getSign(), sign);
@@ -129,6 +130,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         }
 
         UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
+        log.info("[redirectPage]从缓存中获取到的用户信息:{}", userInfoCache);
         if (userInfoCache != null) {
             //设置用户信息cookie
             setUserInfoCookie(request, response, userInfoCache);
@@ -229,7 +231,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         formData.put("timestamp", timestamp);
         //orderId为空,是跳列表页,不为空,是跳详情页
         if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
-            formData.put("orderId", todoUrlQuery.getThirdId());
+            formData.put("thirdid", todoUrlQuery.getThirdId());
         }
 
         String token = getToken();
@@ -326,7 +328,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         userInfoCache.setMobile(mobile);
         userInfoCache.setSelectGridInfo(selectGridInfo);
         userInfoCache.setGridInfo(gridInfo);
-        log.info("[getDaosanjiaoTodoDetailUrl] 缓存用户信息:{}", userInfoCache);
+        log.info("[saveUserInfo] 缓存用户信息:{}", userInfoCache);
         redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_ONE_DAY);
     }
 

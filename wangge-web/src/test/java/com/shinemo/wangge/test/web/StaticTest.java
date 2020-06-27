@@ -1,8 +1,15 @@
 package com.shinemo.wangge.test.web;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
+import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
+import com.shinemo.todo.dto.TodoRedirectDetailDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
@@ -16,8 +23,9 @@ import java.util.TreeMap;
 /**
  * @Author shangkaihui
  * @Date 2020/6/11 10:25
- * @Desc
+ *@Desc
  */
+@Slf4j
 public class StaticTest {
 
     @Test
@@ -27,6 +35,28 @@ public class StaticTest {
 
         tableIndexByMonth = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.of(2020, 6, 29).plusDays(2));
         System.out.println("tableIndexByMonth = " + tableIndexByMonth);
+    }
+
+    @Test
+    public void parseSign() {
+
+        String encryptData = "Q81wxKR1TghpKNmUKflyyyPjsN8fNWba4HSA54E6BWt3EPTYQOrDP8txaxgvc2Aee7rjgkvff4zcDXuy_5MIt31WVAW6xdb3RWAzsY0cDBWpyXK-7BfZEvOFHBAW5aN6ifLrJGiSLz4-F_jxpEQu5Q";
+        Long time = 1592996798155L;
+        String seed = "a8537aaefdd489789c07ae8a9760203";
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + time);
+        System.out.println("sign = " + sign);
+
+        String decryptData = EncryptUtil.decrypt(encryptData, seed);
+        log.info("[redirectPage]解密后的参数decryptData:{}", decryptData);
+        Map<String, String> map = HttpUtil.decodeParamMap(decryptData, CharsetUtil.charset("UTF-8"));
+        TodoRedirectDetailDTO todoRedirectDetailDTO = BeanUtil.mapToBean(map, TodoRedirectDetailDTO.class, false);
+        log.info("[redirectPage]map转化为bean后的的参数todoRedirectDetailDTO:{}", todoRedirectDetailDTO);
+
+
+        //String decode = URLUtil.decode("%250A");
+        //System.out.println("decode = " + decode);
+        //String encode = URLUtil.encode("%250A", "utf-8");
+        //System.out.println("encode = " + encode);
     }
 
     @Test
@@ -47,7 +77,7 @@ public class StaticTest {
         postBody.put("startTime", "2020-07-04 00:00:00");
         //注意:参数顺序按照首字母正序排列
         Map<String,Object> map =  new TreeMap<>();
-        map.put("timeStamp",1592990702320L);
+        map.put("timeStamp",1592989502350L);
         map.put("postBody",postBody);
         map.put("method","operateTodoThing");
         //key为双方约定，参数不传递
@@ -98,7 +128,7 @@ public class StaticTest {
         postBody.put("startTime", "2020-06-18 17:30:00");
         //注意:参数顺序按照首字母正序排列
         Map<String,Object> map =  new TreeMap<>();
-        map.put("timeStamp",1592489264615L);
+        map.put("timeStamp",1592989502350L);
         map.put("postBody",postBody);
         map.put("method","operateTodoThing");
         //key为双方约定，参数不传递

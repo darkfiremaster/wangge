@@ -1,21 +1,16 @@
 package com.shinemo.stallup.domain.utils;
 
-import java.net.URLEncoder;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.URLEncoder;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class EncryptUtil {
 
@@ -81,6 +76,11 @@ public class EncryptUtil {
 
     public static String buildParameterString(Map<String, Object> param) {
         String paramString = sortString(param, true);
+        return paramString;
+    }
+
+    public static String buildParameterString(Map<String, Object> param,Boolean toLower) {
+        String paramString = sortString(param, toLower);
         return paramString;
     }
 
