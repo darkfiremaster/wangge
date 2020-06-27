@@ -6,11 +6,13 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
+import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
+import com.shinemo.smartgrid.constants.SmartGridConstant;
 import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.UserInfoCache;
@@ -130,15 +132,15 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             Assert.notNull(todoRedirectDetailDTO.getThirdid(), "thirdId is null");
         }
 
-        //UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
-        //log.info("[redirectPage]从缓存中获取到的用户信息:{}", userInfoCache);
-        //if (userInfoCache != null) {
-        //    //设置用户信息cookie
-        //    setUserInfoCookie(request, response, userInfoCache);
-        //
-        //    //设置网格信息cookie
-        //    setUserGridInfoCookie(request, response, userInfoCache);
-        //}
+        UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
+        log.info("[redirectPage]从缓存中获取到的用户信息:{}", userInfoCache);
+        if (userInfoCache != null) {
+            //设置用户信息cookie
+            setUserInfoCookie(request, response, userInfoCache);
+
+            //设置网格信息cookie
+            setUserGridInfoCookie(request, response, userInfoCache);
+        }
 
         //页面跳转
         try {
@@ -187,20 +189,20 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
 
         //设置用户信息cookie
-        //WebUtil.addCookie(request, response, "token", token,
-        //        null, "/", Integer.MAX_VALUE, false);
-        //
-        //WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-        //        null, "/", Integer.MAX_VALUE, false);
-        //
-        //WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-        //        null, "/", Integer.MAX_VALUE, false);
-        //
-        //WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-        //        null, "/", Integer.MAX_VALUE, false);
-        //
-        //WebUtil.addCookie(request, response, "userInfo", userInfo,
-        //        null, "/", Integer.MAX_VALUE, false);
+        WebUtil.addCookie(request, response, "token", token,
+                null, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
+                null, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
+                null, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
+                null, "/", Integer.MAX_VALUE, false);
+
+        WebUtil.addCookie(request, response, "userInfo", userInfo,
+                null, "/", Integer.MAX_VALUE, false);
 
     }
 
@@ -216,11 +218,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfoToken.setGridList(GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class));
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
-        //WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-        //        null, "/", EXPIRE_TIME, false);
-        //
-        //WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-        //        null, "/", EXPIRE_TIME, false);
+        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
+                null, "/", EXPIRE_TIME, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                null, "/", EXPIRE_TIME, false);
     }
 
     //获取预警工单详情页url
@@ -247,7 +249,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         log.info("[getYujingTodoDetailUrl] formData:{}", formData);
 
         //设置用户参数到redis
-        //saveUserInfo();
+        saveUserInfo();
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
@@ -304,7 +306,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         log.info("[getDaosanjiaoTodoDetailUrl] formData:{}", formData);
 
         //设置用户参数到redis
-        //saveUserInfo();
+        saveUserInfo();
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
@@ -345,18 +347,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     }
 
     private String getToken() {
-
         return IdUtil.simpleUUID();
-
-        //String uid = SmartGridContext.getUid();
-        //String orgId = SmartGridContext.getOrgId();
-        //TreeMap<String, Object> map = new TreeMap<>();
-        //String selectGridInfo = SmartGridContext.getSelectGridInfo();
-        //String gridInfo = SmartGridContext.getGridInfo();
-        //map.put("selectGridInfo", selectGridInfo);
-        //map.put("gridInfo", gridInfo);
-        //log.info("[getToken] 生成token的参数, uid:{},orgId:{},map:{}", uid, orgId, map);
-        //return authService.generateToken(Long.valueOf(uid), Long.valueOf(orgId), map);
     }
 
     public static void main(String[] args) {
