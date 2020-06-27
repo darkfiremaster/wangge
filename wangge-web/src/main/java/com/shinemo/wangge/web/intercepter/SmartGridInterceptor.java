@@ -69,7 +69,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     @Resource
     private OperateService operateService;
 
-   // public static final int EXPIRE_TIME = 60 * 60 * 24;
+    // public static final int EXPIRE_TIME = 60 * 60 * 24;
 
     //@NacosValue(value = "${domain}", autoRefreshed = true)
     //private String domain = "127.0.0.1";
@@ -149,15 +149,15 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             SmartGridContext.setUserName(userName);
         }
 
-        //
-        //String token = (String)LoginContext.get("token");
-        //Long timestamp = (Long)LoginContext.get("timestamp");
-        //if (token != null) {
-        //    SmartGridContext.setToken(token);
-        //}
-        //if (timestamp != null) {
-        //    SmartGridContext.setTimeStamp(timestamp);
-        //}
+        String token = getValueFromCookies("token", cookies);
+        if (token != null) {
+            SmartGridContext.setToken(token);
+        }
+        String timestamp = getValueFromCookies("timestamp", cookies);
+        if (timestamp != null) {
+            SmartGridContext.setTimeStamp(Long.valueOf(timestamp));
+        }
+
 
         // 查询用户网格信息,并更新
         String allGridInfo = getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, cookies);
@@ -283,7 +283,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             if (Utils.isNotEmpty(userInfo)) {
                 Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
                 if (Utils.isNotEmpty(map)) {
-                    String[] keys = new String[] { "orgId", "mobile", "orgName", "name" };
+                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name"};
                     for (String key : keys) {
                         Object value = map.get(key);
                         if (value != null) {
