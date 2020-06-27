@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
     @Resource
     private UserProfileServiceWrapper userProfileServiceWrapper;
 
-    private final AppTypeEnum appType = AppTypeEnum.CAIYUN;
+    private final AppTypeEnum appType = AppTypeEnum.GUANGXI;
 
     @Override
     public Result<Token> validateToken(String tokenStr) {

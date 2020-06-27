@@ -168,10 +168,12 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String mobile = userInfoCache.getMobile();
         String orgName = userInfoCache.getOrgName();
         String userName = userInfoCache.getUserName();
-        long timestamp = System.currentTimeMillis();
+        String token = userInfoCache.getToken();
+        String timestamp = userInfoCache.getTimestamp();
+        //long timestamp = System.currentTimeMillis();
 
         //生成短token
-        String shortToken = authService.generateShortToken(Long.parseLong(uid), timestamp);
+        //String shortToken = authService.generateShortToken(Long.parseLong(uid), timestamp);
 
         //生成userInfo
         HashMap<String, Object> userInfoMap = new HashMap<>();
@@ -183,7 +185,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
 
         //设置用户信息cookie
-        WebUtil.addCookie(request, response, "token", shortToken,
+        WebUtil.addCookie(request, response, "token", token,
                 null, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
@@ -322,6 +324,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String orgName = SmartGridContext.getOrgName();
         String mobile = SmartGridContext.getMobile();
         String userName = SmartGridContext.getUserName();
+        String token = SmartGridContext.getToken();
+        String timeStamp = SmartGridContext.getTimeStamp();
         String selectGridInfo = SmartGridContext.getSelectGridInfo();
         String gridInfo = SmartGridContext.getGridInfo();
         UserInfoCache userInfoCache = new UserInfoCache();
@@ -330,6 +334,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         userInfoCache.setOrgId(orgId);
         userInfoCache.setOrgName(orgName);
         userInfoCache.setMobile(mobile);
+        userInfoCache.setToken(token);
+        userInfoCache.setTimestamp(timeStamp);
         userInfoCache.setSelectGridInfo(selectGridInfo);
         userInfoCache.setGridInfo(gridInfo);
         log.info("[saveUserInfo] 缓存用户信息:{}", userInfoCache);

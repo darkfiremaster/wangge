@@ -6,6 +6,7 @@ import com.shinemo.client.ace.Imlogin.IMLoginService;
 import com.shinemo.client.common.Result;
 import com.shinemo.client.order.AppTypeEnum;
 import com.shinemo.client.token.Token;
+import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.Utils;
 import com.shinemo.smartgrid.domain.UserInfoCache;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import static com.shinemo.Aace.RetCode.RET_SUCCESS;
@@ -40,8 +42,8 @@ public class AuthServiceTest {
         TreeMap<String,Object> map = new TreeMap<>();
         map.put("roleId",1L);
         map.put("gridId",1L);
-
-        String s = authService.generateToken(69553048L, 1111L, map);
+        //13607713224 扫楼
+        String s = authService.generateToken(115180015645232L, 0L, map);
 
         System.out.println("authService.genToken = " + s);
     }
@@ -49,7 +51,7 @@ public class AuthServiceTest {
 
     @Test
     public void testValidateToken(){
-        String token = "eyJhcHBJZCI6MCwiZ3JpZElkIjoxLCJvcmdJZCI6MTExMSwicm9sZUlkIjoxLCJzY29wZUlkIjowLCJzaWduYXR1cmUiOiI4NGYyNmZlODMyMTI3Njk5YzY3ZjI4YjMxZjAyZGJkNSIsInNpdGVJZCI6MSwidGltZXN0YW1wIjoxNTkyODc5OTkzMzY4LCJ1aWQiOjY5NTUzMDQ4fQ";
+        String token = "eyJhcHBJZCI6MCwiZ3JpZElkIjoxLCJvcmdJZCI6MCwicm9sZUlkIjoxLCJzY29wZUlkIjowLCJzaWduYXR1cmUiOiIzMjBiYzkzNzFhYmU2ODEyMjJkMjBhZTRmNjUwMGJkNyIsInNpdGVJZCI6MTgsInRpbWVzdGFtcCI6MTU5MzI0MDA2NzIzOCwidWlkIjo2OTU1MzA0OH0";
         Result<Token> tokenResult = authService.validateToken(token);
         System.out.println("orgId:" + tokenResult.getValue().getOrgId());
         System.out.println("phone:" + tokenResult.getValue().getPhone());
@@ -63,11 +65,11 @@ public class AuthServiceTest {
     @Test
     public void test() {
         UserInfoCache userInfoCache = new UserInfoCache();
-        userInfoCache.setUid(String.valueOf(115180015645232L));
-        userInfoCache.setUserName("尚凯辉");
+        userInfoCache.setUid(String.valueOf(69553048L));
+        userInfoCache.setUserName("扫楼");
         userInfoCache.setOrgId(String.valueOf(168));
         userInfoCache.setOrgName("彩牛科技有限公司");
-        userInfoCache.setMobile("13588039023");
+        userInfoCache.setMobile("13607713224");
         //userInfoCache.setSelectGridInfo();
         //userInfoCache.setGridInfo();
 
@@ -79,6 +81,8 @@ public class AuthServiceTest {
         String orgName = userInfoCache.getOrgName();
         String userName = userInfoCache.getUserName();
         long timestamp = System.currentTimeMillis();
+        //long timestamp = 1593238042000L;
+        System.out.println("timestamp = " + timestamp);
 
         //生成短token
         String shortToken = authService.generateShortToken(Long.parseLong(uid), timestamp);
@@ -92,10 +96,11 @@ public class AuthServiceTest {
         userInfoMap.put("name", userName);
         String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
         System.out.println("userInfo = " + userInfo);
-
+        Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
+        System.out.println("map = " + map);
         int ret = RET_SUCCESS;
         MutableBoolean isSuccess = new MutableBoolean();
-        AaceContext ctx = new AaceContext(AppTypeEnum.GUANGXI.getId() + "");
+        AaceContext ctx = new AaceContext(AppTypeEnum.CAIYUN.getId() + "");
         ctx.set("uid", uid + "");
         try {
             ret = aaceIMLoginService.verifyToken(uid, shortToken, timestamp, isSuccess, ctx);

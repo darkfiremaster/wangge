@@ -23,6 +23,10 @@ public class UserInfoCache implements Serializable {
 
     private String mobile;
 
+    private String token;
+
+    private String timestamp;
+
     private String selectGridInfo;
 
     private String gridInfo;
