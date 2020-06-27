@@ -23,7 +23,7 @@ public class SmartGridContext {
 	public static String KEY_GRID_INFO = "gridInfo";
 	public static String KEY_SELECT_GRID_INFO = "selectGridInfo";
 	public static String TOKEN = "token";
-	public static String TIMESTAMP = "timestamp";
+	public static String TIMESTAMP = "timeStamp";
 
 	private static final ThreadLocal<Map<String, Object>> local = new ThreadLocal<Map<String, Object>>() {
 		@Override
@@ -141,7 +141,7 @@ public class SmartGridContext {
 		return (String) get(TOKEN);
 	}
 
-	public static void setTimeStamp(Long timeStamp) {
+	public static void setTimeStamp(String timeStamp) {
 		put(TIMESTAMP, timeStamp);
 	}
 	public static String getTimeStamp() {

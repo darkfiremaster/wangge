@@ -148,8 +148,9 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
                 response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             } else if (redirectPage.equals(1)) {
-                log.info("[redirectPage] 跳新建摆摊页面:{}", smartGridUrlPropertity.getCreateStallupUrl());
-                response.sendRedirect(smartGridUrlPropertity.getCreateStallupUrl());
+                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "&thirdId=" + todoRedirectDetailDTO.getThirdid();
+                log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
+                response.sendRedirect(createStallupUrl);
             } else {
                 log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
                 response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
@@ -172,9 +173,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Long timestamp = Long.valueOf(userInfoCache.getTimestamp());
 
         if (StrUtil.isEmpty(token)) {
+            //如果cookie中的token为空,那就自己生成token,一般情况下不会出现这种情况.
             timestamp = System.currentTimeMillis();
             //生成短token
-             token = authService.generateShortToken(Long.parseLong(uid), timestamp);
+            token = authService.generateShortToken(Long.parseLong(uid), timestamp);
         }
 
         //生成userInfo

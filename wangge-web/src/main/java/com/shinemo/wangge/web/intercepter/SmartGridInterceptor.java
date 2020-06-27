@@ -153,9 +153,9 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (token != null) {
             SmartGridContext.setToken(token);
         }
-        String timestamp = getValueFromCookies("timestamp", cookies);
+        String timestamp = getValueFromCookies("timeStamp", cookies);
         if (timestamp != null) {
-            SmartGridContext.setTimeStamp(Long.valueOf(timestamp));
+            SmartGridContext.setTimeStamp(timestamp);
         }
 
 
