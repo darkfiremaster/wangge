@@ -109,7 +109,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Assert.notNull(todoRedirectDTO.getThirdType(), "thirdType is null");
 
         String seed = seedMap.get(todoRedirectDTO.getThirdType());
+        if (StrUtil.isBlank(seed)) {
+            throw new ApiException(TodoErrorCodes.TODO_TYPE_ERROR);
 
+        }
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + todoRedirectDTO.getTimestamp());
         if (!sign.equalsIgnoreCase(todoRedirectDTO.getSign())) {
             log.error("[redirectPage]签名校验失败,请求签名:{},计算后的签名:{}", todoRedirectDTO.getSign(), sign);
