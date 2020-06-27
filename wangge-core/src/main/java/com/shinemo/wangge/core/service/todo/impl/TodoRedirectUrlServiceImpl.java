@@ -130,15 +130,15 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             Assert.notNull(todoRedirectDetailDTO.getThirdid(), "thirdId is null");
         }
 
-        UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
-        log.info("[redirectPage]从缓存中获取到的用户信息:{}", userInfoCache);
-        if (userInfoCache != null) {
-            //设置用户信息cookie
-            setUserInfoCookie(request, response, userInfoCache);
-
-            //设置网格信息cookie
-            setUserGridInfoCookie(request, response, userInfoCache);
-        }
+        //UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
+        //log.info("[redirectPage]从缓存中获取到的用户信息:{}", userInfoCache);
+        //if (userInfoCache != null) {
+        //    //设置用户信息cookie
+        //    setUserInfoCookie(request, response, userInfoCache);
+        //
+        //    //设置网格信息cookie
+        //    setUserGridInfoCookie(request, response, userInfoCache);
+        //}
 
         //页面跳转
         try {
@@ -247,7 +247,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         log.info("[getYujingTodoDetailUrl] formData:{}", formData);
 
         //设置用户参数到redis
-        saveUserInfo();
+        //saveUserInfo();
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
@@ -304,7 +304,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         log.info("[getDaosanjiaoTodoDetailUrl] formData:{}", formData);
 
         //设置用户参数到redis
-        saveUserInfo();
+        //saveUserInfo();
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
