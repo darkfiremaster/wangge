@@ -25,6 +25,7 @@ import com.shinemo.todo.dto.TodoRedirectDetailDTO;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.error.TodoErrorCodes;
 import com.shinemo.todo.query.TodoUrlQuery;
+import com.shinemo.wangge.core.config.properties.ChannelVisitPropertity;
 import com.shinemo.wangge.core.config.properties.DaosanjiaoPropertity;
 import com.shinemo.wangge.core.config.properties.SmartGridUrlPropertity;
 import com.shinemo.wangge.core.config.properties.YujingPropertity;
@@ -61,6 +62,9 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private YujingPropertity yujingPropertity;
 
     @Resource
+    private ChannelVisitPropertity channelVisitPropertity;
+
+    @Resource
     private SmartGridUrlPropertity smartGridUrlPropertity;
 
     @Resource
@@ -94,6 +98,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             return getDaosanjiaoTodoDetailUrl(todoUrlQuery);
         } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.YU_JING_ORDER.getId())) {
             return getYujingTodoDetailUrl(todoUrlQuery);
+        } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.CHANNEL_VISIT.getId())) {
+            return getChannelVisitTodoDetailUrl(todoUrlQuery);
         } else {
             return ApiResultWrapper.fail(TodoErrorCodes.TODO_TYPE_ERROR);
         }
@@ -264,6 +270,43 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         log.info("[getYujingTodoDetailUrl] 生成跳转url:{}", url);
         return ApiResult.of(0, url);
+    }
+
+    //获取渠道走访详情页url
+    private ApiResult<String> getChannelVisitTodoDetailUrl(TodoUrlQuery todoUrlQuery) {
+        String seed = channelVisitPropertity.getSeed();
+        String domain = channelVisitPropertity.getDomain();
+        String path = channelVisitPropertity.getTodoDetailUrl();
+
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", SmartGridContext.getMobile());
+        formData.put("timestamp", timestamp);
+        formData.put("thirdid", todoUrlQuery.getThirdId());
+        formData.put("urlType", "bgcy_app");
+        formData.put("resId", 20);
+
+        log.info("[getChannelVisitTodoDetailUrl] formData:{}", formData);
+
+        //String token = getToken();
+        //formData.put("token", token);
+        //设置用户参数到redis
+        saveUserInfo();
+
+        String paramStr = EncryptUtil.buildParameterString(formData);
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramStr, seed);
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+        String url = domain + path + "?";
+        StringBuilder sb = new StringBuilder(url);
+        url = sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign).toString();
+
+        log.info("[getChannelVisitTodoDetailUrl] 生成跳转url:{}", url);
+        return ApiResult.of(0, url);
+
     }
 
     //获取倒三角工单详情页url
