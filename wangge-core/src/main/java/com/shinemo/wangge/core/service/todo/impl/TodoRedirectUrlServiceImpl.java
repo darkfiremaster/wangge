@@ -197,6 +197,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         WebUtil.addCookie(request, response, "userInfo", userInfo,
                 null, "/", Integer.MAX_VALUE, false);
+
     }
 
     private void setUserGridInfoCookie(HttpServletRequest request, HttpServletResponse response, UserInfoCache userInfoCache) {

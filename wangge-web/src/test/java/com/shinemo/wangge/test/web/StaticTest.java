@@ -8,6 +8,7 @@ import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
+import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.dto.TodoRedirectDetailDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -159,6 +160,27 @@ public class StaticTest {
 
         String request = GsonUtils.toJson(map);
         System.out.println("request = " + request);
+
+    }
+
+    @Test
+    public void t() {
+        String json = "{\n" +
+                "            \"id\": 32,\n" +
+                "            \"gmtCreate\": 1592991344000,\n" +
+                "            \"gmtModified\": 1593230403000,\n" +
+                "            \"thirdId\": \"DK202006240707281\",\n" +
+                "            \"thirdType\": 5,\n" +
+                "            \"title\": \"中直村委吴屋村端口数预警\",\n" +
+                "            \"remark\": \"您负责的@中直村委吴屋村-@，在20200622的@宽带端口剩余数为22个-@，@端口可利用率为55%-@，请及时组织人员开展实地摆台营销，小区相关信息如下，营销完成后，请填写营销日志并进行返单。\",\n" +
+                "            \"status\": 0,\n" +
+                "            \"label\": \"未返单\",\n" +
+                "            \"operatorTime\": 1592928000000,\n" +
+                "            \"operatorMobile\": \"13557710513\",\n" +
+                "            \"startTime\": 1593792000000\n" +
+                "        }";
+        TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
+        System.out.println("todoDO = " + todoDO);
 
     }
 }
