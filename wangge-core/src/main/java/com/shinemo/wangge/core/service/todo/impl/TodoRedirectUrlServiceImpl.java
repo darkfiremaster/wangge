@@ -6,13 +6,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
-import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
-import com.shinemo.smartgrid.constants.SmartGridConstant;
 import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.UserInfoCache;
@@ -185,20 +183,20 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
 
         //设置用户信息cookie
-        WebUtil.addCookie(request, response, "token", token,
-                null, "/", Integer.MAX_VALUE, false);
-
-        WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                null, "/", Integer.MAX_VALUE, false);
-
-        WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                null, "/", Integer.MAX_VALUE, false);
-
-        WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                null, "/", Integer.MAX_VALUE, false);
-
-        WebUtil.addCookie(request, response, "userInfo", userInfo,
-                null, "/", Integer.MAX_VALUE, false);
+        //WebUtil.addCookie(request, response, "token", token,
+        //        null, "/", Integer.MAX_VALUE, false);
+        //
+        //WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
+        //        null, "/", Integer.MAX_VALUE, false);
+        //
+        //WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
+        //        null, "/", Integer.MAX_VALUE, false);
+        //
+        //WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
+        //        null, "/", Integer.MAX_VALUE, false);
+        //
+        //WebUtil.addCookie(request, response, "userInfo", userInfo,
+        //        null, "/", Integer.MAX_VALUE, false);
 
     }
 
@@ -214,11 +212,11 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfoToken.setGridList(GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class));
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
-        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                null, "/", EXPIRE_TIME, false);
-
-        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                null, "/", EXPIRE_TIME, false);
+        //WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
+        //        null, "/", EXPIRE_TIME, false);
+        //
+        //WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+        //        null, "/", EXPIRE_TIME, false);
     }
 
     //获取预警工单详情页url

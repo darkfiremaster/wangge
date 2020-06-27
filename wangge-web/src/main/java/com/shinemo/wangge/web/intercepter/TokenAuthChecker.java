@@ -144,13 +144,6 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
                 LoginContext.setOrgId(orgId);
             }
 
-            if (token != null) {
-                LoginContext.put("token", token);
-            }
-            if (timestamp != 0) {
-                LoginContext.put("timestamp", timestamp);
-            }
-
             return true;
         }
 

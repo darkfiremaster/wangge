@@ -82,7 +82,7 @@ public class TodoController {
      * @return
      */
     @GetMapping("/getRedirectUrl")
-    public ApiResult<String> getRedirectUrl(TodoUrlQuery todoUrlQuery)  {
+    public ApiResult<String> getRedirectUrl( TodoUrlQuery todoUrlQuery)  {
         return todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
 

@@ -87,8 +87,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         String orgName = LoginContext.getOrgName();
         String mobile = LoginContext.getMobile();
         String userName = LoginContext.getUserName();
-        String token = (String)LoginContext.get("token");
-        Long timestamp = (Long)LoginContext.get("timestamp");
+
 
         if (mobile == null) {
             mobile = getValueFromCookies("mobile", cookies);
@@ -149,12 +148,16 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (userName != null) {
             SmartGridContext.setUserName(userName);
         }
-        if (token != null) {
-            SmartGridContext.setToken(token);
-        }
-        if (timestamp != null) {
-            SmartGridContext.setTimeStamp(timestamp);
-        }
+
+        //
+        //String token = (String)LoginContext.get("token");
+        //Long timestamp = (Long)LoginContext.get("timestamp");
+        //if (token != null) {
+        //    SmartGridContext.setToken(token);
+        //}
+        //if (timestamp != null) {
+        //    SmartGridContext.setTimeStamp(timestamp);
+        //}
 
         // 查询用户网格信息,并更新
         String allGridInfo = getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, cookies);
