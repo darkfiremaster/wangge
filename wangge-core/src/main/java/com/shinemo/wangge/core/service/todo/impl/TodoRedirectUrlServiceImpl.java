@@ -280,18 +280,22 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", SmartGridContext.getMobile());
+        if (!StringUtils.isEmpty(todoUrlQuery.getOperatorMobile())) {
+            formData.put("mobile", todoUrlQuery.getOperatorMobile());
+        } else {
+            formData.put("mobile", SmartGridContext.getMobile());
+        }
         formData.put("timestamp", timestamp);
         formData.put("thirdid", todoUrlQuery.getThirdId());
-        formData.put("urlType", "bgcy_app");
-        formData.put("resId", 20);
+        formData.put("urltype", "bgcy_app");
+        formData.put("resid", 20);
 
         log.info("[getChannelVisitTodoDetailUrl] formData:{}", formData);
 
         //String token = getToken();
         //formData.put("token", token);
         //设置用户参数到redis
-        saveUserInfo();
+        //saveUserInfo();
 
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
