@@ -72,6 +72,11 @@ public class OperateController {
             ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
             WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
 
+            GridInfoToken selectToken = getToken(stringApiResult.getData());
+            GridUserRoleDetail detail = selectToken.getGridList().get(0);
+            ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
+            WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, stringApiResult1.getData(), null, "/", EXPIRE_TIME, false);
+
             String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
             List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
@@ -128,6 +133,12 @@ public class OperateController {
         }
 
         return ApiResult.of(0, gridUserRoleDetails);
+    }
+
+    private GridInfoToken getToken(String gridInfo) {
+        String usableToken = new String(Base64.decodeBase64(gridInfo), StandardCharsets.UTF_8);
+        GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(usableToken, GridInfoToken.class);
+        return gridInfoToken;
     }
 
 
