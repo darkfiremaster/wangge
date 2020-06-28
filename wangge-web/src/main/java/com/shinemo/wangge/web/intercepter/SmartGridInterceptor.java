@@ -72,7 +72,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     // public static final int EXPIRE_TIME = 60 * 60 * 24;
 
     @NacosValue(value = "${domain}", autoRefreshed = true)
-    private String domain = "127.0.0.1";
+    private String domain = "developer.e.uban360.com";
 
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
@@ -182,11 +182,11 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
         SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
         SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
-        //WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
-        //        null, "/", EXPIRE_TIME, false);
-        //
-        //WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-        //        null, "/", EXPIRE_TIME, false);
+        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
+                domain, "/", EXPIRE_TIME, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                domain, "/", EXPIRE_TIME, false);
         return true;
     }
 

@@ -56,7 +56,7 @@ public class OperateController {
     private SmartGridInfoService smartGridInfoService;
 
     @NacosValue(value = "${domain}", autoRefreshed = true)
-    private String domain = "127.0.0.1";
+    private String domain = "developer.e.uban360.com";
 
     public static final int EXPIRE_TIME = 60 * 60 * 1;
 
