@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.Utils;
@@ -73,8 +74,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     @Resource
     private RedisService redisService;
 
-    //@NacosValue(value = "${domain}", autoRefreshed = true)
-    //private String domain = "127.0.0.1";
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "127.0.0.1";
 
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 
