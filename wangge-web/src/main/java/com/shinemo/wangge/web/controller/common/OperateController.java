@@ -103,7 +103,7 @@ public class OperateController {
         ApiResult<String> result = operateService.genGridInfoToken(gridDetail);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, result.getData(),
-                null, "/", EXPIRE_TIME, false);
+                domain, "/", EXPIRE_TIME, false);
 
 
         return ApiResult.of(0);
