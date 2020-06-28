@@ -309,6 +309,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         SmartGridContext.remove();
+        LoginContext.remove();
         super.afterCompletion(request, response, handler, ex);
     }
 }
