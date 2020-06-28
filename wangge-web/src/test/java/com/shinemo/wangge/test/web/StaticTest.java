@@ -41,9 +41,9 @@ public class StaticTest {
     @Test
     public void parseSign() {
 
-        String encryptData = "Q81wxKR1TghpKNmUKflyyyPjsN8fNWba4HSA54E6BWt3EPTYQOrDP8txaxgvc2Aee7rjgkvff4zcDXuy_5MIt31WVAW6xdb3RWAzsY0cDBWpyXK-7BfZEvOFHBAW5aN6ifLrJGiSLz4-F_jxpEQu5Q";
-        Long time = 1592996798155L;
-        String seed = "a8537aaefdd489789c07ae8a9760203";
+        String encryptData = "Q-Rf5TNa26Vpa4uoiOX-cxE6H04otjluNgGSL54ptZyPp1aIoioM9PNM3OD8P6aIHZMjdtQI-9XBOKDOEbfIBQi7_9xSx_b1dUGIQBwaCp53xhCZM2aJOLGqJj21EPab0MLHLTqtiARqPJHPVhGHkg";
+        Long time = 1593308926934L;
+        String seed = "87a4b2e679304f4bbe4da9bb935ffd9f";
         String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + time);
         System.out.println("sign = " + sign);
 

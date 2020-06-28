@@ -25,4 +25,5 @@ public class StallUpCreateRequest extends StallUpRequest{
 	private List<Long> bizTypeList;
 	private List<String> custList;
 	private String location;
+	private String orderId;
 }

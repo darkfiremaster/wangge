@@ -43,6 +43,5 @@ public class SweepFloorActivityVO {
     private String creatorName;
     /** 异常原因 */
     private String abnormalReason;
-    /** 工单id */
-    private String orderId;
+
 }

@@ -91,6 +91,7 @@ public class ParentStallUpActivity {
 	 */
 	private String extend;
 	private Long count;
+	private String orderId;
 
 	//查询条件
 	private Date ltCreateTime;
@@ -98,6 +99,7 @@ public class ParentStallUpActivity {
 	private Date gtRealEndTime;
 	private Date ltStartTime;
 	private List<String> gridIds;
+
 
 	public void addExceptionFlag() {
 		if (flag == null) {

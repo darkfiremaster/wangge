@@ -217,15 +217,12 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         } else if (request.getMobile().equals("15958032925")) {
             //3个网格
             return ApiResult.of(0, getMockGridUserWithNum(3));
-
         } else if (request.getMobile().equals("15000001171")) {
             //2个网格
             return ApiResult.of(0, getMockGridUserWithNum(2));
-
         } else if (request.getMobile().equals("15226536886")) {
             //1个网格
             return ApiResult.of(0, getMockGridUserWithNum(1));
-
         } else if (request.getMobile().equals("15000001170")) {
             //无网格
             return ApiResult.of(0, getMockGridUserWithNum(0));
