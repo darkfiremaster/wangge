@@ -82,7 +82,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME_ONE_DAY = 24 * 60 * 60;
+    private static final Integer EXPIRE_TIME_ONE_DAY = 1 * 60 * 60;
 
     @PostConstruct
     public void init() {
@@ -197,19 +197,19 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         //设置用户信息cookie
         WebUtil.addCookie(request, response, "token", token,
-                null, "/", Integer.MAX_VALUE, false);
+                domain, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                null, "/", Integer.MAX_VALUE, false);
+                domain, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                null, "/", Integer.MAX_VALUE, false);
+                domain, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                null, "/", Integer.MAX_VALUE, false);
+                domain, "/", Integer.MAX_VALUE, false);
 
         WebUtil.addCookie(request, response, "userInfo", userInfo,
-                null, "/", Integer.MAX_VALUE, false);
+                domain, "/", Integer.MAX_VALUE, false);
 
     }
 
@@ -226,10 +226,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                null, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_ONE_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                null, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                domain, "/", EXPIRE_TIME_ONE_DAY, false);
     }
 
     //获取预警工单详情页url
