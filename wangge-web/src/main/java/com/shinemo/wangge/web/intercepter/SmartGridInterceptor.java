@@ -3,7 +3,6 @@ package com.shinemo.wangge.web.intercepter;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.client.util.GsonUtil;
-import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
@@ -183,11 +182,11 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
         SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
         SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
-        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
-                null, "/", EXPIRE_TIME, false);
-
-        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                null, "/", EXPIRE_TIME, false);
+        //WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
+        //        null, "/", EXPIRE_TIME, false);
+        //
+        //WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+        //        null, "/", EXPIRE_TIME, false);
         return true;
     }
 
