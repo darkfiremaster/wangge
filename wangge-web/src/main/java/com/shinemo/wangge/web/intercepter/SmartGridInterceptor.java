@@ -75,7 +75,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     @NacosValue(value = "${domain}", autoRefreshed = true)
     private String domain = "developer.e.uban360.com";
 
-    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
+    public static final int EXPIRE_TIME = 60 * 60;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
