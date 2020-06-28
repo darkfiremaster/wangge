@@ -209,7 +209,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public ApiResult<List<GridUserRoleDetail>> getGridUserInfo(HuaWeiRequest request) {
 
         //todo mock待删除
-        List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
+        List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611","13607713224");
 
         if (request.getMobile().equals("15000001172")) {
             //6个网格
