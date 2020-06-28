@@ -1,6 +1,5 @@
 package com.shinemo.wangge.web.controller.common;
 
-
 import com.shinemo.Aace.MutableBoolean;
 import com.shinemo.Aace.MutableByteArray;
 import com.shinemo.Aace.MutableLong;
@@ -48,7 +47,7 @@ public class SmartGridFilesystemController {
             MutableByteArray data = new MutableByteArray();
             AaceContext aaceContext = new AaceContext();
             // 下载文件
-            int ret = tinyfsService.getFile(id, (byte) 2, data, finished,aaceContext);
+            int ret = tinyfsService.getFile(id, (byte) 2, data, finished, aaceContext);
             if (ret != RetCode.RET_SUCCESS) {
                 log.error("FilesystemController downloadFileForId tinyfsClient.getFile error,id={} ret: {}", id, ret);
                 throw new ApiException("下载文件失败，请稍后再试", ret);
@@ -71,7 +70,7 @@ public class SmartGridFilesystemController {
             }
             MutableLong fileId = new MutableLong();
             AaceContext aaceContext = new AaceContext();
-            int ret = tinyfsService.addFile((byte) 2, file.getBytes(), false, true, fileId,aaceContext);
+            int ret = tinyfsService.addFile((byte) 2, file.getBytes(), false, true, fileId, aaceContext);
             log.info("FilesystemController upload, ret={}", ret);
             return ApiResult.success(fileId.get());
         } catch (Exception e) {
@@ -83,21 +82,27 @@ public class SmartGridFilesystemController {
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @SmIgnore
     public ApiResult<String> uploadFile(@RequestBody FileVo fileVo) {
+        log.error("[uploadFile] time_0 = {}.", System.currentTimeMillis());
         try {
             return transformBase64(fileVo.getContent().split(",")[1]);
         } catch (Exception e) {
             log.error("FilesystemController upload Exception, msg:", e);
             return ApiResult.fail("文件上传错误", -1);
+        } finally {
+            log.error("[uploadFile] time_final = {}.", System.currentTimeMillis());
         }
     }
 
     private ApiResult<String> transformBase64(String str) throws IOException {
         BASE64Decoder decode = new BASE64Decoder();
         byte[] buffer = decode.decodeBuffer(str);
+        log.error("[uploadFile] time_1 = {}.", System.currentTimeMillis());
         fileSystemClient.setFileUploadUrl(FILE_SYSTEM_INNER_NET_URL);
         String uploadUrl = fileSystemClient.upload(buffer, 30);
+        log.error("[uploadFile] time_2 = {}, url = {}.", System.currentTimeMillis(), uploadUrl);
         if (StringUtils.isBlank(uploadUrl)) {
-            log.error("FilesystemController getUrl fileSystemClient.upload error, filesystemUrl={}", FILE_SYSTEM_INNER_NET_URL);
+            log.error("FilesystemController getUrl fileSystemClient.upload error, filesystemUrl={}",
+                    FILE_SYSTEM_INNER_NET_URL);
             return ApiResult.fail("文件上传错误", -1);
         }
         return ApiResult.success(uploadUrl);
