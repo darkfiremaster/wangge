@@ -71,12 +71,12 @@ public class OperateController {
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
             ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
+            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), domain, "/", EXPIRE_TIME, false);
 
             GridInfoToken selectToken = getToken(stringApiResult.getData());
             GridUserRoleDetail detail = selectToken.getGridList().get(0);
             ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
-            WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, stringApiResult1.getData(), null, "/", EXPIRE_TIME, false);
+            WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, stringApiResult1.getData(), domain, "/", EXPIRE_TIME, false);
 
             String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
@@ -103,7 +103,7 @@ public class OperateController {
         ApiResult<String> result = operateService.genGridInfoToken(gridDetail);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, result.getData(),
-                null, "/", EXPIRE_TIME, false);
+                domain, "/", EXPIRE_TIME, false);
 
 
         return ApiResult.of(0);
