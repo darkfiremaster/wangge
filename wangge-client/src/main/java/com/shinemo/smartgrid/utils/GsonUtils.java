@@ -68,7 +68,7 @@ public class GsonUtils {
 			gson.fromJson(json, type);
 			return true;
 		} catch (Exception e) {
-			log.error("Jsons.fromJsonToList ex, json=" + json + ", type=" + type, e);
+			log.error("not json list, json=" + json);
 		}
 		return false;
 	}
