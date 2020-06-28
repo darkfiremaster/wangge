@@ -209,29 +209,29 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public ApiResult<List<GridUserRoleDetail>> getGridUserInfo(HuaWeiRequest request) {
 
         //todo mock待删除
-        List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611","13607713224");
-
-        if (request.getMobile().equals("15000001172")) {
-            //6个网格
-            return ApiResult.of(0, getMockGridUserWithNum(6));
-        } else if (request.getMobile().equals("15958032925")) {
-            //3个网格
-            return ApiResult.of(0, getMockGridUserWithNum(3));
-        } else if (request.getMobile().equals("15000001171")) {
-            //2个网格
-            return ApiResult.of(0, getMockGridUserWithNum(2));
-        } else if (request.getMobile().equals("15226536886")) {
-            //1个网格
-            return ApiResult.of(0, getMockGridUserWithNum(1));
-        } else if (request.getMobile().equals("15000001170")) {
-            //无网格
-            return ApiResult.of(0, getMockGridUserWithNum(0));
-        }
-
-        if (list.contains(request.getMobile())) {
-            List<GridUserRoleDetail> detailList = getMockGridUser();
-            return ApiResult.of(0, detailList);
-        }
+//        List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611","13607713224");
+//
+//        if (request.getMobile().equals("15000001172")) {
+//            //6个网格
+//            return ApiResult.of(0, getMockGridUserWithNum(6));
+//        } else if (request.getMobile().equals("15958032925")) {
+//            //3个网格
+//            return ApiResult.of(0, getMockGridUserWithNum(3));
+//        } else if (request.getMobile().equals("15000001171")) {
+//            //2个网格
+//            return ApiResult.of(0, getMockGridUserWithNum(2));
+//        } else if (request.getMobile().equals("15226536886")) {
+//            //1个网格
+//            return ApiResult.of(0, getMockGridUserWithNum(1));
+//        } else if (request.getMobile().equals("15000001170")) {
+//            //无网格
+//            return ApiResult.of(0, getMockGridUserWithNum(0));
+//        }
+//
+//        if (list.contains(request.getMobile())) {
+//            List<GridUserRoleDetail> detailList = getMockGridUser();
+//            return ApiResult.of(0, detailList);
+//        }
 
         GetGridUserInfoRequest getGridUserInfoRequest = new GetGridUserInfoRequest();
         getGridUserInfoRequest.setUserTel(request.getMobile());
