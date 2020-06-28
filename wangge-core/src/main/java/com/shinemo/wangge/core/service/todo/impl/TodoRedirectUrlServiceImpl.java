@@ -154,7 +154,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
                 response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             } else if (redirectPage.equals(1)) {
-                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "&thirdId=" + todoRedirectDetailDTO.getThirdid();
+                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "&orderId=" + todoRedirectDetailDTO.getThirdid();
                 log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
                 response.sendRedirect(createStallupUrl);
             } else {

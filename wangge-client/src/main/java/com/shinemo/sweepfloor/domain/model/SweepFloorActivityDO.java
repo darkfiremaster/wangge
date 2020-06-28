@@ -29,5 +29,7 @@ public class SweepFloorActivityDO {
     private String gridId;
     private Date startTime;
     private Date endTime;
+    /** 工单id */
+    private String orderId;
 
 }

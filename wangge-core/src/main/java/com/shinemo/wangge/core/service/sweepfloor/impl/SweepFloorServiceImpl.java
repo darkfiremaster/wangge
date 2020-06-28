@@ -36,14 +36,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -163,6 +161,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         activityDO.setMobile(SmartGridContext.getMobile());
         activityDO.setGmtCreate(new Date());
         activityDO.setGmtModified(new Date());
+        activityDO.setOrderId(request.getOrderId());
 
         String selectGridInfo = SmartGridContext.getSelectGridInfo();
         GridUserRoleDetail gridDetail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);
