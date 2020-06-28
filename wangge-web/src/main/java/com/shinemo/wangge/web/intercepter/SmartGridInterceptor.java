@@ -75,7 +75,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     @NacosValue(value = "${domain}", autoRefreshed = true)
     private String domain = "developer.e.uban360.com";
 
-    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
+    public static final int EXPIRE_TIME = 60 * 60;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -183,11 +183,11 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
         SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
         SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
-        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
-                domain, "/", EXPIRE_TIME, false);
-
-        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME, false);
+//        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
+//                domain, "/", EXPIRE_TIME, false);
+//
+//        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+//                domain, "/", EXPIRE_TIME, false);
         return true;
     }
 
@@ -309,6 +309,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         SmartGridContext.remove();
+        LoginContext.remove();
         super.afterCompletion(request, response, handler, ex);
     }
 }

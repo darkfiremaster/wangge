@@ -58,7 +58,7 @@ public class OperateController {
     @NacosValue(value = "${domain}", autoRefreshed = true)
     private String domain = "developer.e.uban360.com";
 
-    public static final int EXPIRE_TIME = 60 * 60 * 1;
+    public static final int EXPIRE_TIME = 60 * 60;
 
     @PostMapping("/addUserOperateLog")
     public ApiResult<Void> addUserOperateLog(@RequestBody UserOperateLogVO userOperateLogVO,
