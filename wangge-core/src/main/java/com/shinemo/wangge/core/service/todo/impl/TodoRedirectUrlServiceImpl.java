@@ -135,7 +135,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         if (redirectPage.equals(1)) {
             //跳转摆摊页面 工单id不能为空
-            Assert.notNull(todoRedirectDetailDTO.getThirdid(), "thirdId is null");
+            cn.hutool.core.lang.Assert.notBlank(todoRedirectDetailDTO.getThirdid(), "thirdId is null");
         }
 
         UserInfoCache userInfoCache = redisService.get(USER_INFO_KEY + todoRedirectDetailDTO.getMobile(), UserInfoCache.class);
@@ -225,10 +225,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                null, "/", EXPIRE_TIME, false);
+                null, "/", EXPIRE_TIME_ONE_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                null, "/", EXPIRE_TIME, false);
+                null, "/", EXPIRE_TIME_ONE_DAY, false);
     }
 
     //获取预警工单详情页url
