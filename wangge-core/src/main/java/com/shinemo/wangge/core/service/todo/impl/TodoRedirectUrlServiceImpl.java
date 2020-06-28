@@ -9,7 +9,6 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
-import com.shinemo.common.tools.Utils;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
@@ -40,12 +39,15 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * @Author shangkaihui
@@ -82,7 +84,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME_ONE_DAY = 1 * 60 * 60;
+    private static final Integer EXPIRE_TIME_HALF_DAY = 6 * 60 * 60;
 
     @PostConstruct
     public void init() {
@@ -179,50 +181,35 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         String token = userInfoCache.getToken();
         Long timestamp = Long.valueOf(userInfoCache.getTimestamp());
 
-        if (StrUtil.isEmpty(token)) {
-            //如果cookie中的token为空,那就自己生成token,一般情况下不会出现这种情况.
-            timestamp = System.currentTimeMillis();
-            //生成短token
-            token = authService.generateShortToken(Long.parseLong(uid), timestamp);
-        }
-
-        //生成userInfo
-        HashMap<String, Object> userInfoMap = new HashMap<>();
-        userInfoMap.put("orgId", orgId);
-        userInfoMap.put("mobile", mobile);
-        userInfoMap.put("orgName", orgName);
-        userInfoMap.put("username", userName);
-        userInfoMap.put("name", userName);
-        String userInfo = Utils.encodeUrl(GsonUtils.toJson(userInfoMap));
-
         //设置用户信息cookie
-        WebUtil.addCookie(request, response, "token", token,
-                domain, "/", Integer.MAX_VALUE, false);
+        Cookie[] cookies = request.getCookies();
+        String tokenFromCookie = getValueFromCookies("token", cookies);
+        if (StrUtil.isBlank(tokenFromCookie)) {
+            log.info("[setUserInfoCookie] cookie中的用户信息为空,开始设置cookie");
+            WebUtil.addCookie(request, response, "token", token,
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "mobile", mobile,
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "mobile", mobile,
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "username", userName,
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "username", userName,
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "name", userName,
-                domain, "/", Integer.MAX_VALUE, false);
+            WebUtil.addCookie(request, response, "name", userName,
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
-        WebUtil.addCookie(request, response, "orgName", orgName,
-                domain, "/", Integer.MAX_VALUE, false);
-
-        //WebUtil.addCookie(request, response, "userInfo", userInfo,
-        //        domain, "/", Integer.MAX_VALUE, false);
-
+            WebUtil.addCookie(request, response, "orgName", orgName,
+                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+        }
     }
 
     private void setUserGridInfoCookie(HttpServletRequest request, HttpServletResponse response, UserInfoCache userInfoCache) {
@@ -238,13 +225,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
     }
 
     //获取预警工单详情页url
@@ -406,7 +393,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         userInfoCache.setSelectGridInfo(selectGridInfo);
         userInfoCache.setGridInfo(gridInfo);
         log.info("[saveUserInfo] 缓存用户信息:{}", userInfoCache);
-        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_ONE_DAY);
+        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_HALF_DAY);
     }
 
     private String getToken() {
