@@ -183,11 +183,11 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
         SmartGridContext.setGridInfo(GsonUtils.toJson(gridList));
         SmartGridContext.setSelectGridInfo(GsonUtils.toJson(selectToken.getGridDetail()));
-        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
-                domain, "/", EXPIRE_TIME, false);
-
-        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME, false);
+//        WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, allGridInfo,
+//                domain, "/", EXPIRE_TIME, false);
+//
+//        WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+//                domain, "/", EXPIRE_TIME, false);
         return true;
     }
 
