@@ -1,9 +1,27 @@
 package com.shinemo.wangge.web.intercepter;
 
+import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.util.WebUtils.getValueFromCookies;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.client.util.GsonUtil;
-import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.Jsons;
 import com.shinemo.common.tools.LoginContext;
 import com.shinemo.common.tools.Utils;
@@ -23,24 +41,8 @@ import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
 import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
-import static com.shinemo.Aace.RetCode.RET_SUCCESS;
-import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * debug拦截
@@ -88,7 +90,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         String orgName = LoginContext.getOrgName();
         String mobile = LoginContext.getMobile();
         String userName = LoginContext.getUserName();
-
 
         if (mobile == null) {
             mobile = getValueFromCookies("mobile", cookies);
@@ -219,7 +220,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         String token = null;
         long timestamp = 0;
         String orgId = null;
-        String userInfo = null;
         Cookie[] cookies = request.getCookies();
         if (null != cookies) {
             token = getValueFromCookies("token", cookies);
@@ -239,7 +239,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             }
 
             orgId = getValueFromCookies("orgId", cookies);
-            userInfo = getValueFromCookies("userInfo", cookies);
         }
 
         if (token == null || uid == null) {
@@ -279,19 +278,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
             // 特殊场景下cookie里没有orgId
             if (Utils.isEmpty(orgId)) {
                 orgId = request.getParameter("orgId");
-            }
-
-            if (Utils.isNotEmpty(userInfo)) {
-                Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
-                if (Utils.isNotEmpty(map)) {
-                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name"};
-                    for (String key : keys) {
-                        Object value = map.get(key);
-                        if (value != null) {
-                            LoginContext.put(key, value);
-                        }
-                    }
-                }
             }
 
             LoginContext.setUid(uid);
