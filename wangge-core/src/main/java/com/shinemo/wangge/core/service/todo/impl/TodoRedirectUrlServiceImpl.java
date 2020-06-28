@@ -82,7 +82,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME_ONE_DAY = 24 * 60 * 60;
+    private static final Integer EXPIRE_TIME_ONE_DAY = 1 * 60 * 60;
 
     @PostConstruct
     public void init() {
@@ -229,6 +229,9 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 domain, "/", EXPIRE_TIME_ONE_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
+                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+
+        WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
                 domain, "/", EXPIRE_TIME_ONE_DAY, false);
     }
 

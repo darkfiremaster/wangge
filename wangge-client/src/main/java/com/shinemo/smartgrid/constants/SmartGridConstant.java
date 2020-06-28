@@ -8,4 +8,7 @@ public class SmartGridConstant {
     /** 所选网格信息的cookieName:json */
     public static final String SELECT_GRID_INFO_COOKIE = "selectGridInfo";
 
+    /** 所选网格信息的cookieName:json */
+    public static final String TEMP_SELECT_GRID_INFO_COOKIE = "tempSelectGridInfo";
+
 }
