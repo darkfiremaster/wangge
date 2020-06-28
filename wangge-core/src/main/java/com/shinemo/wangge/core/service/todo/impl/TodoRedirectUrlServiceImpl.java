@@ -208,6 +208,9 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
                 domain, "/", Integer.MAX_VALUE, false);
 
+        WebUtil.addCookie(request, response, "mobile", mobile,
+                domain, "/", Integer.MAX_VALUE, false);
+
         WebUtil.addCookie(request, response, "userInfo", userInfo,
                 domain, "/", Integer.MAX_VALUE, false);
 
