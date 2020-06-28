@@ -1,6 +1,5 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -182,6 +181,7 @@ public class StallUpServiceImpl implements StallUpService {
             BeanUtils.copyProperties(insertList.get(0), parent);
             parent.setId(null);
             parent.setMobile(request.getMobile());
+            parent.setOrderId(request.getOrderId());
             String name = null;
             ApiResult<GetGridUserInfoResult.DataBean> result = null;
             try {
