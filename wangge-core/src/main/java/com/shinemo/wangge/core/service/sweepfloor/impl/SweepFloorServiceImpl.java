@@ -161,7 +161,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         activityDO.setMobile(SmartGridContext.getMobile());
         activityDO.setGmtCreate(new Date());
         activityDO.setGmtModified(new Date());
-        activityDO.setOrderId(request.getOrderId());
 
         String selectGridInfo = SmartGridContext.getSelectGridInfo();
         GridUserRoleDetail gridDetail = GsonUtils.fromGson2Obj(selectGridInfo, GridUserRoleDetail.class);

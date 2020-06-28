@@ -26,11 +26,14 @@
 		<result property="bizList" column="biz_list"/>
 		<result property="flag" column="flag"/>
 		<result property="extend" column="extend"/>
+		<result property="orderId" column="order_id"/>
 	</resultMap>
 
 	<!-- 数据库字段 -->
 	<sql id="columns">
-		id, gmt_create, gmt_modified, community_name, community_id, address, mobile, `name`, title, start_time, end_time, real_start_time, real_end_time, location, status, partner,grid_id, cust_id_list, biz_list, flag, extend
+		id, gmt_create, gmt_modified, community_name, community_id, address, mobile, `name`, title,
+        start_time, end_time, real_start_time, real_end_time, location,
+        status, partner,grid_id, cust_id_list, biz_list, flag, extend,order_id
 	</sql>
 
     <sql id="table">
@@ -208,6 +211,9 @@
             <if test="extend != null">
 				extend,
 			</if>
+            <if test="orderId != null">
+                order_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -268,6 +274,9 @@
             </if>
             <if test="extend != null">
 				#{extend, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="orderId != null">
+                #{orderId, jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -331,6 +340,9 @@
             </if>
             <if test="extend != null">
                 extend = #{extend, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId, jdbcType=VARCHAR},
             </if>
         </set>
         WHERE

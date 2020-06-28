@@ -85,8 +85,8 @@ public class TodoTest {
     public void testGetChannelVisitUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(ThirdTodoTypeEnum.CHANNEL_VISIT.getId());
-        todoUrlQuery.setOperatorMobile("15077103940");
-        todoUrlQuery.setThirdId("1-15866-15077103940");
+        todoUrlQuery.setOperatorMobile("13617712720");
+        todoUrlQuery.setThirdId("1-15890-13617712720");
         todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
 
@@ -94,7 +94,7 @@ public class TodoTest {
     public void testGetYujingUrl() {
         TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
         todoUrlQuery.setThirdType(5);
-        todoUrlQuery.setOperatorMobile("13557710513");
+        todoUrlQuery.setOperatorMobile("13617712720");
         todoUrlQuery.setThirdId("DK202006240707281");
         todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
     }
