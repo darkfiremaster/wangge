@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.shinemo.util.WebUtils.getValueFromCookies;
 
@@ -77,11 +78,27 @@ public class OperateController {
 
             String tempCookies = getValueFromCookies(SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, request.getCookies());
             if (StringUtils.isBlank(tempCookies)) {
-                GridInfoToken selectToken = getToken(stringApiResult.getData());
-                GridUserRoleDetail detail = selectToken.getGridList().get(0);
-                ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
-                tempCookies = stringApiResult1.getData();
+                String selectCookie = getValueFromCookies(SmartGridConstant.SELECT_GRID_INFO_COOKIE, request.getCookies());
+                if (StringUtils.isBlank(selectCookie)) {
+                    GridInfoToken selectToken = getToken(stringApiResult.getData());
+                    GridUserRoleDetail detail = selectToken.getGridList().get(0);
+                    ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
+                    tempCookies = stringApiResult1.getData();
+                }else {
+                    GridInfoToken selectToken = getToken(selectCookie);
+                    GridUserRoleDetail gridDetail = selectToken.getGridDetail();
+                    List<GridUserRoleDetail> gridList = getToken(stringApiResult.getData()).getGridList();
+                    List<String> idList = gridList.stream().map(GridUserRoleDetail::getId).collect(Collectors.toList());
+                    if (!idList.contains(gridDetail.getId())) {
+                        GridUserRoleDetail detail = gridList.get(0);
+                        ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
+                        tempCookies = stringApiResult1.getData();
+                    }else {
+                        tempCookies = selectCookie;
+                    }
+                }
             }
+
             WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, tempCookies,
                     domain, "/", 0, false);
             WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, tempCookies, domain, "/", EXPIRE_TIME, false);
