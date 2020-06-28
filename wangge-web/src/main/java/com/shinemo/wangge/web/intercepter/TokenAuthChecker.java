@@ -19,30 +19,32 @@
 
 package com.shinemo.wangge.web.intercepter;
 
-import com.shinemo.Aace.MutableBoolean;
-import com.shinemo.Aace.context.AaceContext;
-import com.shinemo.client.ace.Imlogin.IMLoginService;
-import com.shinemo.client.order.AppTypeEnum;
-import com.shinemo.common.tools.Jsons;
-import com.shinemo.common.tools.LoginContext;
-import com.shinemo.common.tools.Utils;
-import com.shinemo.common.tools.exception.ApiException;
-import com.shinemo.smartgrid.utils.GsonUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.common.tools.exception.CommonErrorCodes.INVALID_TOKEN;
+import static com.shinemo.util.WebUtils.getValueFromCookies;
+
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
-import static com.shinemo.Aace.RetCode.RET_SUCCESS;
-import static com.shinemo.common.tools.exception.CommonErrorCodes.INVALID_TOKEN;
-import static com.shinemo.util.WebUtils.getValueFromCookies;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.shinemo.Aace.MutableBoolean;
+import com.shinemo.Aace.context.AaceContext;
+import com.shinemo.client.ace.Imlogin.IMLoginService;
+import com.shinemo.client.order.AppTypeEnum;
+import com.shinemo.common.tools.LoginContext;
+import com.shinemo.common.tools.Utils;
+import com.shinemo.common.tools.exception.ApiException;
+import com.shinemo.smartgrid.utils.GsonUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by ohun on 2019-05-21.
@@ -56,14 +58,12 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
     @Resource
     private IMLoginService aaceIMLoginService;
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String uid = null;
         String token = null;
         long timestamp = 0;
         String orgId = null;
-        String userInfo = null;
         Cookie[] cookies = request.getCookies();
         if (null != cookies) {
             token = getValueFromCookies("token", cookies);
@@ -83,7 +83,6 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
             }
 
             orgId = getValueFromCookies("orgId", cookies);
-            userInfo = getValueFromCookies("userInfo", cookies);
         }
 
         if (token == null || uid == null) {
@@ -121,22 +120,9 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
         }
 
         if (ret == RET_SUCCESS) {
-            //特殊场景下cookie里没有orgId
+            // 特殊场景下cookie里没有orgId
             if (Utils.isEmpty(orgId)) {
                 orgId = request.getParameter("orgId");
-            }
-
-            if (Utils.isNotEmpty(userInfo)) {
-                Map<String, ?> map = Jsons.fromJson(Utils.decodeUrl(userInfo), Map.class);
-                if (Utils.isNotEmpty(map)) {
-                    String[] keys = new String[]{"orgId", "mobile", "orgName", "name","username"};
-                    for (String key : keys) {
-                        Object value = map.get(key);
-                        if (value != null) {
-                            LoginContext.put(key, value);
-                        }
-                    }
-                }
             }
 
             LoginContext.setUid(uid);
