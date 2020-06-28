@@ -82,7 +82,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME_ONE_DAY = 1 * 60 * 60;
+    private static final Integer EXPIRE_TIME_HALF_DAY = 6 * 60 * 60;
 
     @PostConstruct
     public void init() {
@@ -197,28 +197,28 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         //设置用户信息cookie
         WebUtil.addCookie(request, response, "token", token,
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "mobile", mobile,
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "username", userName,
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "name", userName,
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, "orgName", orgName,
-                domain, "/", Integer.MAX_VALUE, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         //WebUtil.addCookie(request, response, "userInfo", userInfo,
         //        domain, "/", Integer.MAX_VALUE, false);
@@ -238,13 +238,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_ONE_DAY, false);
+                domain, "/", EXPIRE_TIME_HALF_DAY, false);
     }
 
     //获取预警工单详情页url
@@ -406,7 +406,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         userInfoCache.setSelectGridInfo(selectGridInfo);
         userInfoCache.setGridInfo(gridInfo);
         log.info("[saveUserInfo] 缓存用户信息:{}", userInfoCache);
-        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_ONE_DAY);
+        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_HALF_DAY);
     }
 
     private String getToken() {
