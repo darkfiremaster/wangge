@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.intercepter;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
@@ -71,8 +72,8 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
 
     // public static final int EXPIRE_TIME = 60 * 60 * 24;
 
-    //@NacosValue(value = "${domain}", autoRefreshed = true)
-    //private String domain = "127.0.0.1";
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "127.0.0.1";
 
     public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
 

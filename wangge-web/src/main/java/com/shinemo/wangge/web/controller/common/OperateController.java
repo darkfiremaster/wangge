@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.controller.common;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.result.ApiResult;
@@ -54,8 +55,8 @@ public class OperateController {
     @Resource
     private SmartGridInfoService smartGridInfoService;
 
-    //@NacosValue(value = "${domain}", autoRefreshed = true)
-    //private String domain = "127.0.0.1";
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "127.0.0.1";
 
     public static final int EXPIRE_TIME = 60 * 60 * 1;
 
