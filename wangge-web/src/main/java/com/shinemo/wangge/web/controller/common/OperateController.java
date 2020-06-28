@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.controller.common;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
 import com.shinemo.common.tools.result.ApiResult;
@@ -54,8 +55,8 @@ public class OperateController {
     @Resource
     private SmartGridInfoService smartGridInfoService;
 
-    //@NacosValue(value = "${domain}", autoRefreshed = true)
-    //private String domain = "127.0.0.1";
+    @NacosValue(value = "${domain}", autoRefreshed = true)
+    private String domain = "developer.e.uban360.com";
 
     public static final int EXPIRE_TIME = 60 * 60 * 1;
 
@@ -70,12 +71,12 @@ public class OperateController {
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {
             ApiResult<String> stringApiResult = operateService.genGridInfoToken(null);
-            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), null, "/", EXPIRE_TIME, false);
+            WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, stringApiResult.getData(), domain, "/", EXPIRE_TIME, false);
 
             GridInfoToken selectToken = getToken(stringApiResult.getData());
             GridUserRoleDetail detail = selectToken.getGridList().get(0);
             ApiResult<String> stringApiResult1 = operateService.genGridInfoToken(detail);
-            WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, stringApiResult1.getData(), null, "/", EXPIRE_TIME, false);
+            WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, stringApiResult1.getData(), domain, "/", EXPIRE_TIME, false);
 
             String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
