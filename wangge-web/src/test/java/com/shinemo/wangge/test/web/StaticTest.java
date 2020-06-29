@@ -63,22 +63,22 @@ public class StaticTest {
     @Test
     public void sign() throws NoSuchAlgorithmException {
         //key为双方约定的key
-        String key = "34b18faa-0424-41ad-b73b-80fc02d4be55";
+        String key = "e0d349cb-e98f-45e5-bf98-3a89d46d0671";
         //请求参数
         Map<String,Object> postBody = new HashMap<>();
-        postBody.put("thirdId", "DK202006240707281");
-        postBody.put("thirdType", 5);
+        postBody.put("thirdId", "13588039023");
+        postBody.put("thirdType", 4);
         postBody.put("operateType",1);
-        postBody.put("title", "中直村委吴屋村端口数预警");
-        postBody.put("remark", "您负责的@中直村委吴屋村-@，在20200622的@宽带端口剩余数为22个-@，@端口可利用率为55%-@，请及时组织人员开展实地摆台营销，小区相关信息如下，营销完成后，请填写营销日志并进行返单。");
+        postBody.put("title", "测试装维");
+        postBody.put("remark", "测试装维");
         postBody.put("status", 0);
         postBody.put("label", "未返单");
-        postBody.put("operatorMobile", "13557710513");
+        postBody.put("operatorMobile", "13588039023");
         postBody.put("operatorTime", "2020-06-24 00:00:00");
         postBody.put("startTime", "2020-07-04 00:00:00");
         //注意:参数顺序按照首字母正序排列
         Map<String,Object> map =  new TreeMap<>();
-        map.put("timeStamp",1592989502350L);
+        map.put("timeStamp",System.currentTimeMillis());
         map.put("postBody",postBody);
         map.put("method","operateTodoThing");
         //key为双方约定，参数不传递
