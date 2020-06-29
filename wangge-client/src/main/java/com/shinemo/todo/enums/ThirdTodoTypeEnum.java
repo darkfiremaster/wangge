@@ -9,7 +9,7 @@ public enum ThirdTodoTypeEnum {
     DAO_SAN_JIAO_ORDER(1, "倒三角工单", "亚信"),
     JI_HE_ORDER(2, "稽核工单", "思特奇"),//待确定
     TOU_SU_ORDER(3, "投诉工单", "在线公司"),//待确定
-    ZHUANG_WEI_ORDER(4, "装维工单", "浩鲸"),
+    ZHUANG_YI_ORDER(4, "装移工单", "浩鲸"),
     YU_JING_ORDER(5, "预警工单", "华为"),
     SHANG_JI_ORDER(6, "商机工单", "华为"),
     CHANNEL_VISIT(7, "渠道走访", "年华"),//公司叫年华,系统叫督导系统,功能叫渠道走访
