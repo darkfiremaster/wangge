@@ -45,6 +45,8 @@ public class TodoTest {
     @Resource
     private TodoService todoService;
 
+
+
     @Test
     public void testGetRedirectUrl() {
         String seed = "ffd40e661eb946f48fd3c759e6b8ef0b";
