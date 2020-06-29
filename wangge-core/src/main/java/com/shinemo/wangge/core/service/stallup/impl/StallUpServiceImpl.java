@@ -597,8 +597,20 @@ public class StallUpServiceImpl implements StallUpService {
         if (prepareList.size() > 0) {
             List<StallUpDetailVO> prepareVoList = prepareList.stream().map(v -> getDetailVO(v))
                     .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList());
-
-            response.setPrepareDetail();
+            List<Long> activityIds = prepareVoList.stream().map(StallUpDetailVO::getParentId).collect(Collectors.toList());
+            //查询小区信息
+            StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+            stallUpCommunityQuery.setActivityIds(activityIds);
+            List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
+            Map<Long, List<StallUpCommunityDO>> communityMap = stallUpCommunityDOS.stream().collect(Collectors.groupingBy(StallUpCommunityDO::getActivityId));
+            for (StallUpDetailVO stallUpDetailVO : prepareVoList) {
+                List<StallUpCommunityDO> communityDOS = communityMap.get(stallUpDetailVO.getParentId());
+                if (!CollectionUtils.isEmpty(communityDOS)) {
+                    List<String> stringList = communityDOS.stream().map(StallUpCommunityDO::getCommunityId).collect(Collectors.toList());
+                    stallUpDetailVO.setCommunityIdList(stringList);
+                }
+            }
+            response.setPrepareDetail(prepareVoList);
         } else {
             response.setPrepareDetail(new ArrayList<>());
         }
