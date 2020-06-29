@@ -190,9 +190,9 @@ public class OperateServiceImpl implements OperateService {
 
 
     private boolean isGridUser(UserOperateLogVO userOperateLogVO) {
-        String gridInfo = SmartGridContext.getGridInfo();
+        String gridInfo = userOperateLogVO.getGridInfo();
         List<GridUserRoleDetail> gridList = GsonUtil.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
-        if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
+        if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), "0")) {
             return true;
         } else {
             return false;

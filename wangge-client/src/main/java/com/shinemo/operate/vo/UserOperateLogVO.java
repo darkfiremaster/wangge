@@ -17,4 +17,9 @@ public class UserOperateLogVO {
     private String userName;
 
     private String uid;
+
+    private String gridInfo;
+
+    private String selectGridInfo;
+
 }

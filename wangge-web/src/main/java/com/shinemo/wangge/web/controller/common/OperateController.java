@@ -69,6 +69,8 @@ public class OperateController {
         userOperateLogVO.setMobile(SmartGridContext.getMobile());
         userOperateLogVO.setUid(SmartGridContext.getUid());
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
+        userOperateLogVO.setGridInfo(SmartGridContext.getGridInfo());
+        userOperateLogVO.setSelectGridInfo(SmartGridContext.getSelectGridInfo());
         asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
 
         //刷新用户所有网格信息
@@ -106,7 +108,7 @@ public class OperateController {
             String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
             GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
             List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
-            if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), 0)) {
+            if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), "0")) {
                 //存在网格信息
                 log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
                 String finalMobile = SmartGridContext.getMobile();

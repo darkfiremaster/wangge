@@ -1,24 +1,5 @@
 package com.shinemo.wangge.web.intercepter;
 
-import static com.shinemo.Aace.RetCode.RET_SUCCESS;
-import static com.shinemo.util.WebUtils.getValueFromCookies;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.shinemo.client.util.GsonUtil;
@@ -41,8 +22,24 @@ import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
 import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static com.shinemo.Aace.RetCode.RET_SUCCESS;
+import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * debug拦截
@@ -107,6 +104,7 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         qbl.setMobile(mobile);
         BackdoorLoginDO bl = backdoorLoginMapper.get(qbl);
         if (bl != null) {
+            log.info("[preHandle] 模拟用户登录, 登录的mobile:{},模拟的mobile:{}", mobile, bl.getCMobile());
             uid = bl.getCUid();
             orgId = bl.getCOrgId();
             orgName = bl.getCOrgName();
