@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @Author shangkaihui
  * @Date 2020/6/22 16:05
- * @Desc 督导
+ * @Desc 督导的渠道走访配置
  */
 @Data
 @Configuration
