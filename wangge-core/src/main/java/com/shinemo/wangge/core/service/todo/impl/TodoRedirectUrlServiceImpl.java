@@ -99,6 +99,8 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         Assert.notNull(todoUrlQuery.getThirdType(), "thirdType is null");
         if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId())) {
             return getDaosanjiaoTodoDetailUrl(todoUrlQuery);
+        } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.ZHUANG_YI_ORDER.getId())) {
+            return getZhuangYiTodoDetailUrl(todoUrlQuery);
         } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.YU_JING_ORDER.getId())) {
             return getYujingTodoDetailUrl(todoUrlQuery);
         } else if (todoUrlQuery.getThirdType().equals(ThirdTodoTypeEnum.CHANNEL_VISIT.getId())) {
@@ -107,6 +109,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             return ApiResultWrapper.fail(TodoErrorCodes.TODO_TYPE_ERROR);
         }
     }
+
 
     @Override
     public ApiResult<Void> redirectPage(TodoRedirectDTO todoRedirectDTO, HttpServletRequest request, HttpServletResponse response) {
@@ -232,6 +235,28 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
                 domain, "/", EXPIRE_TIME_HALF_DAY, false);
+    }
+
+    //获取唤起装移app的scheme
+    private ApiResult<String> getZhuangYiTodoDetailUrl(TodoUrlQuery todoUrlQuery) {
+        HashMap<String, String> map = new HashMap<>();
+
+        String scheme = "";
+        if (StrUtil.isNotBlank(todoUrlQuery.getThirdId())) {
+            //跳工单详情页
+            scheme = "zctsoft://com.ztesoft.union/LoginActivityXM?purposeClassName=com.ztesoft.csdp.activities.workorder.WorkOrderSGDDDetailActivity&orderCode=" + todoUrlQuery.getThirdId() + "&entrance=eightLaurelsClouds";
+        } else {
+            //跳工单列表页
+            scheme = "zctsoft://com.ztesoft.union/LoginActivityXM?purposeClassName=com.ztesoft.union.activities.history.WorkOrderHistoryActivity&entrance=eightLaurelsClouds";
+        }
+
+        String downloadUrl = "http://112.54.48.61:13004/app-release.apk?timestamp=" + System.currentTimeMillis();
+        map.put("downloadUrl", downloadUrl);
+        map.put("scheme", scheme);
+        String url = GsonUtils.toJson(map);
+        log.info("[getZhuangYiTodoDetailUrl] 获取唤起装移app的url:{}", url);
+        return ApiResult.of(0, url);
+
     }
 
     //获取预警工单详情页url
