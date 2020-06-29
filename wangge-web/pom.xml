@@ -12,10 +12,6 @@
     <version>${web-version}</version>
     <dependencies>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.shinemo.wangge</groupId>
             <artifactId>wangge-core</artifactId>
         </dependency>
