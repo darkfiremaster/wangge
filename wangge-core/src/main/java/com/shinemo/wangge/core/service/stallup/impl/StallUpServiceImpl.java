@@ -24,6 +24,7 @@ import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.model.*;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
 import com.shinemo.stallup.domain.query.StallUpActivityQuery;
+import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
 import com.shinemo.stallup.domain.query.StallUpMarketingNumberQuery;
 import com.shinemo.stallup.domain.request.*;
 import com.shinemo.stallup.domain.response.*;
@@ -582,15 +583,26 @@ public class StallUpServiceImpl implements StallUpService {
                 .bizNum(monthList.stream().mapToInt(v -> v.getBizTotal()).sum()).build());
         // 已开始，最多一条
         if (startList.size() > 0) {
-            response.setStartedDetail(getDetailVO(startList.get(0)));
+            StallUpDetail start = startList.get(0);
+            Long parentId = start.getParentId();
+            StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+            stallUpCommunityQuery.setActivityId(parentId);
+            List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
+            List<String> communityIds = stallUpCommunityDOS.stream().map(StallUpCommunityDO::getCommunityId).collect(Collectors.toList());
+            StallUpDetailVO detailVO = getDetailVO(start);
+            detailVO.setCommunityIdList(communityIds);
+            response.setStartedDetail(detailVO);
         }
         // 待开始计划开始时间升序
         if (prepareList.size() > 0) {
-            response.setPrepareDetail(prepareList.stream().map(v -> getDetailVO(v))
-                    .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList()));
+            List<StallUpDetailVO> prepareVoList = prepareList.stream().map(v -> getDetailVO(v))
+                    .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList());
+
+            response.setPrepareDetail();
         } else {
             response.setPrepareDetail(new ArrayList<>());
         }
+
         return ApiResult.of(0, response);
     }
 
@@ -1054,6 +1066,7 @@ public class StallUpServiceImpl implements StallUpService {
         tmp.setLocation(detail.getLocation());
         tmp.setBizList(detail.getBizList());
         tmp.setCommunityId(detail.getCommunityId());
+        tmp.setParentId(detail.getParentId());
         StallUpDetailVO stallUpDetailVO = stallUpDetail2VO(tmp);
 
         List<Long> bizIdList = GsonUtils.fromGson2Obj(detail.getBizList(), new TypeToken<List<Long>>() {
@@ -1114,6 +1127,7 @@ public class StallUpServiceImpl implements StallUpService {
         stallUpDetailVO.setStartTime(date2String.apply(v.getStartTime()));
         stallUpDetailVO.setEndTime(date2String.apply(v.getEndTime()));
         stallUpDetailVO.setCommunityId(v.getCommunityId());
+        stallUpDetailVO.setParentId(v.getParentId());
         if (v.getStatus() != null) {
             if (v.getStatus().equals(StallUpStatusEnum.AUTO_END.getId())) {
                 stallUpDetailVO.setIsAutoEnd(true);

@@ -2,6 +2,8 @@ package com.shinemo.stallup.domain.model;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 摆摊详情
  *
@@ -22,4 +24,6 @@ public class StallUpDetailVO {
 	private String location;
 	private String bizTypeStr;
 	private String communityId;
+	private List<String> communityIdList;
+	private Long parentId;
 }
