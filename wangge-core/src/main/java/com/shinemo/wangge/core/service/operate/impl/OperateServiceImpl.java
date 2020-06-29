@@ -173,6 +173,7 @@ public class OperateServiceImpl implements OperateService {
             //登录类型
             if (!isGridUser(userOperateLogVO)) {
                 //非网格用户不统计登录信息
+                log.info("[insertUserOperateLog] 非网格用户不统计登录信息, mobile:{}", userOperateLogVO.getMobile());
                 return;
             }
             //15分钟内只算一次登录
