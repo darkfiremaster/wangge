@@ -118,7 +118,6 @@ public class StallUpServiceImpl implements StallUpService {
     @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
     private String defaultBiz;
 
-    private static final String STALL_UP_ID_PREFIX = "SL_";
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
@@ -182,7 +181,8 @@ public class StallUpServiceImpl implements StallUpService {
             BeanUtils.copyProperties(insertList.get(0), parent);
             parent.setId(null);
             parent.setMobile(request.getMobile());
-            if (StrUtil.isNotBlank(request.getOrderId()) && !request.getOrderId().equals("undefined")) {
+            if (StrUtil.isNotBlank(request.getOrderId()) && !Objects.equals(request.getOrderId(), "undefined")) {
+                log.info("[create] 新建摆摊存在orderId:{}", request.getOrderId());
                 parent.setOrderId(request.getOrderId());
             }
             String name = null;
@@ -209,7 +209,7 @@ public class StallUpServiceImpl implements StallUpService {
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
             //同步华为数据
             Map<String, Object> map = new HashMap<>();
-            map.put("id", STALL_UP_ID_PREFIX + parent.getId());
+            map.put("id", ID_PREFIX + parent.getId());
             map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
             map.put("communityName", parent.getCommunityName());
             map.put("communityId", parent.getCommunityId());
