@@ -16,6 +16,7 @@ import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
+import com.shinemo.wangge.core.service.user.UserService;
 import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -51,6 +52,9 @@ public class OperateServiceImpl implements OperateService {
 
     @Resource
     private RedisLock redisLock;
+
+    @Resource
+    private UserService userService;
 
     @Resource
     private SmartGridInfoService smartGridInfoService;
@@ -184,6 +188,15 @@ public class OperateServiceImpl implements OperateService {
 
             //登录成功
             redisService.set(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()), "true", LOGIN_EXPIRE_TIME);
+
+            //更新用户网格信息
+            String gridInfo = userOperateLogVO.getGridInfo();
+            List<GridUserRoleDetail> gridUserRoleDetailList = GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
+            if (!CollectionUtils.isEmpty(gridUserRoleDetailList) && !Objects.equals(gridUserRoleDetailList.get(0).getId(), "0")) {
+                //存在网格信息
+                log.info("[insertUserOperateLog]  start update gridinfo,mobile:{}", userOperateLogVO.getMobile());
+                userService.updateUserGridRoleRelation(gridUserRoleDetailList, userOperateLogVO.getMobile());
+            }
         }
 
         addUserOperateLogToDB(userOperateLogVO);

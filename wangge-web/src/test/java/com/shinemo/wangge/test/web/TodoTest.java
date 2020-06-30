@@ -82,6 +82,14 @@ public class TodoTest {
         System.out.println("url = " + url);
     }
 
+    @Test
+    public void testGetZhuangYiAppUrl() {
+        TodoUrlQuery todoUrlQuery = new TodoUrlQuery();
+        todoUrlQuery.setThirdType(ThirdTodoTypeEnum.ZHUANG_YI_ORDER.getId());
+        todoUrlQuery.setOperatorMobile("13617712720");
+        todoUrlQuery.setThirdId("1-15890-13617712720");
+        todoRedirectUrlService.getRedirectUrl(todoUrlQuery);
+    }
 
     @Test
     public void testGetChannelVisitUrl() {

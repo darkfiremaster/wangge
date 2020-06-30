@@ -19,7 +19,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.shinemo.util.WebUtils.getValueFromCookies;
@@ -105,17 +103,17 @@ public class OperateController {
                     domain, "/", 0, false);
             WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, tempCookies, domain, "/", EXPIRE_TIME, false);
 
-            String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
-            GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
-            List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
-            if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), "0")) {
-                //存在网格信息
-                log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
-                String finalMobile = SmartGridContext.getMobile();
-                asyncServiceExecutor.submit(() -> {
-                    userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
-                });
-            }
+            //String token = new String(Base64.decodeBase64(stringApiResult.getData()), StandardCharsets.UTF_8);
+            //GridInfoToken gridInfoToken = GsonUtil.fromGson2Obj(token, GridInfoToken.class);
+            //List<GridUserRoleDetail> gridList = gridInfoToken.getGridList();
+            //if (!CollectionUtils.isEmpty(gridList) && !Objects.equals(gridList.get(0).getId(), "0")) {
+            //    //存在网格信息
+            //    log.info("[addUserOperateLog]  start update gridinfo,mobile:{}", SmartGridContext.getMobile());
+            //    String finalMobile = SmartGridContext.getMobile();
+            //    asyncServiceExecutor.submit(() -> {
+            //        userService.updateUserGridRoleRelation(gridInfoToken.getGridList(), finalMobile);
+            //    });
+            //}
 
         }
 

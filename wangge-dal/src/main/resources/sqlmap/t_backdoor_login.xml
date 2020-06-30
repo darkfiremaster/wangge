@@ -74,28 +74,52 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             gmt_create,
             gmt_modified,
-            <if test="bizType != null">
-                biz_type,
+            <if test="mobile != null">
+                mobile,
             </if>
-            <if test="type != null">
-                type,
+            <if test="cUid != null">
+                c_uid,
             </if>
-            <if test="content != null">
-                content,
+            <if test="cOrgId != null">
+                c_org_id,
+            </if>
+            <if test="cOrgName != null">
+                c_org_name,
+            </if>
+            <if test="cUserName != null">
+                c_user_name,
+            </if>
+            <if test="cMobile != null">
+                c_mobile,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             now(),
             now(),
-            <if test="bizType != null">
-                #{bizType},
+            <if test="mobile != null">
+                #{mobile},
             </if>
-            <if test="type != null">
-                #{type},
+            <if test="cUid != null">
+                #{cUid},
             </if>
-            <if test="content != null">
-                #{content},
+            <if test="cOrgId != null">
+                #{cOrgId},
+            </if>
+            <if test="cOrgName != null">
+                #{cOrgName},
+            </if>
+            <if test="cUserName != null">
+                #{cUserName},
+            </if>
+            <if test="cMobile != null">
+                #{cMobile},
             </if>
         </trim>
     </insert>
+
+    <delete id="deleteByMobile" parameterType="string">
+        delete from
+        <include refid="table" />
+        where mobile=#{loginMobile}
+    </delete>
 </mapper>

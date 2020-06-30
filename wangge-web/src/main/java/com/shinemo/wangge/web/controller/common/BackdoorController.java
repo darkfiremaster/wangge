@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.controller.common;
 
+import cn.hutool.core.util.StrUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
@@ -8,12 +9,14 @@ import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
+import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
+import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
 import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
 import com.shinemo.wangge.dal.mapper.StallUpCommunityMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +57,8 @@ public class BackdoorController {
     @Resource
     private LoginStatisticsService loginStatisticsService;
 
+    @Resource
+    private BackdoorLoginMapper backdoorLoginMapper;
     @Resource
     private ParentStallUpActivityMapper parentStallUpActivityMapper;
 
@@ -117,6 +122,7 @@ public class BackdoorController {
 
     /**
      * 生成昨日登录统计结果
+     *
      * @return
      */
     @GetMapping("/generateLoginInfoResult")
@@ -127,6 +133,7 @@ public class BackdoorController {
 
     /**
      * 获取昨日登录信息
+     *
      * @return
      */
     @GetMapping("/getLoginInfoExcelDTOList")
@@ -134,6 +141,28 @@ public class BackdoorController {
         return loginStatisticsService.getLoginInfoExcelDTOList();
     }
 
+    /**
+     * 模拟登陆
+     */
+    @GetMapping("/mockLogin")
+    public ApiResult<Void> mockLogin(String loginMobile, String mockMobile) {
+        Assert.notNull(loginMobile,"loginMobile is null");
+        backdoorLoginMapper.deleteByMobile(loginMobile);
+        if (StrUtil.isBlank(mockMobile)) {
+            return ApiResult.of(0);
+        }
+        BackdoorLoginDO backdoorLoginDO = new BackdoorLoginDO();
+        backdoorLoginDO.setMobile(loginMobile);
+        backdoorLoginDO.setCUid(String.valueOf(0));
+        backdoorLoginDO.setCOrgId(String.valueOf(0));
+        backdoorLoginDO.setCOrgName("mock企业");
+        backdoorLoginDO.setCUserName("mock账号");
+        backdoorLoginDO.setCMobile(mockMobile);
+
+        backdoorLoginMapper.insert(backdoorLoginDO);
+
+        return ApiResult.of(0);
+    }
 
     @GetMapping("/stallUp/refreshCommunity")
     public String refreshCommunity() {
@@ -154,7 +183,5 @@ public class BackdoorController {
         }
         return "success\n";
     }
-
-
 
 }
