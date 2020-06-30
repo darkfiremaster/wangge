@@ -5,18 +5,24 @@ import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
+import com.shinemo.stallup.domain.model.ParentStallUpActivity;
+import com.shinemo.stallup.domain.model.StallUpCommunityDO;
+import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
+import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
+import com.shinemo.wangge.dal.mapper.StallUpCommunityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +53,12 @@ public class BackdoorController {
 
     @Resource
     private LoginStatisticsService loginStatisticsService;
+
+    @Resource
+    private ParentStallUpActivityMapper parentStallUpActivityMapper;
+
+    @Resource
+    private StallUpCommunityMapper stallUpCommunityMapper;
 
 
 
@@ -121,6 +133,28 @@ public class BackdoorController {
     public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
         return loginStatisticsService.getLoginInfoExcelDTOList();
     }
+
+
+    @GetMapping("/stallUp/refreshCommunity")
+    public String refreshCommunity() {
+        ParentStallUpActivityQuery parentStallUpActivityQuery = new ParentStallUpActivityQuery();
+        List<ParentStallUpActivity> historyForRefreshCommunity = parentStallUpActivityMapper.findHistoryForRefreshCommunity(parentStallUpActivityQuery);
+        if (!CollectionUtils.isEmpty(historyForRefreshCommunity)) {
+            List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>(historyForRefreshCommunity.size());
+            for (ParentStallUpActivity stallUpActivity: historyForRefreshCommunity) {
+                StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
+                stallUpCommunityDO.setActivityId(stallUpActivity.getId());
+                stallUpCommunityDO.setCommunityName(stallUpActivity.getCommunityName());
+                stallUpCommunityDO.setCommunityLocation(stallUpActivity.getLocation());
+                stallUpCommunityDO.setCommunityId(stallUpActivity.getCommunityId());
+                stallUpCommunityDO.setCommunityAddress(stallUpActivity.getAddress());
+                stallUpCommunityDOS.add(stallUpCommunityDO);
+            }
+            stallUpCommunityMapper.batchInsert(stallUpCommunityDOS);
+        }
+        return "success\n";
+    }
+
 
 
 }
