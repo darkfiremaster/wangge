@@ -688,6 +688,7 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         StallUpActivity stallUpActivity = result.getData();
+
         // 业务办理
         List<Long> bizIdList = GsonUtils.fromGson2Obj(stallUpActivity.getBizList(), new TypeToken<List<Long>>() {
         }.getType());
@@ -730,8 +731,14 @@ public class StallUpServiceImpl implements StallUpService {
                 }
             }
         }
+
+        //查询摆摊对应的小区id
+        StallUpCommunityQuery communityQuery = new StallUpCommunityQuery();
+        communityQuery.setActivityId(stallUpActivity.getParentId());
+        List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(communityQuery);
+
         response.setLocation(stallUpActivity.getLocation());
-        response.setCommunityId(stallUpActivity.getCommunityId());
+        response.setCommunityId(stallUpCommunityDOS.get(0).getCommunityId());
         response.setAddress(stallUpActivity.getAddress());
         response.setTitle(stallUpActivity.getTitle());
         return ApiResult.of(0, response);
