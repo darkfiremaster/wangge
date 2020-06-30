@@ -118,7 +118,6 @@ public class StallUpServiceImpl implements StallUpService {
     @NacosValue(value = "${wangge.index.default.biz}", autoRefreshed = true)
     private String defaultBiz;
 
-    private static final String STALL_UP_ID_PREFIX = "SL_";
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
@@ -1252,7 +1251,7 @@ public class StallUpServiceImpl implements StallUpService {
      */
     private void synchronizeToHuaWei(StallUpCreateRequest request,ParentStallUpActivity parent) {
         Map<String, Object> map = new HashMap<>();
-        map.put("id", STALL_UP_ID_PREFIX + parent.getId());
+        map.put("id", ID_PREFIX + parent.getId());
         map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
         map.put("communityList", request.getCommunityVOS());
         map.put("addressDetail", parent.getAddress());
