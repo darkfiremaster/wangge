@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -181,7 +182,9 @@ public class StallUpServiceImpl implements StallUpService {
             BeanUtils.copyProperties(insertList.get(0), parent);
             parent.setId(null);
             parent.setMobile(request.getMobile());
-            parent.setOrderId(request.getOrderId());
+            if (StrUtil.isNotBlank(request.getOrderId()) && !request.getOrderId().equals("undefined")) {
+                parent.setOrderId(request.getOrderId());
+            }
             String name = null;
             ApiResult<GetGridUserInfoResult.DataBean> result = null;
             try {
@@ -220,14 +223,14 @@ public class StallUpServiceImpl implements StallUpService {
             map.put("status", StallUpStatusEnum.PREPARE.getId());
             map.put("gridId", parent.getGridId());
             List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
-            for (GridUserDetail detail: partnerList) {
+            for (GridUserDetail detail : partnerList) {
                 GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
                         name(detail.getName()).role(detail.getRole()).build();
                 simpleList.add(detailSimple);
             }
             map.put("partners", simpleList);
             map.put("custIdList", request.getCustList());
-            thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(),parent.getMobile());
+            thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(), parent.getMobile());
 
 
             //同步代办事项
@@ -236,7 +239,6 @@ public class StallUpServiceImpl implements StallUpService {
             }
         }
     }
-
 
 
     @Override
@@ -264,7 +266,6 @@ public class StallUpServiceImpl implements StallUpService {
             redisLock.unlock(LockContext.create(key));
         }
     }
-
 
 
     @Override
@@ -1043,8 +1044,8 @@ public class StallUpServiceImpl implements StallUpService {
         GetHuaWeiSmsHotRequest request = new GetHuaWeiSmsHotRequest();
         request.setActivityId(ID_PREFIX + activityId);
         activityList.add(request);
-        Map<String,Object> map = new HashMap<>();
-        map.put("activityList",activityList);
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityList", activityList);
         ApiResult<Map<String, Object>> dispatch = thirdApiMappingService.dispatch(map, HuaweiStallUpUrlEnum.QUERY_ACTIVITY_ORDER.getMethod());
         Map<String, Object> data = dispatch.getData();
         Object o = data.get("smsHotResultList");
@@ -1057,7 +1058,7 @@ public class StallUpServiceImpl implements StallUpService {
         if (CollectionUtils.isEmpty(smsActivityList)) {
             smsHotResponse.setSmsActivityList(new ArrayList<>());
         }
-        return ApiResult.of(0,smsHotResponse);
+        return ApiResult.of(0, smsHotResponse);
     }
 
     /**
@@ -1225,6 +1226,7 @@ public class StallUpServiceImpl implements StallUpService {
         ApiResult<TreeMap> todoRequest = todoService.getTodoThirdRequest(todoDTO);
         todoService.operateTodoThing(todoRequest.getData());
     }
+
     private void syncTodoUpdate(int status, Long id) {
         StallUpActivity stallUp = getStallUp(id);
         TodoDTO todoDTO = new TodoDTO();
