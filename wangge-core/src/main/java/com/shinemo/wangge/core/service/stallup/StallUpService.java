@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.service.stallup;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.stallup.domain.model.CommunityVO;
 import com.shinemo.stallup.domain.model.StallUpActivity;
 import com.shinemo.stallup.domain.request.GetParentListRequest;
 import com.shinemo.stallup.domain.request.StallUpEndRequest;
@@ -167,4 +168,6 @@ public interface StallUpService {
 	ApiResult<Void> updateHomePageGridBiz(String uid, List<Long> gridBiz);
 
 	ApiResult<SmsHotResponse> getSmsHot(Long activityId);
+
+	ApiResult<List<CommunityVO>> getRecentCommunity(String mobile);
 }

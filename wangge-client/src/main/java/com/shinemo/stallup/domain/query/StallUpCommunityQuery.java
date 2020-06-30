@@ -9,4 +9,5 @@ public class StallUpCommunityQuery {
     private Long id;
     private Long activityId;
     private List<Long>  activityIds;
+    private String mobile;
 }

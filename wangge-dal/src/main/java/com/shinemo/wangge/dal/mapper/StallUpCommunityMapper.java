@@ -18,4 +18,6 @@ public interface StallUpCommunityMapper extends BaseMapper<StallUpCommunityQuery
 
     Long batchInsert(@Param("stallUpCommunityDOList") List<StallUpCommunityDO> stallUpCommunityDOList);
 
+    List<StallUpCommunityDO> findRecentCommunity(StallUpCommunityQuery query);
+
 }

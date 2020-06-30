@@ -53,6 +53,17 @@
         <include refid="conditions" />
     </select>
 
+    <!-- 查询最近营销小区结果集 -->
+    <select id="findRecentCommunity" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
+        select a.* from t_stall_up_community a
+        left join t_parent_stall_up_activity b
+        on a.activity_id = b.id
+        where b.status in(3,4,5) and b.mobile = #{mobile}
+        group by a.community_id
+        order by b.gmt_create desc
+        limit 10
+    </select>
+
     <!-- 查询某条记录 -->
     <select id="get" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
         select

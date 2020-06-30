@@ -10,6 +10,7 @@ import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.common.statemachine.InvalidStateTransitionException;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.event.StallUpEvent;
+import com.shinemo.stallup.domain.model.CommunityVO;
 import com.shinemo.stallup.domain.model.GridUserDetail;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.StallUpActivity;
@@ -375,6 +376,12 @@ public class StallUpController {
 	public ApiResult<SmsHotResponse> getSmsHot(@RequestParam Long activityId) {
 		Assert.notNull(activityId, "id is null");
 		return stallUpService.getSmsHot(activityId);
+	}
+
+	@GetMapping("getRecentCommunity")
+	public ApiResult<List<CommunityVO>> getRecentCommunity() {
+
+		return stallUpService.getRecentCommunity(getMobile());
 	}
 
 	private Long getUid() {

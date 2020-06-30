@@ -1071,6 +1071,26 @@ public class StallUpServiceImpl implements StallUpService {
         return ApiResult.of(0,smsHotResponse);
     }
 
+    @Override
+    public ApiResult<List<CommunityVO>> getRecentCommunity(String mobile) {
+        StallUpCommunityQuery communityQuery = new StallUpCommunityQuery();
+        communityQuery.setMobile(mobile);
+        List<StallUpCommunityDO> recentCommunity = stallUpCommunityMapper.findRecentCommunity(communityQuery);
+        if (CollectionUtils.isEmpty(recentCommunity)) {
+            return ApiResult.of(0,new ArrayList<>());
+        }
+        List<CommunityVO> communityVOS = new ArrayList<>();
+        for (StallUpCommunityDO stallUpCommunityDO: recentCommunity) {
+            CommunityVO communityVO = new CommunityVO();
+            communityVO.setCommunityAddress(stallUpCommunityDO.getCommunityAddress());
+            communityVO.setCommunityId(stallUpCommunityDO.getCommunityId());
+            communityVO.setCommunityLocation(stallUpCommunityDO.getCommunityLocation());
+            communityVO.setCommunityName(stallUpCommunityDO.getCommunityName());
+            communityVOS.add(communityVO);
+        }
+        return ApiResult.of(0,communityVOS);
+    }
+
     /**
      * 获取待开始和已开始的VO
      */
