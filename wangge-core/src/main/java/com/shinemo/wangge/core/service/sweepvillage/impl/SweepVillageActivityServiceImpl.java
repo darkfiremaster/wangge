@@ -95,7 +95,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityMapper.update(sweepVillageActivityDO);
 
         //todo 透传华为
-        //todo 同步代办
         return ApiResult.of(0);
     }
 

@@ -174,19 +174,18 @@ public class TodoTest {
     private ThirdTodoMapper thirdTodoMapper;
     @Test
     public void insertTodo() {
-        String json = "{\n" +
-                "            \"id\": 37,\n" +
-                "            \"gmtCreate\": 1593241202000,\n" +
-                "            \"gmtModified\": 1593241202000,\n" +
-                "            \"thirdId\": \"XZ202006270631540\",\n" +
-                "            \"thirdType\": 5,\n" +
-                "            \"title\": \"航锐通讯器材经营部(小微)宽带目标用户预警\",\n" +
-                "            \"remark\": \"您负责的@航锐通讯器材经营部(小微)-@，在20200625@可进行宽带新装的目标用户达101个-@，请及时组织人员开展实地摆台营销，小区相关信息如下，营销完成后，请填写营销日志并进行返单。\",\n" +
+        String json = "  {\n" +
+                "            \"id\": 40,\n" +
+                "            \"gmtCreate\": 1593504722000,\n" +
+                "            \"gmtModified\": 1593507256000,\n" +
+                "            \"thirdId\": \"C-771-20200421-910001\",\n" +
+                "            \"thirdType\": 4,\n" +
+                "            \"title\": \"家庭宽带-1000M-FTTH-新装-正装机\",\n" +
+                "            \"remark\": \"2020-04-21 20:00:00.0;2020-04-23 08:00:00 - 2020-04-23 12:00:00;广西2019429952;广西南宁青秀区青秀区城区富兴路81-1号世贸东方小区宿舍楼2栋3楼303\",\n" +
                 "            \"status\": 0,\n" +
-                "            \"label\": \"未返单\",\n" +
-                "            \"operatorTime\": 1593187200000,\n" +
-                "            \"operatorMobile\": \"13607713224\",\n" +
-                "            \"startTime\": 1594051200000\n" +
+                "            \"label\": \"待处理\",\n" +
+                "            \"operatorTime\": 1593507256000,\n" +
+                "            \"operatorMobile\": \"18277406772\"\n" +
                 "        }";
         TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);

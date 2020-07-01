@@ -79,12 +79,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     @NacosValue(value = "${domain}", autoRefreshed = true)
     private String domain = "127.0.0.1";
 
-    public static final int EXPIRE_TIME = 7 * 60 * 60 * 24;
-
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME_HALF_DAY = 6 * 60 * 60;
+    private static final Integer EXPIRE_TIME =  60 * 60;
 
     @PostConstruct
     public void init() {
@@ -160,7 +158,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
                 response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             } else if (redirectPage.equals(1)) {
-                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "&orderId=" + todoRedirectDetailDTO.getThirdid();
+                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "?orderId=" + todoRedirectDetailDTO.getThirdid();
                 log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
                 response.sendRedirect(createStallupUrl);
             } else {
@@ -190,28 +188,28 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         if (StrUtil.isBlank(tokenFromCookie)) {
             log.info("[setUserInfoCookie] cookie中的用户信息为空,开始设置cookie");
             WebUtil.addCookie(request, response, "token", token,
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "timeStamp", String.valueOf(timestamp),
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "uid", String.valueOf(uid),
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "orgId", String.valueOf(orgId),
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "mobile", mobile,
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "username", userName,
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "name", userName,
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
 
             WebUtil.addCookie(request, response, "orgName", orgName,
-                    domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                    domain, "/", EXPIRE_TIME, false);
         }
     }
 
@@ -228,13 +226,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                null, "/", 10*60, false);
+                domain, "/", EXPIRE_TIME, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                domain, "/", EXPIRE_TIME, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.TEMP_SELECT_GRID_INFO_COOKIE, selectGridInfo,
-                domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                domain, "/", EXPIRE_TIME, false);
     }
 
     //获取唤起装移app的scheme
@@ -418,7 +416,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         userInfoCache.setSelectGridInfo(selectGridInfo);
         userInfoCache.setGridInfo(gridInfo);
         log.info("[saveUserInfo] 缓存用户信息:{}", userInfoCache);
-        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME_HALF_DAY);
+        redisService.set(USER_INFO_KEY + mobile, GsonUtils.toJson(userInfoCache), EXPIRE_TIME);
     }
 
     private String getToken() {

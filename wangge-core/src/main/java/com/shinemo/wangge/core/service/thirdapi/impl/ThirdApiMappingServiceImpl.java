@@ -64,7 +64,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
         if (thirdApiMappingDO == null) {
             log.error("[dispatch] url不存在,apiName:{},request:{}", apiName, requestData);
-            return ApiResultWrapper.fail(ThirdApiErrorCodes.URL_NOT_EXIST);
+            throw new ApiException("url不存在");
         }
 
         //根据业务类型判断调谁的接口
