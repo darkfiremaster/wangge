@@ -83,14 +83,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         checkAuth(request);
 
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            log.info("[cookie] domian:{}",cookie.getDomain());
-            log.info("[cookie] name:{}",cookie.getName());
-            log.info("[cookie] value:{}",cookie.getValue());
-            log.info("[cookie] path:{}",cookie.getPath());
-            log.info("[cookie] maxAge:{}",cookie.getMaxAge());
-            log.info("[cookie] cookie:{}",cookie);
-        }
         String uid = LoginContext.getUid();
         String orgId = LoginContext.getOrgId();
         String orgName = LoginContext.getOrgName();
