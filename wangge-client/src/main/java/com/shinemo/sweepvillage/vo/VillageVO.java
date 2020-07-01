@@ -9,4 +9,8 @@ import lombok.Data;
  */
 @Data
 public class VillageVO {
+
+    private String title;
+
+    private String villageId;
 }
