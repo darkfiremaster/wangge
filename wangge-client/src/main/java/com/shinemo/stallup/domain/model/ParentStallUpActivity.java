@@ -19,7 +19,7 @@ public class ParentStallUpActivity {
 	private Date gmtCreate;
 	private Date gmtModified;
 	/**
-	 * 小区名
+	 * 小区名(存储摆摊具体地址，有可能是非小区名)
 	 */
 	private String communityName;
 	/**

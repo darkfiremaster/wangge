@@ -10,6 +10,7 @@ import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.common.statemachine.InvalidStateTransitionException;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.event.StallUpEvent;
+import com.shinemo.stallup.domain.model.CommunityVO;
 import com.shinemo.stallup.domain.model.GridUserDetail;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.StallUpActivity;
@@ -113,11 +114,11 @@ public class StallUpController {
 		Assert.notNull(request.getStartTime(), "request's startTime is null");
 		Assert.notNull(request.getEndTime(), "request's endTime is null");
 		Assert.notNull(request.getTitle(), "request's title is null");
-		Assert.notNull(request.getCommunityId(), "request's communityId is null");
 		Assert.notNull(request.getCommunityName(), "request's communityName is null");
 		Assert.notNull(request.getAddress(), "request's address is null");
 		Assert.notNull(request.getLocation(), "request's location is null");
 		Assert.isTrue(!CollectionUtils.isEmpty(request.getPartnerList()), "request's partnerList is invalid");
+		Assert.isTrue(!CollectionUtils.isEmpty(request.getCommunityVOS()), "request's communityVOS is invalid");
 		if (request.getTitle().length() > TITLE_MAX_LENGTH) {
 			log.error("[create] title length error, request:{}", request);
 			throw new ApiException(StallUpErrorCodes.TITLE_LENGTH_ERROR);
@@ -125,6 +126,10 @@ public class StallUpController {
 		if(request.getStartTime() >= request.getEndTime()){
 			log.error("[create] time error, request:{}", request);
 			throw new ApiException(StallUpErrorCodes.TIME_ERROR);
+		}
+		if (request.getCommunityVOS().size() > 5) {
+			log.error("[create] communityVOS size error, request:{}", request);
+			throw new ApiException(StallUpErrorCodes.COMMUNITY_SIZE_ERROR);
 		}
 		request.setUid(getUid());
 		request.setOrgId(getOrgId());
@@ -371,6 +376,12 @@ public class StallUpController {
 	public ApiResult<SmsHotResponse> getSmsHot(@RequestParam Long activityId) {
 		Assert.notNull(activityId, "id is null");
 		return stallUpService.getSmsHot(activityId);
+	}
+
+	@GetMapping("getRecentCommunity")
+	public ApiResult<List<CommunityVO>> getRecentCommunity() {
+
+		return stallUpService.getRecentCommunity(getMobile());
 	}
 
 	private Long getUid() {

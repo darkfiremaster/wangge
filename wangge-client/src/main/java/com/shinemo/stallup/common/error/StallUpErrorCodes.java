@@ -28,4 +28,5 @@ public interface StallUpErrorCodes {
 	ErrorCode HUAWEI_API_ERROR = new ErrorCode(3001, "调用华为接口异常");
 	ErrorCode GRID_ERROR = new ErrorCode(3002, "非网格系统用户");
 	ErrorCode GRID_TOKEN_ERROR = new ErrorCode(3003, "网格token校验失败");
+	ErrorCode COMMUNITY_SIZE_ERROR = new ErrorCode(3004, "最多可添加5个小区");
 }

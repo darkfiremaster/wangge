@@ -25,6 +25,7 @@ import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.model.*;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
 import com.shinemo.stallup.domain.query.StallUpActivityQuery;
+import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
 import com.shinemo.stallup.domain.query.StallUpMarketingNumberQuery;
 import com.shinemo.stallup.domain.request.*;
 import com.shinemo.stallup.domain.response.*;
@@ -126,6 +127,9 @@ public class StallUpServiceImpl implements StallUpService {
     @Resource
     private TodoService todoService;
 
+    @Resource
+    private StallUpCommunityMapper stallUpCommunityMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(StallUpRequest stallUpRequest) {
@@ -207,32 +211,10 @@ public class StallUpServiceImpl implements StallUpService {
             // 批量插入子摆摊
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
+            //插入摆摊活动小区对应表
+            insertStallCommunity(request,parent);
             //同步华为数据
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", ID_PREFIX + parent.getId());
-            map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            map.put("communityName", parent.getCommunityName());
-            map.put("communityId", parent.getCommunityId());
-            map.put("address", parent.getAddress());
-            map.put("location", parent.getLocation());
-            map.put("mobile", parent.getMobile());
-            map.put("name", parent.getName());
-            map.put("title", parent.getTitle());
-            map.put("startTime", DateUtils.dateToString(parent.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
-            map.put("endTime", DateUtils.dateToString(parent.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
-            map.put("status", StallUpStatusEnum.PREPARE.getId());
-            map.put("gridId", parent.getGridId());
-            List<GridUserDetailSimple> simpleList = new ArrayList<>(partnerList.size());
-            for (GridUserDetail detail : partnerList) {
-                GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
-                        name(detail.getName()).role(detail.getRole()).build();
-                simpleList.add(detailSimple);
-            }
-            map.put("partners", simpleList);
-            map.put("custIdList", request.getCustList());
-            thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(), parent.getMobile());
-
-
+            synchronizeToHuaWei(request,parent);
             //同步代办事项
             for (StallUpActivity stallUpActivity : insertList) {
                 syncTodoCreate(stallUpActivity);
@@ -602,15 +584,38 @@ public class StallUpServiceImpl implements StallUpService {
                 .bizNum(monthList.stream().mapToInt(v -> v.getBizTotal()).sum()).build());
         // 已开始，最多一条
         if (startList.size() > 0) {
-            response.setStartedDetail(getDetailVO(startList.get(0)));
+            StallUpDetail start = startList.get(0);
+            Long parentId = start.getParentId();
+            StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+            stallUpCommunityQuery.setActivityId(parentId);
+            List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
+            List<String> communityIds = stallUpCommunityDOS.stream().map(StallUpCommunityDO::getCommunityId).collect(Collectors.toList());
+            StallUpDetailVO detailVO = getDetailVO(start);
+            detailVO.setCommunityIdList(communityIds);
+            response.setStartedDetail(detailVO);
         }
         // 待开始计划开始时间升序
         if (prepareList.size() > 0) {
-            response.setPrepareDetail(prepareList.stream().map(v -> getDetailVO(v))
-                    .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList()));
+            List<StallUpDetailVO> prepareVoList = prepareList.stream().map(v -> getDetailVO(v))
+                    .sorted(Comparator.comparing(StallUpDetailVO::getStartTime)).collect(Collectors.toList());
+            List<Long> activityIds = prepareVoList.stream().map(StallUpDetailVO::getParentId).collect(Collectors.toList());
+            //查询小区信息
+            StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+            stallUpCommunityQuery.setActivityIds(activityIds);
+            List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
+            Map<Long, List<StallUpCommunityDO>> communityMap = stallUpCommunityDOS.stream().collect(Collectors.groupingBy(StallUpCommunityDO::getActivityId));
+            for (StallUpDetailVO stallUpDetailVO : prepareVoList) {
+                List<StallUpCommunityDO> communityDOS = communityMap.get(stallUpDetailVO.getParentId());
+                if (!CollectionUtils.isEmpty(communityDOS)) {
+                    List<String> stringList = communityDOS.stream().map(StallUpCommunityDO::getCommunityId).collect(Collectors.toList());
+                    stallUpDetailVO.setCommunityIdList(stringList);
+                }
+            }
+            response.setPrepareDetail(prepareVoList);
         } else {
             response.setPrepareDetail(new ArrayList<>());
         }
+
         return ApiResult.of(0, response);
     }
 
@@ -685,6 +690,7 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.BASE_ERROR);
         }
         StallUpActivity stallUpActivity = result.getData();
+
         // 业务办理
         List<Long> bizIdList = GsonUtils.fromGson2Obj(stallUpActivity.getBizList(), new TypeToken<List<Long>>() {
         }.getType());
@@ -727,8 +733,14 @@ public class StallUpServiceImpl implements StallUpService {
                 }
             }
         }
+
+        //查询摆摊对应的小区id
+        StallUpCommunityQuery communityQuery = new StallUpCommunityQuery();
+        communityQuery.setActivityId(stallUpActivity.getParentId());
+        List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(communityQuery);
+
         response.setLocation(stallUpActivity.getLocation());
-        response.setCommunityId(stallUpActivity.getCommunityId());
+        response.setCommunityId(stallUpCommunityDOS.get(0).getCommunityId());
         response.setAddress(stallUpActivity.getAddress());
         response.setTitle(stallUpActivity.getTitle());
         return ApiResult.of(0, response);
@@ -1061,6 +1073,26 @@ public class StallUpServiceImpl implements StallUpService {
         return ApiResult.of(0, smsHotResponse);
     }
 
+    @Override
+    public ApiResult<List<CommunityVO>> getRecentCommunity(String mobile) {
+        StallUpCommunityQuery communityQuery = new StallUpCommunityQuery();
+        communityQuery.setMobile(mobile);
+        List<StallUpCommunityDO> recentCommunity = stallUpCommunityMapper.findRecentCommunity(communityQuery);
+        if (CollectionUtils.isEmpty(recentCommunity)) {
+            return ApiResult.of(0,new ArrayList<>());
+        }
+        List<CommunityVO> communityVOS = new ArrayList<>();
+        for (StallUpCommunityDO stallUpCommunityDO: recentCommunity) {
+            CommunityVO communityVO = new CommunityVO();
+            communityVO.setCommunityAddress(stallUpCommunityDO.getCommunityAddress());
+            communityVO.setCommunityId(stallUpCommunityDO.getCommunityId());
+            communityVO.setCommunityLocation(stallUpCommunityDO.getCommunityLocation());
+            communityVO.setCommunityName(stallUpCommunityDO.getCommunityName());
+            communityVOS.add(communityVO);
+        }
+        return ApiResult.of(0,communityVOS);
+    }
+
     /**
      * 获取待开始和已开始的VO
      */
@@ -1074,6 +1106,7 @@ public class StallUpServiceImpl implements StallUpService {
         tmp.setLocation(detail.getLocation());
         tmp.setBizList(detail.getBizList());
         tmp.setCommunityId(detail.getCommunityId());
+        tmp.setParentId(detail.getParentId());
         StallUpDetailVO stallUpDetailVO = stallUpDetail2VO(tmp);
 
         List<Long> bizIdList = GsonUtils.fromGson2Obj(detail.getBizList(), new TypeToken<List<Long>>() {
@@ -1134,6 +1167,7 @@ public class StallUpServiceImpl implements StallUpService {
         stallUpDetailVO.setStartTime(date2String.apply(v.getStartTime()));
         stallUpDetailVO.setEndTime(date2String.apply(v.getEndTime()));
         stallUpDetailVO.setCommunityId(v.getCommunityId());
+        stallUpDetailVO.setParentId(v.getParentId());
         if (v.getStatus() != null) {
             if (v.getStatus().equals(StallUpStatusEnum.AUTO_END.getId())) {
                 stallUpDetailVO.setIsAutoEnd(true);
@@ -1238,6 +1272,57 @@ public class StallUpServiceImpl implements StallUpService {
         todoDTO.setOperatorMobile(stallUp.getMobile());
         ApiResult<TreeMap> todoRequest = todoService.getTodoThirdRequest(todoDTO);
         todoService.operateTodoThing(todoRequest.getData());
+    }
+
+    /**
+     * 同步华为摆摊数据
+     * @param request
+     * @param parent
+     */
+    private void synchronizeToHuaWei(StallUpCreateRequest request,ParentStallUpActivity parent) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", ID_PREFIX + parent.getId());
+        map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
+        map.put("communityList", request.getCommunityVOS());
+        map.put("addressDetail", parent.getAddress());
+        map.put("location", parent.getLocation());
+        map.put("addressName", parent.getCommunityName());
+        map.put("mobile", parent.getMobile());
+        map.put("name", parent.getName());
+        map.put("title", parent.getTitle());
+        map.put("startTime", DateUtils.dateToString(parent.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+        map.put("endTime", DateUtils.dateToString(parent.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+        map.put("status", StallUpStatusEnum.PREPARE.getId());
+        map.put("gridId", parent.getGridId());
+        List<GridUserDetailSimple> simpleList = new ArrayList<>(request.getPartnerList().size());
+        for (GridUserDetail detail: request.getPartnerList()) {
+            GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
+                    name(detail.getName()).role(detail.getRole()).build();
+            simpleList.add(detailSimple);
+        }
+        map.put("partners", simpleList);
+        map.put("custIdList", request.getCustList());
+        thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(),parent.getMobile());
+    }
+
+    /**
+     * 插入摆摊-小区对应表
+     * @param request
+     * @param parent
+     */
+    private void insertStallCommunity(StallUpCreateRequest request,ParentStallUpActivity parent) {
+        List<CommunityVO> communityVOS = request.getCommunityVOS();
+        List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>();
+        for (CommunityVO communityVO: communityVOS) {
+            StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
+            stallUpCommunityDO.setActivityId(parent.getId());
+            stallUpCommunityDO.setCommunityAddress(communityVO.getCommunityAddress());
+            stallUpCommunityDO.setCommunityId(communityVO.getCommunityId());
+            stallUpCommunityDO.setCommunityLocation(communityVO.getCommunityLocation());
+            stallUpCommunityDO.setCommunityName(communityVO.getCommunityName());
+            stallUpCommunityDOS.add(stallUpCommunityDO);
+        }
+        stallUpCommunityMapper.batchInsert(stallUpCommunityDOS);
     }
 
 }
