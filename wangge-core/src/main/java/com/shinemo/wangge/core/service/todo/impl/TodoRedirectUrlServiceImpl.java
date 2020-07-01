@@ -228,7 +228,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         gridInfo = Base64.encodeBase64URLSafeString(GsonUtils.toJson(gridInfoToken).getBytes(StandardCharsets.UTF_8));
 
         WebUtil.addCookie(request, response, SmartGridConstant.ALL_GRID_INFO_COOKIE, gridInfo,
-                domain, "/", EXPIRE_TIME_HALF_DAY, false);
+                null, "/", 10*60, false);
 
         WebUtil.addCookie(request, response, SmartGridConstant.SELECT_GRID_INFO_COOKIE, selectGridInfo,
                 domain, "/", EXPIRE_TIME_HALF_DAY, false);
