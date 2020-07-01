@@ -174,18 +174,19 @@ public class TodoTest {
     private ThirdTodoMapper thirdTodoMapper;
     @Test
     public void insertTodo() {
-        String json = "  {\n" +
-                "            \"id\": 40,\n" +
-                "            \"gmtCreate\": 1593504722000,\n" +
-                "            \"gmtModified\": 1593507256000,\n" +
-                "            \"thirdId\": \"C-771-20200421-910001\",\n" +
+        String json = " {\n" +
+                "            \"id\": 38,\n" +
+                "            \"gmtCreate\": 1593412724000,\n" +
+                "            \"gmtModified\": 1593412724000,\n" +
+                "            \"thirdId\": \"13588039023\",\n" +
                 "            \"thirdType\": 4,\n" +
-                "            \"title\": \"家庭宽带-1000M-FTTH-新装-正装机\",\n" +
-                "            \"remark\": \"2020-04-21 20:00:00.0;2020-04-23 08:00:00 - 2020-04-23 12:00:00;广西2019429952;广西南宁青秀区青秀区城区富兴路81-1号世贸东方小区宿舍楼2栋3楼303\",\n" +
+                "            \"title\": \"测试装维\",\n" +
+                "            \"remark\": \"测试装维\",\n" +
                 "            \"status\": 0,\n" +
-                "            \"label\": \"待处理\",\n" +
-                "            \"operatorTime\": 1593507256000,\n" +
-                "            \"operatorMobile\": \"18277406772\"\n" +
+                "            \"label\": \"未返单\",\n" +
+                "            \"operatorTime\": 1592928000000,\n" +
+                "            \"operatorMobile\": \"13588039023\",\n" +
+                "            \"startTime\": 1593792000000\n" +
                 "        }";
         TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);
