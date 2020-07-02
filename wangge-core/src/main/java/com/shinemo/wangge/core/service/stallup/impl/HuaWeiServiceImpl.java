@@ -325,7 +325,6 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         mobileSet.add("15226536886");
         mobileSet.add("15000001170");
         mobileSet.add(request.getMobile());
-
         Integer orderSize = 0;
         for(String val:mobileSet){
             if(val.equals(request.getMobile())){
@@ -346,6 +345,39 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                 .getGridUserList(list).build();
 
         return gridUserListResponse;
+
+    }
+
+    public static void main(String[] args) {
+        String seed = "71a25f582a266454";
+
+        List<GridUserDetail> list = new ArrayList<>();
+        Set<String> mobileSet = new HashSet<String>();
+        mobileSet.add("15000001172");
+        mobileSet.add("15958032925");
+        mobileSet.add("15000001171");
+        mobileSet.add("15226536886");
+        mobileSet.add("15000001170");
+        mobileSet.add("13588039023");
+
+        Integer orderSize = 0;
+        int i = 0;
+        for(String val:mobileSet){
+            if(val.equals("13588039023")){
+                orderSize=Integer.MIN_VALUE;
+            }
+            list.add(GridUserDetail.builder()
+                    .userId(val)
+                    .mobile(val)
+                    .seMobile(AESUtil.encrypt(val,seed))
+                    .name("网格长"+i)
+                    .role("网格长"+i)
+                    .order(orderSize).build());
+            orderSize++;
+            i++;
+        }
+        List<GridUserDetail> collect = list.stream().sorted(Comparator.comparing(GridUserDetail::getOrder)).collect(Collectors.toList());
+        System.out.println("collect = " + collect);
 
     }
 
