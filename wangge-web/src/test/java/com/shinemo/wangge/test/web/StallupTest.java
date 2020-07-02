@@ -2,6 +2,7 @@ package com.shinemo.wangge.test.web;
 
 import com.shinemo.cmmc.report.client.common.ErrorCodes;
 import com.shinemo.common.tools.exception.ApiException;
+import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.model.GridUserDetail;
 import com.shinemo.stallup.domain.request.StallUpCreateRequest;
@@ -27,6 +28,12 @@ public class StallupTest {
 
     @Resource
     private StallUpService stallUpService;
+
+    @Test
+    public void testSmsHot() {
+        ApiResult<String> result = stallUpService.getRedirctSmsHotUrl(332L);
+        System.out.println("result = " + result);
+    }
 
     @Test
     public void testCreate() {

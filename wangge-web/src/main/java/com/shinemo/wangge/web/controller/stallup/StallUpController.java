@@ -31,7 +31,6 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 摆摊
@@ -377,6 +376,13 @@ public class StallUpController {
 		Assert.notNull(activityId, "id is null");
 		return stallUpService.getSmsHot(activityId);
 	}
+
+	@GetMapping("getRedirctSmsHotUrl")
+	public ApiResult<String> redirctSmsHot(@RequestParam Long activityId) {
+		Assert.notNull(activityId, "id is null");
+		return stallUpService.getRedirctSmsHotUrl(activityId);
+	}
+
 
 	@GetMapping("getRecentCommunity")
 	public ApiResult<List<CommunityVO>> getRecentCommunity() {
