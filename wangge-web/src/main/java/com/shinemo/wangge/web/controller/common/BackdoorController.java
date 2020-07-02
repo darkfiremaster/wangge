@@ -5,11 +5,10 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.operate.excel.LoginInfoExcelDTO;
-import com.shinemo.smartgrid.utils.RedisKeyUtil;
+import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
-import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
@@ -64,7 +63,6 @@ public class BackdoorController {
 
     @Resource
     private StallUpCommunityMapper stallUpCommunityMapper;
-
 
 
     @Resource
@@ -146,7 +144,7 @@ public class BackdoorController {
      */
     @GetMapping("/mockLogin")
     public ApiResult<Void> mockLogin(String loginMobile, String mockMobile) {
-        Assert.notNull(loginMobile,"loginMobile is null");
+        Assert.notNull(loginMobile, "loginMobile is null");
         backdoorLoginMapper.deleteByMobile(loginMobile);
         if (StrUtil.isBlank(mockMobile)) {
             return ApiResult.of(0);
@@ -170,7 +168,7 @@ public class BackdoorController {
         List<ParentStallUpActivity> historyForRefreshCommunity = parentStallUpActivityMapper.findHistoryForRefreshCommunity(parentStallUpActivityQuery);
         if (!CollectionUtils.isEmpty(historyForRefreshCommunity)) {
             List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>(historyForRefreshCommunity.size());
-            for (ParentStallUpActivity stallUpActivity: historyForRefreshCommunity) {
+            for (ParentStallUpActivity stallUpActivity : historyForRefreshCommunity) {
                 StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
                 stallUpCommunityDO.setActivityId(stallUpActivity.getId());
                 stallUpCommunityDO.setCommunityName(stallUpActivity.getCommunityName());
@@ -179,7 +177,9 @@ public class BackdoorController {
                 stallUpCommunityDO.setCommunityAddress(stallUpActivity.getAddress());
                 stallUpCommunityDOS.add(stallUpCommunityDO);
             }
-            stallUpCommunityMapper.batchInsert(stallUpCommunityDOS);
+            for (int i = 0; i < stallUpCommunityDOS.size(); i += 50) {
+                stallUpCommunityMapper.batchInsert(stallUpCommunityDOS.subList(i, Math.min(i + 50, stallUpCommunityDOS.size())));
+            }
         }
         return "success\n";
     }
