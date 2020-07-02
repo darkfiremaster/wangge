@@ -1,4 +1,4 @@
-package com.shinemo.sweepvillage.domain;
+package com.shinemo.sweepvillage.domain.model;
 
 import lombok.Data;
 
@@ -42,6 +42,11 @@ public class SweepVillageActivityDO {
      * 转化后的打卡人的经纬度坐标
      */
     private String rgsLocation;
+
+    /**
+     * 网格id
+     */
+    private String gridId;
     /**
      * 创建人手机号
      */
@@ -59,12 +64,5 @@ public class SweepVillageActivityDO {
      * 结束时间
      */
     private Date endTime;
-    /**
-     * 备注
-     */
-    private String remark;
-    /**
-     * 图片url
-     */
-    private String picUrl;
+
 }

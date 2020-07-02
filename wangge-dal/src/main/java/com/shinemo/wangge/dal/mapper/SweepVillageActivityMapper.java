@@ -1,8 +1,8 @@
 package com.shinemo.wangge.dal.mapper;
 
 import com.shinemo.common.db.dao.BaseMapper;
-import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
-import com.shinemo.sweepvillage.query.SweepVillageActivityQuery;
+import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
 
 /**
  * @Author shangkaihui
