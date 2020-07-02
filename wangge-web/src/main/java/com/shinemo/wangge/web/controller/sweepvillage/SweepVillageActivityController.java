@@ -1,12 +1,13 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
-import com.shinemo.sweepvillage.vo.VillageVO;
+import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
+import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,9 @@ public class SweepVillageActivityController {
         return sweepVillageActivityService.createVillage(null);
     }
 
-//    @GetMapping("/getSweepVillageActivityList")
-//    public ApiResult<List<VillageVO>>
+
+    @PostMapping("/getActivityList")
+    public ApiResult getActivityList(@RequestBody SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
+        return sweepVillageActivityService.getSweepVillageActivityList(sweepVillageActivityQueryRequest);
+    }
 }

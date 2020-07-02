@@ -1,18 +1,20 @@
 package com.shinemo.wangge.core.service.sweepvillage.impl;
 
+import com.google.common.collect.Lists;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
+import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery;
-import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
-import com.shinemo.sweepvillage.query.SweepVillageActivityQuery;
-import com.shinemo.sweepvillage.query.VillageQuery;
-import com.shinemo.sweepvillage.vo.SweepVillageActivityFinishVO;
-import com.shinemo.sweepvillage.vo.SweepVillageActivityResultVO;
-import com.shinemo.sweepvillage.vo.SweepVillageActivityVO;
-import com.shinemo.sweepvillage.vo.VillageVO;
+import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityVO;
+import com.shinemo.sweepvillage.domain.vo.VillageVO;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
@@ -47,6 +49,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         Assert.notNull(sweepVillageActivityVO, "sweepVillageActivityVO is null");
         //todo 校验参数
 
+        //todo 判断用户是否已有进行中的扫村活动
+
         SweepVillageActivityDO sweepFloorActivityDO = getSweepVillageActivityDO(sweepVillageActivityVO);
         sweepVillageActivityMapper.insert(sweepFloorActivityDO);
 
@@ -56,10 +60,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
 
     @Override
-    public ApiResult<List<VillageVO>> getVillageList(VillageQuery villageQuery) {
+    public ApiResult<List<VillageVO>> getVillageList() {
         //todo 透传华为
         return null;
     }
+
 
     @Override
     public ApiResult<Map<String, Object>> createVillage(VillageVO villageVO) {
@@ -72,28 +77,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         return result;
     }
 
-    @Override
-    public ApiResult<Void> startActivity(Long id) {
-        //校验参数
-        Assert.notNull(id, "id is null");
 
-        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
-        sweepVillageActivityQuery.setId(id);
-        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
-        if (sweepVillageActivityDO == null) {
-            return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST);
-        }
-        if (!sweepVillageActivityDO.getStatus().equals(SweepVillageStatusEnum.NOT_START.getId())) {
-            return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_STATUS_ERROR);
-        }
-
-        sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
-        sweepVillageActivityDO.setStartTime(new Date());
-        sweepVillageActivityMapper.update(sweepVillageActivityDO);
-
-        //todo 透传华为
-        return ApiResult.of(0);
-    }
 
 
     @Override
@@ -110,22 +94,46 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         if (!sweepVillageActivityDO.getStatus().equals(SweepVillageStatusEnum.PROCESSING.getId())) {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_STATUS_ERROR);
         }
+        //todo 判断打卡距离
 
         sweepVillageActivityDO.setEndTime(new Date());
-        sweepVillageActivityDO.setRemark(sweepVillageActivityFinishVO.getRemark());
-        sweepVillageActivityDO.setPicUrl(sweepVillageActivityFinishVO.getPicUrl());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.END.getId());
         sweepVillageActivityMapper.update(sweepVillageActivityDO);
+
+        //todo 插入签到表
 
         //todo 透传华为
         return ApiResult.of(0);
     }
 
     @Override
-    public ApiResult<List<SweepVillageActivityVO>> getSweepVillageActivityList(SweepVillageActivityQuery sweepVillageActivityQuery) {
-        //todo 校验参数
+    public ApiResult<List<SweepVillageActivityVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
+        //校验参数
+        Assert.notNull(sweepVillageActivityQueryRequest, "request is null");
+        Assert.notNull(sweepVillageActivityQueryRequest.getQueryType(), "queryType is null");
 
-        List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
+        if (sweepVillageActivityQueryRequest.getQueryType().equals(1)) {
+            //查进行中的活动
+            SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+            sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
+            sweepVillageActivityQuery.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
+            log.info("[getSweepVillageActivityList] 获取进行中的扫村活动列表,query:{}", sweepVillageActivityQuery);
+            List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
+            //todo 转为vo
+        } else if (sweepVillageActivityQueryRequest.getQueryType().equals(2)) {
+            //查已结束的活动
+            SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+            sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
+            sweepVillageActivityQuery.setStatusList(Lists.newArrayList(
+                    SweepVillageStatusEnum.END.getId(),
+                    SweepVillageStatusEnum.ABNORMAL_END.getId()
+            ));
+            List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
+        } else {
+            throw new ApiException("queryType error");
+        }
+
+
 
         //todo 转化为vo
 

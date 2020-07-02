@@ -1,4 +1,4 @@
-package com.shinemo.sweepvillage.vo;
+package com.shinemo.sweepvillage.domain.vo;
 
 import lombok.Data;
 

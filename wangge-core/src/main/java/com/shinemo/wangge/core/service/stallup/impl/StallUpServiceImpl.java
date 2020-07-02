@@ -30,7 +30,9 @@ import com.shinemo.stallup.domain.query.StallUpMarketingNumberQuery;
 import com.shinemo.stallup.domain.request.*;
 import com.shinemo.stallup.domain.response.*;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.LocalDateTimeUtils;
+import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
@@ -72,6 +74,12 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Value("${smartgrid.huawei.aesKey}")
     public String aeskey;
+
+    @NacosValue(value = "${yujing.seed}", autoRefreshed = true)
+    private String seed;
+    @NacosValue(value = "${huawei.smshot.url}", autoRefreshed = true)
+    private String smsHotUrl;
+
 
     private static final Integer BIZ_TYPE = 2;
     private static final Long OTHER_ID = 1L;
@@ -212,13 +220,15 @@ public class StallUpServiceImpl implements StallUpService {
             stallUpActivityMapper.insertBatch(
                     insertList.stream().peek(v -> v.setParentId(parent.getId())).collect(Collectors.toList()));
             //插入摆摊活动小区对应表
-            insertStallCommunity(request,parent);
+            insertStallCommunity(request, parent);
             //同步华为数据
-            synchronizeToHuaWei(request,parent);
+            synchronizeToHuaWei(request, parent);
             //同步代办事项
             for (StallUpActivity stallUpActivity : insertList) {
                 syncTodoCreate(stallUpActivity);
             }
+
+            log.info("[create] 新建摆摊成功,request:{}", request);
         }
     }
 
@@ -1079,10 +1089,10 @@ public class StallUpServiceImpl implements StallUpService {
         communityQuery.setMobile(mobile);
         List<StallUpCommunityDO> recentCommunity = stallUpCommunityMapper.findRecentCommunity(communityQuery);
         if (CollectionUtils.isEmpty(recentCommunity)) {
-            return ApiResult.of(0,new ArrayList<>());
+            return ApiResult.of(0, new ArrayList<>());
         }
         List<CommunityVO> communityVOS = new ArrayList<>();
-        for (StallUpCommunityDO stallUpCommunityDO: recentCommunity) {
+        for (StallUpCommunityDO stallUpCommunityDO : recentCommunity) {
             CommunityVO communityVO = new CommunityVO();
             communityVO.setCommunityAddress(stallUpCommunityDO.getCommunityAddress());
             communityVO.setCommunityId(stallUpCommunityDO.getCommunityId());
@@ -1090,7 +1100,52 @@ public class StallUpServiceImpl implements StallUpService {
             communityVO.setCommunityName(stallUpCommunityDO.getCommunityName());
             communityVOS.add(communityVO);
         }
-        return ApiResult.of(0,communityVOS);
+        return ApiResult.of(0, communityVOS);
+    }
+
+    @Override
+    public ApiResult<String> getRedirctSmsHotUrl(Long activityId) {
+
+        StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+        stallUpCommunityQuery.setActivityId(activityId);
+        List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
+        Map<String, String> map = new LinkedHashMap<>();
+        if (!CollectionUtils.isEmpty(stallUpCommunityDOS)) {
+            for (StallUpCommunityDO stallUpCommunityDO : stallUpCommunityDOS) {
+                map.put(stallUpCommunityDO.getCommunityId(), stallUpCommunityDO.getCommunityName());
+            }
+        } else {
+            return ApiResult.fail("小区id为空", 500);
+        }
+
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", SmartGridContext.getMobile());
+        formData.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        formData.put("timestamp", timestamp);
+        formData.put("building", map);
+        formData.put("prehotObjectType", 1);
+
+        log.info("[redirctSmsHot] 请求参数formData:{}", formData);
+        String paramStr = EncryptUtil.buildParameterString(formData);
+
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramStr, seed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+
+        String url = smsHotUrl + "?";
+
+        StringBuilder sb = new StringBuilder(url);
+        sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign);
+
+        String smsHotUrl = sb.toString();
+        log.info("[getRedirctSmsHotUrl]摆摊活动id:{},生成短信预热url:{}", activityId, smsHotUrl);
+
+        return ApiResult.of(0, smsHotUrl);
     }
 
     /**
@@ -1276,10 +1331,11 @@ public class StallUpServiceImpl implements StallUpService {
 
     /**
      * 同步华为摆摊数据
+     *
      * @param request
      * @param parent
      */
-    private void synchronizeToHuaWei(StallUpCreateRequest request,ParentStallUpActivity parent) {
+    private void synchronizeToHuaWei(StallUpCreateRequest request, ParentStallUpActivity parent) {
         Map<String, Object> map = new HashMap<>();
         map.put("id", ID_PREFIX + parent.getId());
         map.put("gmtCreate", DateUtils.dateToString(new Date(), "yyyy-MM-dd HH:mm:ss"));
@@ -1295,25 +1351,26 @@ public class StallUpServiceImpl implements StallUpService {
         map.put("status", StallUpStatusEnum.PREPARE.getId());
         map.put("gridId", parent.getGridId());
         List<GridUserDetailSimple> simpleList = new ArrayList<>(request.getPartnerList().size());
-        for (GridUserDetail detail: request.getPartnerList()) {
+        for (GridUserDetail detail : request.getPartnerList()) {
             GridUserDetailSimple detailSimple = GridUserDetailSimple.builder().mobile(detail.getMobile()).
                     name(detail.getName()).role(detail.getRole()).build();
             simpleList.add(detailSimple);
         }
         map.put("partners", simpleList);
         map.put("custIdList", request.getCustList());
-        thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(),parent.getMobile());
+        thirdApiMappingService.asyncDispatch(map, HuaweiStallUpUrlEnum.SYNCHRONIZE_STALL_DATA.getMethod(), parent.getMobile());
     }
 
     /**
      * 插入摆摊-小区对应表
+     *
      * @param request
      * @param parent
      */
-    private void insertStallCommunity(StallUpCreateRequest request,ParentStallUpActivity parent) {
+    private void insertStallCommunity(StallUpCreateRequest request, ParentStallUpActivity parent) {
         List<CommunityVO> communityVOS = request.getCommunityVOS();
         List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>();
-        for (CommunityVO communityVO: communityVOS) {
+        for (CommunityVO communityVO : communityVOS) {
             StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
             stallUpCommunityDO.setActivityId(parent.getId());
             stallUpCommunityDO.setCommunityAddress(communityVO.getCommunityAddress());

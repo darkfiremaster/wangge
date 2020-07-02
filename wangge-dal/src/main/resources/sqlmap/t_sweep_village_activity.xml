@@ -4,7 +4,7 @@
 <mapper namespace="com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper">
 
     <!-- 结果集对应关系 -->
-    <resultMap id="result" type="com.shinemo.sweepvillage.domain.SweepVillageActivityDO" >
+    <resultMap id="result" type="com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO" >
         <id column="id" property="id"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
@@ -61,7 +61,7 @@
 
     <!-- 查询结果集 -->
     <select id="find" resultMap="result"
-            parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+            parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">
         select
         <include refid="columns"/>
         from
@@ -70,7 +70,7 @@
     </select>
 
     <!-- 查询某条记录 -->
-    <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">
         select
         <include refid="columns"/>
         from
@@ -80,7 +80,7 @@
     </select>
 
     <!-- 统计查询结果数量 -->
-    <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.query.SweepVillageActivityQuery">
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">
         select count(*) from
         <include refid="table"/>
         <include refid="conditions"/>
@@ -89,7 +89,7 @@
 
     <!-- 插入 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.shinemo.sweepvillage.domain.SweepVillageActivityDO">
+            parameterType="com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO">
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -187,7 +187,7 @@
     </insert>
 
     <!-- 更新 -->
-    <update id="update" parameterType="com.shinemo.sweepvillage.domain.SweepVillageActivityDO">
+    <update id="update" parameterType="com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO">
         UPDATE
         <include refid="table"/>
         <set>

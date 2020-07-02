@@ -8,10 +8,8 @@ import com.shinemo.stallup.domain.request.StallUpEndRequest;
 import com.shinemo.stallup.domain.request.StallUpRequest;
 import com.shinemo.stallup.domain.response.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 智慧网格 摆摊活动服务
@@ -170,4 +168,6 @@ public interface StallUpService {
 	ApiResult<SmsHotResponse> getSmsHot(Long activityId);
 
 	ApiResult<List<CommunityVO>> getRecentCommunity(String mobile);
+
+	ApiResult<String> getRedirctSmsHotUrl(Long activityId);
 }
