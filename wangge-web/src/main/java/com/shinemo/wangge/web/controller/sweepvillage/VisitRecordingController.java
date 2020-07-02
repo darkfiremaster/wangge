@@ -60,10 +60,8 @@ public class VisitRecordingController {
      */
     @PostMapping("/deleteVisitRecording")
     @GridIdChecker
-    public ApiResult<Void> deleteVisitRecording(@RequestBody Long id) {
-        Assert.notNull(id,"id is null");
-        SweepVillageVisitRecordingVO request = new SweepVillageVisitRecordingVO();
-        request.setId(id);
+    public ApiResult<Void> deleteVisitRecording(@RequestBody SweepVillageVisitRecordingVO request) {
+        Assert.notNull(request.getId(),"id is null");
         request.setStatus(0);
         return visitRecordingService.update(request);
     }

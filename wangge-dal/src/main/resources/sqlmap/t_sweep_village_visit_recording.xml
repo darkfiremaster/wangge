@@ -158,7 +158,7 @@
                 #{successFlag},
             </if>
             <if test="businessType != null">
-                business_type,
+                #{businessType},
             </if>
             <if test="broadbandExpireTime != null">
                 #{broadbandExpireTime},

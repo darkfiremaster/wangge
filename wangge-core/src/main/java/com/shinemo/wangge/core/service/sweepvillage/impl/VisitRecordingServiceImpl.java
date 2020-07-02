@@ -91,17 +91,17 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
         }
 
+
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
         BeanUtils.copyProperties(request,updateVisitRecordingDO);
-        //businessType的处理
-        //删除和更新的区分
-        sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-
-        //TODO 同步给华为
-        if(request.getStatus() == StatusEnum.DELETE.getId()){
+        //删除
+        if(request.getStatus() != null && request.getStatus() == StatusEnum.DELETE.getId()){
+            sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
             synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getMethod());
             return ApiResult.of(0);
         }
+        updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBusinessType()));
+        sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
         synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
