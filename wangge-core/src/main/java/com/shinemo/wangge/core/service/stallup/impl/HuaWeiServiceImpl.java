@@ -211,7 +211,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         //todo mock待删除
         if (!EnvUtil.isOnline()) {
-            List<String> list = Arrays.asList("15797953927","13107701611","15958032925", "18790513853","15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023","13107701611");
+            List<String> list = Arrays.asList("15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034");
 
             if (request.getMobile().equals("15000001172")) {
                 //6个网格
@@ -297,9 +297,9 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         List<GridUserRoleDetail> gridUserRoleDetailList = new ArrayList<>();
 
         for (int i = 0; i < num; i++) {
-            GridUserRoleDetail gridUser= GridUserRoleDetail.builder()
-                    .id("test"+i)
-                    .name("测试网格"+i)
+            GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                    .id("test" + i)
+                    .name("测试网格" + i)
                     .cityCode("771")
                     .cityName("南宁")
                     .countyCode("A2107")
@@ -325,15 +325,15 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyCode("A2107")
                         .countyName("东区")
                         .roleList(Lists.newArrayList(
-                        		new GridUserRoleDetail.GridRole("1", "网格长")))
-										.build(),
-				GridUserRoleDetail.builder()
-						.id("shinemo2")
-						.name("测试网格2")
-						.cityCode("hangzhou")
-						.cityName("杭州")
-						.countyCode("yuhang")
-						.countyName("余杭")
+                                new GridUserRoleDetail.GridRole("1", "网格长")))
+                        .build(),
+                GridUserRoleDetail.builder()
+                        .id("shinemo2")
+                        .name("测试网格2")
+                        .cityCode("hangzhou")
+                        .cityName("杭州")
+                        .countyCode("yuhang")
+                        .countyName("余杭")
                         .roleList(Lists.newArrayList(
                                 new GridUserRoleDetail.GridRole("2", "网格经理")))
                         .build()
