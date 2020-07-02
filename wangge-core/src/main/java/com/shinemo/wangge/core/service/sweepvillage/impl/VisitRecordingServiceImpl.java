@@ -73,7 +73,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         visitRecordingDO.setBusinessType(businessType);
         sweepVillageVisitRecordingMapper.insert(visitRecordingDO);
         //todo 同步华为
-
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
 
@@ -94,6 +94,8 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         BeanUtils.copyProperties(request,updateVisitRecordingDO);
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
 
+        //TODO 同步给华为
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
 
@@ -228,10 +230,13 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     }
 
 
-    private void synchronizeSweepingData(SweepVillageVisitRecordingDO visitRecordingDO) {
+    private void synchronizeSweepingData(SweepVillageVisitRecordingDO visitRecordingDO,String apiName) {
         Map<String,Object> map = new HashMap<>();
         map.put("id", visitRecordingDO.getId());
-        map.put("activityId",visitRecordingDO.getActivityId());
+        //添加接口 传入activityId
+        if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod())){
+            map.put("activityId",visitRecordingDO.getActivityId());
+        }
         map.put("mobile",visitRecordingDO.getMobile());
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());
@@ -245,7 +250,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime());
         map.put("remark",visitRecordingDO.getRemark());
 
-        thirdApiMappingService.asyncDispatch(map, HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod(),visitRecordingDO.getMobile());
+        thirdApiMappingService.asyncDispatch(map, apiName,visitRecordingDO.getMobile());
     }
 
 }

@@ -14,7 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 public enum  HuaweiSweepVillageUrlEnum {
-    ADD_SWEEPING_VILLAGE_DATA("CMCC_GX_market/api/v2/addVillageVisitRrecord", "新增走访记录接口","addSweepVillageData");
+    ADD_SWEEPING_VILLAGE_DATA("CMCC_GX_market/api/v2/addVillageVisitRrecord", "新增走访记录接口","addSweepVillageData"),
+    UPDATE_SWEEPING_VILLAGE_DATA("CMCC_GX_market/api/v2/updateVillageVisitRrecord", "编辑走访记录接口","updateSweepVillageData");
 
     private String url;
     private String desc;
