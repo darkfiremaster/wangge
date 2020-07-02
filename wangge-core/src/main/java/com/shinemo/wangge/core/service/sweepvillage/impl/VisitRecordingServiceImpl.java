@@ -19,7 +19,6 @@ import com.shinemo.sweepfloor.common.enums.SweepFloorStatusEnum;
 import com.shinemo.sweepfloor.domain.model.SmartGridActivityDO;
 import com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO;
 import com.shinemo.sweepfloor.domain.query.SmartGridActivityQuery;
-import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.enums.HuaweiSweepVillageUrlEnum;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;

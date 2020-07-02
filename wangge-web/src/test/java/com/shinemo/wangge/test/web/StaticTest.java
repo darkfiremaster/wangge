@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
@@ -108,6 +109,12 @@ public class StaticTest {
 
         String request = GsonUtils.toJson(map);
         System.out.println("request = " + request);
+    }
+
+    @Test
+    public void ts() {
+        String encrypt = AESUtil.encrypt("15000001171", "71a25f582a266454");
+        System.out.println("encrypt = " + encrypt);
     }
 
     @Test
