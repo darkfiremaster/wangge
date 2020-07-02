@@ -4,6 +4,7 @@ package com.shinemo.wangge.core.service.sweepvillage.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.common.ListVO;
+import com.shinemo.client.common.StatusEnum;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
@@ -92,9 +93,15 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
         BeanUtils.copyProperties(request,updateVisitRecordingDO);
+        //businessType的处理
+        //删除和更新的区分
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
 
         //TODO 同步给华为
+        if(request.getStatus() == StatusEnum.DELETE.getId()){
+            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getMethod());
+            return ApiResult.of(0);
+        }
         synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
