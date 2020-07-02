@@ -378,6 +378,7 @@ public class StallUpController {
 	}
 
 	@GetMapping("getRedirctSmsHotUrl")
+	@SmIgnore
 	public ApiResult<String> redirctSmsHot(@RequestParam Long activityId) {
 		Assert.notNull(activityId, "id is null");
 		return stallUpService.getRedirctSmsHotUrl(activityId);
