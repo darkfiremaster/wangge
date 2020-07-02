@@ -34,6 +34,7 @@ public class GetGridUserListResult {
              * userName : XXX
              * userRole : 客户经理
              */
+            private String userId;
             private String userTel;
             private String userName;
             private String userRole;
