@@ -172,9 +172,15 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
     private boolean checkAuth(SweepVillageVisitRecordingDO visitRecordingDO) {
         String queryMobile = SmartGridContext.getMobile();
-        if (!visitRecordingDO.getMobile().equals(queryMobile)) {
+        if (!visitRecordingDO.getMobile().equals(queryMobile) && !isGridManager(visitRecordingDO)) {
             return false;
+        }else {
+            return true;
         }
+    }
+
+    //todo  走访记录的网格信息从扫村主表获取
+    private boolean isGridManager(SweepVillageVisitRecordingDO visitRecordingDO) {
         String gridInfo = SmartGridContext.getGridInfo();
         List<GridUserRoleDetail> details = GsonUtils.fromJsonToList(gridInfo, GridUserRoleDetail[].class);
         SweepVillageActivityQuery activityQuery = new SweepVillageActivityQuery();
