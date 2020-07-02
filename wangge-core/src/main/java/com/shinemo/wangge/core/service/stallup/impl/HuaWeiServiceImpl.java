@@ -411,7 +411,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                                 .seMobile(userTel)
                                 .name(v.getUserName())
                                 .role(v.getUserRole())
-                                .order(Integer.MAX_VALUE)
+                                .order(Integer.MAX_VALUE).userId(v.getUserId())
                                 .build();
 
                         if (request.getMobile().equals(mobile)) {
