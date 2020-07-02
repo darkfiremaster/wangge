@@ -19,6 +19,7 @@ import org.springframework.core.Ordered;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GridUserDetail implements Ordered {
+	private String userId;
 	private String seMobile;
 	private String mobile;
 	private String name;

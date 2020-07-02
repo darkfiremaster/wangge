@@ -66,19 +66,18 @@ public class StaticTest {
         String key = "e0d349cb-e98f-45e5-bf98-3a89d46d0671";
         //请求参数
         Map<String,Object> postBody = new HashMap<>();
-        postBody.put("thirdId", "13588039023");
+        postBody.put("thirdId", "C-771-20200602-680001");
         postBody.put("thirdType", 4);
         postBody.put("operateType",1);
-        postBody.put("title", "测试装维");
-        postBody.put("remark", "测试装维");
+        postBody.put("title", "家庭宽带-1000M-FTTH-终端更换");
+        postBody.put("remark", "2020-06-05 20:00:00.0;2020-06-24 08:00:00 - 2020-06-24 12:00:00;苏泳琮;广西南宁武鸣县城厢镇灵源路灵水三区3号民房");
         postBody.put("status", 0);
-        postBody.put("label", "未返单");
-        postBody.put("operatorMobile", "13588039023");
-        postBody.put("operatorTime", "2020-06-24 00:00:00");
-        postBody.put("startTime", "2020-07-04 00:00:00");
+        postBody.put("label", null);
+        postBody.put("operatorMobile", "18277406772");
+        postBody.put("operatorTime", null);
         //注意:参数顺序按照首字母正序排列
         Map<String,Object> map =  new TreeMap<>();
-        map.put("timeStamp",System.currentTimeMillis());
+        map.put("timeStamp",1593427008995L);
         map.put("postBody",postBody);
         map.put("method","operateTodoThing");
         //key为双方约定，参数不传递

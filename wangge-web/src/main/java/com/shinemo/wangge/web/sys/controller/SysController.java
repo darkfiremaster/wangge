@@ -14,7 +14,6 @@ public class SysController {
 
     @GetMapping("checkstatus")
     public String checkstatus() {
-        log.info("测试环境项目启动成功");
         return "success";
     }
 

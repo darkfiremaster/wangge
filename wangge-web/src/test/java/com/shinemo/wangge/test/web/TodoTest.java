@@ -174,19 +174,19 @@ public class TodoTest {
     private ThirdTodoMapper thirdTodoMapper;
     @Test
     public void insertTodo() {
-        String json = "{\n" +
-                "            \"id\": 37,\n" +
-                "            \"gmtCreate\": 1593241202000,\n" +
-                "            \"gmtModified\": 1593241202000,\n" +
-                "            \"thirdId\": \"XZ202006270631540\",\n" +
-                "            \"thirdType\": 5,\n" +
-                "            \"title\": \"航锐通讯器材经营部(小微)宽带目标用户预警\",\n" +
-                "            \"remark\": \"您负责的@航锐通讯器材经营部(小微)-@，在20200625@可进行宽带新装的目标用户达101个-@，请及时组织人员开展实地摆台营销，小区相关信息如下，营销完成后，请填写营销日志并进行返单。\",\n" +
+        String json = " {\n" +
+                "            \"id\": 38,\n" +
+                "            \"gmtCreate\": 1593412724000,\n" +
+                "            \"gmtModified\": 1593412724000,\n" +
+                "            \"thirdId\": \"13588039023\",\n" +
+                "            \"thirdType\": 4,\n" +
+                "            \"title\": \"测试装维\",\n" +
+                "            \"remark\": \"测试装维\",\n" +
                 "            \"status\": 0,\n" +
                 "            \"label\": \"未返单\",\n" +
-                "            \"operatorTime\": 1593187200000,\n" +
-                "            \"operatorMobile\": \"13607713224\",\n" +
-                "            \"startTime\": 1594051200000\n" +
+                "            \"operatorTime\": 1592928000000,\n" +
+                "            \"operatorMobile\": \"13588039023\",\n" +
+                "            \"startTime\": 1593792000000\n" +
                 "        }";
         TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);

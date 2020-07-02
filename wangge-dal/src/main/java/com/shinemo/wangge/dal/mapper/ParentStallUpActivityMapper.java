@@ -16,4 +16,5 @@ import java.util.List;
 public interface ParentStallUpActivityMapper extends BaseMapper<ParentStallUpActivityQuery, ParentStallUpActivity> {
 	List<ParentStallUpActivity> getList(ParentStallUpActivityQuery query);
 	List<ParentStallUpActivity> countList(ParentStallUpActivityQuery query);
+	List<ParentStallUpActivity> findHistoryForRefreshCommunity(ParentStallUpActivityQuery query);
 }
