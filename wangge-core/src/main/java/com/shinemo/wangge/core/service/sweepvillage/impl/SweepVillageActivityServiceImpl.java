@@ -50,10 +50,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         SweepVillageActivityDO sweepFloorActivityDO = getSweepVillageActivityDO(sweepVillageActivityVO);
         sweepVillageActivityMapper.insert(sweepFloorActivityDO);
 
-        //todo 同步活动网格关联表
-
         //todo 同步华为
-        //todo 同步代办
         return ApiResult.of(0);
     }
 
@@ -121,7 +118,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityMapper.update(sweepVillageActivityDO);
 
         //todo 透传华为
-        //todo 同步代办
         return ApiResult.of(0);
     }
 
