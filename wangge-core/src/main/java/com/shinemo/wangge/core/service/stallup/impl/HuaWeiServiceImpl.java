@@ -319,32 +319,32 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         List<GridUserDetail> list = new ArrayList<>();
         list.add(GridUserDetail.builder()
-                .mobile("15797953927")
-                .seMobile("15797953927")
+                .mobile("15000001172")
+                .seMobile("15000001172")
                 .name("网格经理")
                 .role("网格经理")
                 .order(1).build());
         list.add(GridUserDetail.builder()
-                .mobile("13107701611")
-                .seMobile("13107701611")
+                .mobile("15958032925")
+                .seMobile("15958032925")
                 .name("网格长")
                 .role("网格长")
                 .order(2).build());
         list.add(GridUserDetail.builder()
-                .mobile("15958032925")
-                .seMobile("15958032925")
+                .mobile("15000001171")
+                .seMobile("15000001171")
                 .name("一线人员")
                 .role("一线人员")
                 .order(3).build());
         list.add(GridUserDetail.builder()
-                .mobile("18790513853")
-                .seMobile("18790513853")
+                .mobile("15226536886")
+                .seMobile("15226536886")
                 .name("一线人员")
                 .role("一线人员")
                 .order(4).build());
         list.add(GridUserDetail.builder()
-                .mobile("15226536886")
-                .seMobile("15226536886")
+                .mobile("15000001170")
+                .seMobile("15000001170")
                 .name("一线人员")
                 .role("一线人员")
                 .order(5).build());
