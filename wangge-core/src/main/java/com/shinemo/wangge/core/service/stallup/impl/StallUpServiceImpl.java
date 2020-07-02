@@ -148,6 +148,10 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.FREQUENT_ERROR);
         }
         StallUpCreateRequest request = (StallUpCreateRequest) stallUpRequest;
+
+        //校验距离
+        checkDistance(request);
+
         List<Long> bizTypeList = request.getBizTypeList();
         if (bizTypeList == null) {
             bizTypeList = new ArrayList<>();
@@ -229,6 +233,34 @@ public class StallUpServiceImpl implements StallUpService {
             }
 
             log.info("[create] 新建摆摊成功,request:{}", request);
+        }
+    }
+
+    private void checkDistance(StallUpCreateRequest request) {
+        //判断小区之间的距离
+        List<CommunityVO> communityVOS = request.getCommunityVOS();
+        for (int i = 0; i < communityVOS.size(); i++) {
+            for (int j = i+1; j < communityVOS.size(); j++) {
+                CommunityVO c1 = communityVOS.get(i);
+                CommunityVO c2 = communityVOS.get(j);
+                Integer distance = DistanceUtils.getDistance(c1.getCommunityLocation(), c2.getCommunityLocation());
+                if (distance >= 10000) {
+                    String errorMsg = StrUtil.format("{}与{}距离超过10公里", c1.getCommunityName(), c2.getCommunityName());
+                    log.error("[checkDistince] c1经纬度:{},c2经纬度:{}", c1.getCommunityLocation(), c2.getCommunityLocation());
+                    throw new ApiException(errorMsg,500);
+                }
+            }
+        }
+
+        //判断摆摊地点和小区之间的距离
+        for (int i = 0; i < communityVOS.size(); i++) {
+            CommunityVO c1 = communityVOS.get(i);
+            Integer distance = DistanceUtils.getDistance(request.getLocation(), c1.getCommunityLocation());
+            if (distance >= 5000) {
+                String errorMsg = StrUtil.format("摆摊地点与{}距离超过5公里", c1.getCommunityName());
+                log.error("[checkDistince] c1经纬度:{},摆摊地点经纬度:{}", c1.getCommunityLocation(), request.getLocation());
+                throw new ApiException(errorMsg, 500);
+            }
         }
     }
 
