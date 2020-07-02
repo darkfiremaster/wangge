@@ -1,15 +1,26 @@
 package com.shinemo.wangge.core.service.sweepvillage.impl;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.common.ListVO;
+import com.shinemo.client.common.StatusEnum;
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.stallup.domain.request.HuaWeiRequest;
+import com.shinemo.sweepfloor.common.enums.HuaweiSweepFloorUrlEnum;
+import com.shinemo.sweepfloor.common.enums.SweepFloorStatusEnum;
 import com.shinemo.sweepfloor.domain.model.SmartGridActivityDO;
+import com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO;
 import com.shinemo.sweepfloor.domain.query.SmartGridActivityQuery;
+import com.shinemo.sweepvillage.domain.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.enums.HuaweiSweepVillageUrlEnum;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
@@ -19,6 +30,7 @@ import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.sweepvillage.VisitRecordingService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.SmartGridActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
@@ -29,9 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,6 +59,9 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
     private static final String GRID_MANAGER_ROLE = "1";
 
+    @Resource
+    private ThirdApiMappingService thirdApiMappingService;
+
     @Override
     public ApiResult<Void> add(SweepVillageVisitRecordingVO request) {
         String mobile = SmartGridContext.getMobile();
@@ -57,9 +70,12 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         BeanUtils.copyProperties(request,visitRecordingDO);
         visitRecordingDO.setMobile(mobile);
         visitRecordingDO.setMarketingUserName(userName);
+
+        String businessType = GsonUtil.toJson(request.getBusinessType());
+        visitRecordingDO.setBusinessType(businessType);
         sweepVillageVisitRecordingMapper.insert(visitRecordingDO);
         //todo 同步华为
-
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
 
@@ -76,10 +92,18 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
         }
 
+
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
         BeanUtils.copyProperties(request,updateVisitRecordingDO);
+        //删除
+        if(request.getStatus() != null && request.getStatus() == StatusEnum.DELETE.getId()){
+            sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
+            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getMethod());
+            return ApiResult.of(0);
+        }
+        updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBusinessType()));
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getMethod());
         return ApiResult.of(0);
     }
 
@@ -211,6 +235,30 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             }
         }
         return false;
+    }
+
+
+    private void synchronizeSweepingData(SweepVillageVisitRecordingDO visitRecordingDO,String apiName) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id", visitRecordingDO.getId());
+        //添加接口 传入activityId
+        if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod())){
+            map.put("activityId",visitRecordingDO.getActivityId());
+        }
+        map.put("mobile",visitRecordingDO.getMobile());
+        map.put("tenantsId",visitRecordingDO.getTenantsId());
+        map.put("successFlag",visitRecordingDO.getSuccessFlag());
+        map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag());
+
+        Gson gson = new Gson();
+        List<StallUpBizType> businessType = gson.fromJson(visitRecordingDO.getBusinessType(), new TypeToken<List<StallUpBizType>>() {
+        }.getType());
+        map.put("bizTypes",businessType);
+        map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime());
+        map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime());
+        map.put("remark",visitRecordingDO.getRemark());
+
+        thirdApiMappingService.asyncDispatch(map, apiName,visitRecordingDO.getMobile());
     }
 
 }

@@ -314,6 +314,48 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
     }
 
+    private GridUserListResponse getMockGridList() {
+
+
+        List<GridUserDetail> list = new ArrayList<>();
+        list.add(GridUserDetail.builder()
+                .mobile("15000001172")
+                .seMobile("15000001172")
+                .name("网格经理")
+                .role("网格经理")
+                .order(1).build());
+        list.add(GridUserDetail.builder()
+                .mobile("15958032925")
+                .seMobile("15958032925")
+                .name("网格长")
+                .role("网格长")
+                .order(2).build());
+        list.add(GridUserDetail.builder()
+                .mobile("15000001171")
+                .seMobile("15000001171")
+                .name("一线人员")
+                .role("一线人员")
+                .order(3).build());
+        list.add(GridUserDetail.builder()
+                .mobile("15226536886")
+                .seMobile("15226536886")
+                .name("一线人员")
+                .role("一线人员")
+                .order(4).build());
+        list.add(GridUserDetail.builder()
+                .mobile("15000001170")
+                .seMobile("15000001170")
+                .name("一线人员")
+                .role("一线人员")
+                .order(5).build());
+
+        GridUserListResponse gridUserListResponse = GridUserListResponse.builder()
+                .getGridUserList(list).build();
+
+        return gridUserListResponse;
+
+    }
+
     private List<GridUserRoleDetail> getMockGridUser() {
         //return new ArrayList<>();
         return Arrays.asList(
@@ -373,6 +415,16 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
     @Override
     public ApiResult<GridUserListResponse> getGridUserList(HuaWeiRequest request) {
+        //mock数据
+        if (!EnvUtil.isOnline()) {
+            List<String> list = Arrays.asList("15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034");
+
+            if (list.contains(request.getMobile())) {
+                GridUserListResponse gridUserListResponse = getMockGridList();
+                return ApiResult.of(0, gridUserListResponse);
+            }
+        }
+
         GetGridUserListRequest getGridUserListRequest = new GetGridUserListRequest();
         getGridUserListRequest.setGridId(request.getGridId());
 
