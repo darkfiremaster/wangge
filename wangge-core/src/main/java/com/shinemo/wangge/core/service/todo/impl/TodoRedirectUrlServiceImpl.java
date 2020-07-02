@@ -250,7 +250,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
 
         String downloadUrl = "http://112.54.48.61:13004/app-release.apk?timestamp=" + System.currentTimeMillis();
         map.put("downloadUrl", downloadUrl);
-        map.put("scheme", scheme);
+        map.put("schema", scheme);
         String url = GsonUtils.toJson(map);
         log.info("[getZhuangYiTodoDetailUrl] 获取唤起装移app的url:{}", url);
         return ApiResult.of(0, url);
