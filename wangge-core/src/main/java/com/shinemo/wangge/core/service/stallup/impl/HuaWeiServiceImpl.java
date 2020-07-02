@@ -326,23 +326,24 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         mobileSet.add("15000001170");
         mobileSet.add(request.getMobile());
         Integer orderSize = 0;
+        int i = 0;
         for(String val:mobileSet){
-            if(val.equals(request.getMobile())){
+            if(val.equals("13588039023")){
                 orderSize=Integer.MIN_VALUE;
             }
             list.add(GridUserDetail.builder()
                     .userId(val)
                     .mobile(val)
                     .seMobile(AESUtil.encrypt(val,seed))
-                    .name("网格长")
-                    .role("网格长")
+                    .name("网格长"+i)
+                    .role("网格长"+i)
                     .order(orderSize).build());
             orderSize++;
+            i++;
         }
-
-
+        List<GridUserDetail> collect = list.stream().sorted(Comparator.comparing(GridUserDetail::getOrder)).collect(Collectors.toList());
         GridUserListResponse gridUserListResponse = GridUserListResponse.builder()
-                .getGridUserList(list).build();
+                .getGridUserList(collect).build();
 
         return gridUserListResponse;
 
