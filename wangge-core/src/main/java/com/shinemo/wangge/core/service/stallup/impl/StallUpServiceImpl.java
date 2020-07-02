@@ -227,6 +227,8 @@ public class StallUpServiceImpl implements StallUpService {
             for (StallUpActivity stallUpActivity : insertList) {
                 syncTodoCreate(stallUpActivity);
             }
+
+            log.info("[create] 新建摆摊成功,request:{}", request);
         }
     }
 

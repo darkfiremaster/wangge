@@ -126,10 +126,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
             sweepVillageActivityQuery.setStatusList(Lists.newArrayList(
                     SweepVillageStatusEnum.END.getId(),
-                    SweepVillageStatusEnum.END.getId(),
-                    SweepVillageStatusEnum.END.getId()
+                    SweepVillageStatusEnum.ABNORMAL_END.getId()
             ));
-
+            List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
         } else {
             throw new ApiException("queryType error");
         }
