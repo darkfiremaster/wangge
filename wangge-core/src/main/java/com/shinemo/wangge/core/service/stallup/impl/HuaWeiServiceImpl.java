@@ -314,45 +314,33 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
     }
 
-    private GridUserListResponse getMockGridList() {
+    private GridUserListResponse getMockGridList(HuaWeiRequest request) {
         String seed = "71a25f582a266454";
 
         List<GridUserDetail> list = new ArrayList<>();
-        list.add(GridUserDetail.builder()
-                .userId("15000001172")
-                .mobile("15000001172")
-                .seMobile(AESUtil.encrypt("15000001172",seed))
-                .name("网格经理")
-                .role("网格经理")
-                .order(1).build());
-        list.add(GridUserDetail.builder()
-                .userId("15958032925")
-                .mobile("15958032925")
-                .seMobile(AESUtil.encrypt("15958032925",seed))
-                .name("网格长")
-                .role("网格长")
-                .order(2).build());
-        list.add(GridUserDetail.builder()
-                .userId("15000001171")
-                .mobile("15000001171")
-                .seMobile(AESUtil.encrypt("15000001171",seed))
-                .name("一线人员")
-                .role("一线人员")
-                .order(3).build());
-        list.add(GridUserDetail.builder()
-                .userId("15226536886")
-                .mobile("15226536886")
-                .seMobile(AESUtil.encrypt("15226536886",seed))
-                .name("一线人员")
-                .role("一线人员")
-                .order(4).build());
-        list.add(GridUserDetail.builder()
-                .userId("15000001170")
-                .mobile("15000001170")
-                .seMobile(AESUtil.encrypt("15000001170",seed))
-                .name("一线人员")
-                .role("一线人员")
-                .order(5).build());
+        Set<String> mobileSet = new HashSet<String>();
+        mobileSet.add("15000001172");
+        mobileSet.add("15958032925");
+        mobileSet.add("15000001171");
+        mobileSet.add("15226536886");
+        mobileSet.add("15000001170");
+        mobileSet.add(request.getMobile());
+
+        Integer orderSize = 0;
+        for(String val:mobileSet){
+            if(val.equals(request.getMobile())){
+                orderSize=Integer.MIN_VALUE;
+            }
+            list.add(GridUserDetail.builder()
+                    .userId(val)
+                    .mobile(val)
+                    .seMobile(AESUtil.encrypt(val,seed))
+                    .name("网格长")
+                    .role("网格长")
+                    .order(orderSize).build());
+            orderSize++;
+        }
+
 
         GridUserListResponse gridUserListResponse = GridUserListResponse.builder()
                 .getGridUserList(list).build();
@@ -425,7 +413,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             List<String> list = Arrays.asList("15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034");
 
             if (list.contains(request.getMobile())) {
-                GridUserListResponse gridUserListResponse = getMockGridList();
+                GridUserListResponse gridUserListResponse = getMockGridList(request);
                 return ApiResult.of(0, gridUserListResponse);
             }
         }
