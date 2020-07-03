@@ -57,17 +57,26 @@
     <!-- 查询最近营销小区结果集 -->
     <select id="findRecentCommunity" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
         select
-            a.*
+            t.*
         from
-            t_stall_up_community a
-                left join t_parent_stall_up_activity b on a.activity_id = b.id
-                left join t_stall_up_activity c on b.id = c.parent_id
-        where
-            b.mobile = #{mobile} or c.mobile = #{mobile}
+            (
+                select
+                    a.*,
+                    b.gmt_create as createTime
+                from
+                    t_stall_up_community a
+                        left join t_parent_stall_up_activity b on a.activity_id = b.id
+                        left join t_stall_up_activity c on b.id = c.parent_id
+                where
+                    b.mobile = #{mobile}
+                   or c.mobile = #{mobile}
+                order by
+                    b.gmt_create desc
+            ) t
         group by
-            a.community_id
+            t.community_id
         order by
-            b.gmt_create desc
+            t.createTime desc
         limit 10
     </select>
 
