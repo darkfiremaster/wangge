@@ -52,7 +52,7 @@ public interface SweepVillageActivityService {
      * 获取扫村活动列表
      * @return
      */
-    ApiResult<List<SweepVillageActivityVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest);
+    ApiResult<List<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest);
 
     /**
      * 获取扫村完成情况

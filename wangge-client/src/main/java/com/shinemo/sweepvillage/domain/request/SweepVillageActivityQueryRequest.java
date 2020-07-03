@@ -14,14 +14,10 @@ public class SweepVillageActivityQueryRequest extends QueryBase {
     private Long id;
 
     /**
-     * 活动状态
+     * 活动状态  1:进行中 2:已结束
      */
     private Integer status;
 
-    /**
-     * 查询类型 1:进行中 2:已结束
-     */
-    private Integer queryType;
 
     private String startTime;
 

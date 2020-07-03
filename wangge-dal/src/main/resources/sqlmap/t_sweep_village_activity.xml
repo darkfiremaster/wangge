@@ -15,17 +15,16 @@
         <result property="areaCode" column="area_code"/>
         <result property="location" column="location"/>
         <result property="rgsLocation" column="rgs_location"/>
+        <result property="gridId" column="grid_id"/>
         <result property="mobile" column="mobile"/>
         <result property="status" column="status"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
-        <result property="remark" column="remark"/>
-        <result property="picUrl" column="pic_url"/>
     </resultMap>
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, gmt_create, gmt_modified, title, village_id, village_name, area, area_code, location, rgs_location, mobile, status, start_time, end_time, remark, pic_url
+        id, gmt_create, gmt_modified, title, village_id, village_name, area, area_code, location, rgs_location, grid_id, mobile, status, start_time, end_time
     </sql>
 
     <sql id="table">
@@ -47,10 +46,17 @@
                     <!--<if test="areaCode != null">and area_code = #{areaCode}</if>-->
                     <!--<if test="location != null">and location = #{location}</if>-->
                     <!--<if test="rgsLocation != null">and rgs_location = #{rgsLocation}</if>-->
-                    <!--<if test="mobile != null">and mobile = #{mobile}</if>-->
-                    <!--<if test="status != null">and status = #{status}</if>-->
-                    <!--<if test="startTime != null">and start_time = #{startTime}</if>-->
-                    <!--<if test="endTime != null">and end_time = #{endTime}</if>-->
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="statusList != null and statusList.size() > 0">
+                        and status in
+                        <foreach collection="statusList" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
+                    <if test="status != null">and status = #{status}</if>
+
+                    <if test="startTime != null">and start_time >= #{startTime}</if>
+                    <if test="endTime != null">and <![CDATA[ end_time <= #{endTime}]]> </if>
                     <!--<if test="remark != null">and remark = #{remark}</if>-->
                     <!--<if test="picUrl != null">and pic_url = #{picUrl}</if>-->
                 </otherwise>
@@ -119,6 +125,9 @@
             <if test="rgsLocation != null">
                 rgs_location,
             </if>
+            <if test="gridId != null">
+                grid_id,
+            </if>
             <if test="mobile != null">
                 mobile,
             </if>
@@ -130,12 +139,6 @@
             </if>
             <if test="endTime != null">
                 end_time,
-            </if>
-            <if test="remark != null">
-                remark,
-            </if>
-            <if test="picUrl != null">
-                pic_url,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -165,6 +168,9 @@
             <if test="rgsLocation != null">
                 #{rgsLocation, jdbcType=VARCHAR},
             </if>
+            <if test="gridId != null">
+                #{gridId, jdbcType=VARCHAR},
+            </if>
             <if test="mobile != null">
                 #{mobile, jdbcType=VARCHAR},
             </if>
@@ -176,12 +182,6 @@
             </if>
             <if test="endTime != null">
                 #{endTime, jdbcType=TIMESTAMP},
-            </if>
-            <if test="remark != null">
-                #{remark, jdbcType=VARCHAR},
-            </if>
-            <if test="picUrl != null">
-                #{picUrl, jdbcType=LONGVARCHAR},
             </if>
         </trim>
     </insert>
@@ -213,6 +213,9 @@
             <if test="rgsLocation != null">
                 rgs_location = #{rgsLocation, jdbcType=VARCHAR},
             </if>
+            <if test="gridId != null">
+                grid_id = #{gridId, jdbcType=VARCHAR},
+            </if>
             <if test="mobile != null">
                 mobile = #{mobile, jdbcType=VARCHAR},
             </if>
@@ -224,12 +227,6 @@
             </if>
             <if test="endTime != null">
                 end_time = #{endTime, jdbcType=TIMESTAMP},
-            </if>
-            <if test="remark != null">
-                remark = #{remark, jdbcType=VARCHAR},
-            </if>
-            <if test="picUrl != null">
-                pic_url = #{picUrl, jdbcType=LONGVARCHAR}
             </if>
         </set>
         WHERE
