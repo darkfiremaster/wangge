@@ -33,6 +33,7 @@
                 </when>
                 <otherwise>
                     <if test="activityId != null">and activity_id = #{activityId}</if>
+                    <if test="communityId != null">and community_id = #{communityId}</if>
                     <if test="activityIds != null and activityIds.size() > 0">
                         and activity_id in
                         <foreach collection="activityIds" item="item" open="(" close=")" separator=",">
@@ -55,12 +56,27 @@
 
     <!-- 查询最近营销小区结果集 -->
     <select id="findRecentCommunity" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
-        select a.* from t_stall_up_community a
-        left join t_parent_stall_up_activity b
-        on a.activity_id = b.id
-        where b.status in(3,4,5) and b.mobile = #{mobile}
-        group by a.community_id
-        order by b.gmt_create desc
+        select
+            t.*
+        from
+            (
+                select
+                    a.*,
+                    b.gmt_create as createTime
+                from
+                    t_stall_up_community a
+                        left join t_parent_stall_up_activity b on a.activity_id = b.id
+                        left join t_stall_up_activity c on b.id = c.parent_id
+                where
+                    b.mobile = #{mobile}
+                   or c.mobile = #{mobile}
+                order by
+                    b.gmt_create desc
+            ) t
+        group by
+            t.community_id
+        order by
+            t.createTime desc
         limit 10
     </select>
 

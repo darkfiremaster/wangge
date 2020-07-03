@@ -9,6 +9,7 @@ import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
+import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
@@ -166,17 +167,28 @@ public class BackdoorController {
     public String refreshCommunity() {
         ParentStallUpActivityQuery parentStallUpActivityQuery = new ParentStallUpActivityQuery();
         List<ParentStallUpActivity> historyForRefreshCommunity = parentStallUpActivityMapper.findHistoryForRefreshCommunity(parentStallUpActivityQuery);
+        log.info("[refreshCommunity] 历史摆摊数量:{}",historyForRefreshCommunity.size());
         if (!CollectionUtils.isEmpty(historyForRefreshCommunity)) {
             List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>(historyForRefreshCommunity.size());
             for (ParentStallUpActivity stallUpActivity : historyForRefreshCommunity) {
-                StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
-                stallUpCommunityDO.setActivityId(stallUpActivity.getId());
-                stallUpCommunityDO.setCommunityName(stallUpActivity.getCommunityName());
-                stallUpCommunityDO.setCommunityLocation(stallUpActivity.getLocation());
-                stallUpCommunityDO.setCommunityId(stallUpActivity.getCommunityId());
-                stallUpCommunityDO.setCommunityAddress(stallUpActivity.getAddress());
-                stallUpCommunityDOS.add(stallUpCommunityDO);
+                //根据活动id和小区id判断,数据是否已存在
+                StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
+                stallUpCommunityQuery.setActivityId(stallUpActivity.getId());
+                stallUpCommunityQuery.setCommunityId(stallUpActivity.getCommunityId());
+                StallUpCommunityDO old = stallUpCommunityMapper.get(stallUpCommunityQuery);
+
+                if (old == null) {
+                    StallUpCommunityDO stallUpCommunityDO = new StallUpCommunityDO();
+                    stallUpCommunityDO.setActivityId(stallUpActivity.getId());
+                    stallUpCommunityDO.setCommunityName(stallUpActivity.getCommunityName());
+                    stallUpCommunityDO.setCommunityLocation(stallUpActivity.getLocation());
+                    stallUpCommunityDO.setCommunityId(stallUpActivity.getCommunityId());
+                    stallUpCommunityDO.setCommunityAddress(stallUpActivity.getAddress());
+                    stallUpCommunityDOS.add(stallUpCommunityDO);
+                }
             }
+
+            log.info("[refreshCommunity] 需要更新的数量:{}",stallUpCommunityDOS.size());
             for (int i = 0; i < stallUpCommunityDOS.size(); i += 50) {
                 stallUpCommunityMapper.batchInsert(stallUpCommunityDOS.subList(i, Math.min(i + 50, stallUpCommunityDOS.size())));
             }
