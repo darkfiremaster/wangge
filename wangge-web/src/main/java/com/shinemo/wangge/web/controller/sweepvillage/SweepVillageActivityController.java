@@ -1,17 +1,15 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
+import cn.hutool.core.lang.Assert;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +32,8 @@ public class SweepVillageActivityController {
 
     @PostMapping("/getActivityList")
     public ApiResult getActivityList(@RequestBody SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
+        Assert.notNull(sweepVillageActivityQueryRequest,"sweepVillageActivityQueryRequest is null");
+        Assert.notNull(sweepVillageActivityQueryRequest.getStatus(),"status is null");
         return sweepVillageActivityService.getSweepVillageActivityList(sweepVillageActivityQueryRequest);
     }
 }

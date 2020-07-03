@@ -65,4 +65,5 @@ public class SweepVillageActivityDO {
      */
     private Date endTime;
 
+
 }
