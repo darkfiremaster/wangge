@@ -3,6 +3,8 @@ package com.shinemo.sweepvillage.domain.request;
 import com.shinemo.smartgrid.domain.QueryBase;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @Author shangkaihui
  * @Date 2020/7/2 14:31
@@ -19,8 +21,8 @@ public class SweepVillageActivityQueryRequest extends QueryBase {
     private Integer status;
 
 
-    private String startTime;
+    private Date startTime;
 
-    private String endTime;
+    private Date endTime;
 
 }

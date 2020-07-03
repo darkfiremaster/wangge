@@ -12,7 +12,15 @@ public class SweepVillageActivityFinishVO {
 
     private Long id;
 
-    private String remark;
+    /**
+     * 扫村次数
+     */
+    private Integer sweepVillageCount;
 
-    private String picUrl;
+    /**
+     * 走访户数
+     */
+    private Integer visitUserCount;
+
+
 }

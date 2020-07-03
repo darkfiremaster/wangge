@@ -19,4 +19,15 @@ public class SweepVillageVisitRecordingQuery extends Query {
     private Long activityId;
 
     private Integer status;
+
+
+    private String mobile;
+    /**
+     * filterCreateTime为true时，根据创建时间过滤
+     */
+    private Boolean filterCreateTime;
+
+    private Date startTime;
+    private Date endTime;
+
 }

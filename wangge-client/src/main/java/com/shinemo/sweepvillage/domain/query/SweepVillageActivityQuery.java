@@ -3,6 +3,7 @@ package com.shinemo.sweepvillage.domain.query;
 import com.shinemo.client.common.QueryBase;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,20 +16,17 @@ public class SweepVillageActivityQuery extends QueryBase {
     private Long id;
 
     /**
-     * 活动状态
+     * 活动状态  1:进行中 2:已结束
      */
     private Integer status;
 
     private List<Integer> statusList;
 
-    /**
-     * 查询类型 1:进行中 2:已结束
-     */
-    private Integer queryType;
 
-    private String startTime;
 
-    private String endTime;
+    private Date startTime;
+
+    private Date endTime;
 
     private String mobile;
 

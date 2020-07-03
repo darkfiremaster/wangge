@@ -2,14 +2,17 @@ package com.shinemo.wangge.core.service.sweepvillage.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.google.common.collect.Lists;
+import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.sweepfloor.domain.model.SweepFloorMarketingNumberDO;
 import com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageMarketingNumberQuery;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
@@ -55,6 +58,10 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Resource
     private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
+
+
+    private static final Integer WEEK_TYPE = 1;
+    private static final Integer MONTH_TYPE = 2;
 
     @Override
     public ApiResult<Void> createSweepVillageActivity(SweepVillageActivityVO sweepVillageActivityVO) {
@@ -198,9 +205,58 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     }
 
     @Override
-    public ApiResult<SweepVillageActivityResultVO> getFinshResultInfo(SweepFloorActivityQuery sweepFloorActivityQuery) {
-        //1.获取已结束
-        return null;
+    public ApiResult<SweepVillageActivityFinishVO> getFinishResultInfo(Integer type) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Date zero = calendar.getTime();
+
+        Date startTime = new Date();
+        SweepVillageActivityQuery query = new SweepVillageActivityQuery();
+        if (WEEK_TYPE.equals(type)) {
+            startTime = DateUtils.getThisWeekMonday(zero);
+        } else if (MONTH_TYPE.equals(type)) {
+            startTime = DateUtils.getThisMonthFirstDay();
+        }
+        //1.获取指定时间段内的已结束的活动列表 指定手机号
+        query.setMobile(SmartGridContext.getMobile());
+        query.setStartTime(startTime);
+        query.setStatusList(Lists.newArrayList(
+                SweepVillageStatusEnum.END.getId(),
+                SweepVillageStatusEnum.ABNORMAL_END.getId()
+        ));
+        query.setEndTime(new Date());
+
+        log.info("[getSweepVillageActivityList] 获取已结束的扫村活动列表,query:{}", query);
+        List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(query);
+
+        Set<Long> activityIdSet = new HashSet<>();
+        sweepVillageActivityDOS.forEach(val->{
+            activityIdSet.add(val.getId());
+        });
+        //2.将指定时间内的活动中生成的走访记录加载到内存
+        SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
+        visitRecordingQuery.setFilterCreateTime(true);
+        visitRecordingQuery.setStartTime(startTime);
+        visitRecordingQuery.setEndTime(new Date());
+        visitRecordingQuery.setMobile(SmartGridContext.getMobile());
+        visitRecordingQuery.setStatus(StatusEnum.NORMAL.getId());
+        List<SweepVillageVisitRecordingDO> visitRecordingDOS = sweepVillageVisitRecordingMapper.find(visitRecordingQuery);
+
+        int visitCount = 0;
+        for(SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS){
+            if(activityIdSet.contains(visitRecordingDO.getActivityId())){
+                continue;
+            }
+            visitCount++;
+        }
+
+        SweepVillageActivityFinishVO sweepVillageActivityFinishVO = new SweepVillageActivityFinishVO();
+        sweepVillageActivityFinishVO.setSweepVillageCount(sweepVillageActivityDOS.size());
+        sweepVillageActivityFinishVO.setVisitUserCount(visitCount);
+        return ApiResult.of(0,sweepVillageActivityFinishVO);
     }
 
     private SweepVillageActivityDO getSweepVillageActivityDO(SweepVillageActivityVO sweepVillageActivityVO) {

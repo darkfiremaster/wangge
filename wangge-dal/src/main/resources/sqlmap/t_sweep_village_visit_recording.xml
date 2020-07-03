@@ -45,6 +45,11 @@
                     <if test="status != null">and status = #{status}</if>
                     <if test="activityId != null">and activity_id = #{activityId}</if>
                     <if test="tenantsId != null">and tenants_id = #{tenantsId}</if>
+                    <if test="filterCreateTime">
+                        <if test="startTime != null"><![CDATA[and gmt_create >= #{startTime}]]></if>
+                        <if test="endTime != null"><![CDATA[and gmt_create <= #{endTime}]]></if>
+                    </if>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
                 </otherwise>
             </choose>
         </where>

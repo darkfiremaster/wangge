@@ -56,10 +56,10 @@ public interface SweepVillageActivityService {
 
     /**
      * 获取扫村完成情况
-     * @param sweepFloorActivityQuery
+     * @param type 1-周记录 2-月记录
      * @return
      */
-    ApiResult<SweepVillageActivityResultVO> getFinshResultInfo(SweepFloorActivityQuery sweepFloorActivityQuery);
+    ApiResult<SweepVillageActivityFinishVO> getFinishResultInfo(Integer type);
 
     /**
      * 历史扫村详情
