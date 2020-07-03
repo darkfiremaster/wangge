@@ -151,6 +151,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.END.getId())) {
+            Assert.notNull(sweepVillageActivityQueryRequest.getStartTime(), "startTime is null");
+            Assert.notNull(sweepVillageActivityQueryRequest.getEndTime(), "endTime is null");
+
             //查已结束的活动
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
             sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
