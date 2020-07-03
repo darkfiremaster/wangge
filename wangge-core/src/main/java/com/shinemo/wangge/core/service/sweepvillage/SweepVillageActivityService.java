@@ -1,12 +1,8 @@
 package com.shinemo.wangge.core.service.sweepvillage;
 
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepfloor.domain.query.SweepFloorActivityQuery;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityVO;
-import com.shinemo.sweepvillage.domain.vo.VillageVO;
+import com.shinemo.sweepvillage.domain.vo.*;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +41,7 @@ public interface SweepVillageActivityService {
      * 扫村结束打卡
      * @return
      */
-    ApiResult<Void> finishActivity(SweepVillageActivityFinishVO sweepVillageActivityFinishVO);
+    ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO);
 
 
     /**

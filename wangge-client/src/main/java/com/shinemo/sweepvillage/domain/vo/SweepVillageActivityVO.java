@@ -16,4 +16,5 @@ public class SweepVillageActivityVO {
     private String rgsLocation;
     private String area;
     private String areaCode;
+    private String startLocation;
 }

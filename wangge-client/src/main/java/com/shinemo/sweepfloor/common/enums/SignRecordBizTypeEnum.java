@@ -9,7 +9,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SignRecordBizTypeEnum {
-    SWEEP_FLOOR(1, "扫楼活动")
+    SWEEP_FLOOR(1, "扫楼活动"),
+    STALL_UP(2, "摆摊活动"),
+    SWEEP_VILLAGE(3, "扫村活动")
 
     ;
     private final int id;
