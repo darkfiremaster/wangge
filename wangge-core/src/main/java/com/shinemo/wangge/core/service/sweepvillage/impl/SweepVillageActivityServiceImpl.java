@@ -170,6 +170,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             ));
             sweepVillageActivityQuery.setStartTime(sweepVillageActivityQueryRequest.getStartTime());
             sweepVillageActivityQuery.setEndTime(sweepVillageActivityQueryRequest.getEndTime());
+            sweepVillageActivityQuery.setOrderByEnable(true);
+            sweepVillageActivityQuery.putOrderBy("end_time",false);
 
             log.info("[getSweepVillageActivityList] 获取已结束的扫村活动列表,query:{}", sweepVillageActivityQuery);
             List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
@@ -201,7 +203,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResult.of(0,resultVOList);
         }
 
-        return ApiResult.of(0, null);
+        throw new ApiException("illegal status",500);
     }
 
     @Override
@@ -248,9 +250,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         int visitCount = 0;
         for(SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS){
             if(activityIdSet.contains(visitRecordingDO.getActivityId())){
-                continue;
+                visitCount++;
             }
-            visitCount++;
+
         }
 
         SweepVillageActivityFinishVO sweepVillageActivityFinishVO = new SweepVillageActivityFinishVO();
