@@ -89,9 +89,9 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_NOT_EXIST);
         }
 
-        if (!checkAuth((visitRecordingDO))) {
-            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
-        }
+//        if (!checkAuth((visitRecordingDO))) {
+//            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
+//        }
 
 
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
@@ -99,12 +99,12 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         //删除
         if(request.getStatus() != null && request.getStatus() == StatusEnum.DELETE.getId()){
             sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName());
+            synchronizeSweepingData(updateVisitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName());
             return ApiResult.of(0);
         }
         updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBizTypes()));
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getApiName());
+        synchronizeSweepingData(updateVisitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getApiName());
         return ApiResult.of(0);
     }
 
