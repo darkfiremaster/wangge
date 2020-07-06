@@ -79,7 +79,7 @@ public class VisitRecordingController {
     }
 
     /**
-     * 根据住户id查询走访记录
+     * 根据活动id查询走访记录
      * @return
      */
     @GetMapping("/getVisitRecordingByActivityId")
