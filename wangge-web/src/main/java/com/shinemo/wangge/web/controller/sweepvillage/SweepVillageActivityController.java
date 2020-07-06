@@ -61,7 +61,7 @@ public class SweepVillageActivityController {
     }
 
 
-    @PostMapping("/getActivityList")
+    @GetMapping("/getSweepVillageActivityList")
     public ApiResult getActivityList(Integer status,String startTime,String endTime) throws ParseException {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
@@ -89,9 +89,9 @@ public class SweepVillageActivityController {
      * 查询扫楼业务办理按钮
      * @return
      */
-    @GetMapping("/getSweepFloorBizList")
+    @GetMapping("/getSweepVillageBizList")
     @SmIgnore
-    public ApiResult<SweepVillageBizListVO> getSweepFloorBizList() {
+    public ApiResult<SweepVillageBizListVO> getSweepVillageBizList() {
 
         //获取摆摊配置
         StallUpConfig.ConfigDetail config = stallUpConfig.getConfig();
