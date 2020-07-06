@@ -2,8 +2,8 @@ package com.shinemo.wangge.core.service.sweepvillage;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
+import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +55,25 @@ public interface SweepVillageActivityService {
      * @return
      */
     ApiResult<SweepVillageActivityFinishVO> getFinishResultInfo(Integer type);
+
+
+    /**
+     * 历史扫村详情
+     */
+
+    /**
+     * 录入业务信息
+     * @param request
+     * @return
+     */
+    public ApiResult<Void> enterMarketingNumber(SweepVillageBusinessRequest request) ;
+
+    /**
+     * 业务量查询
+     * @param activityId
+     * @return
+     */
+    ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId);
+
 
 }
