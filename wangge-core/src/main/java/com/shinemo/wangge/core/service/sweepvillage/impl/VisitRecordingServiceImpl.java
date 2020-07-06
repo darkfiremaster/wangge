@@ -240,11 +240,16 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     private void synchronizeSweepingData(SweepVillageVisitRecordingDO visitRecordingDO,String apiName) {
         Map<String,Object> map = new HashMap<>();
         map.put("id", visitRecordingDO.getId());
+        //删除操作
+        if (apiName.equals(HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getMethod())) {
+            thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
+            return;
+        }
+
         //添加接口 传入activityId
         if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod())){
             map.put("activityId",visitRecordingDO.getActivityId());
         }
-        map.put("mobile",visitRecordingDO.getMobile());
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag());
@@ -257,7 +262,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime());
         map.put("remark",visitRecordingDO.getRemark());
 
-        thirdApiMappingService.asyncDispatch(map, apiName,visitRecordingDO.getMobile());
+        thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
     }
 
 }
