@@ -85,6 +85,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         Assert.hasText(villageVO.getName(), "name is null");
         Assert.hasText(villageVO.getArea(), "area is null");
         Assert.hasText(villageVO.getAreaCode(), "areaCode is null");
+        Assert.hasText(villageVO.getLocation(), "location is null");
         Assert.hasText(villageVO.getRgsLocation(), "rgsLocation is null");
 
         //透传华为
@@ -152,12 +153,12 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
         sweepVillageActivityDO.setStartTime(startTime);
-        long activityId = sweepVillageActivityMapper.insert(sweepVillageActivityDO);
+        sweepVillageActivityMapper.insert(sweepVillageActivityDO);
 
 
         SignRecordDO signRecordDO = new SignRecordDO();
         signRecordDO.setUserId(SmartGridContext.getUid());
-        signRecordDO.setActivityId(activityId);
+        signRecordDO.setActivityId(sweepVillageActivityDO.getId());
         signRecordDO.setStartTime(startTime);
         signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordDO.setStartLocation(sweepVillageActivityVO.getStartLocation());
@@ -169,12 +170,12 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("mobile", SmartGridContext.getMobile());
         map.put("title", sweepVillageActivityVO.getTitle());
         map.put("status", SweepVillageStatusEnum.PROCESSING.getId());
-        map.put("activityId", String.valueOf(activityId));
+        map.put("activityId", String.valueOf(sweepVillageActivityDO.getId()));
         map.put("createTime", startTime.getTime());
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
-        ApiResult<Map<String, Object>> result = thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
+        thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功");
         return ApiResult.of(0);
     }
@@ -376,24 +377,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityFinishVO.setVisitUserCount(visitCount);
         return ApiResult.of(0, sweepVillageActivityFinishVO);
     }
-
-    private SweepVillageActivityDO getSweepVillageActivityDO(SweepVillageActivityVO sweepVillageActivityVO) {
-        SweepVillageActivityDO sweepVillageActivityDO = new SweepVillageActivityDO();
-        sweepVillageActivityDO.setTitle(sweepVillageActivityVO.getTitle());
-        sweepVillageActivityDO.setVillageId(sweepVillageActivityVO.getVillageId());
-        sweepVillageActivityDO.setVillageName(sweepVillageActivityVO.getVillageName());
-        sweepVillageActivityDO.setArea(sweepVillageActivityVO.getArea());
-        sweepVillageActivityDO.setAreaCode(sweepVillageActivityVO.getAreaCode());
-        sweepVillageActivityDO.setLocation(sweepVillageActivityVO.getLocation());
-        sweepVillageActivityDO.setRgsLocation(sweepVillageActivityVO.getRgsLocation());
-        sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
-        sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.NOT_START.getId());
-
-        //TODO
-        return null;
-    }
-
-
 
     @Override
     public ApiResult<Void> enterMarketingNumber(SweepVillageBusinessRequest request) {
