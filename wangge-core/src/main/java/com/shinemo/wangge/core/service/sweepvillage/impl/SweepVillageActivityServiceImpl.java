@@ -16,6 +16,7 @@ import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.model.SweepFloorMarketingNumberDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
+import com.shinemo.sweepvillage.domain.model.SweepVillageMarketingNumberDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
 import com.shinemo.sweepvillage.domain.query.SweepVillageMarketingNumberQuery;
@@ -292,7 +293,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
                 query.setMobile(sweepVillageActivityDO.getMobile());
-                SweepFloorMarketingNumberDO sweepFloorMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
+                SweepVillageMarketingNumberDO sweepFloorMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
                 if (sweepFloorMarketingNumberDO == null) {
                     log.error("[getSweepVillageActivityList] query market num error,query:{}", query);
                     continue;
