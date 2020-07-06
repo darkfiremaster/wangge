@@ -214,23 +214,15 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             log.error("[checkAuth] update visit record error activityDO is null,activityId = {}",visitRecordingDO.getActivityId());
             return false;
         }
-        SmartGridActivityQuery gridActivityQuery = new SmartGridActivityQuery();
-        gridActivityQuery.setActivityId(activityDO.getId());
-        List<SmartGridActivityDO> gridActivityDOS = smartGridActivityMapper.find(gridActivityQuery);
-        if (CollectionUtils.isEmpty(gridActivityDOS)) {
-            return false;
-        }
-        //List<String> dbGridIds = gridActivityDOS.stream().map(SmartGridActivityDO::getGridId).collect(Collectors.toList());
+        String gridId = activityDO.getGridId();
         Map<String, GridUserRoleDetail> roleDetailMap = details.stream().collect(Collectors.toMap(GridUserRoleDetail::getId, a -> a, (k1, k2) -> k1));
-        for (SmartGridActivityDO gridActivityDO : gridActivityDOS) {
-            GridUserRoleDetail detail = roleDetailMap.get(gridActivityDO.getGridId());
-            if (detail != null) {
-                List<GridUserRoleDetail.GridRole> roleList = detail.getRoleList();
-                if (!CollectionUtils.isEmpty(roleList)) {
-                    for (GridUserRoleDetail.GridRole role: roleList) {
-                        if (role.getId().equals(GRID_MANAGER_ROLE)) {
-                            return true;
-                        }
+        GridUserRoleDetail detail = roleDetailMap.get(gridId);
+        if (detail != null) {
+            List<GridUserRoleDetail.GridRole> roleList = detail.getRoleList();
+            if (!CollectionUtils.isEmpty(roleList)) {
+                for (GridUserRoleDetail.GridRole role: roleList) {
+                    if (role.getId().equals(GRID_MANAGER_ROLE)) {
+                        return true;
                     }
                 }
             }
