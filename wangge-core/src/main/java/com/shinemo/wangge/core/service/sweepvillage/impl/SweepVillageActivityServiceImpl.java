@@ -10,10 +10,11 @@ import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
+import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
-import com.shinemo.sweepfloor.domain.model.SweepFloorMarketingNumberDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageMarketingNumberDO;
@@ -22,9 +23,11 @@ import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
 import com.shinemo.sweepvillage.domain.query.SweepVillageMarketingNumberQuery;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
+import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
 import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
+import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.SignRecordMapper;
@@ -32,11 +35,13 @@ import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageMarketingNumberMapper;
 import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -64,6 +69,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Resource
     private SignRecordMapper signRecordMapper;
+
+    @Resource
+    private StallUpConfig stallUpConfig;
 
 
     private static final Integer WEEK_TYPE = 1;
@@ -293,13 +301,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
                 query.setMobile(sweepVillageActivityDO.getMobile());
-                SweepVillageMarketingNumberDO sweepFloorMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
-                if (sweepFloorMarketingNumberDO == null) {
+                SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
+                if (sweepVillageMarketingNumberDO == null) {
                     log.error("[getSweepVillageActivityList] query market num error,query:{}", query);
                     continue;
                 }
 
-                resultVO.setHandleCount(sweepFloorMarketingNumberDO.getCount());
+                resultVO.setHandleCount(sweepVillageMarketingNumberDO.getCount());
 
                 //获取走访户数
                 SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
@@ -383,6 +391,117 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
         //TODO
         return null;
+    }
+
+
+
+    @Override
+    public ApiResult<Void> enterMarketingNumber(SweepVillageBusinessRequest request) {
+
+        ApiResult apiResult = checkActivityExist(request.getActivityId());
+        if (!apiResult.isSuccess()) {
+            return apiResult;
+        }
+
+        SweepVillageMarketingNumberQuery numberQuery = new SweepVillageMarketingNumberQuery();
+        numberQuery.setActivityId(request.getActivityId());
+        SweepVillageMarketingNumberDO marketingNumberDO = sweepVillageMarketingNumberMapper.get(numberQuery);
+        if (marketingNumberDO == null) {
+            //添加
+            SweepVillageMarketingNumberDO newMarketingNumberDO = new SweepVillageMarketingNumberDO();
+            newMarketingNumberDO.setActivityId(request.getActivityId());
+            if (!CollectionUtils.isEmpty(request.getBizList())) {
+                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                newMarketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
+            } else {
+                newMarketingNumberDO.setCount(0);
+                List<StallUpBizType> sweepVillageBizList = stallUpConfig.getConfig().getSweepVillageBizList();
+                List<SweepVillageBizDetail> details = new ArrayList<>();
+                for (StallUpBizType bizType : sweepVillageBizList) {
+                    SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
+                    bizDetail.setId(bizType.getId());
+                    bizDetail.setName(bizType.getName());
+                    bizDetail.setNum(0);
+                    details.add(bizDetail);
+                }
+                newMarketingNumberDO.setDetail(GsonUtils.toJson(details));
+            }
+            newMarketingNumberDO.setRemark(request.getRemark());
+            newMarketingNumberDO.setUserId(SmartGridContext.getUid());
+            sweepVillageMarketingNumberMapper.insert(newMarketingNumberDO);
+        } else {
+            //更新
+            if (!CollectionUtils.isEmpty(request.getBizList())) {
+                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                marketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
+            } else {
+                marketingNumberDO.setCount(0);
+                List<StallUpBizType> sweepVillageBizList = stallUpConfig.getConfig().getSweepVillageBizList();
+                List<SweepVillageBizDetail> details = new ArrayList<>();
+                for (StallUpBizType bizType : sweepVillageBizList) {
+                    SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
+                    bizDetail.setId(bizType.getId());
+                    bizDetail.setName(bizType.getName());
+                    bizDetail.setNum(0);
+                    details.add(bizDetail);
+                }
+                marketingNumberDO.setDetail(GsonUtils.toJson(details));
+            }
+            marketingNumberDO.setRemark(request.getRemark());
+            sweepVillageMarketingNumberMapper.update(marketingNumberDO);
+        }
+        return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId) {
+        //校验活动是否存在
+        ApiResult apiResult = checkActivityExist(activityId);
+        if (!apiResult.isSuccess()) {
+            return apiResult;
+        }
+
+
+        SweepVillageMarketingNumberQuery numberQuery = new SweepVillageMarketingNumberQuery();
+        numberQuery.setActivityId(activityId);
+        SweepVillageMarketingNumberDO marketingNumberDO = sweepVillageMarketingNumberMapper.get(numberQuery);
+        SweepVillageBusinessRequest numberVO = new SweepVillageBusinessRequest();
+        if (marketingNumberDO == null) {
+            List<StallUpBizType> sweepVillageBizList = stallUpConfig.getConfig().getSweepVillageBizList();
+            List<SweepVillageBizDetail> details = new ArrayList<>();
+            for (StallUpBizType bizType : sweepVillageBizList) {
+                SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                details.add(bizDetail);
+            }
+            numberVO.setBizList(details);
+        } else {
+            String detail = marketingNumberDO.getDetail();
+            if (!StringUtils.isBlank(detail)) {
+                List<SweepVillageBizDetail> details = GsonUtils.fromJsonToList(detail, SweepVillageBizDetail[].class);
+                numberVO.setBizList(details);
+            }
+            numberVO.setRemark(marketingNumberDO.getRemark());
+        }
+
+        //用户姓名从哪来？
+        numberVO.setUsername(SmartGridContext.getUserName());
+        return ApiResult.of(0, numberVO);
+    }
+
+
+    private ApiResult<SweepVillageActivityDO> checkActivityExist(Long activityId){
+        //判断扫村活动是否存在
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setId(activityId);
+        SweepVillageActivityDO activityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
+        if (activityDO == null) {
+            log.error("[checkActivityExist] error,query:{}",sweepVillageActivityQuery);
+            return null;
+        }
+        return ApiResult.of(0,activityDO);
     }
 }
 

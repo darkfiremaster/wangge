@@ -39,4 +39,7 @@ public class SweepVillageMarketingNumberDO {
      * 详情
      */
     private String detail;
+
+    /** 营销人员id */
+    private String userId;
 }
