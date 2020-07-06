@@ -68,6 +68,11 @@ public class StallUpConfig {
 		config.setSweepFloorList(bizConfigMap.get(BusinessConfigEnum.SWEEP_FLOOR.getType()));
 		config.setSweepFloorBizList(bizConfigMap.get(BusinessConfigEnum.SWEEP_FLOOR_BIZ.getType()));
 
+		//扫村配置
+		config.setSweepVillageList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE.getType()));
+		config.setSweepVillageBizList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE_BIZ.getType()));
+
+
 		//查询全量业务列表
 		SmartGridBizQuery bizQuery = new SmartGridBizQuery();
 		bizQuery.setStatus(1);
@@ -111,6 +116,19 @@ public class StallUpConfig {
 		List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
 		config.setSweepFloorBizList(tmpSweepFloorBizList);
 		config.setSweepFloorBizMap(tmpSweepFloorBizMap);
+
+		//扫村配置
+		Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
+		List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
+		config.setSweepVillageList(tmpSweepVillageList);
+		config.setSweepVillageMap(tmpSweepVillageMap);
+
+		//扫村业务配置
+		Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
+		List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
+		config.setSweepFloorBizList(tmpSweepVillageBizList);
+		config.setSweepFloorBizMap(tmpSweepVillageBizMap);
+
 
 		//初始化url参数拼接handler
 		MaDianConfig MaDianConfig = config.getMaDianConfig();
@@ -316,6 +334,20 @@ public class StallUpConfig {
 		 */
 		private Map<Long, StallUpBizType> sweepFloorBizMap;
 		private List<StallUpBizType> sweepFloorBizList;
+
+		/**
+		 * 扫村
+		 */
+		private Map<Long,StallUpBizType> sweepVillageMap;
+		private List<StallUpBizType> sweepVillageList;
+
+
+		/**
+		 * 扫村业务
+		 */
+		private List<StallUpBizType> sweepVillageBizMap;
+		private List<StallUpBizType> sweepVillageBizList;
+
 		/**
 		 * url参数拼接map
 		 *
