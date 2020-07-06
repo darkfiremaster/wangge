@@ -99,12 +99,12 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         //删除
         if(request.getStatus() != null && request.getStatus() == StatusEnum.DELETE.getId()){
             sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName());
+            synchronizeSweepingData(updateVisitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName());
             return ApiResult.of(0);
         }
         updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBizTypes()));
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getApiName());
+        synchronizeSweepingData(updateVisitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getApiName());
         return ApiResult.of(0);
     }
 
@@ -133,16 +133,13 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     }
 
     @Override
-    public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
+    public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
         SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
         visitRecordingQuery.setStatus(1);
         visitRecordingQuery.setActivityId(request.getActivityId());
-        visitRecordingQuery.setCurrentPage(request.getCurrentPage());
-        visitRecordingQuery.setPageSize(request.getPageSize());
-        visitRecordingQuery.setQueryTotal(false);
         List<SweepVillageVisitRecordingDO> doList = sweepVillageVisitRecordingMapper.find(visitRecordingQuery);
         if (CollectionUtils.isEmpty(doList)) {
-            return ApiResult.of(0,ListVO.list(new ArrayList<>(),0));
+            return ApiResult.of(0,new ArrayList<>());
         }
         List<SweepVillageVisitRecordingVO> vos = new ArrayList<>();
         for (SweepVillageVisitRecordingDO visitRecordingDO: doList) {
@@ -152,11 +149,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             convertBusinessType(visitRecordingDO,visitRecordingVO);
             vos.add(visitRecordingVO);
         }
-        SweepVillageVisitRecordingQuery countQuery = new SweepVillageVisitRecordingQuery();
-        countQuery.setStatus(1);
-        countQuery.setActivityId(request.getActivityId());
-        long count = sweepVillageVisitRecordingMapper.count(countQuery);
-        return ApiResult.of(0,ListVO.list(vos,count));
+        return ApiResult.of(0,vos);
     }
 
     @Override

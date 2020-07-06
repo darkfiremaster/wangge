@@ -79,11 +79,11 @@ public class VisitRecordingController {
     }
 
     /**
-     * 根据住户id查询走访记录
+     * 根据活动id查询走访记录
      * @return
      */
     @GetMapping("/getVisitRecordingByActivityId")
-    public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
+    public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         return visitRecordingService.getVisitRecordingByActivityId(request);
