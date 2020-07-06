@@ -73,6 +73,9 @@
         from
         <include refid="table"/>
         <include refid="conditions"/>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
     </select>
 
     <!-- 查询某条记录 -->
