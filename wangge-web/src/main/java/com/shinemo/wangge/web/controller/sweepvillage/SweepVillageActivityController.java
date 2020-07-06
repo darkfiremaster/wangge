@@ -76,8 +76,8 @@ public class SweepVillageActivityController {
     /**
      * 获取扫村活动列表
      */
-    @PostMapping("/getSweepFloorActivity")
-    public ApiResult getActivityList(@RequestParam Integer status,
+    @GetMapping("/getSweepVillageActivityList")
+    public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
                                      @RequestParam String startTime,
                                      @RequestParam String endTime,
                                      @RequestParam(required = false)  Integer pageSize,
