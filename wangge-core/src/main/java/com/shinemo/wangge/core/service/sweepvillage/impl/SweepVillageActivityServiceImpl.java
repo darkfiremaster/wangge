@@ -1,5 +1,7 @@
 package com.shinemo.wangge.core.service.sweepvillage.impl;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
@@ -66,6 +68,44 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     private static final Integer WEEK_TYPE = 1;
     private static final Integer MONTH_TYPE = 2;
 
+
+    @Override
+    public ApiResult<Map<String, Object>> createVillage(VillageVO villageVO) {
+        //校验参数
+        Assert.notNull(villageVO, "request is null");
+        Assert.hasText(villageVO.getName(), "name is null");
+        Assert.hasText(villageVO.getArea(), "area is null");
+        Assert.hasText(villageVO.getAreaCode(), "areaCode is null");
+        Assert.hasText(villageVO.getRgsLocation(), "rgsLocation is null");
+
+        //透传华为
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", villageVO.getName());
+        map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        map.put("area", villageVO.getArea());
+        map.put("areaCode", villageVO.getAreaCode());
+        map.put("location", villageVO.getRgsLocation());
+        map.put("mobile", SmartGridContext.getMobile());
+        map.put("createTime", System.currentTimeMillis());
+        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, "addVillage");
+        if (result.isSuccess()) {
+            log.info("[createVillage] 新建村庄成功");
+        } else {
+            log.error("[createVillage] 新建村庄失败,失败原因:{},请求参数:{}", result.getMsg(), map);
+        }
+        return result;
+    }
+
+    @Override
+    public ApiResult<Map<String, Object>> getVillageList() {
+        //透传华为
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        map.put("mobile", SmartGridContext.getMobile());
+        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, "queryVillageList");
+        return result;
+    }
+
     @Override
     @Transactional
     public ApiResult<Void> createSweepVillageActivity(SweepVillageActivityVO sweepVillageActivityVO) {
@@ -114,39 +154,30 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordDO.setStartLocation(sweepVillageActivityVO.getStartLocation());
         signRecordMapper.insert(signRecordDO);
 
-        //todo 同步华为
-
+        //同步华为
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("villageId", sweepVillageActivityVO.getVillageId());
+        map.put("mobile", SmartGridContext.getMobile());
+        map.put("title", sweepVillageActivityVO.getTitle());
+        map.put("status", SweepVillageStatusEnum.PROCESSING.getId());
+        map.put("activityId", String.valueOf(activityId));
+        map.put("createTime", startTime.getTime());
+        map.put("updateTime", startTime.getTime());
+        map.put("startTime", startTime.getTime());
+        map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        ApiResult<Map<String, Object>> result = thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功");
         return ApiResult.of(0);
     }
 
 
     @Override
-    public ApiResult<List<VillageVO>> getVillageList() {
-        //todo 透传华为
-        return null;
-    }
-
-
-    @Override
-    public ApiResult<Map<String, Object>> createVillage(VillageVO villageVO) {
-        //todo 透传华为
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("name", "skh");
-        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, "wahaha");
-
-        return result;
-    }
-
-
-    @Override
     @Transactional
     public ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO) {
-        //todo 校验参数
+        //校验参数
         Assert.notNull(sweepVillageSignVO.getActivityId(), "id is null");
         Assert.notNull(sweepVillageSignVO.getEndLocation(), "endLocation is null");
-
+        Date endTime = new Date();
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageSignVO.getActivityId());
         SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
@@ -166,7 +197,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.END.getId());
         }
 
-        sweepVillageActivityDO.setEndTime(new Date());
+        sweepVillageActivityDO.setEndTime(endTime);
         sweepVillageActivityMapper.update(sweepVillageActivityDO);
 
         //修改签到表
@@ -175,14 +206,29 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordQuery.setActivityId(sweepVillageSignVO.getActivityId());
         SignRecordDO signRecordFromDB = signRecordMapper.get(signRecordQuery);
-        signRecordFromDB.setEndTime(new Date());
+        signRecordFromDB.setEndTime(endTime);
         signRecordFromDB.setEndLocation(sweepVillageSignVO.getEndLocation());
         signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
         signRecordFromDB.setImgUrl(sweepVillageSignVO.getImgUrl());
         signRecordMapper.update(signRecordFromDB);
 
-        log.info("[finishActivity] 扫村活动结束成功");
-        //todo 透传华为
+        //同步华为
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("activityId", String.valueOf(sweepVillageSignVO.getActivityId()));
+        map.put("mobile", SmartGridContext.getMobile());
+        map.put("status", sweepVillageActivityDO.getStatus());
+        map.put("updateTime", endTime.getTime());
+        map.put("endTime", endTime.getTime());
+        if (StrUtil.isNotBlank(sweepVillageSignVO.getRemark())) {
+            map.put("remark", sweepVillageSignVO.getRemark());
+        }
+        if (StrUtil.isNotBlank(sweepVillageSignVO.getImgUrl())) {
+            List<String> imgUrlList = Convert.toList(String.class, sweepVillageSignVO.getImgUrl());
+            map.put("picUrl", imgUrlList);
+        }
+        ApiResult<Map<String, Object>> result = thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
+
+        log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getActivityId());
         return ApiResult.of(0);
     }
 

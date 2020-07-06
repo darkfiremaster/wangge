@@ -10,7 +10,21 @@ import lombok.Data;
 @Data
 public class VillageVO {
 
-    private String title;
-
     private String villageId;
+
+    private String name;
+
+    private String gridId;
+
+    private String area;
+
+    private String areaCode;
+
+    private String location;
+
+    private String rgsLocation;
+
+    private String mobile;
+
+    private Long createTime;
 }
