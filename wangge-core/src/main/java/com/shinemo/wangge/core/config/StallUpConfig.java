@@ -17,7 +17,6 @@ import com.shinemo.wangge.dal.mapper.SmartGridBizMapper;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -156,6 +155,13 @@ public class StallUpConfig {
 		daoSanJiaoHandler.setSeed(daoSanJiaoConfig.getSeed());
 		tmpUrlMap.put(ThirdHandlerTypeEnum.DAO_SAN_JIAO.getType(), daoSanJiaoHandler);
 
+		//稽核工作配置
+		JiHeHandler jiHeHandler = new JiHeHandler();
+		jiHeHandler.setDomain(daoSanJiaoConfig.getDomain());
+		jiHeHandler.setPath(daoSanJiaoConfig.getPath());
+		jiHeHandler.setSeed(daoSanJiaoConfig.getSeed());
+		tmpUrlMap.put(ThirdHandlerTypeEnum.JI_HE.getType(), jiHeHandler);
+
 		//督导配置
 		DuDaoConfig duDaoConfig = config.getDuDaoConfig();
 		DuDaoCommonHandler.setDomain(duDaoConfig.getDomain());
@@ -271,6 +277,7 @@ public class StallUpConfig {
 		private SmsHotConfig smsHotConfig;
 		/** 倒三角配置 */
 		private DaoSanJiaoConfig daoSanJiaoConfig;
+
 		/**
 		 * 督导配置
 		 */
@@ -376,6 +383,7 @@ public class StallUpConfig {
 		private Integer sid;
 		private String seed;
 	}
+
 
 	@Setter
 	@Getter
