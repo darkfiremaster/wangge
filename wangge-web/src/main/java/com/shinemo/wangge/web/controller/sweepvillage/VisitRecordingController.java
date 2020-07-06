@@ -83,7 +83,7 @@ public class VisitRecordingController {
      * @return
      */
     @GetMapping("/getVisitRecordingByActivityId")
-    public ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
+    public ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId(VisitRecordingListRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         return visitRecordingService.getVisitRecordingByActivityId(request);

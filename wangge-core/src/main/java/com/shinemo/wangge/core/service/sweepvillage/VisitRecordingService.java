@@ -16,7 +16,7 @@ public interface VisitRecordingService {
 
     ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByTenantsId(VisitRecordingListRequest request);
 
-    ApiResult<ListVO<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId( VisitRecordingListRequest request);
+    ApiResult<List<SweepVillageVisitRecordingVO>> getVisitRecordingByActivityId( VisitRecordingListRequest request);
 
     ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(Long id);
 
