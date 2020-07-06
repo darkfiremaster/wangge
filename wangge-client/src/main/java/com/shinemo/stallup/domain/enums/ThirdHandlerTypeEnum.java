@@ -33,6 +33,7 @@ public enum ThirdHandlerTypeEnum {
 	DU_DAO_QUERY(11, "督导接口", DuDaoParams.class),
 	ZHUANG_WEI(12, "装维系统", ZhuangWeiParams.class),
 	QUAN_JING(13, "全景系统", null),
+	JI_HE(14, "稽核工作", null),
 	;
 	@Getter
 	private Integer type;

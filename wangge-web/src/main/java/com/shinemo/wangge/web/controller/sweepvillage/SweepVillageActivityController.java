@@ -6,10 +6,8 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageBizListVO;
+import com.shinemo.sweepvillage.domain.vo.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
-import com.shinemo.sweepvillage.domain.vo.VillageVO;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +56,25 @@ public class SweepVillageActivityController {
         return sweepVillageActivityService.getVillageList();
     }
 
+    /**
+     * 新建扫村活动
+     */
+    @PostMapping("/createSweepVillageActivity")
+    public ApiResult<Void> createSweepVillageActivity(@RequestBody SweepVillageActivityVO sweepVillageActivityVO) {
+        return sweepVillageActivityService.createSweepVillageActivity(sweepVillageActivityVO);
+    }
 
+    /**
+     * 结束扫村
+     */
+    @PostMapping("/finishActivity")
+    public ApiResult<Void> finishActivity(@RequestBody SweepVillageSignVO sweepVillageSignVO) {
+        return sweepVillageActivityService.finishActivity(sweepVillageSignVO);
+    }
+
+    /**
+     * 获取扫村活动列表
+     */
     @PostMapping("/getActivityList")
     public ApiResult getActivityList(Integer status,String startTime,String endTime) throws ParseException {
         Assert.notNull(status,"status is null");
