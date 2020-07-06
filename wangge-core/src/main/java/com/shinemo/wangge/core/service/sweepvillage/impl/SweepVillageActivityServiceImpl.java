@@ -428,6 +428,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             }
             newMarketingNumberDO.setRemark(request.getRemark());
             newMarketingNumberDO.setUserId(SmartGridContext.getUid());
+            newMarketingNumberDO.setMobile(SmartGridContext.getMobile());
             sweepVillageMarketingNumberMapper.insert(newMarketingNumberDO);
         } else {
             //更新
