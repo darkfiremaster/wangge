@@ -4,12 +4,12 @@ import cn.hutool.core.lang.Assert;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.model.StallUpBizType;
-import com.shinemo.sweepfloor.domain.vo.SweepFloorMarketingNumberVO;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageBizListVO;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.sweepvillage.domain.vo.VillageVO;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +38,26 @@ public class SweepVillageActivityController {
 
     @Autowired
     private SweepVillageActivityService sweepVillageActivityService;
-
     @Resource
     private StallUpConfig stallUpConfig;
 
 
+
+    /**
+     * 新建村庄
+     */
     @PostMapping("/createVillage")
-    public ApiResult<Map<String, Object>> createVillage() {
-        return sweepVillageActivityService.createVillage(null);
+    public ApiResult<Map<String, Object>> createVillage(@RequestBody VillageVO villageVO) {
+        return sweepVillageActivityService.createVillage(villageVO);
+    }
+
+
+    /**
+     * 获取村庄列表
+     */
+    @PostMapping("/getVillageList")
+    public ApiResult<Map<String, Object>> getVillageList() {
+        return sweepVillageActivityService.getVillageList();
     }
 
 

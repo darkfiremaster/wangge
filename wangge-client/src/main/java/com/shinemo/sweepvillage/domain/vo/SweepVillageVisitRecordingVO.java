@@ -26,7 +26,7 @@ public class SweepVillageVisitRecordingVO {
     /** 是否营销成功标识 */
     private Integer successFlag;
     /** 办理业务 */
-    private List<StallUpBizType> businessType;
+    private List<StallUpBizType> bizTypes;
     /** 宽带过期时间 */
     private Date broadbandExpireTime;
     /** 电视盒到期时间*/

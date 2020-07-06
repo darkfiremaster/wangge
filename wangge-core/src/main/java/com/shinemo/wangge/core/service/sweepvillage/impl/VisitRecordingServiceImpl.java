@@ -58,6 +58,8 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
     private static final String GRID_MANAGER_ROLE = "1";
 
+    private static final String ID_PREFIX = "SC_RECORD_";
+
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
 
@@ -70,11 +72,11 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         visitRecordingDO.setMobile(mobile);
         visitRecordingDO.setMarketingUserName(userName);
 
-        String businessType = GsonUtil.toJson(request.getBusinessType());
+        String businessType = GsonUtil.toJson(request.getBizTypes());
         visitRecordingDO.setBusinessType(businessType);
         sweepVillageVisitRecordingMapper.insert(visitRecordingDO);
         //todo 同步华为
-        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod());
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getApiName());
         return ApiResult.of(0);
     }
 
@@ -97,12 +99,12 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         //删除
         if(request.getStatus() != null && request.getStatus() == StatusEnum.DELETE.getId()){
             sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getMethod());
+            synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName());
             return ApiResult.of(0);
         }
-        updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBusinessType()));
+        updateVisitRecordingDO.setBusinessType(GsonUtil.toJson(request.getBizTypes()));
         sweepVillageVisitRecordingMapper.update(updateVisitRecordingDO);
-        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getMethod());
+        synchronizeSweepingData(visitRecordingDO,HuaweiSweepVillageUrlEnum.UPDATE_SWEEPING_VILLAGE_DATA.getApiName());
         return ApiResult.of(0);
     }
 
@@ -178,9 +180,9 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
     private void convertBusinessType(SweepVillageVisitRecordingDO recordingDO,SweepVillageVisitRecordingVO visitRecordingVO) {
         if (!StringUtils.isBlank(recordingDO.getBusinessType())) {
-            visitRecordingVO.setBusinessType(GsonUtils.fromJsonToList(recordingDO.getBusinessType(), StallUpBizType[].class));
+            visitRecordingVO.setBizTypes(GsonUtils.fromJsonToList(recordingDO.getBusinessType(), StallUpBizType[].class));
         }else {
-            visitRecordingVO.setBusinessType(new ArrayList<>());
+            visitRecordingVO.setBizTypes(new ArrayList<>());
         }
     }
 
@@ -212,23 +214,15 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             log.error("[checkAuth] update visit record error activityDO is null,activityId = {}",visitRecordingDO.getActivityId());
             return false;
         }
-        SmartGridActivityQuery gridActivityQuery = new SmartGridActivityQuery();
-        gridActivityQuery.setActivityId(activityDO.getId());
-        List<SmartGridActivityDO> gridActivityDOS = smartGridActivityMapper.find(gridActivityQuery);
-        if (CollectionUtils.isEmpty(gridActivityDOS)) {
-            return false;
-        }
-        //List<String> dbGridIds = gridActivityDOS.stream().map(SmartGridActivityDO::getGridId).collect(Collectors.toList());
+        String gridId = activityDO.getGridId();
         Map<String, GridUserRoleDetail> roleDetailMap = details.stream().collect(Collectors.toMap(GridUserRoleDetail::getId, a -> a, (k1, k2) -> k1));
-        for (SmartGridActivityDO gridActivityDO : gridActivityDOS) {
-            GridUserRoleDetail detail = roleDetailMap.get(gridActivityDO.getGridId());
-            if (detail != null) {
-                List<GridUserRoleDetail.GridRole> roleList = detail.getRoleList();
-                if (!CollectionUtils.isEmpty(roleList)) {
-                    for (GridUserRoleDetail.GridRole role: roleList) {
-                        if (role.getId().equals(GRID_MANAGER_ROLE)) {
-                            return true;
-                        }
+        GridUserRoleDetail detail = roleDetailMap.get(gridId);
+        if (detail != null) {
+            List<GridUserRoleDetail.GridRole> roleList = detail.getRoleList();
+            if (!CollectionUtils.isEmpty(roleList)) {
+                for (GridUserRoleDetail.GridRole role: roleList) {
+                    if (role.getId().equals(GRID_MANAGER_ROLE)) {
+                        return true;
                     }
                 }
             }
@@ -239,12 +233,17 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
     private void synchronizeSweepingData(SweepVillageVisitRecordingDO visitRecordingDO,String apiName) {
         Map<String,Object> map = new HashMap<>();
-        map.put("id", visitRecordingDO.getId());
+        map.put("id", ID_PREFIX + visitRecordingDO.getId());
+        //删除操作
+        if (apiName.equals(HuaweiSweepVillageUrlEnum.DELETE_SWEEPING_VILLAGE_DATA.getApiName())) {
+            thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
+            return;
+        }
+
         //添加接口 传入activityId
-        if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getMethod())){
+        if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getApiName())){
             map.put("activityId",visitRecordingDO.getActivityId());
         }
-        map.put("mobile",visitRecordingDO.getMobile());
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag());
@@ -257,7 +256,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime());
         map.put("remark",visitRecordingDO.getRemark());
 
-        thirdApiMappingService.asyncDispatch(map, apiName,visitRecordingDO.getMobile());
+        thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
     }
 
 }

@@ -14,20 +14,19 @@ import java.util.Map;
  */
 public interface SweepVillageActivityService {
 
-
-    /**
-     * 获取村庄列表
-     * @return
-     */
-    ApiResult<List<VillageVO>> getVillageList();
-
-
     /**
      * 新建村庄
      * @param villageVO
      * @return
      */
     ApiResult<Map<String, Object>> createVillage(VillageVO villageVO);
+
+
+    /**
+     * 获取村庄列表
+     * @return
+     */
+    ApiResult<Map<String, Object>> getVillageList();
 
 
     /**
@@ -57,6 +56,7 @@ public interface SweepVillageActivityService {
      */
     ApiResult<SweepVillageActivityFinishVO> getFinishResultInfo(Integer type);
 
+
     /**
      * 历史扫村详情
      */
@@ -74,5 +74,6 @@ public interface SweepVillageActivityService {
      * @return
      */
     ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId);
+
 
 }

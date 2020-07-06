@@ -7,6 +7,8 @@ import java.util.List;
 
 @Data
 public class SweepVillageTenantsVO {
+    /** 住户id */
+    private String id;
     /** 扫村计划id */
     private Long activityId;
     /** 村庄id */
@@ -41,4 +43,14 @@ public class SweepVillageTenantsVO {
     private String port;
     /** 家庭联系人 */
     private List<SweepVillageFamilyMember> contactPersonList;
+    /** 村庄名 */
+    private String villageName;
+    /** 联系人姓名 */
+    private String contactPerson;
+    /** 联系人手机号 */
+    private String contactMobile;
+    /** 最近走访时间 */
+    private Date visitTime;
+    /** 距离 */
+    private String distance;
 }
