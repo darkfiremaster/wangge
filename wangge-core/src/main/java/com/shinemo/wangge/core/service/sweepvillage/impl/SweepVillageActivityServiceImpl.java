@@ -241,6 +241,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         return ApiResult.of(0);
     }
 
+    /**
+     * 默认分页
+     * @param sweepVillageActivityQueryRequest
+     * @return
+     */
     @Override
     public ApiResult<List<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
         //校验参数
@@ -252,6 +257,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
             sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
             sweepVillageActivityQuery.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
+            sweepVillageActivityQuery.setPageEnable(true);
+            sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
+            sweepVillageActivityQuery.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
 
             log.info("[getSweepVillageActivityList] 获取进行中的扫村活动列表,query:{}", sweepVillageActivityQuery);
             List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
@@ -288,6 +296,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             sweepVillageActivityQuery.setEndTime(sweepVillageActivityQueryRequest.getEndTime());
             sweepVillageActivityQuery.setOrderByEnable(true);
             sweepVillageActivityQuery.putOrderBy("end_time", false);
+
+            sweepVillageActivityQuery.setPageEnable(true);
+            sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
+            sweepVillageActivityQuery.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
+
 
             log.info("[getSweepVillageActivityList] 获取已结束的扫村活动列表,query:{}", sweepVillageActivityQuery);
             List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);

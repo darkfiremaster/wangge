@@ -62,13 +62,17 @@ public class SweepVillageActivityController {
 
 
     @GetMapping("/getSweepVillageActivityList")
-    public ApiResult getActivityList(Integer status,String startTime,String endTime) throws ParseException {
+    public ApiResult getActivityList(Integer status,String startTime,String endTime,
+                                     @RequestParam(required = false) Integer pageSize,
+                                     @RequestParam(required = false) Integer currentPage) throws ParseException {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         request.setStatus(status);
         request.setStartTime(format.parse(startTime));
         request.setEndTime(format.parse(endTime));
+        request.setCurrentPage(currentPage);
+        request.setPageSize(pageSize);
         return sweepVillageActivityService.getSweepVillageActivityList(request);
     }
 
