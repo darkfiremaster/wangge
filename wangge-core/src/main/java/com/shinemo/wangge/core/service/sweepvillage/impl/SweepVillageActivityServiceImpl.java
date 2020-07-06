@@ -381,10 +381,10 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     @Override
     public ApiResult<Void> enterMarketingNumber(SweepVillageBusinessRequest request) {
 
-//        ApiResult apiResult = checkActivityExist(request.getActivityId());
-//        if (!apiResult.isSuccess()) {
-//            return apiResult;
-//        }
+        ApiResult apiResult = checkActivityExist(request.getActivityId());
+        if (!apiResult.isSuccess()) {
+            return apiResult;
+        }
 
         SweepVillageMarketingNumberQuery numberQuery = new SweepVillageMarketingNumberQuery();
         numberQuery.setActivityId(request.getActivityId());
@@ -394,7 +394,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             SweepVillageMarketingNumberDO newMarketingNumberDO = new SweepVillageMarketingNumberDO();
             newMarketingNumberDO.setActivityId(request.getActivityId());
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
+                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
                 newMarketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
             } else {
                 newMarketingNumberDO.setCount(0);
@@ -404,7 +404,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                     SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                     bizDetail.setId(bizType.getId());
                     bizDetail.setName(bizType.getName());
-                    bizDetail.setCount(0);
+                    bizDetail.setNum(0);
                     details.add(bizDetail);
                 }
                 newMarketingNumberDO.setDetail(GsonUtils.toJson(details));
@@ -415,7 +415,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         } else {
             //更新
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
+                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
                 marketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
             } else {
                 marketingNumberDO.setCount(0);
@@ -425,7 +425,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                     SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                     bizDetail.setId(bizType.getId());
                     bizDetail.setName(bizType.getName());
-                    bizDetail.setCount(0);
+                    bizDetail.setNum(0);
                     details.add(bizDetail);
                 }
                 marketingNumberDO.setDetail(GsonUtils.toJson(details));
@@ -438,13 +438,12 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Override
     public ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId) {
-        //判断扫村活动是否存在
-        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
-        sweepVillageActivityQuery.setId(activityId);
-        SweepVillageActivityDO activityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
-        if (activityDO == null) {
-            return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST);
+        //校验活动是否存在
+        ApiResult apiResult = checkActivityExist(activityId);
+        if (!apiResult.isSuccess()) {
+            return apiResult;
         }
+
 
         SweepVillageMarketingNumberQuery numberQuery = new SweepVillageMarketingNumberQuery();
         numberQuery.setActivityId(activityId);
@@ -457,7 +456,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                 bizDetail.setId(bizType.getId());
                 bizDetail.setName(bizType.getName());
-                bizDetail.setCount(0);
+                bizDetail.setNum(0);
                 details.add(bizDetail);
             }
             numberVO.setBizList(details);
@@ -475,6 +474,18 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         return ApiResult.of(0, numberVO);
     }
 
+
+    private ApiResult<SweepVillageActivityDO> checkActivityExist(Long activityId){
+        //判断扫村活动是否存在
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setId(activityId);
+        SweepVillageActivityDO activityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
+        if (activityDO == null) {
+            log.error("[checkActivityExist] error,query:{}",sweepVillageActivityQuery);
+            return null;
+        }
+        return ApiResult.of(0,activityDO);
+    }
 }
 
 
