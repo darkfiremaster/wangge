@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
-import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
@@ -291,14 +290,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
             log.info("[getSweepVillageActivityList] 获取进行中的扫村活动列表,query:{}", sweepVillageActivityQuery);
             List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(sweepVillageActivityQuery);
-            if (sweepVillageActivityDOS == null) {
-                log.error("[getSweepVillageActivityList] find error,query:{}", sweepVillageActivityQuery);
-                return ApiResult.fail(CommonErrorCodes.SERVER_ERROR.code);
-            }
             //do转为vo
             List<SweepVillageActivityResultVO> resultVOList = new ArrayList<>();
             for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
+                resultVO.setTitle(sweepVillageActivityDO.getTitle());
                 resultVO.setStartTime(sweepVillageActivityDO.getStartTime());
                 resultVO.setArea(sweepVillageActivityDO.getArea());
                 resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
