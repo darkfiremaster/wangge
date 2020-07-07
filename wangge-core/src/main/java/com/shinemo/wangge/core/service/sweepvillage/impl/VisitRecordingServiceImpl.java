@@ -20,6 +20,7 @@ import com.shinemo.sweepfloor.common.enums.SweepFloorStatusEnum;
 import com.shinemo.sweepfloor.domain.model.SmartGridActivityDO;
 import com.shinemo.sweepfloor.domain.model.SweepFloorActivityDO;
 import com.shinemo.sweepfloor.domain.query.SmartGridActivityQuery;
+import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
 import com.shinemo.sweepvillage.domain.enums.HuaweiSweepVillageUrlEnum;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
@@ -236,7 +237,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
         //添加接口 传入activityId
         if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getApiName())){
-            map.put("activityId","" + visitRecordingDO.getActivityId());
+            map.put("activityId", SweepVillageConstants.ID_PREFIX + visitRecordingDO.getActivityId());
         }
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());

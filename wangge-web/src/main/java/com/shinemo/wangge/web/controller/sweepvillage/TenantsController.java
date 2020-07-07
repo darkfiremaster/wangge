@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
+import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,7 @@ public class TenantsController {
 
     @PostMapping("/addTenants")
     public ApiResult<Map<String,Object>> addTenants(@RequestBody Map<String,Object> requestData) {
-        requestData.put("activityId","" + requestData.get("activityId"));
+        requestData.put("activityId", SweepVillageConstants.ID_PREFIX + requestData.get("activityId"));
         return thirdApiMappingService.dispatch(requestData,"addTenants");
     }
 
