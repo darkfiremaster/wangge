@@ -78,6 +78,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     private StallUpConfig stallUpConfig;
 
 
+    private static final String ID_PREFIX = "SC_ACTIVITY";
     private static final Integer WEEK_TYPE = 1;
     private static final Integer MONTH_TYPE = 2;
 
@@ -525,8 +526,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         List<SweepVillageBizDetail> bizDetails = gson.fromJson(sweepVillageMarketingNumberDO.getDetail(),
                 new TypeToken<List<SweepVillageBizDetail>>() {
                 }.getType());
-        //ID_PREFIX +
-        map.put("activityId", sweepVillageMarketingNumberDO.getActivityId());
+
+        map.put("activityId",ID_PREFIX + sweepVillageMarketingNumberDO.getActivityId());
 
         map.put("mobile",SmartGridContext.getMobile());
         map.put("bizInfoList",bizDetails);
