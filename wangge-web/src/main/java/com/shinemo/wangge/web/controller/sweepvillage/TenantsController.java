@@ -78,4 +78,10 @@ public class TenantsController {
         return apiResult;
     }
 
+    @PostMapping("/addTenants")
+    public ApiResult<Map<String,Object>> addTenants(@RequestBody Map<String,Object> requestData) {
+        requestData.put("activityId","" + requestData.get("activityId"));
+        return thirdApiMappingService.dispatch(requestData,"addTenants");
+    }
+
 }
