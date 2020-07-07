@@ -110,7 +110,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         return result;
     }
-xx
     @Override
     public ApiResult<Map<String, Object>> getVillageList() {
         //透传华为
