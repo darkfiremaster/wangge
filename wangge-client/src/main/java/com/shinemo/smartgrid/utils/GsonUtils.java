@@ -1,9 +1,9 @@
 package com.shinemo.smartgrid.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,6 +25,11 @@ public class GsonUtils {
 		gsonBuilder.registerTypeAdapter(Date.class, dateTypeAdapter);
 		gsonBuilder.registerTypeAdapter(Timestamp.class, dateTypeAdapter);
 		gsonBuilder.registerTypeAdapter(java.sql.Date.class, dateTypeAdapter);
+		gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+			public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+				return new Date(json.getAsJsonPrimitive().getAsLong());
+			}
+		});
 		gsonBuilder.disableHtmlEscaping();
 		gson = gsonBuilder.create();
 	}
@@ -115,6 +120,15 @@ public class GsonUtils {
 			return (String) object;
 		}
 		return gson.toJson(object);
+	}
+
+	public static <T> List<T> jsonArrayToList( JsonArray jsonArray, Class<T> clazz) {
+		List<T> list = new ArrayList<>();
+		for (JsonElement user : jsonArray) {
+			T t = gson.fromJson(user, clazz);
+			list.add(t);
+		}
+		return list;
 	}
 
 

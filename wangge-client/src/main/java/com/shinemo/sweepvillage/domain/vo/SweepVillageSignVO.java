@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class SweepVillageSignVO {
 
-    private Long activityId;
+    private Long sweepVillageActivityId;
 
     private String remark;
 

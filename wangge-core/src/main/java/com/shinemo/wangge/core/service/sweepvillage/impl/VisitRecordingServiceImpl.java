@@ -12,6 +12,7 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.stallup.domain.model.SimpleStallUpBizType;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.sweepfloor.common.enums.HuaweiSweepFloorUrlEnum;
@@ -235,7 +236,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
 
         //添加接口 传入activityId
         if(apiName.equals(HuaweiSweepVillageUrlEnum.ADD_SWEEPING_VILLAGE_DATA.getApiName())){
-            map.put("activityId",visitRecordingDO.getActivityId());
+            map.put("activityId","" + visitRecordingDO.getActivityId());
         }
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());
@@ -244,7 +245,16 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         Gson gson = new Gson();
         List<StallUpBizType> businessType = gson.fromJson(visitRecordingDO.getBusinessType(), new TypeToken<List<StallUpBizType>>() {
         }.getType());
-        map.put("bizTypes",businessType);
+        List<SimpleStallUpBizType> simpleStallUpBizTypes = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(businessType)) {
+            for (StallUpBizType stallUpBizType: businessType) {
+                SimpleStallUpBizType simpleStallUpBizType = new SimpleStallUpBizType();
+                simpleStallUpBizType.setId("" + stallUpBizType.getId());
+                simpleStallUpBizType.setName(stallUpBizType.getName());
+                simpleStallUpBizTypes.add(simpleStallUpBizType);
+            }
+        }
+        map.put("bizTypes",simpleStallUpBizTypes);
         map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime());
         map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime());
         map.put("remark",visitRecordingDO.getRemark());

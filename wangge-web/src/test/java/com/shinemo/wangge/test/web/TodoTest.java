@@ -1,5 +1,6 @@
 package com.shinemo.wangge.test.web;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -16,6 +17,7 @@ import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.core.service.todo.impl.TodoRedirectUrlServiceImpl;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
 import com.shinemo.wangge.web.MainApplication;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +36,7 @@ import java.util.TreeMap;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MainApplication.class)
+@Slf4j
 public class TodoTest {
 
     @Resource
@@ -191,5 +194,71 @@ public class TodoTest {
         TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);
         thirdTodoMapper.insert(todoDO);
+    }
+
+    @Test
+    public void insertTodoList() {
+        String json = "[\n" +
+                "        {\n" +
+                "            \"id\": 58,\n" +
+                "            \"gmtCreate\": 1594116776000,\n" +
+                "            \"gmtModified\": 1594116777000,\n" +
+                "            \"thirdId\": \"C-771-20200707-188515\",\n" +
+                "            \"thirdType\": 4,\n" +
+                "            \"title\": \"魔百盒-null-null-新装\",\n" +
+                "            \"remark\": \"工单时限：2020-07-08 20:00:00.0\\n预约时间：2020-07-07 18:00:00 - 2020-07-07 19:00:00\\n装机地址：广西南宁良庆区良庆区城区宋厢路18号盛科城小区A1栋1单元17楼竖井\",\n" +
+                "            \"status\": 0,\n" +
+                "            \"label\": \"待施工\",\n" +
+                "            \"operatorTime\": 1594116777000,\n" +
+                "            \"operatorMobile\": \"18776892034\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 57,\n" +
+                "            \"gmtCreate\": 1594116776000,\n" +
+                "            \"gmtModified\": 1594116776000,\n" +
+                "            \"thirdId\": \"C-771-20200707-188485\",\n" +
+                "            \"thirdType\": 4,\n" +
+                "            \"title\": \"家庭宽带-50M-FTTH-新装-正装机\",\n" +
+                "            \"remark\": \"工单时限：2020-07-09 12:00:00.0\\n预约时间： - \\n装机地址：广西南宁武鸣县城厢镇定罗路农机厂宿舍(B改H)B栋2单元3楼301\",\n" +
+                "            \"status\": 0,\n" +
+                "            \"label\": \"待预约\",\n" +
+                "            \"operatorTime\": 1594116776000,\n" +
+                "            \"operatorMobile\": \"18776892034\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 56,\n" +
+                "            \"gmtCreate\": 1594116776000,\n" +
+                "            \"gmtModified\": 1594117870000,\n" +
+                "            \"thirdId\": \"C-771-20200707-188488\",\n" +
+                "            \"thirdType\": 4,\n" +
+                "            \"title\": \"家庭宽带-100M-FTTB-新装-正装机\",\n" +
+                "            \"remark\": \"工单时限：2020-07-09 12:00:00.0\\n预约时间： - \\n装机地址：广西南宁青秀区青秀区城区仙葫大道121号观澜溪谷小区(B改H含小微)13栋1单元1楼24号商铺\",\n" +
+                "            \"status\": 0,\n" +
+                "            \"label\": \"待预约\",\n" +
+                "            \"operatorTime\": 1594117870000,\n" +
+                "            \"operatorMobile\": \"18776892034\"\n" +
+                "        }\n" +
+                "    ]";
+        List<TodoDO> todoDOList = GsonUtils.fromJsonToList(json, TodoDO[].class);
+        for (TodoDO todoDO : todoDOList) {
+            TodoQuery todoQuery = new TodoQuery();
+            todoQuery.setThirdId(todoDO.getThirdId());
+            todoQuery.setThirdType(todoDO.getThirdType());
+            todoQuery.setMobile(todoDO.getOperatorMobile());
+            TodoDO todoDB = thirdTodoMapper.get(todoQuery);
+            if (todoDB == null) {
+                //新增
+                todoDO.setId(null);
+                thirdTodoMapper.insert(todoDO);
+                log.info("新增成功");
+            } else {
+                //更新
+                TodoDO todoDO1 = new TodoDO();
+                BeanUtil.copyProperties(todoDO, todoDO1);
+                todoDO1.setId(todoDB.getId());
+                thirdTodoMapper.update(todoDO);
+                log.info("修改成功,id:{}", todoDO1.getId());
+            }
+        }
     }
 }

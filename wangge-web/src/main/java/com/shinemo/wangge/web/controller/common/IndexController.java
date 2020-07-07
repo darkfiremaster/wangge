@@ -1,20 +1,6 @@
 package com.shinemo.wangge.web.controller.common;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import cn.hutool.core.collection.CollUtil;
 import com.google.gson.JsonElement;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
@@ -40,14 +26,27 @@ import com.shinemo.sweepfloor.domain.response.IndexInfoResponse;
 import com.shinemo.sweepfloor.domain.vo.SmartGridVO;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorBusinessCountAndHouseCountVO;
+import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
+import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
-
+import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 首页
@@ -68,6 +67,9 @@ public class IndexController {
 
     @Resource
     private SweepFloorService sweepFloorService;
+
+    @Resource
+    private SweepVillageActivityService sweepVillageActivityService;
 
     @Resource
     private HuaWeiService huaWeiService;
@@ -111,6 +113,20 @@ public class IndexController {
         response.setMonthDone(stallUpInfo.getMonthDone() + sweepFloorData.getMonthDone());
         response.setWeekToDo(stallUpInfo.getWeekToDo() + sweepFloorData.getWeekToDo());
         response.setSweepFloorActivityVO(sweepFloorData.getSweepFloorActivityVO());
+
+        // 查扫村相关信息
+        SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest = new SweepVillageActivityQueryRequest();
+        sweepVillageActivityQueryRequest.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
+        ApiResult<List<SweepVillageActivityResultVO>> sweepVillageActivityList = sweepVillageActivityService.getSweepVillageActivityList(sweepVillageActivityQueryRequest);
+        if (CollUtil.isNotEmpty(sweepVillageActivityList.getData())) {
+            SweepVillageActivityResultVO sweepVillageActivityResultVO = sweepVillageActivityList.getData().get(0);
+            response.setSweepVillageActivityResultVO(sweepVillageActivityResultVO);
+        } else {
+            response.setSweepVillageActivityResultVO(null);
+        }
+        ApiResult<SweepVillageActivityFinishVO> finishResultInfo = sweepVillageActivityService.getFinishResultInfo(1);
+        response.setSweepVillageActivityFinishVO(finishResultInfo.getData());
+
         // 首页
         List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(uid + "").stream()
                 .map(i -> toBizTypeVO(stallUpConfig.getConfig().getMap().get(i))).collect(Collectors.toList());
