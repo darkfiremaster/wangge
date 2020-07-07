@@ -224,7 +224,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_STATUS_ERROR);
         }
         //判断打卡距离
-        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getLocation(), sweepVillageSignVO.getLocationDetailVO().getLocation());
+        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getRgsLocation(), sweepVillageSignVO.getLocationDetailVO().getLocation());
         if (distance >= 10000) {
             //异常打卡
             log.info("[finishActivity]异常打卡,超过打卡距离,活动id:{},距离:{}", sweepVillageSignVO.getActivityId(), distance);
