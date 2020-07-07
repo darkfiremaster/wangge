@@ -1,16 +1,23 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
 import cn.hutool.core.lang.Assert;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
 import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
+import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +27,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +45,8 @@ public class SweepVillageActivityController {
     private SweepVillageActivityService sweepVillageActivityService;
     @Resource
     private StallUpConfig stallUpConfig;
+    @Resource
+    private ThirdApiMappingService thirdApiMappingService;
 
     /**
      * 获取用户上次扫村打卡的村庄
@@ -186,5 +196,68 @@ public class SweepVillageActivityController {
     public ApiResult<SweepVillageBusinessRequest> getMarketingNumber(@RequestParam Long activityId) {
         org.springframework.util.Assert.notNull(activityId,"activityId is null");
         return sweepVillageActivityService.getMarketingNumber(activityId);
+    }
+
+    /**
+     * 村庄地区查询
+     * @return
+     */
+    @GetMapping("/queryRegionalInformation")
+    public ApiResult<List<SweepVillageAreaVO>> queryRegionalInformation(@RequestParam(required = false) String provinceCode,
+                                                                            @RequestParam(required = false) String cityCode) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("cityCode",cityCode);
+        map.put("provinceCode",provinceCode);
+        ApiResult<Map<String, Object>> apiResult = thirdApiMappingService.dispatch(map, "queryRegionalInformation");
+        if (apiResult == null || !apiResult.isSuccess()) {
+            return ApiResultWrapper.fail(SweepVillageErrorCodes.BASE_ERROR);
+        }
+        Map<String, Object> data = apiResult.getData();
+        if (CollectionUtils.isEmpty(data)) {
+            return ApiResult.of(0,new ArrayList<>());
+        }
+        JsonParser parser = new JsonParser();
+        JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("provinceList"))).getAsJsonArray();
+        List<HuaWeiAreaVO> list = GsonUtils.jsonArrayToList(jsonArray, HuaWeiAreaVO.class);
+        List<SweepVillageAreaVO> villageAreaVOS = new ArrayList<>();
+        if (StringUtils.isBlank(cityCode) && StringUtils.isBlank(provinceCode)) {
+            for (HuaWeiAreaVO huaWeiAreaVO: list) {
+                SweepVillageAreaVO sweepVillageAreaVO = new SweepVillageAreaVO();
+                sweepVillageAreaVO.setText(huaWeiAreaVO.getProvinceName());
+                sweepVillageAreaVO.setCode(huaWeiAreaVO.getProvinceCode());
+                villageAreaVOS.add(sweepVillageAreaVO);
+            }
+        }else if (StringUtils.isBlank(cityCode) && !StringUtils.isBlank(provinceCode)) {
+            HuaWeiAreaVO huaWeiAreaVO = list.get(0);
+            List<HuaWeiAreaVO.City> cityList = huaWeiAreaVO.getCityList();
+            if (CollectionUtils.isEmpty(cityList)) {
+                return ApiResult.of(0,new ArrayList<>());
+            }
+            for (HuaWeiAreaVO.City city: cityList) {
+                SweepVillageAreaVO sweepVillageAreaVO = new SweepVillageAreaVO();
+                sweepVillageAreaVO.setText(city.getCityName());
+                sweepVillageAreaVO.setCode(city.getCityCode());
+                villageAreaVOS.add(sweepVillageAreaVO);
+            }
+        }else {
+            HuaWeiAreaVO huaWeiAreaVO = list.get(0);
+            List<HuaWeiAreaVO.City> cityList = huaWeiAreaVO.getCityList();
+            if (CollectionUtils.isEmpty(cityList)) {
+                return ApiResult.of(0,new ArrayList<>());
+            }
+            HuaWeiAreaVO.City city = cityList.get(0);
+            List<HuaWeiAreaVO.Area> areaList = city.getAreaList();
+            if (CollectionUtils.isEmpty(areaList)) {
+                return ApiResult.of(0,new ArrayList<>());
+            }
+            for (HuaWeiAreaVO.Area area: areaList) {
+                SweepVillageAreaVO sweepVillageAreaVO = new SweepVillageAreaVO();
+                sweepVillageAreaVO.setText(area.getAreaName());
+                sweepVillageAreaVO.setCode(area.getAreaCode());
+                villageAreaVOS.add(sweepVillageAreaVO);
+            }
+        }
+
+        return ApiResult.of(0,villageAreaVOS);
     }
 }

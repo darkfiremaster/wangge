@@ -1,20 +1,16 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
 import com.google.gson.*;
-import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageVisitRecordingVO;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
