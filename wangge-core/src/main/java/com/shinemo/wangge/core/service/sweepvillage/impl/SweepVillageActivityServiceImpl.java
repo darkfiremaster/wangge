@@ -318,10 +318,10 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
                 if (sweepVillageMarketingNumberDO == null) {
                     log.error("[getSweepVillageActivityList] query market num error,query:{}", query);
-                    continue;
+                    resultVO.setHandleCount(0);
+                }else {
+                    resultVO.setHandleCount(sweepVillageMarketingNumberDO.getCount());
                 }
-
-                resultVO.setHandleCount(sweepVillageMarketingNumberDO.getCount());
 
                 //获取走访户数
                 SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
