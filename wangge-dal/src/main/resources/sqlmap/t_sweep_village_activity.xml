@@ -73,9 +73,23 @@
         from
         <include refid="table"/>
         <include refid="conditions"/>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
     </select>
 
     <!-- 查询某条记录 -->
+    <select id="getUserLastVillage" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        where 1=1
+        and mobile=#{mobile}
+        order by gmt_modified desc
+        limit 1
+    </select>
+
     <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">
         select
         <include refid="columns"/>
@@ -84,6 +98,7 @@
         <include refid="conditions"/>
         limit 1
     </select>
+
 
     <!-- 统计查询结果数量 -->
     <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery">

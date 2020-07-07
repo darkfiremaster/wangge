@@ -7,6 +7,7 @@ import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
+import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,13 @@ public class SweepVillageActivityController {
     @Resource
     private StallUpConfig stallUpConfig;
 
-
+    /**
+     * 获取用户上次扫村打卡的村庄
+     */
+    @PostMapping("/getUserLastVillage")
+    public ApiResult<VillageVO> getUserLastVillage() {
+        return sweepVillageActivityService.getUserLastVillage();
+    }
 
     /**
      * 新建村庄
@@ -64,6 +71,7 @@ public class SweepVillageActivityController {
         return sweepVillageActivityService.createSweepVillageActivity(sweepVillageActivityVO);
     }
 
+
     /**
      * 结束扫村
      */
@@ -75,14 +83,25 @@ public class SweepVillageActivityController {
     /**
      * 获取扫村活动列表
      */
-    @PostMapping("/getActivityList")
-    public ApiResult getActivityList(Integer status,String startTime,String endTime) throws ParseException {
+    @GetMapping("/getSweepVillageActivityList")
+    public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
+                                     @RequestParam String startTime,
+                                     @RequestParam String endTime,
+                                     @RequestParam(required = false)  Integer pageSize,
+                                     @RequestParam(required = false) Integer currentPage) {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         request.setStatus(status);
-        request.setStartTime(format.parse(startTime));
-        request.setEndTime(format.parse(endTime));
+        try {
+            request.setStartTime(format.parse(startTime));
+            request.setEndTime(format.parse(endTime));
+        } catch (ParseException e) {
+            log.error("[getSweepVillageActivityList] date parse error,startTime:{},endTime:{}",startTime,endTime);
+            return ApiResult.fail(SweepVillageErrorCodes.DATE_PARSE_ERROR.code,SweepVillageErrorCodes.DATE_PARSE_ERROR.msg);
+        }
+        request.setCurrentPage(currentPage);
+        request.setPageSize(pageSize);
         return sweepVillageActivityService.getSweepVillageActivityList(request);
     }
 
@@ -103,9 +122,9 @@ public class SweepVillageActivityController {
      * 查询扫楼业务办理按钮
      * @return
      */
-    @GetMapping("/getSweepFloorBizList")
+    @GetMapping("/getSweepVillageBizList")
     @SmIgnore
-    public ApiResult<SweepVillageBizListVO> getSweepFloorBizList() {
+    public ApiResult<SweepVillageBizListVO> getSweepVillageBizList() {
 
         //获取摆摊配置
         StallUpConfig.ConfigDetail config = stallUpConfig.getConfig();
