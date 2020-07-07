@@ -88,7 +88,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.getUserLastVillage(sweepVillageActivityQuery);
         if (sweepVillageActivityDO != null) {
             VillageVO villageVO = new VillageVO();
-            villageVO.setVillageId(sweepVillageActivityDO.getVillageId());
+            villageVO.setId(sweepVillageActivityDO.getVillageId());
             villageVO.setName(sweepVillageActivityDO.getVillageName());
             villageVO.setArea(sweepVillageActivityDO.getArea());
             villageVO.setAreaCode(sweepVillageActivityDO.getAreaCode());
@@ -169,6 +169,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setTitle(sweepVillageActivityVO.getTitle());
         sweepVillageActivityDO.setVillageId(sweepVillageActivityVO.getVillageId());
         sweepVillageActivityDO.setVillageName(sweepVillageActivityVO.getVillageName());
+        sweepVillageActivityDO.setAddress(sweepVillageActivityVO.getLocationDetailVO().getAddress());
         sweepVillageActivityDO.setArea(sweepVillageActivityVO.getArea());
         sweepVillageActivityDO.setAreaCode(sweepVillageActivityVO.getAreaCode());
         sweepVillageActivityDO.setLocation(sweepVillageActivityVO.getLocation());
@@ -296,6 +297,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
                 resultVO.setTitle(sweepVillageActivityDO.getTitle());
                 resultVO.setStartTime(sweepVillageActivityDO.getStartTime());
+                resultVO.setAddress(sweepVillageActivityDO.getAddress());
                 resultVO.setArea(sweepVillageActivityDO.getArea());
                 resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
                 resultVO.setVillageName(sweepVillageActivityDO.getVillageName());

@@ -13,10 +13,17 @@ public class SweepVillageActivityVO {
     private String title;
     private String villageId;
     private String villageName;
+    /**
+     * 村庄高德地图坐标
+     */
     private String location;
+    /**
+     * 村庄rgs坐标
+     */
     private String rgsLocation;
     private String area;
     private String areaCode;
+    private String address;
     /** 地址信息 */
     private LocationDetailVO locationDetailVO;
 }

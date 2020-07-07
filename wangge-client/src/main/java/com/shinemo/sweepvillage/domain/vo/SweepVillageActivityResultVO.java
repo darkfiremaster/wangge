@@ -24,6 +24,8 @@ public class SweepVillageActivityResultVO {
     /** 村庄名称 */
     private String villageName;
 
+    private String address;
+
     /** 地区 */
     private String area;
 

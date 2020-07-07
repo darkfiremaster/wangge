@@ -26,6 +26,11 @@ public class SweepVillageActivityDO {
      * 村庄名称
      */
     private String villageName;
+
+    /**
+     * 扫村打卡地址
+     */
+    private String address;
     /**
      * 地区
      */

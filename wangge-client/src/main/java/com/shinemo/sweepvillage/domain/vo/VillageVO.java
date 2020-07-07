@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class VillageVO {
 
-    private String villageId;
+    private String id;
 
     private String name;
 
