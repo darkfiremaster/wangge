@@ -1,9 +1,11 @@
 package com.shinemo.todo.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shinemo.client.dal.entity.Model;
 import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -17,8 +19,11 @@ public class TodoDO implements Model {
     protected static final long serialVersionUID = 4753810862868386037L;
 
     private Long id;
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date gmtCreate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date gmtModified;
     /**
      * 第三方代办事项id
@@ -49,6 +54,8 @@ public class TodoDO implements Model {
     /**
      * 执行时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date operatorTime;
     /**
      * 执行人手机号

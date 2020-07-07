@@ -128,6 +128,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         return result;
     }
+
     @Override
     public ApiResult<Map<String, Object>> getVillageList() {
         //透传华为
@@ -150,7 +151,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         Assert.notNull(sweepVillageActivityVO.getAreaCode(), "areaCode is null");
         Assert.notNull(sweepVillageActivityVO.getLocation(), "location is null");
         Assert.notNull(sweepVillageActivityVO.getRgsLocation(), "rgsLocation is null");
-        Assert.notNull(sweepVillageActivityVO.getRgsLocation(), "startLocation is null");
+        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO(), "locationDetail is null");
+        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getAddress(), "address is null");
 
         //判断用户是否已有进行中的扫村活动
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
@@ -183,7 +186,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordDO.setActivityId(sweepVillageActivityDO.getId());
         signRecordDO.setStartTime(startTime);
         signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
-        signRecordDO.setStartLocation(sweepVillageActivityVO.getStartLocation());
+        signRecordDO.setStartLocation(GsonUtils.toJson(sweepVillageActivityVO.getLocationDetailVO()));
         signRecordMapper.insert(signRecordDO);
 
         //同步华为
@@ -192,13 +195,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("mobile", SmartGridContext.getMobile());
         map.put("title", sweepVillageActivityVO.getTitle());
         map.put("status", SweepVillageStatusEnum.PROCESSING.getId());
-        map.put("activityId", ID_PREFIX+sweepVillageActivityDO.getId());
+        map.put("activityId", ID_PREFIX + sweepVillageActivityDO.getId());
         map.put("createTime", startTime.getTime());
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
-        log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}",sweepVillageActivityDO.getId());
+        log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}", sweepVillageActivityDO.getId());
         return ApiResult.of(0);
     }
 
@@ -221,7 +224,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_STATUS_ERROR);
         }
         //判断打卡距离
-        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getLocation(), sweepVillageSignVO.getLocationDetailVO().getLocation());
+        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getRgsLocation(), sweepVillageSignVO.getLocationDetailVO().getLocation());
         if (distance >= 10000) {
             //异常打卡
             log.info("[finishActivity]异常打卡,超过打卡距离,活动id:{},距离:{}", sweepVillageSignVO.getActivityId(), distance);
@@ -247,7 +250,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
         //同步华为
         HashMap<String, Object> map = new HashMap<>();
-        map.put("activityId", ID_PREFIX+sweepVillageSignVO.getActivityId());
+        map.put("activityId", ID_PREFIX + sweepVillageSignVO.getActivityId());
         map.put("mobile", SmartGridContext.getMobile());
         map.put("status", sweepVillageActivityDO.getStatus());
         map.put("updateTime", endTime.getTime());
@@ -479,7 +482,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
 
 
-
         return ApiResult.of(0);
     }
 
@@ -537,22 +539,23 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     /**
      * 同步给华为
+     *
      * @param sweepVillageMarketingNumberDO
      */
     private void synchronizeSweepingData(SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO) {
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         Gson gson = new Gson();
         List<SweepVillageBizDetail> bizDetails = gson.fromJson(sweepVillageMarketingNumberDO.getDetail(),
                 new TypeToken<List<SweepVillageBizDetail>>() {
                 }.getType());
 
-        map.put("activityId",ID_PREFIX + sweepVillageMarketingNumberDO.getActivityId());
+        map.put("activityId", ID_PREFIX + sweepVillageMarketingNumberDO.getActivityId());
 
-        map.put("mobile",SmartGridContext.getMobile());
-        map.put("bizInfoList",bizDetails);
-        map.put("remark",sweepVillageMarketingNumberDO.getRemark());
+        map.put("mobile", SmartGridContext.getMobile());
+        map.put("bizInfoList", bizDetails);
+        map.put("remark", sweepVillageMarketingNumberDO.getRemark());
 
-        thirdApiMappingService.asyncDispatch(map, HuaweiSweepVillageUrlEnum.ADD_OR_UPDATE_VILLAGE_BIZ_DATA.getApiName(),SmartGridContext.getMobile());
+        thirdApiMappingService.asyncDispatch(map, HuaweiSweepVillageUrlEnum.ADD_OR_UPDATE_VILLAGE_BIZ_DATA.getApiName(), SmartGridContext.getMobile());
     }
 
 }
