@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class LocationDetailVO {
-    /** 坐标 */
+    /** 打卡人坐标 */
     private String location;
-    /** 详细地址 */
+    /** 打卡人详细地址 */
     private String address;
 }

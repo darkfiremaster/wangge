@@ -7,6 +7,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableAsync
@@ -35,5 +36,10 @@ public class ExecutorConfig {
         //执行初始化
         executor.initialize();
         return executor;
+    }
+    
+    @Bean
+    public UserOperatorLogManager userOperatorLogManager() {
+        return new UserOperatorLogManager(100, corePoolSize, true, 1, TimeUnit.MINUTES);
     }
 }

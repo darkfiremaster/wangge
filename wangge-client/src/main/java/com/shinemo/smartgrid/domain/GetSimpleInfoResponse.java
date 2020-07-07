@@ -6,6 +6,8 @@ import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.model.StallUpDetailVO;
 import com.shinemo.stallup.domain.model.SweepFloorBizTotal;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
 import lombok.Data;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class GetSimpleInfoResponse {
 	//todo 扫楼
 	private SweepFloorActivityVO sweepFloorActivityVO;
 	private SweepFloorBizTotal sweepFloorBizTotal;
+	//扫村
+	private SweepVillageActivityResultVO sweepVillageActivityResultVO;
+	private SweepVillageActivityFinishVO sweepVillageActivityFinishVO;
 	private Long todayToDo;
 	private Long weekToDo;
 	private Long monthDone;

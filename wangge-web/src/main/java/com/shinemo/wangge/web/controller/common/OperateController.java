@@ -1,5 +1,25 @@
 package com.shinemo.wangge.web.controller.common;
 
+import static com.shinemo.util.WebUtils.getValueFromCookies;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.client.util.WebUtil;
@@ -10,26 +30,13 @@ import com.shinemo.smartgrid.domain.GridInfoToken;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
+import com.shinemo.wangge.core.async.UserOperatorLogManager;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.shinemo.util.WebUtils.getValueFromCookies;
 
 /**
  * @Author shangkaihui
@@ -44,8 +51,8 @@ public class OperateController {
     @Resource
     private OperateService operateService;
 
-    @Resource
-    private ThreadPoolTaskExecutor asyncServiceExecutor;
+    // @Resource
+    // private ThreadPoolTaskExecutor asyncServiceExecutor;
 
     @Resource
     private HuaWeiService huaWeiService;
@@ -55,6 +62,9 @@ public class OperateController {
 
     @Resource
     private SmartGridInfoService smartGridInfoService;
+    
+    @Resource
+    private UserOperatorLogManager userOperatorLogManager;
 
     @NacosValue(value = "${domain}", autoRefreshed = true)
     private String domain = "developer.e.uban360.com";
@@ -69,7 +79,9 @@ public class OperateController {
         userOperateLogVO.setUserName(SmartGridContext.getUserName());
         userOperateLogVO.setGridInfo(SmartGridContext.getGridInfo());
         userOperateLogVO.setSelectGridInfo(SmartGridContext.getSelectGridInfo());
-        asyncServiceExecutor.submit(() -> operateService.addUserOperateLog(userOperateLogVO));
+        // asyncServiceExecutor.submit(() ->
+        // operateService.addUserOperateLog(userOperateLogVO));
+        userOperatorLogManager.addLog(userOperateLogVO);
 
         //刷新用户所有网格信息
         if (userOperateLogVO.getType() == 1) {

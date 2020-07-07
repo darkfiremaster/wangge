@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class VillageVO {
 
-    private String villageId;
+    private String id;
 
     private String name;
 
@@ -20,9 +20,15 @@ public class VillageVO {
 
     private String areaCode;
 
+    /**
+     * 华为rgs坐标
+     */
     private String location;
 
-    private String rgsLocation;
+    /**
+     * 高德地图坐标
+     */
+    private String originLocation;
 
     private String mobile;
 
