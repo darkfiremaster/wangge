@@ -14,7 +14,6 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
-import com.shinemo.stallup.domain.model.SweepFloorBizDetail;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
@@ -78,7 +77,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     private StallUpConfig stallUpConfig;
 
 
-    private static final String ID_PREFIX = "SC_ACTIVITY";
+    private static final String ID_PREFIX = "SC_ACTIVITY_";
     private static final Integer WEEK_TYPE = 1;
     private static final Integer MONTH_TYPE = 2;
 
@@ -193,13 +192,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("mobile", SmartGridContext.getMobile());
         map.put("title", sweepVillageActivityVO.getTitle());
         map.put("status", SweepVillageStatusEnum.PROCESSING.getId());
-        map.put("activityId", String.valueOf(sweepVillageActivityDO.getId()));
+        map.put("activityId", ID_PREFIX+sweepVillageActivityDO.getId());
         map.put("createTime", startTime.getTime());
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
-        log.info("[createSweepVillageActivity] 新建扫村活动成功");
+        log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}",sweepVillageActivityDO.getId());
         return ApiResult.of(0);
     }
 
@@ -209,7 +208,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO) {
         //校验参数
         Assert.notNull(sweepVillageSignVO.getActivityId(), "id is null");
-        Assert.notNull(sweepVillageSignVO.getEndLocation(), "endLocation is null");
+        Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
+        Assert.notNull(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageSignVO.getActivityId());
@@ -221,7 +221,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_STATUS_ERROR);
         }
         //判断打卡距离
-        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getLocation(), sweepVillageSignVO.getEndLocation());
+        Integer distance = DistanceUtils.getDistance(sweepVillageActivityDO.getLocation(), sweepVillageSignVO.getLocationDetailVO().getLocation());
         if (distance >= 10000) {
             //异常打卡
             log.info("[finishActivity]异常打卡,超过打卡距离,活动id:{},距离:{}", sweepVillageSignVO.getActivityId(), distance);
@@ -240,14 +240,14 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordQuery.setActivityId(sweepVillageSignVO.getActivityId());
         SignRecordDO signRecordFromDB = signRecordMapper.get(signRecordQuery);
         signRecordFromDB.setEndTime(endTime);
-        signRecordFromDB.setEndLocation(sweepVillageSignVO.getEndLocation());
+        signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
         signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
         signRecordFromDB.setImgUrl(sweepVillageSignVO.getImgUrl());
         signRecordMapper.update(signRecordFromDB);
 
         //同步华为
         HashMap<String, Object> map = new HashMap<>();
-        map.put("activityId", String.valueOf(sweepVillageSignVO.getActivityId()));
+        map.put("activityId", ID_PREFIX+sweepVillageSignVO.getActivityId());
         map.put("mobile", SmartGridContext.getMobile());
         map.put("status", sweepVillageActivityDO.getStatus());
         map.put("updateTime", endTime.getTime());

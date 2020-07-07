@@ -1,5 +1,6 @@
 package com.shinemo.sweepvillage.domain.vo;
 
+import com.shinemo.sweepfloor.domain.vo.LocationDetailVO;
 import lombok.Data;
 
 /**
@@ -16,6 +17,7 @@ public class SweepVillageSignVO {
 
     private String imgUrl;
 
-    private String endLocation;
+    /** 地址信息 */
+    private LocationDetailVO locationDetailVO;
 
 }
