@@ -3,6 +3,8 @@ package com.shinemo.wangge.core.service.sweepvillage.impl;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
@@ -12,10 +14,12 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.stallup.domain.model.SweepFloorBizDetail;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.sweepvillage.domain.enums.HuaweiSweepVillageUrlEnum;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageMarketingNumberDO;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
@@ -74,6 +78,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     private StallUpConfig stallUpConfig;
 
 
+    private static final String ID_PREFIX = "SC_ACTIVITY";
     private static final Integer WEEK_TYPE = 1;
     private static final Integer MONTH_TYPE = 2;
 
@@ -124,7 +129,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         return result;
     }
-
     @Override
     public ApiResult<Map<String, Object>> getVillageList() {
         //透传华为
@@ -427,7 +431,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             SweepVillageMarketingNumberDO newMarketingNumberDO = new SweepVillageMarketingNumberDO();
             newMarketingNumberDO.setActivityId(request.getActivityId());
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
                 newMarketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
             } else {
                 newMarketingNumberDO.setCount(0);
@@ -437,7 +441,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                     SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                     bizDetail.setId(bizType.getId());
                     bizDetail.setName(bizType.getName());
-                    bizDetail.setNum(0);
+                    bizDetail.setCount(0);
                     details.add(bizDetail);
                 }
                 newMarketingNumberDO.setDetail(GsonUtils.toJson(details));
@@ -446,10 +450,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             newMarketingNumberDO.setUserId(SmartGridContext.getUid());
             newMarketingNumberDO.setMobile(SmartGridContext.getMobile());
             sweepVillageMarketingNumberMapper.insert(newMarketingNumberDO);
+
+            //同步给华为
+            synchronizeSweepingData(newMarketingNumberDO);
         } else {
             //更新
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
                 marketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
             } else {
                 marketingNumberDO.setCount(0);
@@ -459,14 +466,20 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                     SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                     bizDetail.setId(bizType.getId());
                     bizDetail.setName(bizType.getName());
-                    bizDetail.setNum(0);
+                    bizDetail.setCount(0);
                     details.add(bizDetail);
                 }
                 marketingNumberDO.setDetail(GsonUtils.toJson(details));
             }
             marketingNumberDO.setRemark(request.getRemark());
             sweepVillageMarketingNumberMapper.update(marketingNumberDO);
+
+            //同步给华为
+            synchronizeSweepingData(marketingNumberDO);
         }
+
+
+
         return ApiResult.of(0);
     }
 
@@ -490,7 +503,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageBizDetail bizDetail = new SweepVillageBizDetail();
                 bizDetail.setId(bizType.getId());
                 bizDetail.setName(bizType.getName());
-                bizDetail.setNum(0);
+                bizDetail.setCount(0);
                 details.add(bizDetail);
             }
             numberVO.setBizList(details);
@@ -503,7 +516,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             numberVO.setRemark(marketingNumberDO.getRemark());
         }
 
-        //用户姓名从哪来？
+
         numberVO.setUsername(SmartGridContext.getUserName());
         return ApiResult.of(0, numberVO);
     }
@@ -520,6 +533,28 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         return ApiResult.of(0, activityDO);
     }
+
+
+    /**
+     * 同步给华为
+     * @param sweepVillageMarketingNumberDO
+     */
+    private void synchronizeSweepingData(SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO) {
+        Map<String,Object> map = new HashMap<>();
+        Gson gson = new Gson();
+        List<SweepVillageBizDetail> bizDetails = gson.fromJson(sweepVillageMarketingNumberDO.getDetail(),
+                new TypeToken<List<SweepVillageBizDetail>>() {
+                }.getType());
+
+        map.put("activityId",ID_PREFIX + sweepVillageMarketingNumberDO.getActivityId());
+
+        map.put("mobile",SmartGridContext.getMobile());
+        map.put("bizInfoList",bizDetails);
+        map.put("remark",sweepVillageMarketingNumberDO.getRemark());
+
+        thirdApiMappingService.asyncDispatch(map, HuaweiSweepVillageUrlEnum.ADD_OR_UPDATE_VILLAGE_BIZ_DATA.getApiName(),SmartGridContext.getMobile());
+    }
+
 }
 
 
