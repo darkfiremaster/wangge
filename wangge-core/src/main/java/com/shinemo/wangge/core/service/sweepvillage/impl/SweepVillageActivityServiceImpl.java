@@ -79,6 +79,25 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
 
     @Override
+    public ApiResult<VillageVO> getUserLastVillage() {
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.getUserLastVillage(sweepVillageActivityQuery);
+        if (sweepVillageActivityDO != null) {
+            VillageVO villageVO = new VillageVO();
+            villageVO.setVillageId(sweepVillageActivityDO.getVillageId());
+            villageVO.setName(sweepVillageActivityDO.getVillageName());
+            villageVO.setArea(sweepVillageActivityDO.getArea());
+            villageVO.setAreaCode(sweepVillageActivityDO.getAreaCode());
+            villageVO.setLocation(sweepVillageActivityDO.getLocation());
+            villageVO.setRgsLocation(sweepVillageActivityDO.getRgsLocation());
+            log.info("[getUserLastVillage]用户上次打卡的村庄信息:{}", villageVO);
+            return ApiResult.of(0, villageVO);
+        }
+        return ApiResult.of(0, null);
+    }
+
+    @Override
     public ApiResult<Map<String, Object>> createVillage(VillageVO villageVO) {
         //校验参数
         Assert.notNull(villageVO, "request is null");
@@ -244,6 +263,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     /**
      * 默认分页
+     *
      * @param sweepVillageActivityQueryRequest
      * @return
      */
@@ -319,7 +339,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 if (sweepVillageMarketingNumberDO == null) {
                     log.error("[getSweepVillageActivityList] query market num error,query:{}", query);
                     resultVO.setHandleCount(0);
-                }else {
+                } else {
                     resultVO.setHandleCount(sweepVillageMarketingNumberDO.getCount());
                 }
 
@@ -489,16 +509,16 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     }
 
 
-    private ApiResult<SweepVillageActivityDO> checkActivityExist(Long activityId){
+    private ApiResult<SweepVillageActivityDO> checkActivityExist(Long activityId) {
         //判断扫村活动是否存在
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(activityId);
         SweepVillageActivityDO activityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
         if (activityDO == null) {
-            log.error("[checkActivityExist] error,query:{}",sweepVillageActivityQuery);
+            log.error("[checkActivityExist] error,query:{}", sweepVillageActivityQuery);
             return null;
         }
-        return ApiResult.of(0,activityDO);
+        return ApiResult.of(0, activityDO);
     }
 }
 

@@ -38,7 +38,13 @@ public class SweepVillageActivityController {
     @Resource
     private StallUpConfig stallUpConfig;
 
-
+    /**
+     * 获取用户上次扫村打卡的村庄
+     */
+    @PostMapping("/getUserLastVillage")
+    public ApiResult<VillageVO> getUserLastVillage() {
+        return sweepVillageActivityService.getUserLastVillage();
+    }
 
     /**
      * 新建村庄

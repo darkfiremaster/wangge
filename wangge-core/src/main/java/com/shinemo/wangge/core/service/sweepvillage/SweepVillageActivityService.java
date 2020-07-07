@@ -14,6 +14,13 @@ import java.util.Map;
  */
 public interface SweepVillageActivityService {
 
+
+    /**
+     * 获取用户上次打卡的村庄信息
+     * @return
+     */
+    ApiResult<VillageVO> getUserLastVillage();
+
     /**
      * 新建村庄
      * @param villageVO
@@ -74,6 +81,7 @@ public interface SweepVillageActivityService {
      * @return
      */
     ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId);
+
 
 
 }
