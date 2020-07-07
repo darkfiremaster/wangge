@@ -15,7 +15,7 @@
         <result property="area" column="area"/>
         <result property="areaCode" column="area_code"/>
         <result property="location" column="location"/>
-        <result property="rgsLocation" column="rgs_location"/>
+        <result property="originLocation" column="origin_location"/>
         <result property="gridId" column="grid_id"/>
         <result property="mobile" column="mobile"/>
         <result property="status" column="status"/>
@@ -25,7 +25,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, gmt_create, gmt_modified, title, village_id, village_name,address, area, area_code, location, rgs_location, grid_id, mobile, status, start_time, end_time
+        id, gmt_create, gmt_modified, title, village_id, village_name,address, area, area_code, location, origin_location, grid_id, mobile, status, start_time, end_time
     </sql>
 
     <sql id="table">
@@ -141,8 +141,8 @@
             <if test="location != null">
                 location,
             </if>
-            <if test="rgsLocation != null">
-                rgs_location,
+            <if test="originLocation != null">
+                origin_location,
             </if>
             <if test="gridId != null">
                 grid_id,
@@ -187,8 +187,8 @@
             <if test="location != null">
                 #{location, jdbcType=VARCHAR},
             </if>
-            <if test="rgsLocation != null">
-                #{rgsLocation, jdbcType=VARCHAR},
+            <if test="originLocation != null">
+                #{originLocation, jdbcType=VARCHAR},
             </if>
             <if test="gridId != null">
                 #{gridId, jdbcType=VARCHAR},
@@ -235,8 +235,8 @@
             <if test="location != null">
                 location = #{location, jdbcType=VARCHAR},
             </if>
-            <if test="rgsLocation != null">
-                rgs_location = #{rgsLocation, jdbcType=VARCHAR},
+            <if test="originLocation != null">
+                origin_location = #{originLocation, jdbcType=VARCHAR},
             </if>
             <if test="gridId != null">
                 grid_id = #{gridId, jdbcType=VARCHAR},

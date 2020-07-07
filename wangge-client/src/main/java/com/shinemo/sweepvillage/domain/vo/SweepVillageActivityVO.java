@@ -16,11 +16,11 @@ public class SweepVillageActivityVO {
     /**
      * 村庄高德地图坐标
      */
-    private String location;
+    private String originLocation;
     /**
      * 村庄rgs坐标
      */
-    private String rgsLocation;
+    private String location;
     private String area;
     private String areaCode;
     private String address;

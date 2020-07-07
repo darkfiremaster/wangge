@@ -35,18 +35,19 @@ public class SweepVillageActivityDO {
      * 地区
      */
     private String area;
+
     /**
      * 地区code
      */
     private String areaCode;
     /**
-     * 打卡人的经纬度坐标
+     * 村庄的rgs经纬度坐标
      */
     private String location;
     /**
-     * 转化后的打卡人的经纬度坐标
+     * 村庄的高德地图坐标
      */
-    private String rgsLocation;
+    private String originLocation;
 
     /**
      * 网格id

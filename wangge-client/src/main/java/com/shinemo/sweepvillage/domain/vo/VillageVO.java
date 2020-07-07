@@ -20,9 +20,15 @@ public class VillageVO {
 
     private String areaCode;
 
+    /**
+     * 华为rgs坐标
+     */
     private String location;
 
-    private String rgsLocation;
+    /**
+     * 高德地图坐标
+     */
+    private String originLocation;
 
     private String mobile;
 
