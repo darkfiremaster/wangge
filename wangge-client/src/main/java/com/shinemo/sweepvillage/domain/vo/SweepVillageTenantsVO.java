@@ -49,6 +49,8 @@ public class SweepVillageTenantsVO {
     private String contactPerson;
     /** 联系人手机号 */
     private String contactMobile;
+    /** 住户搜索时的联系人手机号 */
+    private String mobile;
     /** 最近走访时间 */
     private Date visitTime;
     /** 距离 */
