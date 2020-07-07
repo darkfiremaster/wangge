@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
+import com.google.gson.*;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -32,20 +33,22 @@ public class TenantsController {
             return apiResult;
         }
         Map<String, Object> data = apiResult.getData();
-        List<Map<String,Object>> list = (List<Map<String,Object>>)data.get("rows");
-
+        JsonParser parser = new JsonParser();
+        JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("rows"))).getAsJsonArray();
+        List<SweepVillageTenantsVO> list = GsonUtils.jsonArrayToList(jsonArray, SweepVillageTenantsVO.class);
         if (!CollectionUtils.isEmpty(list)) {
 
-            for (Map map: list) {
-                String contactPerson = (String)map.get("contactPerson");
-                String contactMobile = (String)map.get("contactMobile");
+            for (SweepVillageTenantsVO tenantsVO: list) {
+                String contactMobile = tenantsVO.getContactMobile();
+                String contactPerson = tenantsVO.getContactPerson();
                 //脱敏手机号、姓名
                 String mobile = SmartGridUtils.desensitizationMobile(contactMobile);
                 String name = SmartGridUtils.desensitizationName(contactPerson);
-                map.put("contactPerson",name);
-                map.put("contactMobile",mobile);
+                tenantsVO.setContactPerson(name);
+                tenantsVO.setContactMobile(mobile);
             }
         }
+        data.put("rows",list);
         return apiResult;
     }
 
@@ -56,20 +59,22 @@ public class TenantsController {
             return apiResult;
         }
         Map<String, Object> data = apiResult.getData();
-        List<Map<String,Object>> list = (List<Map<String,Object>>)data.get("rows");
-
+        JsonParser parser = new JsonParser();
+        JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("rows"))).getAsJsonArray();
+        List<SweepVillageTenantsVO> list = GsonUtils.jsonArrayToList(jsonArray, SweepVillageTenantsVO.class);
         if (!CollectionUtils.isEmpty(list)) {
 
-            for (Map map: list) {
-                String contactPerson = (String)map.get("contactPerson");
-                String contactMobile = (String)map.get("mobile");
+            for (SweepVillageTenantsVO tenantsVO: list) {
+                String contactMobile = tenantsVO.getMobile();
+                String contactPerson = tenantsVO.getContactPerson();
                 //脱敏手机号、姓名
                 String mobile = SmartGridUtils.desensitizationMobile(contactMobile);
                 String name = SmartGridUtils.desensitizationName(contactPerson);
-                map.put("contactPerson",name);
-                map.put("mobile",mobile);
+                tenantsVO.setContactPerson(name);
+                tenantsVO.setMobile(mobile);
             }
         }
+        data.put("rows",list);
         return apiResult;
     }
 
