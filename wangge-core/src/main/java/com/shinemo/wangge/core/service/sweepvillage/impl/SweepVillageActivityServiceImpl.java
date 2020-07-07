@@ -236,7 +236,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             List<String> imgUrlList = Convert.toList(String.class, sweepVillageSignVO.getImgUrl());
             map.put("picUrl", imgUrlList);
         }
-        ApiResult<Map<String, Object>> result = thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
+        thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
 
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getActivityId());
         return ApiResult.of(0);
