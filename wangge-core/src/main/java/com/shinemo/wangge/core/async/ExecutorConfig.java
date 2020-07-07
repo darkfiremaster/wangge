@@ -40,6 +40,6 @@ public class ExecutorConfig {
     
     @Bean
     public UserOperatorLogManager userOperatorLogManager() {
-        return new UserOperatorLogManager(100, corePoolSize, true, 5, TimeUnit.MINUTES);
+        return new UserOperatorLogManager(100, corePoolSize, true, 1, TimeUnit.MINUTES);
     }
 }
