@@ -7,6 +7,7 @@ import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
+import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.extern.slf4j.Slf4j;
@@ -81,13 +82,18 @@ public class SweepVillageActivityController {
                                      @RequestParam String startTime,
                                      @RequestParam String endTime,
                                      @RequestParam(required = false)  Integer pageSize,
-                                     @RequestParam(required = false) Integer currentPage) throws ParseException {
+                                     @RequestParam(required = false) Integer currentPage) {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         request.setStatus(status);
-        request.setStartTime(format.parse(startTime));
-        request.setEndTime(format.parse(endTime));
+        try {
+            request.setStartTime(format.parse(startTime));
+            request.setEndTime(format.parse(endTime));
+        } catch (ParseException e) {
+            log.error("[getSweepVillageActivityList] date parse error,startTime:{},endTime:{}",startTime,endTime);
+            return ApiResult.fail(SweepVillageErrorCodes.DATE_PARSE_ERROR.code,SweepVillageErrorCodes.DATE_PARSE_ERROR.msg);
+        }
         request.setCurrentPage(currentPage);
         request.setPageSize(pageSize);
         return sweepVillageActivityService.getSweepVillageActivityList(request);
