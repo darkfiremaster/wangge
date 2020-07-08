@@ -26,10 +26,7 @@ import javax.annotation.Resource;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author shangkaihui
@@ -95,24 +92,27 @@ public class SweepVillageActivityController {
      */
     @GetMapping("/getSweepVillageActivityList")
     public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
-                                     @RequestParam String startTime,
-                                     @RequestParam String endTime,
+                                     @RequestParam(required = false) Long startTime,
+                                     @RequestParam(required = false) Long endTime,
                                      @RequestParam(required = false)  Integer pageSize,
                                      @RequestParam(required = false) Integer currentPage) {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         request.setStatus(status);
-        try {
-            request.setStartTime(format.parse(startTime));
-            request.setEndTime(format.parse(endTime));
-        } catch (ParseException e) {
-            log.error("[getSweepVillageActivityList] date parse error,startTime:{},endTime:{}",startTime,endTime);
-            return ApiResult.fail(SweepVillageErrorCodes.DATE_PARSE_ERROR.code,SweepVillageErrorCodes.DATE_PARSE_ERROR.msg);
+        if(startTime != null){
+            request.setStartTime(new Date(startTime));
         }
-        request.setCurrentPage(currentPage);
-        request.setPageSize(pageSize);
+        if(endTime != null){
+            request.setEndTime(new Date(endTime));
+        }
+        if(currentPage != null){
+            request.setCurrentPage(currentPage);
+        }
+        if(pageSize != null){
+            request.setPageSize(pageSize);
+        }
         return sweepVillageActivityService.getSweepVillageActivityList(request);
+
     }
 
     /**
