@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.common.ListVO;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
@@ -143,16 +144,16 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> createSweepVillageActivity(SweepVillageActivityVO sweepVillageActivityVO) {
         //校验参数
         Assert.notNull(sweepVillageActivityVO, "sweepVillageActivityVO is null");
-        Assert.notNull(sweepVillageActivityVO.getTitle(), "title is null");
-        Assert.notNull(sweepVillageActivityVO.getVillageId(), "villageId is null");
-        Assert.notNull(sweepVillageActivityVO.getVillageName(), "villageName is null");
-        Assert.notNull(sweepVillageActivityVO.getArea(), "area is null");
-        Assert.notNull(sweepVillageActivityVO.getAreaCode(), "areaCode is null");
-        Assert.notNull(sweepVillageActivityVO.getLocation(), "location is null");
-        Assert.notNull(sweepVillageActivityVO.getOriginLocation(), "originLocation is null");
+        Assert.hasText(sweepVillageActivityVO.getTitle(), "title is null");
+        Assert.hasText(sweepVillageActivityVO.getVillageId(), "villageId is null");
+        Assert.hasText(sweepVillageActivityVO.getVillageName(), "villageName is null");
+        Assert.hasText(sweepVillageActivityVO.getArea(), "area is null");
+        Assert.hasText(sweepVillageActivityVO.getAreaCode(), "areaCode is null");
+        Assert.hasText(sweepVillageActivityVO.getLocation(), "location is null");
+        Assert.hasText(sweepVillageActivityVO.getOriginLocation(), "originLocation is null");
         Assert.notNull(sweepVillageActivityVO.getLocationDetailVO(), "locationDetail is null");
-        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getLocation(), "location is null");
-        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getAddress(), "address is null");
+        Assert.hasText(sweepVillageActivityVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.hasText(sweepVillageActivityVO.getLocationDetailVO().getAddress(), "address is null");
 
         //判断用户是否已有进行中的扫村活动
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
@@ -212,7 +213,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
         Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
-        Assert.notNull(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageSignVO.getSweepVillageActivityId());
@@ -275,7 +276,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
      * @return
      */
     @Override
-    public ApiResult<List<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
+    public ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
         //校验参数
         Assert.notNull(sweepVillageActivityQueryRequest, "request is null");
         Assert.notNull(sweepVillageActivityQueryRequest.getStatus(), "status is null");
@@ -305,12 +306,10 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, resultVOList);
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
         }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.END.getId())) {
-            Assert.notNull(sweepVillageActivityQueryRequest.getStartTime(), "startTime is null");
-            Assert.notNull(sweepVillageActivityQueryRequest.getEndTime(), "endTime is null");
 
             //查已结束的活动
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
@@ -357,7 +356,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVisitCount((int) count);
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, resultVOList);
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
         }
 
         throw new ApiException("illegal status", 500);

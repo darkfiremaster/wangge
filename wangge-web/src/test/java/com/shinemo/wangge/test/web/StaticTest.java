@@ -1,6 +1,7 @@
 package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -189,4 +190,15 @@ public class StaticTest {
         System.out.println("todoDO = " + todoDO);
 
     }
+
+
+    @Test
+    public void parseCookie() {
+        String s = "eyJncmlkR\n" +
+                "GV0YWlsIjp7ImlkIjoiNzcxX0EyMTA3XzMwIiwibmFtZSI6IuS4nOWMuuaxn-WNl-e9keagvCIsImNpdHlOYW1lIjoi5Y2X5a6BIiwiY2l0eUNvZGUiOiI3NzEiLCJjb3VudHlOYW1lIjoi5Lic5Yy6IiwiY291bnR5Q29kZSI6IkEyMTA3Iiwicm9sZUxpc3QiOlt7ImlkIjoiMSIsIm5hbWUiOiLnvZHmoLzplb8ifV0sIn\n" +
+                "R5cGUiOjB9fQ";
+        String result = Base64.decodeStr(s);
+        System.out.println("result = " + result);
+    }
+
 }

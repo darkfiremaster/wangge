@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.sweepvillage;
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
@@ -54,7 +55,7 @@ public interface SweepVillageActivityService {
      * 获取扫村活动列表
      * @return
      */
-    ApiResult<List<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest);
+    ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest);
 
     /**
      * 获取扫村完成情况
