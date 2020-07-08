@@ -144,16 +144,16 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> createSweepVillageActivity(SweepVillageActivityVO sweepVillageActivityVO) {
         //校验参数
         Assert.notNull(sweepVillageActivityVO, "sweepVillageActivityVO is null");
-        Assert.notNull(sweepVillageActivityVO.getTitle(), "title is null");
-        Assert.notNull(sweepVillageActivityVO.getVillageId(), "villageId is null");
-        Assert.notNull(sweepVillageActivityVO.getVillageName(), "villageName is null");
-        Assert.notNull(sweepVillageActivityVO.getArea(), "area is null");
-        Assert.notNull(sweepVillageActivityVO.getAreaCode(), "areaCode is null");
-        Assert.notNull(sweepVillageActivityVO.getLocation(), "location is null");
-        Assert.notNull(sweepVillageActivityVO.getOriginLocation(), "originLocation is null");
+        Assert.hasText(sweepVillageActivityVO.getTitle(), "title is null");
+        Assert.hasText(sweepVillageActivityVO.getVillageId(), "villageId is null");
+        Assert.hasText(sweepVillageActivityVO.getVillageName(), "villageName is null");
+        Assert.hasText(sweepVillageActivityVO.getArea(), "area is null");
+        Assert.hasText(sweepVillageActivityVO.getAreaCode(), "areaCode is null");
+        Assert.hasText(sweepVillageActivityVO.getLocation(), "location is null");
+        Assert.hasText(sweepVillageActivityVO.getOriginLocation(), "originLocation is null");
         Assert.notNull(sweepVillageActivityVO.getLocationDetailVO(), "locationDetail is null");
-        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getLocation(), "location is null");
-        Assert.notNull(sweepVillageActivityVO.getLocationDetailVO().getAddress(), "address is null");
+        Assert.hasText(sweepVillageActivityVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.hasText(sweepVillageActivityVO.getLocationDetailVO().getAddress(), "address is null");
 
         //判断用户是否已有进行中的扫村活动
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
@@ -213,7 +213,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
         Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
-        Assert.notNull(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageSignVO.getSweepVillageActivityId());

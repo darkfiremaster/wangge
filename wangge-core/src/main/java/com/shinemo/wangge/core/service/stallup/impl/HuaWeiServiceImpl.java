@@ -231,6 +231,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             }
 
             if (list.contains(request.getMobile())) {
+                log.info("[getGridUserInfo] 返回mock用户网格信息,手机号:{}",request.getMobile());
                 List<GridUserRoleDetail> detailList = getMockGridUser();
                 return ApiResult.of(0, detailList);
             }
