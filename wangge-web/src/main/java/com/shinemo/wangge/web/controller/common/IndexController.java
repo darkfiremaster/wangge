@@ -117,9 +117,9 @@ public class IndexController {
         // 查扫村相关信息
         SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest = new SweepVillageActivityQueryRequest();
         sweepVillageActivityQueryRequest.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
-        ApiResult<List<SweepVillageActivityResultVO>> sweepVillageActivityList = sweepVillageActivityService.getSweepVillageActivityList(sweepVillageActivityQueryRequest);
-        if (CollUtil.isNotEmpty(sweepVillageActivityList.getData())) {
-            SweepVillageActivityResultVO sweepVillageActivityResultVO = sweepVillageActivityList.getData().get(0);
+        ApiResult<ListVO<SweepVillageActivityResultVO>> sweepVillageActivityList = sweepVillageActivityService.getSweepVillageActivityList(sweepVillageActivityQueryRequest);
+        if (CollUtil.isNotEmpty(sweepVillageActivityList.getData().getRows())) {
+            SweepVillageActivityResultVO sweepVillageActivityResultVO = sweepVillageActivityList.getData().getRows().get(0);
             response.setSweepVillageActivityResultVO(sweepVillageActivityResultVO);
         } else {
             response.setSweepVillageActivityResultVO(null);

@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.common.ListVO;
 import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
@@ -275,7 +276,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
      * @return
      */
     @Override
-    public ApiResult<List<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
+    public ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
         //校验参数
         Assert.notNull(sweepVillageActivityQueryRequest, "request is null");
         Assert.notNull(sweepVillageActivityQueryRequest.getStatus(), "status is null");
@@ -305,12 +306,10 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, resultVOList);
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).build());
         }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.END.getId())) {
-            Assert.notNull(sweepVillageActivityQueryRequest.getStartTime(), "startTime is null");
-            Assert.notNull(sweepVillageActivityQueryRequest.getEndTime(), "endTime is null");
 
             //查已结束的活动
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
@@ -357,7 +356,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVisitCount((int) count);
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, resultVOList);
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).build());
         }
 
         throw new ApiException("illegal status", 500);
