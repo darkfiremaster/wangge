@@ -43,6 +43,8 @@ public class StallUpConfig {
 	private SmartGridBizMapper smartGridBizMapper;
 	@Resource
 	private RedisService redisService;
+	@Resource
+	private SmsHotHandler smsHotHandler;
 	private static final Integer BASE_CONFIG_TYPE = 1;
 	private static final Integer BIZ_TYPE = 2;
 
@@ -151,11 +153,7 @@ public class StallUpConfig {
 		tmpUrlMap.put(ThirdHandlerTypeEnum.MA_DIAN_BIG_DATA_WITH_MOBILE.getType(),maDianBigDataHandler);
 
 		//短信预热配置
-		SmsHotConfig smsHotConfig = config.getSmsHotConfig();
-		SmsHotHandler smsHotHandler = new SmsHotHandler();
 		smsHotHandler.setRedisService(redisService);
-		smsHotHandler.setDomain(smsHotConfig.getDomain());
-		smsHotHandler.setPath(smsHotConfig.getPath());
 		tmpUrlMap.put(ThirdHandlerTypeEnum.SMS_HOT.getType(),smsHotHandler);
 
 		//码店智慧查询

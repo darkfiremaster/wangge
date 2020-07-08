@@ -170,4 +170,5 @@ public interface StallUpService {
 	ApiResult<List<CommunityVO>> getRecentCommunity(String mobile);
 
 	ApiResult<String> getRedirctSmsHotUrl(Long activityId);
+
 }

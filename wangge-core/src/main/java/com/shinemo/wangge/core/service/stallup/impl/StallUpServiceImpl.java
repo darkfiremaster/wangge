@@ -1154,9 +1154,12 @@ public class StallUpServiceImpl implements StallUpService {
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", SmartGridContext.getMobile());
         formData.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        //新加网格名
+        formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
         formData.put("timestamp", timestamp);
         formData.put("building", map);
-        formData.put("prehotObjectType", 1);
+        formData.put("prehotObjectType", 3);
+        formData.put("activityId",ID_PREFIX + activityId);
 
         log.info("[redirctSmsHot] 请求参数formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);
