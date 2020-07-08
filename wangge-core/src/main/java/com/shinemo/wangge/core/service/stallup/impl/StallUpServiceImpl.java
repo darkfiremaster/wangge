@@ -1137,9 +1137,11 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public ApiResult<String> getRedirctSmsHotUrl(Long activityId) {
-
+        StallUpActivityQuery activityQuery = new StallUpActivityQuery();
+        activityQuery.setId(activityId);
+        StallUpActivity stallUpActivity = stallUpActivityMapper.get(activityQuery);
         StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
-        stallUpCommunityQuery.setActivityId(activityId);
+        stallUpCommunityQuery.setActivityId(stallUpActivity.getParentId());
         List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
         Map<String, String> map = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(stallUpCommunityDOS)) {
