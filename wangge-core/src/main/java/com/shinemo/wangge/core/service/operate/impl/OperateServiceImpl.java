@@ -14,6 +14,7 @@ import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.RedisKeyUtil;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
+import com.shinemo.wangge.core.async.UserOperatorLogManager;
 import com.shinemo.wangge.core.service.gridinfo.SmartGridInfoService;
 import com.shinemo.wangge.core.service.operate.OperateService;
 import com.shinemo.wangge.core.service.user.UserService;
@@ -21,7 +22,6 @@ import com.shinemo.wangge.dal.mapper.UserOperateLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +57,9 @@ public class OperateServiceImpl implements OperateService {
     private UserService userService;
 
     @Resource
+    private UserOperatorLogManager userOperatorLogManager;
+
+    @Resource
     private SmartGridInfoService smartGridInfoService;
 
     private static final Integer LOGIN_EXPIRE_TIME = 15 * 60;
@@ -70,9 +73,6 @@ public class OperateServiceImpl implements OperateService {
 
     @Override
     public ApiResult<Void> addUserOperateLog(UserOperateLogVO userOperateLogVO) {
-        Assert.notNull(userOperateLogVO.getType(), "type is null");
-        Assert.notNull(userOperateLogVO.getMobile(), "mobile is null");
-
         insertUserOperateLog(userOperateLogVO);
         return ApiResult.of(0);
     }
@@ -172,7 +172,7 @@ public class OperateServiceImpl implements OperateService {
 //    }
 
 
-    private void insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
+    private void  insertUserOperateLog(UserOperateLogVO userOperateLogVO) {
         if (userOperateLogVO.getType() == 1) {
             //登录类型
             if (!isGridUser(userOperateLogVO)) {
@@ -183,6 +183,7 @@ public class OperateServiceImpl implements OperateService {
             //15分钟内只算一次登录
             String loginFlag = redisService.get(RedisKeyUtil.getUserLoginFlagPrefixKey(userOperateLogVO.getMobile()));
             if (!StringUtils.isEmpty(loginFlag)) {
+                log.info("[insertUserOperateLog] 用户15分钟内已经登录过, mobile:{}", userOperateLogVO.getMobile());
                 return;
             }
 
@@ -199,7 +200,8 @@ public class OperateServiceImpl implements OperateService {
             }
         }
 
-        addUserOperateLogToDB(userOperateLogVO);
+        UserOperateLogDO userOperateLogDO = getUserOperateLogDO(userOperateLogVO);
+        userOperatorLogManager.addLog(userOperateLogDO);
     }
 
 
