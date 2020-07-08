@@ -99,8 +99,12 @@ public class SweepVillageActivityController {
         Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
         request.setStatus(status);
-        request.setStartTime(new Date(startTime));
-        request.setEndTime(new Date(endTime));
+        if(startTime != null){
+            request.setStartTime(new Date(startTime));
+        }
+        if(endTime != null){
+            request.setEndTime(new Date(endTime));
+        }
         request.setCurrentPage(currentPage);
         request.setPageSize(pageSize);
         return sweepVillageActivityService.getSweepVillageActivityList(request);
