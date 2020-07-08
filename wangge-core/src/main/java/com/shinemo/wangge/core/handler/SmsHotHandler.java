@@ -82,7 +82,7 @@ public class SmsHotHandler implements UrlRedirectHandler{
 				.append("&sign=").append(sign);
 
 		String smsHotUrl = sb.toString();
-		log.info("[SmsHotHandler]非摆摊计划场景,生成短信预热url:{}", request.getCommunityId(), smsHotUrl);
+		log.info("[SmsHotHandler]非摆摊计划场景,生成短信预热url:{}", smsHotUrl);
 
 		return smsHotUrl;
 	}
