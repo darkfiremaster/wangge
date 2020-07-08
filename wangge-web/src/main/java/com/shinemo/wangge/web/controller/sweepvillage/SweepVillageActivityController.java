@@ -105,9 +105,14 @@ public class SweepVillageActivityController {
         if(endTime != null){
             request.setEndTime(new Date(endTime));
         }
-        request.setCurrentPage(currentPage);
-        request.setPageSize(pageSize);
+        if(currentPage != null){
+            request.setCurrentPage(currentPage);
+        }
+        if(pageSize != null){
+            request.setPageSize(pageSize);
+        }
         return sweepVillageActivityService.getSweepVillageActivityList(request);
+
     }
 
     /**
