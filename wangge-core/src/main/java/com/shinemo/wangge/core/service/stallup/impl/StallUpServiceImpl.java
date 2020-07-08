@@ -1154,9 +1154,12 @@ public class StallUpServiceImpl implements StallUpService {
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", SmartGridContext.getMobile());
         formData.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        //新加网格名
+        formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
         formData.put("timestamp", timestamp);
         formData.put("building", map);
-        formData.put("prehotObjectType", 1);
+        formData.put("prehotObjectType", 3);
+        formData.put("activityId",ID_PREFIX + activityId);
 
         log.info("[redirctSmsHot] 请求参数formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);
@@ -1176,6 +1179,42 @@ public class StallUpServiceImpl implements StallUpService {
 
         String smsHotUrl = sb.toString();
         log.info("[getRedirctSmsHotUrl]摆摊活动id:{},生成短信预热url:{}", activityId, smsHotUrl);
+
+        return ApiResult.of(0, smsHotUrl);
+    }
+
+    @Override
+    public ApiResult<String> getRedirctSmsHotUrlNotStallUp(String communityId, String communityName) {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(communityId,communityName);
+
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", SmartGridContext.getMobile());
+        formData.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
+        formData.put("timestamp", timestamp);
+        formData.put("building", map);
+        formData.put("prehotObjectType", 1);
+
+        log.info("[getRedirctSmsHotUrlNotStallUp] 请求参数formData:{}", formData);
+        String paramStr = EncryptUtil.buildParameterString(formData);
+
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramStr, seed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+
+        String url = smsHotUrl + "?";
+
+        StringBuilder sb = new StringBuilder(url);
+        sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign);
+
+        String smsHotUrl = sb.toString();
+        log.info("[getRedirctSmsHotUrlNotStallUp]非摆摊计划场景,生成短信预热url:{}", communityId, smsHotUrl);
 
         return ApiResult.of(0, smsHotUrl);
     }
