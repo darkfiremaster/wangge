@@ -306,7 +306,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).build());
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
         }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.END.getId())) {
@@ -356,7 +356,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVisitCount((int) count);
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).build());
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
         }
 
         throw new ApiException("illegal status", 500);
