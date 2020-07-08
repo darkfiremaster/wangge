@@ -7,8 +7,9 @@ import java.util.List;
 
 @Data
 public class SweepVillageTenantsVO {
-    /** 住户id */
     private String id;
+    /** 住户id */
+    private String tenantsId;
     /** 扫村计划id */
     private Long activityId;
     /** 村庄id */
