@@ -384,13 +384,6 @@ public class StallUpController {
 		return stallUpService.getRedirctSmsHotUrl(activityId);
 	}
 
-	@GetMapping("getRedirctSmsHotUrlNotStallUp")
-	@SmIgnore
-	public ApiResult<String> getRedirctSmsHotUrlNotStallUp(@RequestParam String communityId,@RequestParam String communityName) {
-		Assert.notNull(communityId, "communityId is null");
-		Assert.notNull(communityName, "communityName is null");
-		return stallUpService.getRedirctSmsHotUrlNotStallUp(communityId,communityName);
-	}
 
 
 	@GetMapping("getRecentCommunity")

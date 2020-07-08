@@ -171,5 +171,4 @@ public interface StallUpService {
 
 	ApiResult<String> getRedirctSmsHotUrl(Long activityId);
 
-	ApiResult<String> getRedirctSmsHotUrlNotStallUp(String communityId,String communityName);
 }
