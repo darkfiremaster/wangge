@@ -51,6 +51,7 @@ public class VisitRecordingController {
         Assert.notNull(request.getTenantsId(),"tenantsId is null");
         Assert.notNull(request.getContactName(),"contactName is null");
         Assert.notNull(request.getContactMobile(),"contactMobile is null");
+        Assert.notNull(request.getId(),"id is null");
         return visitRecordingService.update(request);
     }
 

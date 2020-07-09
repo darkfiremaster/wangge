@@ -157,7 +157,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
     @Override
     public ApiResult<SweepVillageVisitRecordingVO> getVisitRecordingDetail(Long id) {
         SweepVillageVisitRecordingDO recordingDO = getDo(id, 1);
-        if (recordingDO == null) {
+        if (recordingDO == null || recordingDO.getStatus() == 0) {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_NOT_EXIST);
         }
         SweepVillageVisitRecordingVO visitRecordingVO = new SweepVillageVisitRecordingVO();
