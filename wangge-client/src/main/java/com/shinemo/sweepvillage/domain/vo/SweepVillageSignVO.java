@@ -17,7 +17,7 @@ public class SweepVillageSignVO {
 
     private String remark;
 
-    private List<String> imgUrl;
+    private List<String> picUrl;
 
     /** 地址信息 */
     private LocationDetailVO locationDetailVO;

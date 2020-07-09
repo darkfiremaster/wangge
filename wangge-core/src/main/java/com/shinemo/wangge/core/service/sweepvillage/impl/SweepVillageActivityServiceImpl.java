@@ -211,7 +211,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO) {
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
-        Assert.notEmpty(sweepVillageSignVO.getImgUrl(), "图片不能为空");
+        Assert.notEmpty(sweepVillageSignVO.getPicUrl(), "图片不能为空");
         Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
         Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
@@ -246,7 +246,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordFromDB.setEndTime(endTime);
         signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
         signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
-        signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getImgUrl()));
+        signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getPicUrl()));
         signRecordMapper.update(signRecordFromDB);
 
         //同步华为
@@ -259,7 +259,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         if (StrUtil.isNotBlank(sweepVillageSignVO.getRemark())) {
             map.put("remark", sweepVillageSignVO.getRemark());
         }
-        map.put("picUrl", sweepVillageSignVO.getImgUrl());
+        map.put("picUrl", sweepVillageSignVO.getPicUrl());
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
