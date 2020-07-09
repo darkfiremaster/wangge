@@ -528,6 +528,27 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         return ApiResult.of(0, numberVO);
     }
 
+    @Override
+    public ApiResult<VillageVO> getLocationByVillageId(String id) {
+        Assert.hasText(id, "id is null");
+        SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
+        sweepVillageActivityQuery.setVillageId(id);
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(sweepVillageActivityQuery);
+        if (sweepVillageActivityDO == null) {
+            log.error("[getLocationByVillageId] 扫村活动不存在,villageId:{}", id);
+            return ApiResultWrapper.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST);
+        }
+        VillageVO villageVO = new VillageVO();
+        villageVO.setId(sweepVillageActivityDO.getVillageId());
+        villageVO.setName(sweepVillageActivityDO.getVillageName());
+        villageVO.setGridId(sweepVillageActivityDO.getGridId());
+        villageVO.setArea(sweepVillageActivityDO.getArea());
+        villageVO.setAreaCode(sweepVillageActivityDO.getAreaCode());
+        villageVO.setLocation(sweepVillageActivityDO.getLocation());
+        villageVO.setOriginLocation(sweepVillageActivityDO.getOriginLocation());
+        return ApiResult.of(0, villageVO);
+    }
+
 
     private ApiResult<SweepVillageActivityDO> checkActivityExist(Long activityId) {
         //判断扫村活动是否存在

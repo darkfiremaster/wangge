@@ -55,6 +55,7 @@
                         </foreach>
                     </if>
                     <if test="status != null">and status = #{status}</if>
+                    <if test="villageId != null">and village_id = #{villageId}</if>
 
                     <if test="startTime != null">and start_time >= #{startTime}</if>
                     <if test="endTime != null">and <![CDATA[ end_time <= #{endTime}]]> </if>
