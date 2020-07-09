@@ -22,7 +22,7 @@ public class SweepVillageActivityQuery extends QueryBase {
 
     private List<Integer> statusList;
 
-
+    private String villageId;
 
     private Date startTime;
 

@@ -12,7 +12,6 @@ import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
 import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
-import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
@@ -23,9 +22,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -61,6 +57,13 @@ public class SweepVillageActivityController {
         return sweepVillageActivityService.createVillage(villageVO);
     }
 
+    /**
+     * 根据村庄id获取村庄坐标
+     */
+    @GetMapping("/getVillageById")
+    public ApiResult<VillageVO> getVillageById(String id) {
+        return sweepVillageActivityService.getLocationByVillageId(id);
+    }
 
     /**
      * 获取村庄列表

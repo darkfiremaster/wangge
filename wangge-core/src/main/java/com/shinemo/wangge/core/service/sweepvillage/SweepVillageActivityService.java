@@ -5,7 +5,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -84,5 +84,8 @@ public interface SweepVillageActivityService {
     ApiResult<SweepVillageBusinessRequest> getMarketingNumber(Long activityId);
 
 
-
+    /**
+     * 根据村庄id获取村庄详情
+     */
+    ApiResult<VillageVO> getLocationByVillageId(String villageId);
 }
