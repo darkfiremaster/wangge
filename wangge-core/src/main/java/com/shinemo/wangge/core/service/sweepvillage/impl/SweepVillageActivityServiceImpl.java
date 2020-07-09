@@ -212,6 +212,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO) {
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
+        Assert.hasText(sweepVillageSignVO.getImgUrl(), "图片不能为空");
         Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
         Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
