@@ -6,6 +6,7 @@ import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.exception.CommonErrorCodes;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.todo.error.TodoException;
+import com.shinemo.wangge.core.config.exception.HuaweiApiTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +32,11 @@ public final class SmartGridGlobalExceptionAdvice {
     public ApiResult handleTodoException(TodoException e) {
         log.error(e.getMessage(), e);
         return ApiResult.fail(e.getMessage(), e.code);
+    }
+
+    @ExceptionHandler(HuaweiApiTimeoutException.class)
+    public ApiResult handleHuaweiApiTimeoutException(HuaweiApiTimeoutException e) {
+        return ApiResult.fail(e.getMessage(), e.getCode());
     }
 
     /**
