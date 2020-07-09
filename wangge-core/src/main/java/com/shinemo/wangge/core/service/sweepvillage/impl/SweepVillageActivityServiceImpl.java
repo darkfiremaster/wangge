@@ -336,14 +336,14 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
                 BeanUtils.copyProperties(sweepVillageActivityDO, resultVO);
-
+                resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 //获取统计量
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
                 query.setMobile(sweepVillageActivityDO.getMobile());
                 SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO = sweepVillageMarketingNumberMapper.get(query);
                 if (sweepVillageMarketingNumberDO == null) {
-                    log.error("[getSweepVillageActivityList] query market num error,query:{}", query);
+                    log.error("[getSweepVillageActivityList] query market num is null,query:{}", query);
                     resultVO.setHandleCount(0);
                 } else {
                     resultVO.setHandleCount(sweepVillageMarketingNumberDO.getCount());
@@ -433,8 +433,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             SweepVillageMarketingNumberDO newMarketingNumberDO = new SweepVillageMarketingNumberDO();
             newMarketingNumberDO.setActivityId(request.getActivityId());
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
-                newMarketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
+                newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                //设置count值
+                List<SweepVillageBizDetail> bizList = request.getBizList();
+                for(SweepVillageBizDetail detail : bizList){
+                    detail.setCount(detail.getNum());
+                }
+                newMarketingNumberDO.setDetail(GsonUtils.toJson(bizList));
             } else {
                 newMarketingNumberDO.setCount(0);
                 List<StallUpBizType> sweepVillageBizList = stallUpConfig.getConfig().getSweepVillageBizList();
@@ -458,8 +463,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         } else {
             //更新
             if (!CollectionUtils.isEmpty(request.getBizList())) {
-                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getCount()).sum());
-                marketingNumberDO.setDetail(GsonUtils.toJson(request.getBizList()));
+                marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
+                //设置count值
+                List<SweepVillageBizDetail> bizList = request.getBizList();
+                for(SweepVillageBizDetail detail : bizList){
+                    detail.setCount(detail.getNum());
+                }
+                marketingNumberDO.setDetail(GsonUtils.toJson(bizList));
             } else {
                 marketingNumberDO.setCount(0);
                 List<StallUpBizType> sweepVillageBizList = stallUpConfig.getConfig().getSweepVillageBizList();
