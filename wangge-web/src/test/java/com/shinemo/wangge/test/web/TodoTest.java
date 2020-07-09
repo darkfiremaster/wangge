@@ -2,6 +2,7 @@ package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.HttpUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
@@ -194,6 +195,13 @@ public class TodoTest {
         TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);
         thirdTodoMapper.insert(todoDO);
+    }
+
+    @Test
+    public void abc() {
+        String response = HttpUtil.get("https://api-gx.uban360.com/cmgr-test//todo/thing/log/getTodoList?thirdType=4&currentPage=1&pageSize=100");
+        System.out.println("response = " + response);
+
     }
 
     @Test
