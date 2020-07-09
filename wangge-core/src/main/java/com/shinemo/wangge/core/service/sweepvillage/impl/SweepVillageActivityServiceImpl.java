@@ -336,7 +336,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
                 BeanUtils.copyProperties(sweepVillageActivityDO, resultVO);
-
+                resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 //获取统计量
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
