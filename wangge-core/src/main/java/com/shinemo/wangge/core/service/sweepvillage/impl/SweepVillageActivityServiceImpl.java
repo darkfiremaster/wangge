@@ -1,6 +1,5 @@
 package com.shinemo.wangge.core.service.sweepvillage.impl;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -212,7 +211,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<Void> finishActivity(SweepVillageSignVO sweepVillageSignVO) {
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
-        Assert.hasText(sweepVillageSignVO.getImgUrl(), "图片不能为空");
+        Assert.notEmpty(sweepVillageSignVO.getImgUrl(), "图片不能为空");
         Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
         Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
         Date endTime = new Date();
@@ -247,7 +246,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordFromDB.setEndTime(endTime);
         signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
         signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
-        signRecordFromDB.setImgUrl(sweepVillageSignVO.getImgUrl());
+        signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getImgUrl()));
         signRecordMapper.update(signRecordFromDB);
 
         //同步华为
@@ -260,12 +259,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         if (StrUtil.isNotBlank(sweepVillageSignVO.getRemark())) {
             map.put("remark", sweepVillageSignVO.getRemark());
         }
-        if (StrUtil.isNotBlank(sweepVillageSignVO.getImgUrl())) {
-            List<String> imgUrlList = Convert.toList(String.class, sweepVillageSignVO.getImgUrl());
-            map.put("picUrl", imgUrlList);
-        }
+        map.put("picUrl", sweepVillageSignVO.getImgUrl());
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
-
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
     }
@@ -287,7 +282,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
             sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
             sweepVillageActivityQuery.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
-            if(sweepVillageActivityQueryRequest.getCurrentPage() != null ){
+            if (sweepVillageActivityQueryRequest.getCurrentPage() != null) {
                 sweepVillageActivityQuery.setPageEnable(true);
                 sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
                 sweepVillageActivityQuery.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
@@ -323,7 +318,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             sweepVillageActivityQuery.setEndTime(sweepVillageActivityQueryRequest.getEndTime());
             sweepVillageActivityQuery.setOrderByEnable(true);
             sweepVillageActivityQuery.putOrderBy("end_time", false);
-            if(sweepVillageActivityQueryRequest.getCurrentPage() != null ){
+            if (sweepVillageActivityQueryRequest.getCurrentPage() != null) {
                 sweepVillageActivityQuery.setPageEnable(true);
                 sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
                 sweepVillageActivityQuery.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
@@ -437,7 +432,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 newMarketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
                 //设置count值
                 List<SweepVillageBizDetail> bizList = request.getBizList();
-                for(SweepVillageBizDetail detail : bizList){
+                for (SweepVillageBizDetail detail : bizList) {
                     detail.setCount(detail.getNum());
                 }
                 newMarketingNumberDO.setDetail(GsonUtils.toJson(bizList));
@@ -467,7 +462,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 marketingNumberDO.setCount(request.getBizList().stream().mapToInt(v -> v.getNum()).sum());
                 //设置count值
                 List<SweepVillageBizDetail> bizList = request.getBizList();
-                for(SweepVillageBizDetail detail : bizList){
+                for (SweepVillageBizDetail detail : bizList) {
                     detail.setCount(detail.getNum());
                 }
                 marketingNumberDO.setDetail(GsonUtils.toJson(bizList));
