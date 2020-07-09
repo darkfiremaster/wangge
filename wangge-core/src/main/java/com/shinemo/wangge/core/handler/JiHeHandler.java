@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.handler;
 
+import cn.hutool.core.util.IdUtil;
 import com.shinemo.smartgrid.domain.UrlRedirectHandlerRequest;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
@@ -45,6 +46,7 @@ public class JiHeHandler implements UrlRedirectHandler{
 		formData.put("mobile", mobile);
 		formData.put("auditid", 2);
 		formData.put("timestamp", timestamp);
+		formData.put("token", IdUtil.simpleUUID());
 
 		String paramStr = EncryptUtil.buildParameterString(formData);
 

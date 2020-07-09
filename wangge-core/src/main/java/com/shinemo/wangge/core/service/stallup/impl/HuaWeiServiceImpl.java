@@ -298,21 +298,33 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         List<GridUserRoleDetail> gridUserRoleDetailList = new ArrayList<>();
 
         for (int i = 0; i < num; i++) {
-            GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
-                    .id("test" + i)
-                    .name("测试网格" + i)
-                    .cityCode("771")
-                    .cityName("南宁")
-                    .countyCode("A2107")
-                    .countyName("东区")
-                    .roleList(Lists.newArrayList(
-                            new GridUserRoleDetail.GridRole("1", "网格长")))
-                    .build();
-            gridUserRoleDetailList.add(gridUser);
+            if (i == 0) {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("771_A2107_30")
+                        .name("东区江南网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("1", "网格长")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
+            } else {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("test" + i)
+                        .name("测试网格" + i)
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("1", "网格长")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
+            }
         }
-
         return gridUserRoleDetailList;
-
     }
 
     private GridUserListResponse getMockGridList(HuaWeiRequest request) {

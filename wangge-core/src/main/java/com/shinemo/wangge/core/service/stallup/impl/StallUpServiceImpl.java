@@ -232,7 +232,7 @@ public class StallUpServiceImpl implements StallUpService {
                 syncTodoCreate(stallUpActivity);
             }
 
-            log.info("[create] 新建摆摊成功,request:{}", request);
+            log.info("[create] 新建摆摊成功,父摆摊活动id:{}", parent.getId());
         }
     }
 
@@ -240,14 +240,14 @@ public class StallUpServiceImpl implements StallUpService {
         //判断小区之间的距离
         List<CommunityVO> communityVOS = request.getCommunityVOS();
         for (int i = 0; i < communityVOS.size(); i++) {
-            for (int j = i+1; j < communityVOS.size(); j++) {
+            for (int j = i + 1; j < communityVOS.size(); j++) {
                 CommunityVO c1 = communityVOS.get(i);
                 CommunityVO c2 = communityVOS.get(j);
                 Integer distance = DistanceUtils.getDistance(c1.getCommunityLocation(), c2.getCommunityLocation());
                 if (distance >= 10000) {
                     String errorMsg = StrUtil.format("{}与{}距离超过10公里", c1.getCommunityName(), c2.getCommunityName());
                     log.error("[checkDistince] c1经纬度:{},c2经纬度:{}", c1.getCommunityLocation(), c2.getCommunityLocation());
-                    throw new ApiException(errorMsg,500);
+                    throw new ApiException(errorMsg, 500);
                 }
             }
         }
@@ -1137,9 +1137,11 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public ApiResult<String> getRedirctSmsHotUrl(Long activityId) {
-
+        StallUpActivityQuery activityQuery = new StallUpActivityQuery();
+        activityQuery.setId(activityId);
+        StallUpActivity stallUpActivity = stallUpActivityMapper.get(activityQuery);
         StallUpCommunityQuery stallUpCommunityQuery = new StallUpCommunityQuery();
-        stallUpCommunityQuery.setActivityId(activityId);
+        stallUpCommunityQuery.setActivityId(stallUpActivity.getParentId());
         List<StallUpCommunityDO> stallUpCommunityDOS = stallUpCommunityMapper.find(stallUpCommunityQuery);
         Map<String, String> map = new LinkedHashMap<>();
         if (!CollectionUtils.isEmpty(stallUpCommunityDOS)) {
@@ -1159,7 +1161,7 @@ public class StallUpServiceImpl implements StallUpService {
         formData.put("timestamp", timestamp);
         formData.put("building", map);
         formData.put("prehotObjectType", 3);
-        formData.put("activityId",ID_PREFIX + activityId);
+        formData.put("activityId", ID_PREFIX + activityId);
 
         log.info("[redirctSmsHot] 请求参数formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);

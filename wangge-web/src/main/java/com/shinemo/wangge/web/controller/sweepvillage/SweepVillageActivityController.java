@@ -180,8 +180,8 @@ public class SweepVillageActivityController {
      */
     @PostMapping("/addBusiness")
     public ApiResult<Void> addOrUpdateBusiness(@RequestBody SweepVillageBusinessRequest request){
-        org.springframework.util.Assert.notNull(request,"request is null");
-        org.springframework.util.Assert.notNull(request.getActivityId(),"activityId is null");
+        Assert.notNull(request,"request is null");
+        Assert.notNull(request.getActivityId(),"activityId is null");
         return sweepVillageActivityService.enterMarketingNumber(request);
     }
 
