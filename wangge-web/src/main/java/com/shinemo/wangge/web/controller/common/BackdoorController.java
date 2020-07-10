@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
-import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
@@ -129,16 +128,6 @@ public class BackdoorController {
         return loginStatisticsService.saveYesterdayLoginInfoResult();
     }
 
-
-    /**
-     * 获取昨日登录信息
-     *
-     * @return
-     */
-    @GetMapping("/getLoginInfoExcelDTOList")
-    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
-        return loginStatisticsService.getLoginInfoExcelDTOList();
-    }
 
     /**
      * 模拟登陆

@@ -115,23 +115,50 @@
     </select>
 
 
-    <select id="getLoginInfoExcelDTOList" parameterType="com.shinemo.operate.query.UserOperateLogQuery"
-            resultType="com.shinemo.operate.excel.LoginInfoExcelDTO">
+    <select id="getLoginResultExcelDTOList" resultType="com.shinemo.excel.LoginResultExcelDTO" >
         select
-        t1.id,
-        t1.mobile,
-        t1.username,
-        t1.operate_time as loginTime,
-        GROUP_CONCAT( DISTINCT ( t2.city_name) ) as cityName,
-        GROUP_CONCAT( DISTINCT ( t2.county_name )) as countyName,
-        GROUP_CONCAT( DISTINCT ( t2.role_name )) as roleName,
-        GROUP_CONCAT( DISTINCT ( t2.grid_name )) as gridName
-        from
-         t_user_operate_log${tableIndex} as  t1
-        left join t_user_grid_role as t2 on t1.mobile = t2.mobile
-        where t1.type=1 and t1.operate_time <![CDATA[>=]]> #{startTime} and t1.operate_time <![CDATA[<=]]> #{endTime}
+            statistics_time as statisticsTime,
+            city_name as cityName,
+            county_name as countyName,
+            IFNULL(grid_captain_login_person_count,0) as gridCaptainLoginPersonCount,
+            IFNULL(grid_captain_login_count,0) as gridCaptainLoginCount ,
+            IFNULL(grid_manager_login_person_count,0) as gridManagerLoginPersonCount,
+            IFNULL(grid_manager_login_count,0) as gridManagerLoginCount,
+            direct_seller_login_person_count as directSellerLoginPersonCount,
+            direct_seller_login_count as directSellerLoginCount,
+            decorator_login_person_count as decoratorLoginPersonCount,
+            decorator_login_count as decoratorLoginCount,
+            business_hall_login_person_count as businessHallLoginPersonCount,
+            business_hall_login_count as businessHallLoginCount,
+            agent_business_login_person_count as agentBusinessLoginPersonCount,
+            agent_business_login_count as agentBusinessLoginCount,
+            operating_personnel_login_person_count as operatingPersonnelLoginPersonCount,
+            operating_personnel_login_count as operatingPersonnelLoginCount,
+            login_person_total_count as loginPersonTotalCount,
+            login_total_count as loginTotalCount,
+            IFNULL(CONCAT(login_person_day_percent*100,'%'),'') as loginPersonDayPercent,
+            IFNULL(CONCAT(login_count_day_percent*100,'%'),'') as loginCountDayPercent
+        FROM t_login_info_result
+        WHERE statistics_time = #{date}
+    </select>
+
+    <select id="getLoginInfoExcelDTOList" resultType="com.shinemo.excel.LoginInfoExcelDTO" >
+        select
+            t1.mobile as mobile,
+            t1.username as username,
+            t1.operate_time as operateTime,
+            GROUP_CONCAT( DISTINCT ( t2.city_name ) )  as cityName,
+            GROUP_CONCAT( DISTINCT ( t2.county_name ))  as countyName,
+            GROUP_CONCAT( DISTINCT ( t2.grid_name )) as gridName ,
+            GROUP_CONCAT( DISTINCT ( t2.role_name ))  as roleName
+        FROM
+            t_user_operate_log_month_${tableIndex} as t1
+                LEFT JOIN t_user_grid_role as t2 ON t1.mobile = t2.mobile
+        WHERE
+            t1.type = 1
+          and DATE_FORMAT(t1.operate_time,'%Y-%m-%d') = #{date}
         GROUP BY
-        t1.id;
+            t1.id;
     </select>
 
 </mapper>

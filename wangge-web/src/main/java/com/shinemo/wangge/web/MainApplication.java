@@ -94,7 +94,11 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/operate/**")
                 .addPathPatterns("/todo/thing/**")
                 .addPathPatterns("/targetcustomer/getByMobile/**")
-                .excludePathPatterns("/backdoor/**", "/error","/todo/operateTodoThing","/todo/thing/log/**",properties.getCheckStatusPath())
+                .excludePathPatterns("/backdoor/**",
+                        "/error","/todo/operateTodoThing",
+                        "/todo/thing/log/**",
+                        "/excel/**",
+                        properties.getCheckStatusPath())
                 .order(1);
         registry.addInterceptor(getDebugInterceptor())
                 .addPathPatterns("/**")

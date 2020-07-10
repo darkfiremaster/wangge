@@ -5,9 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.domain.LoginInfoResultDO;
-import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.operate.query.LoginInfoResultQuery;
-import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.dal.mapper.LoginInfoResultMapper;
@@ -91,15 +89,7 @@ public class LoginStatisticsServiceImpl implements LoginStatisticsService {
     }
 
 
-    @Override
-    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoExcelDTOList() {
-        UserOperateLogQuery userOperateLogQuery = new UserOperateLogQuery();
-        userOperateLogQuery.setStartTime(DateUtil.beginOfDay(DateUtil.yesterday()));
-        userOperateLogQuery.setEndTime(DateUtil.endOfDay(DateUtil.yesterday()));
-        userOperateLogQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now().minusDays(1)));
-        List<LoginInfoExcelDTO> loginInfoExcelDTOList = slaveLoginInfoResultMapper.getLoginInfoExcelDTOList(userOperateLogQuery);
-        return ApiResult.of(0, loginInfoExcelDTOList);
-    }
+
 }
 
 
