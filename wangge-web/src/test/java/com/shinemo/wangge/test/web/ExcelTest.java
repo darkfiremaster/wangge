@@ -78,7 +78,7 @@ public class ExcelTest {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         ExcelWriter writer = EasyExcelFactory.getWriter(fileOutputStream);
         Sheet sheet = new Sheet(1, 0, LoginResultExcelDTO.class);
-        sheet.setSheetName("登录信结果统计"+date);
+        sheet.setSheetName("登录结果统计"+date);
         writer.write(loginResultExcelDTOList, sheet);
         writer.finish();
 
