@@ -60,14 +60,14 @@ public class ExcelController {
     public String exportLoginResultExcel(String date, HttpServletResponse response) {
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         //List<LoginResultExcelDTO> loginResultExcelDTOList = slaveLoginInfoResultMapper.getLoginResultExcelDTOList(date);
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("date", date);
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("date", date);
         String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
-        log.info("[exportLoginResultExcel] 请求地址:{}", url);
-        String res = HttpUtil.get(url);
+        String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
         List<LoginResultExcelDTO> loginResultExcelDTOList = data.toList(LoginResultExcelDTO.class);
+        log.info("[exportLoginResultExcel] 请求地址:{},结果集数量:{}", url, loginResultExcelDTOList.size());
         try {
             ExcelUtil.writeExcel(response, loginResultExcelDTOList, "登录结果统计", "登录结果统计",
                     ExcelTypeEnum.XLSX, LoginResultExcelDTO.class);
@@ -97,14 +97,14 @@ public class ExcelController {
     @GetMapping("/exportLoginInfoExcel")
     public String exportLoginInfoExcel(String date, HttpServletResponse response) {
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("date", date);
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("date", date);
         String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
-        log.info("[exportLoginInfoExcel] 请求地址:{}", url);
-        String res = HttpUtil.get(url);
+        String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
         List<LoginInfoExcelDTO> loginInfoExcelDTOS = data.toList(LoginInfoExcelDTO.class);
+        log.info("[exportLoginInfoExcel] 请求地址:{},结果集数量:{}", url, loginInfoExcelDTOS.size());
         try {
             ExcelUtil.writeExcel(response, loginInfoExcelDTOS, "登录信息统计", "登录信息统计",
                     ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
