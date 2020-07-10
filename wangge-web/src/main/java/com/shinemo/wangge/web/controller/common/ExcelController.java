@@ -1,10 +1,14 @@
 package com.shinemo.wangge.web.controller.common;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.shinemo.client.easyexcel.ExcelException;
 import com.shinemo.client.easyexcel.ExcelUtil;
@@ -20,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,8 +43,9 @@ public class ExcelController {
     @Resource
     private SlaveLoginInfoResultMapper slaveLoginInfoResultMapper;
 
+    private static final String devDomin = "http://localhost:20014";
     private static final String testDomin = "https://developer.e.uban360.com";
-    private static final String domin = "https://api-gx.uban360.com";
+    private static final String onlineDomin = "https://api-gx.uban360.com";
 
     /**
      * 获取登录结果列表
@@ -95,24 +103,37 @@ public class ExcelController {
      * 获取正式环境登录统计信息excel
      */
     @GetMapping("/exportLoginInfoExcel")
-    public String exportLoginInfoExcel(String date, HttpServletResponse response) {
+    public String exportLoginInfoExcel(String date, HttpServletResponse response) throws FileNotFoundException {
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("date", date);
-        String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
+        String url = devDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
         String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
         List<LoginInfoExcelDTO> loginInfoExcelDTOS = data.toList(LoginInfoExcelDTO.class);
+
         log.info("[exportLoginInfoExcel] 请求地址:{},结果集数量:{}", url, loginInfoExcelDTOS.size());
-        try {
-            ExcelUtil.writeExcel(response, loginInfoExcelDTOS, "登录信息统计", "登录信息统计",
-                    ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
-        } catch (ExcelException e) {
-            throw new ApiException("导出excel异常", e);
-        }
+
+        File file = FileUtil.file("/Users/cindy/Desktop/" + "writeSimple" + System.currentTimeMillis());
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ExcelWriter writer = EasyExcelFactory.getWriter(fileOutputStream);
+        Sheet sheet = new Sheet(1, 0, LoginInfoExcelDTO.class);
+        writer.write(loginInfoExcelDTOS,sheet);
+        writer.finish();
+        //try {
+        //    ExcelUtil.writeExcel(response, loginInfoExcelDTOS, "登录信息统计", "登录信息统计",
+        //            ExcelTypeEnum.XLSX, LoginInfoExcelDTO.class);
+        //} catch (ExcelException e) {
+        //    throw new ApiException("导出excel异常", e);
+        //}
         log.info("[exportLoginInfoExcel] 导出登录信息excel成功");
         return "success";
     }
 
+    public static void main(String[] args) throws FileNotFoundException {
+        File file = FileUtil.file("/Users/cindy/Desktop/" + "writeSimple" + System.currentTimeMillis());
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ExcelWriter writer = EasyExcelFactory.getWriter(fileOutputStream);
+    }
 }
