@@ -50,6 +50,7 @@ public class TenantsController {
                 tenantsVO.setContactMobile(mobile);
                 SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
                 visitRecordingQuery.setTenantsId(tenantsVO.getId());
+                visitRecordingQuery.setStatus(1);
                 SweepVillageVisitRecordingDO recordingDO = sweepVillageVisitRecordingMapper.getRecentVisit(visitRecordingQuery);
                 if (recordingDO != null) {
                     tenantsVO.setVisitTime(recordingDO.getGmtCreate());
