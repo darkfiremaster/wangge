@@ -79,6 +79,17 @@
         limit 1
     </select>
 
+    <!-- 查询某条记录 -->
+    <select id="getRecentVisit" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        <include refid="conditions" />
+        order by gmt_create desc
+        limit 1
+    </select>
+
     <!-- 统计查询结果数量 -->
     <select id="count" resultType="long" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
         select count(*) from
