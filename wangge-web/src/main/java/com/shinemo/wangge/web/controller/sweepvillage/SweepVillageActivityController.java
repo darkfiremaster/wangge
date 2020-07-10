@@ -162,7 +162,7 @@ public class SweepVillageActivityController {
 
             for (int i = 0;i < sweepVillageListConfig.size();i++) {
                 StallUpBizType bizType = sweepVillageListConfig.get(i);
-                if (bizType.getId().equals(19L)) {
+                if (bizType.getId().equals(16L)) {
                     marketToolList.add(bizType);
                 }else {
                     sweepVillageList.add(bizType);
