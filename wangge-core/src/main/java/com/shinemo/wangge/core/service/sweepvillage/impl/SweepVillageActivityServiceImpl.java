@@ -399,17 +399,17 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         visitRecordingQuery.setStatus(StatusEnum.NORMAL.getId());
         List<SweepVillageVisitRecordingDO> visitRecordingDOS = sweepVillageVisitRecordingMapper.find(visitRecordingQuery);
 
-        int visitCount = 0;
-        for (SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS) {
-            if (activityIdSet.contains(visitRecordingDO.getActivityId())) {
-                visitCount++;
-            }
-
-        }
+//        int visitCount = 0;
+//        for (SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS) {
+//            if (activityIdSet.contains(visitRecordingDO.getActivityId())) {
+//                visitCount++;
+//            }
+//
+//        }
 
         SweepVillageActivityFinishVO sweepVillageActivityFinishVO = new SweepVillageActivityFinishVO();
         sweepVillageActivityFinishVO.setSweepVillageCount(sweepVillageActivityDOS.size());
-        sweepVillageActivityFinishVO.setVisitUserCount(visitCount);
+        sweepVillageActivityFinishVO.setVisitUserCount(visitRecordingDOS.size());
         return ApiResult.of(0, sweepVillageActivityFinishVO);
     }
 

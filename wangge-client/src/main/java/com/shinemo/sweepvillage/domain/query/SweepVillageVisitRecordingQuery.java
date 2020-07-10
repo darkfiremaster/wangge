@@ -24,8 +24,9 @@ public class SweepVillageVisitRecordingQuery extends Query {
     private String mobile;
     /**
      * filterCreateTime为true时，根据创建时间过滤
+     * 默认为false
      */
-    private Boolean filterCreateTime;
+    private Boolean filterCreateTime = false;
 
     private Date startTime;
     private Date endTime;

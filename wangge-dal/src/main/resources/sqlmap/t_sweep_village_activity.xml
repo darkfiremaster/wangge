@@ -57,7 +57,7 @@
                     <if test="status != null">and status = #{status}</if>
                     <if test="villageId != null">and village_id = #{villageId}</if>
 
-                    <if test="startTime != null">and start_time >= #{startTime}</if>
+                    <if test="startTime != null">and end_time >= #{startTime}</if>
                     <if test="endTime != null">and <![CDATA[ end_time <= #{endTime}]]> </if>
                     <!--<if test="remark != null">and remark = #{remark}</if>-->
                     <!--<if test="picUrl != null">and pic_url = #{picUrl}</if>-->
@@ -75,9 +75,16 @@
         from
         <include refid="table"/>
         <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
         <if test="pageEnable">
             limit #{startRow}, #{pageSize}
         </if>
+
     </select>
 
     <!-- 查询某条记录 -->
