@@ -26,10 +26,6 @@ public class ExcelController {
     @Resource
     private SlaveLoginInfoResultMapper slaveLoginInfoResultMapper;
 
-    private static final String devDomin = "http://localhost:20014";
-    private static final String testDomin = "https://developer.e.uban360.com";
-    private static final String onlineDomin = "https://api-gx.uban360.com";
-
     /**
      * 获取登录结果列表
      *
@@ -42,6 +38,19 @@ public class ExcelController {
         List<LoginResultExcelDTO> loginResultExcelDTOList = slaveLoginInfoResultMapper.getLoginResultExcelDTOList(date);
         log.info("[getLoginResultDTOList] 获取登录结果列表,date:{},结果集数量:{}", date, loginResultExcelDTOList.size());
         return ApiResult.of(0, loginResultExcelDTOList);
+    }
+
+    /**
+     * 获取登录信息列表
+     */
+    @GetMapping("/getLoginInfoDTOList")
+    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoDTOList(String date) {
+        Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
+        String[] split = date.split("-");
+        String tableIndex = split[1];//该表按月分表所以需要先获取月份
+        List<LoginInfoExcelDTO> loginInfoExcelDTOList = slaveLoginInfoResultMapper.getLoginInfoExcelDTOList(date, tableIndex);
+        log.info("[getLoginResultDTOList] 获取登录信息列表,date:{},结果集数量:{}", date, loginInfoExcelDTOList.size());
+        return ApiResult.of(0, loginInfoExcelDTOList);
     }
 
     ///**
@@ -69,18 +78,7 @@ public class ExcelController {
     //    return "success";
     //}
 
-    /**
-     * 获取登录信息列表
-     */
-    @GetMapping("/getLoginInfoDTOList")
-    public ApiResult<List<LoginInfoExcelDTO>> getLoginInfoDTOList(String date) {
-        Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
-        String[] split = date.split("-");
-        String tableIndex = split[1];//该表按月分表所以需要先获取月份
-        List<LoginInfoExcelDTO> loginInfoExcelDTOList = slaveLoginInfoResultMapper.getLoginInfoExcelDTOList(date, tableIndex);
-        log.info("[getLoginResultDTOList] 获取登录信息列表,date:{},结果集数量:{}", date, loginInfoExcelDTOList.size());
-        return ApiResult.of(0, loginInfoExcelDTOList);
-    }
+
 
     ///**
     // * 获取正式环境登录统计信息excel
