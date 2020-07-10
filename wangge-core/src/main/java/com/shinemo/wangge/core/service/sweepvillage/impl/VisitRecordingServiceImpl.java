@@ -256,8 +256,12 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             }
         }
         map.put("bizTypes",simpleStallUpBizTypes);
-        map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime().getTime());
-        map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime().getTime());
+        if (visitRecordingDO.getBroadbandExpireTime() != null) {
+            map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime().getTime());
+        }
+        if (visitRecordingDO.getTvBoxExpireTime() != null) {
+            map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime().getTime());
+        }
         map.put("remark",visitRecordingDO.getRemark());
 
         thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
