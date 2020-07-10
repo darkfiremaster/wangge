@@ -38,7 +38,7 @@ public class ExcelTest {
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("date", date);
-        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
+        String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
         String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
@@ -66,7 +66,7 @@ public class ExcelTest {
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("date", date);
-        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
+        String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
         String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));

@@ -211,7 +211,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         //todo mock待删除
         if (!EnvUtil.isOnline()) {
-            List<String> list = Arrays.asList("18523280364","15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034");
+            List<String> list = Arrays.asList("18523280364", "15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034");
 
             if (request.getMobile().equals("15000001172")) {
                 //6个网格
@@ -231,7 +231,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             }
 
             if (list.contains(request.getMobile())) {
-                log.info("[getGridUserInfo] 返回mock用户网格信息,手机号:{}",request.getMobile());
+                log.info("[getGridUserInfo] 返回mock用户网格信息,手机号:{}", request.getMobile());
                 List<GridUserRoleDetail> detailList = getMockGridUser();
                 return ApiResult.of(0, detailList);
             }
@@ -372,16 +372,16 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         mobileSet.add(request.getMobile());
         Integer orderSize = 0;
         int i = 0;
-        for(String val:mobileSet){
-            if(val.equals(request.getMobile())){
-                orderSize=Integer.MIN_VALUE;
+        for (String val : mobileSet) {
+            if (val.equals(request.getMobile())) {
+                orderSize = Integer.MIN_VALUE;
             }
             list.add(GridUserDetail.builder()
                     .userId(val)
                     .mobile(val)
-                    .seMobile(AESUtil.encrypt(val,seed))
-                    .name("网格长"+i)
-                    .role("网格长"+i)
+                    .seMobile(AESUtil.encrypt(val, seed))
+                    .name("网格长" + i)
+                    .role("网格长" + i)
                     .order(orderSize).build());
             orderSize++;
             i++;
@@ -393,7 +393,6 @@ public class HuaWeiServiceImpl implements HuaWeiService {
         return gridUserListResponse;
 
     }
-
 
 
     private List<GridUserRoleDetail> getMockGridUser() {
@@ -596,9 +595,15 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             log.error("[getRedirectUrl] handler is null, type:{}", stallUpBizType.getType());
             throw new ApiException(StallUpErrorCodes.BIZ_TYPE_ERROR);
         }
-        String seMobile = request.getQueryMobile();
-        if (org.springframework.util.StringUtils.hasText(seMobile)) {
-            String queryMobile = AESUtil.decrypt(seMobile, aeskey);
+
+
+        String queryMobile = request.getQueryMobile();
+        if (org.springframework.util.StringUtils.hasText(queryMobile)) {
+            //判断手机号是否是明文的还是加密的
+            if (queryMobile.length() != 11) {
+                queryMobile = AESUtil.decrypt(queryMobile, aeskey);
+                log.info("[getRedirectUrl] 查询手机号是加密的,解密后的手机号:{}",queryMobile);
+            }
             request.setQueryMobile(queryMobile);
         }
         request.setBizParams(stallUpBizType.getBizParams());
