@@ -201,4 +201,6 @@ public class StaticTest {
         System.out.println("result = " + result);
     }
 
+
+
 }

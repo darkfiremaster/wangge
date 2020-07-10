@@ -82,24 +82,24 @@ public class SmartGridFilesystemController {
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @SmIgnore
     public ApiResult<String> uploadFile(@RequestBody FileVo fileVo) {
-        log.error("[uploadFile] time_0 = {}.", System.currentTimeMillis());
+        log.info("[uploadFile] time_0 = {}.", System.currentTimeMillis());
         try {
             return transformBase64(fileVo.getContent().split(",")[1]);
         } catch (Exception e) {
             log.error("FilesystemController upload Exception, msg:", e);
             return ApiResult.fail("文件上传错误", -1);
         } finally {
-            log.error("[uploadFile] time_final = {}.", System.currentTimeMillis());
+            log.info("[uploadFile] time_final = {}.", System.currentTimeMillis());
         }
     }
 
     private ApiResult<String> transformBase64(String str) throws IOException {
         BASE64Decoder decode = new BASE64Decoder();
         byte[] buffer = decode.decodeBuffer(str);
-        log.error("[uploadFile] time_1 = {}.", System.currentTimeMillis());
+        log.info("[uploadFile] time_1 = {}.", System.currentTimeMillis());
         fileSystemClient.setFileUploadUrl(FILE_SYSTEM_INNER_NET_URL);
         String uploadUrl = fileSystemClient.upload(buffer, 30);
-        log.error("[uploadFile] time_2 = {}, url = {}.", System.currentTimeMillis(), uploadUrl);
+        log.info("[uploadFile] time_2 = {}, url = {}.", System.currentTimeMillis(), uploadUrl);
         if (StringUtils.isBlank(uploadUrl)) {
             log.error("FilesystemController getUrl fileSystemClient.upload error, filesystemUrl={}",
                     FILE_SYSTEM_INNER_NET_URL);

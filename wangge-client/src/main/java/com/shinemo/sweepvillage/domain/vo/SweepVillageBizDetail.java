@@ -16,4 +16,5 @@ public class SweepVillageBizDetail {
     private Long id;
     private String name;
     private Integer count;
+    private Integer num;
 }

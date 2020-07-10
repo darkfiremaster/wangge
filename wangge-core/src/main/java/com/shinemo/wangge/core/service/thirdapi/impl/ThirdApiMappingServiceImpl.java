@@ -15,6 +15,7 @@ import com.shinemo.thirdapi.common.enums.ThirdApiStatusEnum;
 import com.shinemo.thirdapi.common.enums.ThirdApiTypeEnum;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.thirdapi.domain.model.ThirdApiMappingDO;
+import com.shinemo.wangge.core.config.exception.HuaweiApiTimeoutException;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper;
@@ -95,7 +96,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         return ApiResultWrapper.fail(ThirdApiErrorCodes.API_TYPE_ERROR);
     }
 
-    @Retryable(value = {Exception.class},
+    @Retryable(value = {HuaweiApiTimeoutException.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 3000, multiplier = 2))
     @Async
@@ -133,9 +134,9 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     private ApiResult<Map<String, Object>> handleResult(Map<String, Object> requestData, ThirdApiMappingDO thirdApiMappingDO, String param, HttpResult httpResult) {
         if (httpResult != null && httpResult.timeOut()) {
             //超时处理
-            log.error("[dispatch] huawei api timeout error,url={}, request={}, param={}, httpResult = {}",
+            log.error("[dispatch] 华为接口超时 ,url={}, request={}, param={}, httpResult = {}",
                     thirdApiMappingDO.getUrl(), requestData, param, httpResult);
-            throw new RuntimeException("接口超时,请稍后再试");
+            throw new HuaweiApiTimeoutException(500, "接口超时,请稍后再试");
         }
 
 

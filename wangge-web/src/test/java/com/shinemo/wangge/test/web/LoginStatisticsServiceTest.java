@@ -2,7 +2,6 @@ package com.shinemo.wangge.test.web;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.operate.domain.LoginInfoResultDO;
-import com.shinemo.operate.excel.LoginInfoExcelDTO;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.web.MainApplication;
 import org.junit.Test;
@@ -24,12 +23,6 @@ public class LoginStatisticsServiceTest {
 
     @Resource
     private LoginStatisticsService loginStatisticsService;
-
-    @Test
-    public void testGetLoginInfoExcelDTOList() {
-        ApiResult<List<LoginInfoExcelDTO>> loginInfoExcelDTOList = loginStatisticsService.getLoginInfoExcelDTOList();
-        System.out.println("loginInfoExcelDTOList = " + loginInfoExcelDTOList);
-    }
 
     @Test
     public void testSaveYesterdayLoginInfoResult() {

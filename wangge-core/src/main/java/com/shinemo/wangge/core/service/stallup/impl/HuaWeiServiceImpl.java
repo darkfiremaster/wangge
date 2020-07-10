@@ -235,6 +235,38 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                 List<GridUserRoleDetail> detailList = getMockGridUser();
                 return ApiResult.of(0, detailList);
             }
+
+            if (request.getMobile().equals("18822222222")) {
+                List<GridUserRoleDetail> detailList = Arrays.asList(
+                        GridUserRoleDetail.builder()
+                                .id("771_A2107_30")
+                                .name("东区江南网格")
+                                .cityCode("771")
+                                .cityName("南宁")
+                                .countyCode("A2107")
+                                .countyName("东区")
+                                .roleList(Lists.newArrayList(
+                                        new GridUserRoleDetail.GridRole("1", "网格长")))
+                                .build()
+                );
+                return ApiResult.of(0, detailList);
+            }
+
+            if (request.getMobile().equals("18844444444")) {
+                List<GridUserRoleDetail> detailList = Arrays.asList(
+                        GridUserRoleDetail.builder()
+                                .id("771_A2107_30")
+                                .name("东区江南网格")
+                                .cityCode("771")
+                                .cityName("南宁")
+                                .countyCode("A2107")
+                                .countyName("东区")
+                                .roleList(Lists.newArrayList(
+                                        new GridUserRoleDetail.GridRole("2", "网格经理")))
+                                .build()
+                );
+                return ApiResult.of(0, detailList);
+            }
         }
 
         GetGridUserInfoRequest getGridUserInfoRequest = new GetGridUserInfoRequest();
