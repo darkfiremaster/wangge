@@ -86,11 +86,7 @@ public class SmartGridUtils {
             return null;
         }
         String prefix = name.substring(0, 1);
-        int length = name.length();
-        for (int i = 0;i < length - 1;i++) {
-            prefix = prefix + "*";
-        }
-        return prefix;
+        return prefix + "**";
     }
 
     public static void main(String[] args) {
