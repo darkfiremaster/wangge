@@ -126,7 +126,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             if (visitRecordingDO.getActivityId().equals(request.getActivityId())) {
                 visitRecordingVO.setType(1);
             }else {
-                visitRecordingVO.setType(2);
+                visitRecordingVO.setType(0);
             }
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             vos.add(visitRecordingVO);
