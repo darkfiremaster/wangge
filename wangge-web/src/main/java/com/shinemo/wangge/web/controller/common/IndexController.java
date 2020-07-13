@@ -14,7 +14,9 @@ import com.shinemo.smartgrid.domain.UrlRedirectHandlerRequest;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.HttpUtil;
+import com.shinemo.stallup.common.enums.BizGroupEnum;
 import com.shinemo.stallup.common.error.StallUpErrorCodes;
+import com.shinemo.stallup.domain.model.BizTypeListVO;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.model.SweepFloorBizTotal;
@@ -238,16 +240,40 @@ public class IndexController {
 
     @GetMapping("/getAllHomePageBizList")
     @SmIgnore
-    public ApiResult<GetSimpleInfoResponse> getAllHomePageBizList() {
-        GetSimpleInfoResponse response = new GetSimpleInfoResponse();
+    public ApiResult<BizTypeListVO> getAllHomePageBizList() {
         List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(SmartGridContext.getUid()).stream()
                 .map(i -> toBizTypeVO(stallUpConfig.getConfig().getMap().get(i))).collect(Collectors.toList());
-        response.setHomePageBizList(homePageBizList);
         List<StallUpBizType> indexList = stallUpConfig.getConfig().getIndexList();
-        response.setIndexList(indexList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
         List<StallUpBizType> quickAccessList = stallUpConfig.getConfig().getQuickAccessList();
-        response.setQuickAccessList(quickAccessList.stream().map(v -> toBizTypeVO(v)).collect(Collectors.toList()));
-        return ApiResult.success(response);
+        List<StallUpBizType> daosanjiaoSupportBizList = stallUpConfig.getConfig().getDaosanjiaoSupportBizList();
+
+        //拼接到一个List返回给前端
+        List<BizTypeListVO.BizTypeBean> bizTypeListBean = new ArrayList<>();
+
+        BizTypeListVO.BizTypeBean homePageBean = new BizTypeListVO.BizTypeBean();
+        homePageBean.setBizGroupName(BizGroupEnum.COMMON_APPLICATION.getName());
+        homePageBean.setBizTypeList(homePageBizList);
+        bizTypeListBean.add(homePageBean);
+
+        BizTypeListVO.BizTypeBean indexBean = new BizTypeListVO.BizTypeBean();
+        indexBean.setBizGroupName(BizGroupEnum.ALL_APPLICATION.getName());
+        indexBean.setBizTypeList(indexList);
+        bizTypeListBean.add(indexBean);
+
+        BizTypeListVO.BizTypeBean quickAccessBean = new BizTypeListVO.BizTypeBean();
+        quickAccessBean.setBizGroupName(BizGroupEnum.QUICK_APPLICATION.getName());
+        quickAccessBean.setBizTypeList(quickAccessList);
+        bizTypeListBean.add(quickAccessBean);
+
+        BizTypeListVO.BizTypeBean daosanjiaoBean = new BizTypeListVO.BizTypeBean();
+        daosanjiaoBean.setBizGroupName(BizGroupEnum.DAOSANJIAO_SUPPORT.getName());
+        daosanjiaoBean.setBizTypeList(daosanjiaoSupportBizList);
+        bizTypeListBean.add(daosanjiaoBean);
+
+        BizTypeListVO bizTypeListVO = new BizTypeListVO();
+        bizTypeListVO.setBizTypeListBean(bizTypeListBean);
+
+        return ApiResult.of(0,bizTypeListVO);
     }
 
     @PostMapping("/configHomePageBiz")

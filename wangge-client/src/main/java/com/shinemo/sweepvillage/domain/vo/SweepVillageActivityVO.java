@@ -23,7 +23,6 @@ public class SweepVillageActivityVO {
     private String location;
     private String area;
     private String areaCode;
-    private String address;
     /** 地址信息 */
     private LocationDetailVO locationDetailVO;
 }
