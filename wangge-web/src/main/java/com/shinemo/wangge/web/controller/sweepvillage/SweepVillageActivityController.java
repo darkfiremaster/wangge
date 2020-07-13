@@ -99,9 +99,10 @@ public class SweepVillageActivityController {
                                      @RequestParam(required = false) Long endTime,
                                      @RequestParam(required = false)  Integer pageSize,
                                      @RequestParam(required = false) Integer currentPage) {
-        Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
-        request.setStatus(status);
+        if(status != null){
+            request.setStatus(status);
+        }
         if(startTime != null){
             request.setStartTime(new Date(startTime));
         }

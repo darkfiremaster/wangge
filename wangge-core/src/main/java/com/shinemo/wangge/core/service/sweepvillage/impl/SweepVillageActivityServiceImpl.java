@@ -276,7 +276,34 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
         //校验参数
         Assert.notNull(sweepVillageActivityQueryRequest, "request is null");
-        Assert.notNull(sweepVillageActivityQueryRequest.getStatus(), "status is null");
+
+        if (sweepVillageActivityQueryRequest.getStatus() == null) {
+            //查全部活动
+            SweepVillageActivityQuery query = new SweepVillageActivityQuery();
+            query.setMobile(SmartGridContext.getMobile());
+            if (sweepVillageActivityQueryRequest.getCurrentPage() != null) {
+                query.setPageEnable(true);
+                query.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
+                query.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
+            }
+            log.info("[getSweepVillageActivityList] 获取所有的扫村活动列表,query:{}", query);
+            List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(query);
+            //do转为vo
+            List<SweepVillageActivityResultVO> resultVOList = new ArrayList<>();
+            for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
+                SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
+                resultVO.setTitle(sweepVillageActivityDO.getTitle());
+                resultVO.setStartTime(sweepVillageActivityDO.getStartTime());
+                resultVO.setAddress(sweepVillageActivityDO.getAddress());
+                resultVO.setArea(sweepVillageActivityDO.getArea());
+                resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
+                resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
+                resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+                resultVOList.add(resultVO);
+            }
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
+        }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.PROCESSING.getId())) {
             //查进行中的活动
