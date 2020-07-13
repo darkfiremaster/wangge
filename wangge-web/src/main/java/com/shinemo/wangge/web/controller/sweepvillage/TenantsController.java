@@ -5,8 +5,11 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
+import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
+import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ public class TenantsController {
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+    @Resource
+    private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
 
     @PostMapping("/getTenantsList")
     public ApiResult<Map<String,Object>> getTenantsList(@RequestBody Map<String,Object> requestData) {
@@ -43,6 +48,13 @@ public class TenantsController {
                 String name = SmartGridUtils.desensitizationName(contactPerson);
                 tenantsVO.setContactPerson(name);
                 tenantsVO.setContactMobile(mobile);
+                SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
+                visitRecordingQuery.setTenantsId(tenantsVO.getId());
+                visitRecordingQuery.setStatus(1);
+                SweepVillageVisitRecordingDO recordingDO = sweepVillageVisitRecordingMapper.getRecentVisit(visitRecordingQuery);
+                if (recordingDO != null) {
+                    tenantsVO.setVisitTime(recordingDO.getGmtCreate());
+                }
             }
         }
         data.put("rows",list);

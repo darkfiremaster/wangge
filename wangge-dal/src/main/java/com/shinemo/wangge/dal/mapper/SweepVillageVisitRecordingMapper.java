@@ -7,4 +7,5 @@ import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 
 public interface SweepVillageVisitRecordingMapper extends BaseMapper<SweepVillageVisitRecordingQuery, SweepVillageVisitRecordingDO> {
 
+    public SweepVillageVisitRecordingDO getRecentVisit(SweepVillageVisitRecordingQuery query);
 }
