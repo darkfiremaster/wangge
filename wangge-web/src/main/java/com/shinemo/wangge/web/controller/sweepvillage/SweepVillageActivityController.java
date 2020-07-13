@@ -118,6 +118,14 @@ public class SweepVillageActivityController {
 
     }
 
+    @GetMapping("/getSweepVillageActivityById")
+    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityById(@RequestParam Long sweepVillageActivityId){
+        Assert.notNull(sweepVillageActivityId,"sweepVillageActivityId is null");
+
+        return sweepVillageActivityService.getSweepVillageActivityAndBizById(sweepVillageActivityId);
+    }
+
+
     /**
      * 扫村次数 查询
      * @param type

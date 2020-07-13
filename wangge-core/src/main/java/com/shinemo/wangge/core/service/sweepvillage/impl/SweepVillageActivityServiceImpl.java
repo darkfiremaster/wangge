@@ -178,6 +178,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
         sweepVillageActivityDO.setStartTime(startTime);
+        sweepVillageActivityDO.setCreatorName(SmartGridContext.getUserName());
         sweepVillageActivityMapper.insert(sweepVillageActivityDO);
 
 
@@ -300,6 +301,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
                 resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
                 resultVOList.add(resultVO);
             }
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
@@ -356,6 +358,52 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
 
         throw new ApiException("illegal status", 500);
+    }
+
+    @Override
+    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityAndBizById(Long sweepVillageActivitiId) {
+        //1.获取扫村活动信息
+        SweepVillageActivityQuery activityQuery = new SweepVillageActivityQuery();
+        activityQuery.setId(sweepVillageActivitiId);
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(activityQuery);
+        if(sweepVillageActivityDO == null){
+            log.error("[getSweepVillageActivityAndBizById] query activity is null,query:{}",activityQuery);
+            return ApiResult.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST.msg,SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST.code);
+        }
+
+        //2.初始化返回对象
+        SweepVillageActivityDetailVO activityDetailVO = new SweepVillageActivityDetailVO();
+        activityDetailVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+        activityDetailVO.setTitle(sweepVillageActivityDO.getTitle());
+        activityDetailVO.setVillageId(sweepVillageActivityDO.getVillageId());
+        activityDetailVO.setVillageName(sweepVillageActivityDO.getVillageName());
+        activityDetailVO.setAddress(sweepVillageActivityDO.getAddress());
+        activityDetailVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+        activityDetailVO.setStartTime(sweepVillageActivityDO.getStartTime());
+        activityDetailVO.setEndTime(sweepVillageActivityDO.getEndTime());
+        activityDetailVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+        if(sweepVillageActivityDO.getStatus() == SweepVillageStatusEnum.PROCESSING.getId()){
+            activityDetailVO.setStatus(SweepVillageStatusEnum.PROCESSING.getDesc());
+        }else {
+            activityDetailVO.setStatus(SweepVillageStatusEnum.END.getDesc());
+        }
+        //2.查询业务办理信息
+        SweepVillageMarketingNumberQuery marketingNumberQuery = new SweepVillageMarketingNumberQuery();
+        marketingNumberQuery.setActivityId(sweepVillageActivitiId);
+
+        SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO = sweepVillageMarketingNumberMapper.get(marketingNumberQuery);
+        if(sweepVillageMarketingNumberDO == null){
+            log.error("[getSweepVillageActivityAndBizById] query market is null,query:{}",marketingNumberQuery);
+            activityDetailVO.setBizList(new ArrayList<SweepVillageBizDetail>());
+            return ApiResult.of(0,activityDetailVO);
+        }
+        Gson gson = new Gson();
+        List<SweepVillageBizDetail> bizList = gson.fromJson(sweepVillageMarketingNumberDO.getDetail(),
+                new TypeToken<List<SweepVillageBizDetail>>() {
+                }.getType());
+        activityDetailVO.setBizList(bizList);
+        return ApiResult.of(0,activityDetailVO);
+
     }
 
     @Override

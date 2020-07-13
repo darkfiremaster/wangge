@@ -21,11 +21,12 @@
         <result property="status" column="status"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
+        <result property="creatorName" column="creator_name"/>
     </resultMap>
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, gmt_create, gmt_modified, title, village_id, village_name,address, area, area_code, location, origin_location, grid_id, mobile, status, start_time, end_time
+        id, gmt_create, gmt_modified, title, village_id, village_name,address, area, area_code, location, origin_location, grid_id, mobile, status, start_time, end_time, creator_name
     </sql>
 
     <sql id="table">
@@ -167,6 +168,9 @@
             <if test="endTime != null">
                 end_time,
             </if>
+            <if test="creatorName != null">
+                creator_name,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -212,6 +216,9 @@
             </if>
             <if test="endTime != null">
                 #{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName, jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -260,6 +267,9 @@
             </if>
             <if test="endTime != null">
                 end_time = #{endTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                creator_name = #{creatorName, jdbcType=VARCHAR},
             </if>
         </set>
         WHERE
