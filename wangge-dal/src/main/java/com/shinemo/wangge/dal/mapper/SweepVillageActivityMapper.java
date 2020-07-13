@@ -3,8 +3,6 @@ package com.shinemo.wangge.dal.mapper;
 import com.shinemo.common.db.dao.BaseMapper;
 import com.shinemo.sweepvillage.domain.model.SweepVillageActivityDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageActivityQuery;
-import org.apache.ibatis.annotations.Param;
-
 /**
  * @Author shangkaihui
  * @Date 2020/6/3 10:46
