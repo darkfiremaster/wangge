@@ -94,7 +94,7 @@ public class SweepVillageActivityController {
      * 获取扫村活动列表
      */
     @GetMapping("/getSweepVillageActivityList")
-    public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
+    public ApiResult getSweepVillageActivityList(@RequestParam(required = false) Integer status,
                                      @RequestParam(required = false) Long startTime,
                                      @RequestParam(required = false) Long endTime,
                                      @RequestParam(required = false)  Integer pageSize,
