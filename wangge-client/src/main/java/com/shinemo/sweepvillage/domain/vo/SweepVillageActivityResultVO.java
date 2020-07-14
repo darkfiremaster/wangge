@@ -51,4 +51,9 @@ public class SweepVillageActivityResultVO {
      * 创建人名称
      */
     private String creatorName;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }

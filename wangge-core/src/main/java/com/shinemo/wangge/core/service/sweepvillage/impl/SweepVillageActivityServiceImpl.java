@@ -16,6 +16,7 @@ import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
@@ -46,6 +47,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -307,6 +309,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
                 resultVOList.add(resultVO);
             }
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
@@ -340,6 +343,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+
                 resultVOList.add(resultVO);
             }
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
@@ -379,6 +384,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
                 BeanUtils.copyProperties(sweepVillageActivityDO, resultVO);
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+
                 //获取统计量
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
@@ -490,13 +497,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         visitRecordingQuery.setStatus(StatusEnum.NORMAL.getId());
         List<SweepVillageVisitRecordingDO> visitRecordingDOS = sweepVillageVisitRecordingMapper.find(visitRecordingQuery);
 
-//        int visitCount = 0;
-//        for (SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS) {
-//            if (activityIdSet.contains(visitRecordingDO.getActivityId())) {
-//                visitCount++;
-//            }
-//
-//        }
 
         SweepVillageActivityFinishVO sweepVillageActivityFinishVO = new SweepVillageActivityFinishVO();
         sweepVillageActivityFinishVO.setSweepVillageCount(sweepVillageActivityDOS.size());
@@ -653,7 +653,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
             //2.获取创建人名称
             UserOperateLogQuery logQuery = new UserOperateLogQuery();
-            query.setMobile(sweepVillageActivityDO.getMobile());
+            logQuery.setMobile(sweepVillageActivityDO.getMobile());
+
+            logQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now()));
             UserOperateLogDO userOperateLogDO = userOperateLogMapper.get(logQuery);
             if(userOperateLogDO == null){
                 log.error("[fixDatabase] creator is null,query:{}",query);
