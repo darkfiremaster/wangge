@@ -1367,6 +1367,15 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             }
             huaweiRequest.setServiceProvider(type);
         }
+        if (request.getTVBoxTypes() != null) {
+            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
+        }
+        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
+        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
+        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
+        if (request.getTVBoxExpireTime() != null) {
+            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
+        }
         huaweiRequest.setUnitId(request.getUnitId());
         huaweiRequest.setBroadbandExpireTime(DateUtils.dateToString(request.getBroadbandExpireTime(), "yyyy-MM-dd"));
     }
