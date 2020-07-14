@@ -9,11 +9,14 @@ import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.operate.domain.UserOperateLogDO;
+import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
@@ -33,10 +36,7 @@ import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
-import com.shinemo.wangge.dal.mapper.SignRecordMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageMarketingNumberMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +47,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -69,6 +70,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Resource
     private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
+
+    @Resource
+    private UserOperateLogMapper userOperateLogMapper;
 
     @Resource
     private SignRecordMapper signRecordMapper;
@@ -178,6 +182,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
         sweepVillageActivityDO.setStartTime(startTime);
+        sweepVillageActivityDO.setCreatorName(SmartGridContext.getUserName());
         sweepVillageActivityMapper.insert(sweepVillageActivityDO);
 
 
@@ -275,13 +280,50 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
     public ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest) {
         //校验参数
         Assert.notNull(sweepVillageActivityQueryRequest, "request is null");
-        Assert.notNull(sweepVillageActivityQueryRequest.getStatus(), "status is null");
+
+        Long currentPage = sweepVillageActivityQueryRequest.getCurrentPage();
+        Long pageSize = sweepVillageActivityQueryRequest.getPageSize();
+
+
+        if (sweepVillageActivityQueryRequest.getStatus() == null) {
+            //查全部活动
+            SweepVillageActivityQuery query = new SweepVillageActivityQuery();
+            query.setMobile(SmartGridContext.getMobile());
+            query.setPageEnable(false);
+            if (currentPage != null) {
+                query.setPageEnable(true);
+                query.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
+                query.setCurrentPage(sweepVillageActivityQueryRequest.getCurrentPage());
+            }
+            log.info("[getSweepVillageActivityList] 获取所有的扫村活动列表,query:{}", query);
+            List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(query);
+            //do转为vo
+            List<SweepVillageActivityResultVO> resultVOList = new ArrayList<>();
+            for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
+                SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
+                resultVO.setTitle(sweepVillageActivityDO.getTitle());
+                resultVO.setStartTime(sweepVillageActivityDO.getStartTime());
+                resultVO.setAddress(sweepVillageActivityDO.getAddress());
+                resultVO.setArea(sweepVillageActivityDO.getArea());
+                resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
+                resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
+                resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+                resultVOList.add(resultVO);
+            }
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
+                    .totalCount((long) resultVOList.size())
+                    .currentPage(currentPage)
+                    .pageSize(pageSize).build());
+        }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.PROCESSING.getId())) {
             //查进行中的活动
             SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
             sweepVillageActivityQuery.setMobile(SmartGridContext.getMobile());
             sweepVillageActivityQuery.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
+            sweepVillageActivityQuery.setPageEnable(false);
             if (sweepVillageActivityQueryRequest.getCurrentPage() != null) {
                 sweepVillageActivityQuery.setPageEnable(true);
                 sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
@@ -300,9 +342,16 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
                 resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
+                    .totalCount((long) resultVOList.size())
+                    .pageSize(pageSize)
+                    .currentPage(currentPage)
+                    .build());
         }
 
         if (sweepVillageActivityQueryRequest.getStatus().equals(SweepVillageStatusEnum.END.getId())) {
@@ -318,6 +367,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             sweepVillageActivityQuery.setEndTime(sweepVillageActivityQueryRequest.getEndTime());
             sweepVillageActivityQuery.setOrderByEnable(true);
             sweepVillageActivityQuery.putOrderBy("end_time", false);
+
+            sweepVillageActivityQuery.setPageEnable(false);
             if (sweepVillageActivityQueryRequest.getCurrentPage() != null) {
                 sweepVillageActivityQuery.setPageEnable(true);
                 sweepVillageActivityQuery.setPageSize(sweepVillageActivityQueryRequest.getPageSize());
@@ -333,6 +384,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
                 BeanUtils.copyProperties(sweepVillageActivityDO, resultVO);
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+                resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+
                 //获取统计量
                 SweepVillageMarketingNumberQuery query = new SweepVillageMarketingNumberQuery();
                 query.setActivityId(sweepVillageActivityDO.getId());
@@ -352,10 +405,55 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVisitCount((int) count);
                 resultVOList.add(resultVO);
             }
-            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList).totalCount((long) resultVOList.size()).build());
+            return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
+                    .totalCount((long) resultVOList.size())
+                    .currentPage(currentPage)
+                    .pageSize(pageSize).build());
         }
 
         throw new ApiException("illegal status", 500);
+    }
+
+    @Override
+    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityAndBizById(Long sweepVillageActivitiId) {
+        //1.获取扫村活动信息
+        SweepVillageActivityQuery activityQuery = new SweepVillageActivityQuery();
+        activityQuery.setId(sweepVillageActivitiId);
+        SweepVillageActivityDO sweepVillageActivityDO = sweepVillageActivityMapper.get(activityQuery);
+        if(sweepVillageActivityDO == null){
+            log.error("[getSweepVillageActivityAndBizById] query activity is null,query:{}",activityQuery);
+            return ApiResult.fail(SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST.msg,SweepVillageErrorCodes.SWEEP_VILLAGE_ACTIVITY_NOT_EXIST.code);
+        }
+
+        //2.初始化返回对象
+        SweepVillageActivityDetailVO activityDetailVO = new SweepVillageActivityDetailVO();
+        activityDetailVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
+        activityDetailVO.setTitle(sweepVillageActivityDO.getTitle());
+        activityDetailVO.setVillageId(sweepVillageActivityDO.getVillageId());
+        activityDetailVO.setVillageName(sweepVillageActivityDO.getVillageName());
+        activityDetailVO.setAddress(sweepVillageActivityDO.getAddress());
+        activityDetailVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+        activityDetailVO.setStartTime(sweepVillageActivityDO.getStartTime());
+        activityDetailVO.setEndTime(sweepVillageActivityDO.getEndTime());
+        activityDetailVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
+        activityDetailVO.setStatus(sweepVillageActivityDO.getStatus());
+        //2.查询业务办理信息
+        SweepVillageMarketingNumberQuery marketingNumberQuery = new SweepVillageMarketingNumberQuery();
+        marketingNumberQuery.setActivityId(sweepVillageActivitiId);
+
+        SweepVillageMarketingNumberDO sweepVillageMarketingNumberDO = sweepVillageMarketingNumberMapper.get(marketingNumberQuery);
+        if(sweepVillageMarketingNumberDO == null){
+            log.error("[getSweepVillageActivityAndBizById] query market is null,query:{}",marketingNumberQuery);
+            activityDetailVO.setBizList(new ArrayList<SweepVillageBizDetail>());
+            return ApiResult.of(0,activityDetailVO);
+        }
+        Gson gson = new Gson();
+        List<SweepVillageBizDetail> bizList = gson.fromJson(sweepVillageMarketingNumberDO.getDetail(),
+                new TypeToken<List<SweepVillageBizDetail>>() {
+                }.getType());
+        activityDetailVO.setBizList(bizList);
+        return ApiResult.of(0,activityDetailVO);
+
     }
 
     @Override
@@ -399,13 +497,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         visitRecordingQuery.setStatus(StatusEnum.NORMAL.getId());
         List<SweepVillageVisitRecordingDO> visitRecordingDOS = sweepVillageVisitRecordingMapper.find(visitRecordingQuery);
 
-//        int visitCount = 0;
-//        for (SweepVillageVisitRecordingDO visitRecordingDO : visitRecordingDOS) {
-//            if (activityIdSet.contains(visitRecordingDO.getActivityId())) {
-//                visitCount++;
-//            }
-//
-//        }
 
         SweepVillageActivityFinishVO sweepVillageActivityFinishVO = new SweepVillageActivityFinishVO();
         sweepVillageActivityFinishVO.setSweepVillageCount(sweepVillageActivityDOS.size());
@@ -547,6 +638,38 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         villageVO.setLocation(sweepVillageActivityDO.getLocation());
         villageVO.setOriginLocation(sweepVillageActivityDO.getOriginLocation());
         return ApiResult.of(0, villageVO);
+    }
+
+    @Override
+    public ApiResult<Void> fixDatabase() {
+        //1.查询所有的扫村活动
+        SweepVillageActivityQuery query = new SweepVillageActivityQuery();
+        query.setPageEnable(false);
+        List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(query);
+        if(sweepVillageActivityDOS == null){
+            log.error("[fixDatabase] activityList is null");
+            return ApiResult.fail(500,"订正失败");
+        }
+        for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
+            //2.获取创建人名称
+            UserOperateLogQuery logQuery = new UserOperateLogQuery();
+            logQuery.setMobile(sweepVillageActivityDO.getMobile());
+
+            logQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now()));
+            UserOperateLogDO userOperateLogDO = userOperateLogMapper.get(logQuery);
+            if(userOperateLogDO == null){
+                log.error("[fixDatabase] creator is null,query:{}",query);
+                continue;
+            }
+            SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
+            sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
+            sweepVillageActivityDOUpdate.setCreatorName(userOperateLogDO.getUsername());
+
+            //3.更新
+            sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
+        }
+        log.info("[fixDatabase] 订正扫村数据成功");
+        return ApiResult.of(0,null,"success");
     }
 
 

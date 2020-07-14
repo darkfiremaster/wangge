@@ -71,5 +71,10 @@ public class SweepVillageActivityDO {
      */
     private Date endTime;
 
+    /**
+     * 创建人名称
+     */
+    private String creatorName;
+
 
 }

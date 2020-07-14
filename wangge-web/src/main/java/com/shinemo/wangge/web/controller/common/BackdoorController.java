@@ -14,6 +14,7 @@ import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
+import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
 import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
 import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
@@ -63,6 +64,9 @@ public class BackdoorController {
 
     @Resource
     private StallUpCommunityMapper stallUpCommunityMapper;
+
+    @Resource
+    private SweepVillageActivityService sweepVillageActivityService;
 
 
     @Resource
@@ -185,4 +189,14 @@ public class BackdoorController {
         return "success\n";
     }
 
+    /**
+     * 订正扫村活动数据库数据
+     * @return
+     */
+    @GetMapping("/sweepVillage/fixDatabase")
+    public String fixDatabase(){
+        ApiResult<Void> voidApiResult = sweepVillageActivityService.fixDatabase();
+        return voidApiResult.getMsg();
+
+    }
 }

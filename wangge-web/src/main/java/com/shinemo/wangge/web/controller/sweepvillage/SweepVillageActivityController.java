@@ -94,14 +94,15 @@ public class SweepVillageActivityController {
      * 获取扫村活动列表
      */
     @GetMapping("/getSweepVillageActivityList")
-    public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
+    public ApiResult getSweepVillageActivityList(@RequestParam(required = false) Integer status,
                                      @RequestParam(required = false) Long startTime,
                                      @RequestParam(required = false) Long endTime,
                                      @RequestParam(required = false)  Integer pageSize,
                                      @RequestParam(required = false) Integer currentPage) {
-        Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
-        request.setStatus(status);
+        if(status != null){
+            request.setStatus(status);
+        }
         if(startTime != null){
             request.setStartTime(new Date(startTime));
         }
@@ -117,6 +118,14 @@ public class SweepVillageActivityController {
         return sweepVillageActivityService.getSweepVillageActivityList(request);
 
     }
+
+    @GetMapping("/getSweepVillageActivityById")
+    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityById(@RequestParam Long sweepVillageActivityId){
+        Assert.notNull(sweepVillageActivityId,"sweepVillageActivityId is null");
+
+        return sweepVillageActivityService.getSweepVillageActivityAndBizById(sweepVillageActivityId);
+    }
+
 
     /**
      * 扫村次数 查询

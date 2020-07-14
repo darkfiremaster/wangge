@@ -57,6 +57,14 @@ public interface SweepVillageActivityService {
      */
     ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityList(SweepVillageActivityQueryRequest sweepVillageActivityQueryRequest);
 
+
+    /**
+     * 通过扫村活动id获取扫村活动详情及对应的业务办理信息
+     * @param sweepVillageActivitiId
+     * @return
+     */
+    ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityAndBizById(Long sweepVillageActivitiId);
+
     /**
      * 获取扫村完成情况
      * @param type 1-周记录 2-月记录
@@ -88,4 +96,9 @@ public interface SweepVillageActivityService {
      * 根据村庄id获取村庄详情
      */
     ApiResult<VillageVO> getLocationByVillageId(String villageId);
+
+    /**
+     * 订正数据 后门调用
+     */
+    ApiResult<Void> fixDatabase();
 }
