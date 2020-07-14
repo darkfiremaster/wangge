@@ -176,7 +176,11 @@ public class StallUpConfig {
 
         //倒三角支撑配置
         DaoSanJiaoSupportConfig daoSanJiaoSupportConfig = config.getDaoSanJiaoSupportConfig();
-
+        DaoSanJiaoSupportHandler daoSanJiaoSupportHandler = new DaoSanJiaoSupportHandler();
+        daoSanJiaoSupportHandler.setDomain(daoSanJiaoSupportConfig.getDomain());
+        daoSanJiaoSupportHandler.setPath(daoSanJiaoSupportConfig.getPath());
+        daoSanJiaoSupportHandler.setSeed(daoSanJiaoSupportConfig.getSeed());
+        tmpUrlMap.put(ThirdHandlerTypeEnum.DANSANJIAO_SUPPORT.getType(), daoSanJiaoSupportHandler);
 
         //稽核工作配置
         JiHeHandler jiHeHandler = new JiHeHandler();

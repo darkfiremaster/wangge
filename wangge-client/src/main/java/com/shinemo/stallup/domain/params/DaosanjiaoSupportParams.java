@@ -8,7 +8,7 @@ import lombok.Data;
  * @Desc
  */
 @Data
-public class DaosanjiaoSupportParams {
+public class DaosanjiaoSupportParams extends BizParams{
 
     /**
      * 跳转菜单
