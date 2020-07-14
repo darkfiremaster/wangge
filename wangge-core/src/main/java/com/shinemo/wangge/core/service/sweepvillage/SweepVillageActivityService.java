@@ -96,4 +96,9 @@ public interface SweepVillageActivityService {
      * 根据村庄id获取村庄详情
      */
     ApiResult<VillageVO> getLocationByVillageId(String villageId);
+
+    /**
+     * 订正数据 后门调用
+     */
+    ApiResult<Void> fixDatabase();
 }

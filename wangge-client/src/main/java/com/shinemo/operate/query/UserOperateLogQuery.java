@@ -21,4 +21,6 @@ public class UserOperateLogQuery extends QueryBase {
 
     private Date endTime;
 
+    private String mobile;
+
 }

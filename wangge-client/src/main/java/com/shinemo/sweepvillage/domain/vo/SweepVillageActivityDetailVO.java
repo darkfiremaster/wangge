@@ -31,7 +31,7 @@ public class SweepVillageActivityDetailVO {
 
 
     /** 状态 0:未开始 1:进行中 2:已结束 */
-    private String status;
+    private Integer status;
 
     /** 创建时间 */
     private Date createTime;

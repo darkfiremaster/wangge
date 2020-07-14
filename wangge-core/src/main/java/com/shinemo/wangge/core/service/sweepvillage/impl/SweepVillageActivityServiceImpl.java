@@ -9,6 +9,8 @@ import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.operate.domain.UserOperateLogDO;
+import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -33,10 +35,7 @@ import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
-import com.shinemo.wangge.dal.mapper.SignRecordMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageActivityMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageMarketingNumberMapper;
-import com.shinemo.wangge.dal.mapper.SweepVillageVisitRecordingMapper;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -69,6 +68,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Resource
     private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
+
+    @Resource
+    private UserOperateLogMapper userOperateLogMapper;
 
     @Resource
     private SignRecordMapper signRecordMapper;
@@ -427,11 +429,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         activityDetailVO.setStartTime(sweepVillageActivityDO.getStartTime());
         activityDetailVO.setEndTime(sweepVillageActivityDO.getEndTime());
         activityDetailVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
-        if(sweepVillageActivityDO.getStatus() == SweepVillageStatusEnum.PROCESSING.getId()){
-            activityDetailVO.setStatus(SweepVillageStatusEnum.PROCESSING.getDesc());
-        }else {
-            activityDetailVO.setStatus(SweepVillageStatusEnum.END.getDesc());
-        }
+        activityDetailVO.setStatus(sweepVillageActivityDO.getStatus());
         //2.查询业务办理信息
         SweepVillageMarketingNumberQuery marketingNumberQuery = new SweepVillageMarketingNumberQuery();
         marketingNumberQuery.setActivityId(sweepVillageActivitiId);
@@ -640,6 +638,35 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         villageVO.setLocation(sweepVillageActivityDO.getLocation());
         villageVO.setOriginLocation(sweepVillageActivityDO.getOriginLocation());
         return ApiResult.of(0, villageVO);
+    }
+
+    @Override
+    public ApiResult<Void> fixDatabase() {
+        //1.查询所有的扫村活动
+        SweepVillageActivityQuery query = new SweepVillageActivityQuery();
+        query.setPageEnable(false);
+        List<SweepVillageActivityDO> sweepVillageActivityDOS = sweepVillageActivityMapper.find(query);
+        if(sweepVillageActivityDOS == null){
+            log.error("[fixDatabase] activityList is null");
+            return ApiResult.fail(500,"订正失败");
+        }
+        for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
+            //2.获取创建人名称
+            UserOperateLogQuery logQuery = new UserOperateLogQuery();
+            query.setMobile(sweepVillageActivityDO.getMobile());
+            UserOperateLogDO userOperateLogDO = userOperateLogMapper.get(logQuery);
+            if(userOperateLogDO == null){
+                log.error("[fixDatabase] creator is null,query:{}",query);
+                continue;
+            }
+            SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
+            sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
+            sweepVillageActivityDOUpdate.setCreatorName(userOperateLogDO.getUsername());
+
+            //3.更新
+            sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
+        }
+        return ApiResult.success();
     }
 
 

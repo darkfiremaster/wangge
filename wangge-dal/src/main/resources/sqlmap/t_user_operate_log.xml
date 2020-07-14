@@ -30,7 +30,7 @@
             <choose>
                 <when test="id != null">and id = #{id}</when>
                 <otherwise>
-
+                    <if test="mobile != null">and mobile = #{mobile}</if>
                 </otherwise>
             </choose>
         </where>
