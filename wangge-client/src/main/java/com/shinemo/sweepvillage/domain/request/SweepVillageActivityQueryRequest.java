@@ -25,4 +25,9 @@ public class SweepVillageActivityQueryRequest extends QueryBase {
 
     private Date endTime;
 
+    private Long pageSize;
+    private Long currentPage;
+
+
+
 }
