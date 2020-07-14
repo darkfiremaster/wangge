@@ -32,13 +32,14 @@ public class ExcelTest {
     private static final String testDomin = "https://developer.e.uban360.com";
     private static final String onlineDomin = "https://api-gx.uban360.com";
 
+    private String queryDate = "2020-07-12";
     @Test
     public void exportLoginInfoExcel() throws FileNotFoundException {
-        String date = "2020-07-09";
+        String date = queryDate;
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("date", date);
-        String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
+        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
         String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
@@ -62,11 +63,11 @@ public class ExcelTest {
      */
     @Test
     public void exportLoginResultExcel() throws FileNotFoundException {
-        String date = "2020-07-09";
+        String date = queryDate;
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("date", date);
-        String url = testDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
+        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
         String res = HttpUtil.get(url, paramMap);
         JSONObject jsonObject = JSONUtil.parseObj(res);
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
