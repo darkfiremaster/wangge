@@ -43,4 +43,9 @@ public class SmartGridBiz {
 	 * 分类 0-其他 1-业务办理 2-办公工具 3-营销辅助
 	 */
 	private Integer category;
+
+	/**
+	 * 分组 0:其他 1:业务办理 2:快接入口 3:倒三角支撑
+	 */
+	private Integer groupId;
 }

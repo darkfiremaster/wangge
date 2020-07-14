@@ -13,10 +13,10 @@ import lombok.Getter;
 @Getter
 public enum BizGroupEnum {
 
-    COMMON_APPLICATION("常用应用"),
-    ALL_APPLICATION("全部应用"),
-    QUICK_APPLICATION("快捷入口"),
-    DAOSANJIAO_SUPPORT("倒三角支撑"),
+    COMMON_APPLICATION("常用应用",0),
+    BIZ_HANDLE("业务办理",1),
+    QUICK_APPLICATION("快捷入口",2),
+    DAOSANJIAO_SUPPORT("倒三角支撑",3),
 
     ;
 
@@ -25,4 +25,8 @@ public enum BizGroupEnum {
      */
     private String name;
 
+    /**
+     * 分组id
+     */
+    private Integer group;
 }
