@@ -310,6 +310,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
                 resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+                resultVO.setStatus(sweepVillageActivityDO.getStatus());
+
                 resultVOList.add(resultVO);
             }
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
@@ -344,6 +346,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
                 resultVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
                 resultVO.setCreateTime(sweepVillageActivityDO.getGmtCreate());
+                resultVO.setStatus(sweepVillageActivityDO.getStatus());
 
                 resultVOList.add(resultVO);
             }
