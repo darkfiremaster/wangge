@@ -47,6 +47,11 @@ public class StallUpBizType implements Comparable<StallUpBizType> {
 	 */
 	private Integer category;
 
+	/**
+	 * 分组
+	 */
+	private Integer groupId;
+
 	@Override
 	public int compareTo(StallUpBizType o) {
 		if (this.order == null || o.getOrder() == null) {

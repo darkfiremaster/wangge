@@ -3,6 +3,7 @@ package com.shinemo.wangge.core.config;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.common.enums.BizGroupEnum;
 import com.shinemo.stallup.domain.enums.BusinessConfigEnum;
 import com.shinemo.stallup.domain.enums.ThirdHandlerTypeEnum;
 import com.shinemo.stallup.domain.model.SmartGridBiz;
@@ -74,10 +75,6 @@ public class StallUpConfig {
         config.setSweepVillageList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE.getType()));
         config.setSweepVillageBizList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE_BIZ.getType()));
 
-        //倒三角配置
-        config.setDaosanjiaoSupportBizList(bizConfigMap.get(BusinessConfigEnum.DANSANJIAO_SUPPORT_BIZ.getType()));
-
-
         //查询全量业务列表
         SmartGridBizQuery bizQuery = new SmartGridBizQuery();
         bizQuery.setStatus(1);
@@ -106,15 +103,11 @@ public class StallUpConfig {
         //首页业务办理和快捷入口配置
         List<StallUpBizType> tmpIndexList = new ArrayList<>();
         List<StallUpBizType> tmpQuickAccessList = new ArrayList<>();
-        initIndex(tmpMap, config.getIndexList(), tmpIndexList, tmpQuickAccessList);
+        List<StallUpBizType> tmpDaosanjiaoSupportList = new ArrayList<>();
+        initIndex(tmpMap, config.getIndexList(), tmpIndexList, tmpQuickAccessList, tmpDaosanjiaoSupportList);
         config.setIndexList(tmpIndexList);
         config.setQuickAccessList(tmpQuickAccessList);
-
-        //倒三角支撑
-        Map<Long, StallUpBizType> tmpDaosanjiaoSupportMap = new HashMap<>();
-        List<StallUpBizType> tmpDaosanjiaoSupportList = initListAndMap(tmpMap, config.getDaosanjiaoSupportBizList(), tmpDaosanjiaoSupportMap);
         config.setDaosanjiaoSupportBizList(tmpDaosanjiaoSupportList);
-        config.setDaosanjiaoSupportBizMap(tmpDaosanjiaoSupportMap);
 
         //扫楼配置
         Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
@@ -181,6 +174,10 @@ public class StallUpConfig {
         daoSanJiaoHandler.setSeed(daoSanJiaoConfig.getSeed());
         tmpUrlMap.put(ThirdHandlerTypeEnum.DAO_SAN_JIAO.getType(), daoSanJiaoHandler);
 
+        //倒三角支撑配置
+        DaoSanJiaoSupportConfig daoSanJiaoSupportConfig = config.getDaoSanJiaoSupportConfig();
+
+
         //稽核工作配置
         JiHeHandler jiHeHandler = new JiHeHandler();
         jiHeHandler.setDomain(daoSanJiaoConfig.getDomain());
@@ -225,15 +222,18 @@ public class StallUpConfig {
     private void initIndex(Map<Long, StallUpBizType> tmpMap,
                            List<StallUpBizType> list,
                            List<StallUpBizType> tmpIndexList,
-                           List<StallUpBizType> tmpQuickAccessList) {
+                           List<StallUpBizType> tmpQuickAccessList,
+                           List<StallUpBizType> tmpDaosanjiaoSupportList) {
         list.stream().map(v -> {
             StallUpBizType stallUpBizType = mergeBizType(tmpMap, v);
             //业务办理
-            if (stallUpBizType.getCategory() == 1) {
+            if (stallUpBizType.getGroupId().equals(BizGroupEnum.BIZ_HANDLE.getGroup())) {
                 tmpIndexList.add(v);
-            } else {
+            } else if (stallUpBizType.getGroupId().equals(BizGroupEnum.QUICK_APPLICATION.getGroup())) {
                 //其他类型
                 tmpQuickAccessList.add(v);
+            } else if (stallUpBizType.getGroupId().equals(BizGroupEnum.DAOSANJIAO_SUPPORT.getGroup())) {
+                tmpDaosanjiaoSupportList.add(v);
             }
             return stallUpBizType;
         }).collect(Collectors.toList());
@@ -259,6 +259,7 @@ public class StallUpConfig {
         stallUpBizType.setIcon(v.getIcon());
         stallUpBizType.setType(v.getType());
         stallUpBizType.setCategory(v.getCategory());
+        stallUpBizType.setGroupId(v.getGroupId());
         String config = v.getConfig();
 
         if (StringUtils.hasText(config)) {
@@ -280,6 +281,7 @@ public class StallUpConfig {
         v.setBizParams(stallUpBizType.getBizParams());
         v.setUrl(stallUpBizType.getUrl());
         v.setCategory(stallUpBizType.getCategory());
+        v.setGroupId(stallUpBizType.getGroupId());
         return v;
     }
 
@@ -307,6 +309,11 @@ public class StallUpConfig {
          * 倒三角配置
          */
         private DaoSanJiaoConfig daoSanJiaoConfig;
+
+        /**
+         * 倒三角支撑配置
+         */
+        private DaoSanJiaoSupportConfig daoSanJiaoSupportConfig;
 
         /**
          * 督导配置
@@ -439,6 +446,24 @@ public class StallUpConfig {
          * 双方约定内容
          */
         private Integer sid;
+        private String seed;
+    }
+
+    @Setter
+    @Getter
+    private class DaoSanJiaoSupportConfig {
+        /**
+         * 域名
+         */
+        private String domain;
+        /**
+         * 路径
+         */
+        private String path;
+
+        /**
+         *
+         */
         private String seed;
     }
 
