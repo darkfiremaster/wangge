@@ -37,4 +37,14 @@ public class HouseholdVO {
     private List<FamilyMember> familyMembers;
     /** 标签 */
     private List<String> labels;
+    /** 宽带备注 */
+    private String broadbandRemark;
+    /** 宽带月租 */
+    private Double broadbandMonthlyrent;
+    /** 电视盒类型 */
+    private List<String> TVBoxTypes;
+    /** 电视盒备注 */
+    private String TVBoxRemark;
+    /** 电视盒到期时间 */
+    private Date TVBoxExpireTime;
 }

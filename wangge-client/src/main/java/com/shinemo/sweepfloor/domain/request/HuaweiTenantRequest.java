@@ -32,4 +32,14 @@ public class HuaweiTenantRequest {
     private Integer broadbandFlag;
     /** 家庭成员 */
     private List<FamilyMember> familyMembers;
+    /** 宽带备注 */
+    private String broadbandRemark;
+    /** 宽带月租 */
+    private Double broadbandMonthlyrent;
+    /** 电视盒类型 */
+    private String TVBoxTypes;
+    /** 电视盒备注 */
+    private String TVBoxRemark;
+    /** 电视盒到期时间 */
+    private String TVBoxExpireTime;
 }

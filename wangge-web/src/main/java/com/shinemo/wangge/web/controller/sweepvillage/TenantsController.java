@@ -63,28 +63,7 @@ public class TenantsController {
 
     @PostMapping("/queryVillageTenantListSearch")
     public ApiResult<Map<String,Object>> queryVillageTenantListSearch(@RequestBody Map<String,Object> requestData) {
-        ApiResult<Map<String, Object>> apiResult = thirdApiMappingService.dispatch(requestData, "queryVillageTenantListSearch");
-        if (apiResult == null || !apiResult.isSuccess()) {
-            return apiResult;
-        }
-        Map<String, Object> data = apiResult.getData();
-        JsonParser parser = new JsonParser();
-        JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("rows"))).getAsJsonArray();
-        List<SweepVillageTenantsVO> list = GsonUtils.jsonArrayToList(jsonArray, SweepVillageTenantsVO.class);
-        if (!CollectionUtils.isEmpty(list)) {
-
-            for (SweepVillageTenantsVO tenantsVO: list) {
-                String contactMobile = tenantsVO.getMobile();
-                String contactPerson = tenantsVO.getContactPerson();
-                //脱敏手机号、姓名
-                String mobile = SmartGridUtils.desensitizationMobile(contactMobile);
-                String name = SmartGridUtils.desensitizationName(contactPerson);
-                tenantsVO.setContactPerson(name);
-                tenantsVO.setMobile(mobile);
-            }
-        }
-        data.put("rows",list);
-        return apiResult;
+        return thirdApiMappingService.dispatch(requestData, "queryVillageTenantListSearch");
     }
 
     @PostMapping("/addTenants")

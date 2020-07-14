@@ -671,7 +671,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             //3.更新
             sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
         }
-        return ApiResult.success();
+        log.info("[fixDatabase] 订正扫村数据成功");
+        return ApiResult.of(0,null,"success");
     }
 
 
