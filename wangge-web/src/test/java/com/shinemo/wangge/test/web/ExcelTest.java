@@ -32,7 +32,7 @@ public class ExcelTest {
     private static final String testDomin = "https://developer.e.uban360.com";
     private static final String onlineDomin = "https://api-gx.uban360.com";
 
-    private String queryDate = "2020-07-12";
+    private String queryDate = "2020-07-13";
     @Test
     public void exportLoginInfoExcel() throws FileNotFoundException {
         String date = queryDate;
