@@ -88,6 +88,7 @@ public class MainApplication implements WebMvcConfigurer {
         registry.addInterceptor(getSmartGridInterceptor())
                 .addPathPatterns("/stallUp/**")
                 .addPathPatterns("/smartGrid/**")
+                .addPathPatterns("/redirect/**")
                 .addPathPatterns("/sweepFloor/**")
                 .addPathPatterns("/thirdapi/**")
                 .addPathPatterns("/sweepvillage/**")

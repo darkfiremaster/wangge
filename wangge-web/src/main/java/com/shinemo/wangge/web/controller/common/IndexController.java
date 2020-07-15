@@ -33,6 +33,7 @@ import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
 import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.config.properties.ZhuangweiPropertity;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
@@ -75,6 +76,8 @@ public class IndexController {
 
     @Resource
     private HuaWeiService huaWeiService;
+
+
 
     @GetMapping("getIndex")
     @SmIgnore
@@ -290,6 +293,8 @@ public class IndexController {
         });
         return stallUpService.updateHomePageGridBiz(SmartGridContext.getUid(), bizIdList);
     }
+
+
 
     /**
      * 拼装扫楼场外营销数量

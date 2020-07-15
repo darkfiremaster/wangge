@@ -152,6 +152,10 @@ public class SmartGridContext {
         return (String) get(TIMESTAMP);
     }
 
+    /**
+     * 获取用户选中的网格信息
+     * @return
+     */
     public static GridUserRoleDetail getSelectGridUserRoleDetail() {
         return GsonUtils.fromGson2Obj(getSelectGridInfo(), GridUserRoleDetail.class);
     }

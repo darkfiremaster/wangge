@@ -46,7 +46,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetHuaweiUsername() {
-        String huaweiUsername = HuaWeiUtil.getHuaweiUsername("13607713224");
+        String huaweiUsername = HuaWeiUtil.getHuaweiUsername("13588039022");
         System.out.println("huaweiUsername = " + huaweiUsername);
 
 
