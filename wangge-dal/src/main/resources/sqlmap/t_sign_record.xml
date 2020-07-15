@@ -17,11 +17,14 @@
         <result property="endLocation" column="end_location" />
         <result property="imgUrl" column="img_url" />
         <result property="remark" column="remark" />
+        <result property="userName" column="user_name" />
+        <result property="mobile" column="mobile" />
     </resultMap>
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, gmt_create, gmt_modified, user_id, activity_id, start_time, end_time, biz_type,start_location,end_location,img_url,remark
+        id, gmt_create, gmt_modified, user_id, activity_id, start_time, end_time, biz_type,start_location,end_location,img_url,remark,
+        user_name,mobile
     </sql>
 
     <sql id="table">
@@ -117,6 +120,12 @@
             <if test="remark != null">
                 remark,
             </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             now(),
@@ -147,6 +156,12 @@
             </if>
             <if test="imgUrl != null">
                 #{remark},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="mobile != null">
+                #{mobile},
             </if>
         </trim>
     </insert>

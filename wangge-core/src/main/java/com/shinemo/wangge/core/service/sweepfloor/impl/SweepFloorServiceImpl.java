@@ -482,6 +482,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             insertDO.setStartTime(new Date());
             insertDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
             insertDO.setUserId(SmartGridContext.getUid());
+            insertDO.setMobile(SmartGridContext.getMobile());
+            insertDO.setUserName(SmartGridContext.getUserName());
             signRecordMapper.insert(insertDO);
         } else {
             SignRecordDO updateDO = new SignRecordDO();
