@@ -26,6 +26,7 @@ public class SmartGridContext {
     public static String KEY_SELECT_GRID_INFO = "selectGridInfo";
     public static String TOKEN = "token";
     public static String TIMESTAMP = "timeStamp";
+    public static String HUAWEI_USER_NAME = "huaWeiUserName";
 
     private static final ThreadLocal<Map<String, Object>> local = new ThreadLocal<Map<String, Object>>() {
         @Override
@@ -154,5 +155,12 @@ public class SmartGridContext {
 
     public static GridUserRoleDetail getSelectGridUserRoleDetail() {
         return GsonUtils.fromGson2Obj(getSelectGridInfo(), GridUserRoleDetail.class);
+    }
+
+    public static void setHuaWeiUserName(String huaWeiUserName) {
+        put(HUAWEI_USER_NAME, huaWeiUserName);
+    }
+    public static String getHuaWeiUserName() {
+        return (String) get(HUAWEI_USER_NAME);
     }
 }

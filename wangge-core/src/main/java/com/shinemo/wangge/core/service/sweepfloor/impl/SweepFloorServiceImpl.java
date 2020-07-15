@@ -151,32 +151,16 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult<Long> create(SweepFloorActivityVO request) {
-        String mobile = SmartGridContext.getMobile();
-        ApiResult<GetGridUserInfoResult.DataBean> result = null;
-        String userName = null;
-        try {
-            result = huaWeiService
-                    .getGridUserInfoDetail(HuaWeiRequest.builder().mobile(mobile).build());
-            if (result.isSuccess()) {
-                userName = result.getData().getUserName();
-            }
-        } catch (ApiException e) {
-            log.error("[create] failed call huaWeiService.getGridUserInfoDetail, mobile:{}, result:{}",
-                    mobile, result);
-        }
-        if (userName == null) {
-            userName = SmartGridContext.getUserName();
-        }
 
         SweepFloorActivityDO activityDO = new SweepFloorActivityDO();
         activityDO.setAddress(request.getAddress());
         activityDO.setCommunityId(request.getCommunityId());
         activityDO.setCommunityName(request.getCommunityName());
         activityDO.setCreator(SmartGridContext.getUid());
-        activityDO.setCreatorName(userName);
+        activityDO.setCreatorName(SmartGridContext.getHuaWeiUserName());
         activityDO.setCreatorOrgId(SmartGridContext.getOrgId());
         activityDO.setLocation(request.getLocation());
-        activityDO.setMobile(mobile);
+        activityDO.setMobile(SmartGridContext.getMobile());
         activityDO.setGmtCreate(new Date());
         activityDO.setGmtModified(new Date());
 
