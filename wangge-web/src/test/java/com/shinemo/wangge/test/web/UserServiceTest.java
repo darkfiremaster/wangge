@@ -5,6 +5,7 @@ import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.user.UserService;
+import com.shinemo.wangge.core.util.HuaWeiUtil;
 import com.shinemo.wangge.web.MainApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,5 +42,13 @@ public class UserServiceTest {
     public void testUserInfo() {
         ApiResult<GetGridUserInfoResult.DataBean> result = huaWeiService.getGridUserInfoDetail(HuaWeiRequest.builder().mobile("13607713224").build());
         System.out.println("result = " + result);
+    }
+
+    @Test
+    public void testGetHuaweiUsername() {
+        String huaweiUsername = HuaWeiUtil.getHuaweiUsername("13607713224");
+        System.out.println("huaweiUsername = " + huaweiUsername);
+
+
     }
 }
