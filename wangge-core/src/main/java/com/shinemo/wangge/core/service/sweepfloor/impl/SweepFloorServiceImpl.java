@@ -362,7 +362,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         SweepFloorVisitRecordingDO visitRecordingDO = new SweepFloorVisitRecordingDO();
         BeanUtils.copyProperties(request, visitRecordingDO);
         visitRecordingDO.setMarketingUserId(SmartGridContext.getUid());
-        visitRecordingDO.setMarketingUserName(SmartGridContext.getHuaWeiUserName());
+        visitRecordingDO.setMarketingUserName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         visitRecordingDO.setGmtCreate(new Date());
         sweepFloorVisitRecordingMapper.insert(visitRecordingDO);
         return ApiResult.of(0);
