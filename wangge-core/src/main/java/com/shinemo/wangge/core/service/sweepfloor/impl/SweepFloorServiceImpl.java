@@ -1344,6 +1344,26 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         return ApiResult.of(0,activityVO);
     }
 
+    @Override
+    public ApiResult<Void> fixSweepFloor() {
+        SweepFloorActivityQuery activityQuery = new SweepFloorActivityQuery();
+        List<SweepFloorActivityDO> sweepFloorActivityDOS = sweepFloorActivityMapper.find(activityQuery);
+        if (CollectionUtils.isEmpty(sweepFloorActivityDOS)) {
+            log.error("[fixSweepFloor] sweepFloorActivityDOS is empty");
+            return ApiResult.of(0);
+        }
+        for (SweepFloorActivityDO activityDO: sweepFloorActivityDOS) {
+            String mobile = activityDO.getMobile();
+            String huaweiUsername = HuaWeiUtil.getHuaweiUsername(mobile);
+            if (huaweiUsername != null) {
+                activityDO.setCreatorName(huaweiUsername);
+                sweepFloorActivityMapper.update(activityDO);
+            }
+        }
+        log.info("[fixSweepFloor] fixSweepFloor finished,count = {}",sweepFloorActivityDOS.size());
+        return ApiResult.of(0);
+    }
+
     private void householdVOToHuawei(HuaweiTenantRequest huaweiRequest, HouseholdVO request) {
         huaweiRequest.setBroadbandFlag(request.getBroadbandFlag());
         huaweiRequest.setBuildingId(request.getBuildingId());

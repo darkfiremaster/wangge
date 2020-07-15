@@ -190,6 +190,12 @@
             <if test="remark != null">
                 remark = #{remark},
             </if>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
         </set>
         WHERE
         id = #{id}

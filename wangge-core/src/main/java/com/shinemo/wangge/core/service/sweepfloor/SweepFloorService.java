@@ -73,4 +73,6 @@ public interface SweepFloorService {
 
     ApiResult<SweepFloorActivityVO> getOutsideActivityDetail(Long id);
 
+
+    ApiResult<Void> fixSweepFloor();
 }

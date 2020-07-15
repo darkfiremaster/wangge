@@ -349,17 +349,17 @@ public class StallUpController {
                                                           @RequestParam(required = false) String seMobile,
                                                           @RequestParam(required = false) Integer status,
                                                           @RequestParam(required = false) Integer pageSize,
-                                                          @RequestParam(required = false) Integer curentPage,
+                                                          @RequestParam(required = false) Integer currentPage,
                                                           @RequestParam String gridId) {
 		Assert.notNull(gridId, "gridId is null");
-		curentPage = curentPage == null ? 1 : curentPage;
+		currentPage = currentPage == null ? 1 : currentPage;
 		pageSize = pageSize == null ? 20 : pageSize;
 		GetParentListRequest request = new GetParentListRequest();
 		request.setStartTime(startTime);
 		request.setEndTime(endTime);
 		request.setSeMobile(seMobile);
 		request.setPageSize(pageSize);
-		request.setCurrentPage(curentPage);
+		request.setCurrentPage(currentPage);
 		request.setGridId(gridId);
 		request.setStatus(status);
 		return stallUpService.getParentList(request);

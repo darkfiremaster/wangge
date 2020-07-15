@@ -1,6 +1,10 @@
 package com.shinemo.wangge.web.controller.common;
 
 import cn.hutool.core.util.StrUtil;
+import com.shinemo.Aace.context.AaceContext;
+import com.shinemo.client.ace.user.UserProfileServiceWrapper;
+import com.shinemo.client.ace.user.domain.UserProfileInfo;
+import com.shinemo.client.order.AppTypeEnum;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
@@ -9,6 +13,8 @@ import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
 import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
+import com.shinemo.sweepfloor.domain.model.SignRecordDO;
+import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
@@ -18,6 +24,7 @@ import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
 import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
 import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
+import com.shinemo.wangge.dal.mapper.SignRecordMapper;
 import com.shinemo.wangge.dal.mapper.StallUpCommunityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -68,9 +75,17 @@ public class BackdoorController {
     @Resource
     private SweepVillageActivityService sweepVillageActivityService;
 
+    @Resource
+    private SignRecordMapper signRecordMapper;
+
+    @Resource
+    private UserProfileServiceWrapper userProfileServiceWrapper;
+
 
     @Resource
     private RedisService redisService;
+
+    private final AppTypeEnum appType = AppTypeEnum.GUANGXI;
 
     @GetMapping("stallUp/config/flush")
     public String flushConfig() {
@@ -198,5 +213,42 @@ public class BackdoorController {
         ApiResult<Void> voidApiResult = sweepVillageActivityService.fixDatabase();
         return voidApiResult.getMsg();
 
+    }
+
+    /**
+     * 订正扫楼创建人名
+     * @return
+     */
+    @GetMapping("/sweepFloor/fixDatabase")
+    public String fixSweepFloor(){
+        ApiResult<Void> voidApiResult = sweepFloorService.fixSweepFloor();
+        return voidApiResult.getMsg();
+    }
+
+    /**
+     * 订正签到表手机号、签到人名字段
+     * @return
+     */
+    @GetMapping("/fixSignRecord")
+    public String fixSignRecord(){
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
+        if (CollectionUtils.isEmpty(signRecordDOS)) {
+            log.error("[fixSignRecord] signRecordDOS is empty");
+        }
+        for (SignRecordDO signRecordDO: signRecordDOS) {
+            UserProfileInfo userProfileInfo = userProfileServiceWrapper.getUserProfileInfo(signRecordDO.getUserId(), new AaceContext(appType.getId() + ""));
+            if (userProfileInfo != null) {
+                String mobile = userProfileInfo.getMobile();
+                String name = userProfileInfo.getName();
+                signRecordDO.setMobile(mobile);
+                signRecordDO.setUserName(name);
+                signRecordMapper.update(signRecordDO);
+            } else {
+                log.error("[fixSignRecord] userProfileInfo is null,uid = {}",signRecordDO.getUserId());
+            }
+        }
+        log.info("[fixSignRecord] fixSignRecord finished,count = {}",signRecordDOS.size());
+        return "success";
     }
 }
