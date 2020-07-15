@@ -45,6 +45,7 @@ public class RedirectServiceImpl implements RedirectService {
         formData.put("mobileTel", SmartGridContext.getMobile());
         formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
         formData.put("areaName", SmartGridContext.getSelectGridUserRoleDetail().getCityName());
+        formData.put("countyName", SmartGridContext.getSelectGridUserRoleDetail().getCountyName());
         formData.put("roleName", SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getName());
         formData.put("timestamp", timestamp);
         String paramData = EncryptUtil.buildParameterString(formData, Boolean.FALSE);
