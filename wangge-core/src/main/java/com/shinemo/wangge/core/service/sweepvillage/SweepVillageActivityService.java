@@ -104,7 +104,8 @@ public interface SweepVillageActivityService {
 
     /**
      * 获取扫村活动详情列表
-     * @param sweepVillageActivityQueryRequest
+     * @param request
+     *
      * @return
      */
     ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityListDetail(SweepVillageActivityQueryRequest request);

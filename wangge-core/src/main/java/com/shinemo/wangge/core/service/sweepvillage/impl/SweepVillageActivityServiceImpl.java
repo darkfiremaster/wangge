@@ -404,8 +404,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         activityDetailVO.setStartTime(sweepVillageActivityDO.getStartTime());
         activityDetailVO.setEndTime(sweepVillageActivityDO.getEndTime());
         activityDetailVO.setCreatorName(sweepVillageActivityDO.getCreatorName());
-        activityDetailVO.setStatus(sweepVillageActivityDO.getStatus());
 
+        activityDetailVO.setStatus(sweepVillageActivityDO.getStatus());
+        if(sweepVillageActivityDO.getStatus() == SweepVillageStatusEnum.ABNORMAL_END.getId()){
+            activityDetailVO.setExceptionMsg(SweepVillageStatusEnum.ABNORMAL_END.getDesc());
+        }
         //2.查询业务办理信息
         SweepVillageMarketingNumberQuery marketingNumberQuery = new SweepVillageMarketingNumberQuery();
         marketingNumberQuery.setActivityId(sweepVillageActivitiId);
