@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +35,10 @@ public class EndStallUpSchedule {
 		log.info("[EndStallUpSchedule] execute start");
 		Long now = begin;
 		StallUpActivityQuery query = new StallUpActivityQuery();
-		query.setStatus(StallUpStatusEnum.STARTED.getId());
+		List<Integer> statusList = new ArrayList<>();
+		statusList.add(StallUpStatusEnum.STARTED.getId());
+		statusList.add(StallUpStatusEnum.PREPARE.getId());
+		query.setStatusList(statusList);
 		List<StallUpActivity> list = stallUpActivityMapper.find(query);
 		for (StallUpActivity stallUpActivity : list) {
 			if (stallUpActivity.getEndTime().getTime() < now) {
