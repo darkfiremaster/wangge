@@ -315,6 +315,8 @@ public class StallUpServiceImpl implements StallUpService {
         signRecordDO.setStartTime(startTime);
         signRecordDO.setStartLocation(GsonUtils.toJson(
                 StallUpSignDetail.builder().address(request.getAddress()).location(request.getLocation()).build()));
+        signRecordDO.setUserName(SmartGridContext.getUserName());
+        signRecordDO.setMobile(SmartGridContext.getMobile());
         signRecordMapper.insert(signRecordDO);
         // 更新摆摊计划状态
         StallUpActivity activity = StallUpActivity.builder().id(request.getId()).status(status).build();

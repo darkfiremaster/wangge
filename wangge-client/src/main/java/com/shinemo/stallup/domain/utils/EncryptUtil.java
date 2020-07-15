@@ -8,6 +8,8 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.util.*;
@@ -173,12 +175,10 @@ public class EncryptUtil {
         //3、解密
         String decryptData = decrypt(encryptData, seed);
         System.out.println("decrypt:"+decryptData);
-
         StringBuilder sb = new StringBuilder(url);
         sb.append("paramData=").append(encryptData)
             .append("&timestamp=").append(timestamp)
             .append("&sign=").append(sign);
-
         System.out.println(sb.toString());
     }
 
@@ -188,12 +188,16 @@ public class EncryptUtil {
         String url = "http://211.138.252.146:27001/hello-mui/ossIntegratedSchedulingWeb/noticeboard/index.html?"; //html
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", mobile);
+        formData.put("mobileTel", mobile);
+        formData.put("gridName", "东区江南网格");
+        formData.put("areaName", "南宁");
+        formData.put("roleName", "网格长");
         formData.put("timestamp", timestamp);
         //formData.put("urlType", "bgcy_app");
         //formData.put("resId",18);
 
-        String paramStr = buildParameterString(formData);
+        String paramStr = buildParameterString(formData,Boolean.FALSE);
+        System.out.println("paramStr = " + paramStr);
         //1、加密
         String encryptData = encrypt(paramStr, seed);
         System.out.println("encrypt:"+encryptData);
@@ -212,6 +216,14 @@ public class EncryptUtil {
         //3、解密
         String decryptData = decrypt(encryptData, seed);
         System.out.println("decrypt:"+decryptData);
+        String decode = null;
+        try {
+            decode = URLDecoder.decode(decryptData, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("decode = " + decode);
+
     }
 
     public static void main(String[] args) {

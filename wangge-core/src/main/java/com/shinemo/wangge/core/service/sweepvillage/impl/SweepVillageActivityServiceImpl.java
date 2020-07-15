@@ -9,14 +9,11 @@ import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.operate.domain.UserOperateLogDO;
-import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
-import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
@@ -36,6 +33,7 @@ import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.util.HuaWeiUtil;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +45,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -182,7 +179,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
         sweepVillageActivityDO.setStartTime(startTime);
-        sweepVillageActivityDO.setCreatorName(SmartGridContext.getUserName());
+        sweepVillageActivityDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         sweepVillageActivityMapper.insert(sweepVillageActivityDO);
 
 
@@ -192,6 +189,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordDO.setStartTime(startTime);
         signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordDO.setStartLocation(GsonUtils.toJson(sweepVillageActivityVO.getLocationDetailVO()));
+        signRecordDO.setUserName(SmartGridContext.getUserName());
+        signRecordDO.setMobile(SmartGridContext.getMobile());
         signRecordMapper.insert(signRecordDO);
 
         //同步华为
@@ -205,6 +204,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        //todo 23号联调 同步经纬度
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}", sweepVillageActivityDO.getId());
         return ApiResult.of(0);
@@ -265,6 +265,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             map.put("remark", sweepVillageSignVO.getRemark());
         }
         map.put("picUrl", sweepVillageSignVO.getPicUrl());
+        //todo 23号联调 同步经纬度
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
@@ -630,22 +631,14 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResult.fail(500,"订正失败");
         }
         for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
-            //2.获取创建人名称
-            UserOperateLogQuery logQuery = new UserOperateLogQuery();
-            logQuery.setMobile(sweepVillageActivityDO.getMobile());
-
-            logQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now()));
-            UserOperateLogDO userOperateLogDO = userOperateLogMapper.get(logQuery);
-            if(userOperateLogDO == null){
-                log.error("[fixDatabase] creator is null,query:{}",query);
-                continue;
+            String huaweiUsername = HuaWeiUtil.getHuaweiUsername(sweepVillageActivityDO.getMobile());
+            if (StrUtil.isNotBlank(huaweiUsername)) {
+                SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
+                sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
+                sweepVillageActivityDOUpdate.setCreatorName(huaweiUsername);
+                //3.更新
+                sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
             }
-            SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
-            sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
-            sweepVillageActivityDOUpdate.setCreatorName(userOperateLogDO.getUsername());
-
-            //3.更新
-            sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
         }
         log.info("[fixDatabase] 订正扫村数据成功");
         return ApiResult.of(0,null,"success");
