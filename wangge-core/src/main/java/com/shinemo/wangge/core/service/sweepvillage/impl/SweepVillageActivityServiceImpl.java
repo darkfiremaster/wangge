@@ -9,14 +9,11 @@ import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.operate.domain.UserOperateLogDO;
-import com.shinemo.operate.query.UserOperateLogQuery;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
-import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
@@ -48,7 +45,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -626,22 +622,14 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             return ApiResult.fail(500,"订正失败");
         }
         for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
-            //2.获取创建人名称
-            UserOperateLogQuery logQuery = new UserOperateLogQuery();
-            logQuery.setMobile(sweepVillageActivityDO.getMobile());
-
-            logQuery.setTableIndex(SubTableUtils.getTableIndexByOnlyMonth(LocalDate.now()));
-            UserOperateLogDO userOperateLogDO = userOperateLogMapper.get(logQuery);
-            if(userOperateLogDO == null){
-                log.error("[fixDatabase] creator is null,query:{}",query);
-                continue;
+            String huaweiUsername = HuaWeiUtil.getHuaweiUsername(sweepVillageActivityDO.getMobile());
+            if (StrUtil.isNotBlank(huaweiUsername)) {
+                SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
+                sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
+                sweepVillageActivityDOUpdate.setCreatorName(huaweiUsername);
+                //3.更新
+                sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
             }
-            SweepVillageActivityDO sweepVillageActivityDOUpdate = new SweepVillageActivityDO();
-            sweepVillageActivityDOUpdate.setId(sweepVillageActivityDO.getId());
-            sweepVillageActivityDOUpdate.setCreatorName(userOperateLogDO.getUsername());
-
-            //3.更新
-            sweepVillageActivityMapper.update(sweepVillageActivityDOUpdate);
         }
         log.info("[fixDatabase] 订正扫村数据成功");
         return ApiResult.of(0,null,"success");

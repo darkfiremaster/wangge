@@ -116,7 +116,7 @@ public class AESUtil {
 
 	public static void main(String[] args) {
 
-		String mobile = "18817350871";
+		String mobile = "15797953927";
 		String seed = "71a25f582a266454";
 		String ret = encrypt(mobile, seed);
 		String expect = "cc128b78b781eb9614d79af2f88abad3044bd53e8bc1123d0009fc1fe99868d7c929e2a3c015cb";
