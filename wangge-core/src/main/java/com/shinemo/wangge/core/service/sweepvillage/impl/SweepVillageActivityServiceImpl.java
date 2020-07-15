@@ -315,8 +315,12 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
                 resultVOList.add(resultVO);
             }
+            //查询totalCount
+            sweepVillageActivityQuery.setPageEnable(false);
+            long count = sweepVillageActivityMapper.count(sweepVillageActivityQuery);
+
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
-                    .totalCount((long) resultVOList.size())
+                    .totalCount(count)
                     .pageSize(pageSize)
                     .currentPage(currentPage)
                     .build());
@@ -373,8 +377,11 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
                 resultVO.setVisitCount((int) count);
                 resultVOList.add(resultVO);
             }
+
+            sweepVillageActivityQuery.setPageEnable(false);
+            long count = sweepVillageActivityMapper.count(sweepVillageActivityQuery);
             return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder().rows(resultVOList)
-                    .totalCount((long) resultVOList.size())
+                    .totalCount(count)
                     .currentPage(currentPage)
                     .pageSize(pageSize).build());
         }
@@ -688,8 +695,6 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         for (SweepVillageActivityDO sweepVillageActivityDO : sweepVillageActivityDOS) {
             SweepVillageActivityResultVO resultVO = new SweepVillageActivityResultVO();
             resultVO.setTitle(sweepVillageActivityDO.getTitle());
-            resultVO.setAddress(sweepVillageActivityDO.getAddress());
-            resultVO.setArea(sweepVillageActivityDO.getArea());
             resultVO.setVillageId(sweepVillageActivityDO.getVillageId());
             resultVO.setVillageName(sweepVillageActivityDO.getVillageName());
             resultVO.setSweepVillageActivityId(sweepVillageActivityDO.getId());
@@ -701,12 +706,13 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
             resultVOList.add(resultVO);
         }
-
+        query.setPageEnable(false);
+        long count = sweepVillageActivityMapper.count(query);
         return ApiResult.of(0,ListVO.<SweepVillageActivityResultVO>builder()
                 .rows(resultVOList)
                 .pageSize(request.getPageSize())
                 .currentPage(request.getCurrentPage())
-                .totalCount((long)resultVOList.size()).build());
+                .totalCount(count).build());
     }
 
 
