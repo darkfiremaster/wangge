@@ -650,6 +650,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         SweepVillageActivityQuery query = new SweepVillageActivityQuery();
         query.setPageEnable(false);
         query.setGridId(request.getGridId());
+        query.setOrderByEnable(true);
+        query.putOrderBy("gmt_create",false);
         if(request.getCurrentPage() != null && request.getPageSize() != null){
             query.setPageEnable(true);
             query.setCurrentPage(request.getCurrentPage());
