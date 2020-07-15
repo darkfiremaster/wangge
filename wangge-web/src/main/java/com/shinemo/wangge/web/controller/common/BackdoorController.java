@@ -195,7 +195,7 @@ public class BackdoorController {
      */
     @GetMapping("/sweepVillage/fixDatabase")
     public String fixDatabase(){
-        ApiResult<Void> voidApiResult = sweepVillageActivityService.fixDatabase();
+        ApiResult<Void> voidApiResult = sweepVillageActivityService.fixDBWithCreatorName();
         return voidApiResult.getMsg();
 
     }

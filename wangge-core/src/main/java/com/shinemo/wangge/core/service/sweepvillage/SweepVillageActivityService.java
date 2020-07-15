@@ -100,7 +100,7 @@ public interface SweepVillageActivityService {
     /**
      * 订正数据 后门调用
      */
-    ApiResult<Void> fixDatabase();
+    ApiResult<Void> fixDBWithCreatorName();
 
     /**
      * 获取扫村活动详情列表
