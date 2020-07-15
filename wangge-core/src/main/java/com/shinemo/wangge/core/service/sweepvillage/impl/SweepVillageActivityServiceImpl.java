@@ -36,6 +36,7 @@ import com.shinemo.sweepvillage.error.SweepVillageErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.util.HuaWeiUtil;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -182,7 +183,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         sweepVillageActivityDO.setMobile(SmartGridContext.getMobile());
         sweepVillageActivityDO.setStatus(SweepVillageStatusEnum.PROCESSING.getId());
         sweepVillageActivityDO.setStartTime(startTime);
-        sweepVillageActivityDO.setCreatorName(SmartGridContext.getUserName());
+        sweepVillageActivityDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         sweepVillageActivityMapper.insert(sweepVillageActivityDO);
 
 
@@ -205,6 +206,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        //todo 23号联调 同步经纬度
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}", sweepVillageActivityDO.getId());
         return ApiResult.of(0);
@@ -265,6 +267,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             map.put("remark", sweepVillageSignVO.getRemark());
         }
         map.put("picUrl", sweepVillageSignVO.getPicUrl());
+        //todo 23号联调 同步经纬度
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
