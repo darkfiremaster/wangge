@@ -16,7 +16,6 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
 import com.shinemo.smartgrid.domain.query.BackdoorLoginQuery;
 import com.shinemo.smartgrid.utils.GsonUtils;
-import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.operate.OperateService;
@@ -159,24 +158,6 @@ public class SmartGridInterceptor extends HandlerInterceptorAdapter {
         if (timestamp != null) {
             SmartGridContext.setTimeStamp(timestamp);
         }
-
-        ApiResult<GetGridUserInfoResult.DataBean> result = null;
-        String huaweiUserName = null;
-
-        try {
-            result = huaWeiService
-                    .getGridUserInfoDetail(HuaWeiRequest.builder().mobile(mobile).build());
-            if (result.isSuccess()) {
-                huaweiUserName = result.getData().getUserName();
-            }
-        } catch (ApiException e) {
-            log.error("[create] failed call huaWeiService.getGridUserInfoDetail, mobile:{}, result:{}",
-                    mobile, result);
-        }
-        if (huaweiUserName == null) {
-            huaweiUserName = SmartGridContext.getUserName();
-        }
-        SmartGridContext.setHuaWeiUserName(huaweiUserName);
 
         // 查询用户网格信息,并更新
         String allGridInfo = getValueFromCookies(SmartGridConstant.ALL_GRID_INFO_COOKIE, cookies);
