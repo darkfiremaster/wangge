@@ -431,15 +431,23 @@ public class StallUpServiceImpl implements StallUpService {
         query.setActivityId(request.getId());
         query.setBizType(BIZ_TYPE);
         SignRecordDO signRecordDO = signRecordMapper.get(query);
-        if (signRecordDO == null) {
-            throw new ApiException(StallUpErrorCodes.BASE_ERROR);
-        }
-        // 更新打卡记录
+
         Date endTime = new Date();
-        SignRecordDO newSignRecordDO = new SignRecordDO();
-        newSignRecordDO.setId(signRecordDO.getId());
-        newSignRecordDO.setEndTime(endTime);
-        signRecordMapper.update(newSignRecordDO);
+        if (signRecordDO == null) {
+            //throw new ApiException(StallUpErrorCodes.BASE_ERROR);
+            SignRecordDO insertSignRecordDO = new SignRecordDO();
+            insertSignRecordDO.setEndTime(endTime);
+            insertSignRecordDO.setBizType(2);
+            insertSignRecordDO.setActivityId(request.getId());
+            insertSignRecordDO.setUserId(request.getActivity().getCreatorId().toString());
+            signRecordMapper.insert(insertSignRecordDO);
+        }else {
+            // 更新打卡记录
+            SignRecordDO newSignRecordDO = new SignRecordDO();
+            newSignRecordDO.setId(signRecordDO.getId());
+            newSignRecordDO.setEndTime(endTime);
+            signRecordMapper.update(newSignRecordDO);
+        }
         // 更新摆摊计划状态
         StallUpActivity updateActivity = StallUpActivity.builder().id(request.getId()).status(status).build();
         stallUpActivityMapper.update(updateActivity);
