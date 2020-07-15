@@ -3,15 +3,15 @@ package com.shinemo.smartgrid.utils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shinemo.todo.vo.TodoDTO;
 import com.shinemo.util.GsonUtil;
 import com.shinemo.util.MD5Util;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-
+@Slf4j
 public class SmartGridUtils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();

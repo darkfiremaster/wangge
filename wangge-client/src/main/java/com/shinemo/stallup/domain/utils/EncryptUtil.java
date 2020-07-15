@@ -182,16 +182,16 @@ public class EncryptUtil {
         System.out.println(sb.toString());
     }
 
-    public static void dudao3() {
-        String seed = "87a4b2e679304f4bbe4da9bb935ffd9f";
-        String mobile = "13617712720";
-        String url = "http://hwt.4kb.cn/css_manager/appVistUrl.action?"; //html
+    public static void test() {
+        String seed = "8b0f0fdfa4504925b963aa9df415de71";
+        String mobile = "13588039023";
+        String url = "http://211.138.252.146:27001/hello-mui/ossIntegratedSchedulingWeb/noticeboard/index.html?"; //html
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", mobile);
-        formData.put("urlType", "bgcy_app");
         formData.put("timestamp", timestamp);
-        formData.put("resId",18);
+        //formData.put("urlType", "bgcy_app");
+        //formData.put("resId",18);
 
         String paramStr = buildParameterString(formData);
         //1、加密
@@ -202,21 +202,20 @@ public class EncryptUtil {
         String sign = Md5Util.getMD5Str(encryptData+","+seed+","+timestamp);
         System.out.println("sign:"+sign);
 
-        //3、解密
-        String decryptData = decrypt(encryptData, seed);
-        System.out.println("decrypt:"+decryptData);
-
         StringBuilder sb = new StringBuilder(url);
         sb.append("paramData=").append(encryptData)
             .append("&timestamp=").append(timestamp)
             .append("&sign=").append(sign);
 
         System.out.println(sb.toString());
+
+        //3、解密
+        String decryptData = decrypt(encryptData, seed);
+        System.out.println("decrypt:"+decryptData);
     }
 
     public static void main(String[] args) {
-        dudao1();
-
+        test();
     }
 
 }
