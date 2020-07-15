@@ -62,12 +62,11 @@ public class StallUpController {
 		if (!StringUtils.hasText(keywords) || !StringUtils.hasText(location)) {
 			return ApiResult.of(0);
 		}
-		GridUserRoleDetail selectGridUserRoleDetail = SmartGridContext.getSelectGridUserRoleDetail();
+		//GridUserRoleDetail selectGridUserRoleDetail = SmartGridContext.getSelectGridUserRoleDetail();
 		return huaWeiService.search(HuaWeiRequest.builder()
 			.keywords(keywords)
 			.location(location)
 			.mobile(getMobile())
-			.gridId(selectGridUserRoleDetail.getId())
 			.build()
 		);
 	}

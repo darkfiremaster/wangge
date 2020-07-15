@@ -9,6 +9,7 @@ import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.model.SweepFloorBizDetail;
@@ -150,12 +151,13 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult<Long> create(SweepFloorActivityVO request) {
+
         SweepFloorActivityDO activityDO = new SweepFloorActivityDO();
         activityDO.setAddress(request.getAddress());
         activityDO.setCommunityId(request.getCommunityId());
         activityDO.setCommunityName(request.getCommunityName());
         activityDO.setCreator(SmartGridContext.getUid());
-        activityDO.setCreatorName(SmartGridContext.getUserName());
+        activityDO.setCreatorName(SmartGridContext.getHuaWeiUserName());
         activityDO.setCreatorOrgId(SmartGridContext.getOrgId());
         activityDO.setLocation(request.getLocation());
         activityDO.setMobile(SmartGridContext.getMobile());
@@ -1367,15 +1369,15 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             }
             huaweiRequest.setServiceProvider(type);
         }
-        if (request.getTVBoxTypes() != null) {
-            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
-        }
-        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
-        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
-        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
-        if (request.getTVBoxExpireTime() != null) {
-            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
-        }
+//        if (request.getTVBoxTypes() != null) {
+//            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
+//        }
+//        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
+//        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
+//        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
+//        if (request.getTVBoxExpireTime() != null) {
+//            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
+//        }
         huaweiRequest.setUnitId(request.getUnitId());
         huaweiRequest.setBroadbandExpireTime(DateUtils.dateToString(request.getBroadbandExpireTime(), "yyyy-MM-dd"));
     }
