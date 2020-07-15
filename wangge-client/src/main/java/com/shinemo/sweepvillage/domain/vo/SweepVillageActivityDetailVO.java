@@ -50,4 +50,9 @@ public class SweepVillageActivityDetailVO {
      * 创建人名称
      */
     private String creatorName;
+
+    /**
+     * 异常结束原因
+     */
+    private String exceptionMsg;
 }

@@ -60,7 +60,7 @@
 
                     <if test="startTime != null">and end_time >= #{startTime}</if>
                     <if test="endTime != null">and <![CDATA[ end_time <= #{endTime}]]> </if>
-                    <!--<if test="remark != null">and remark = #{remark}</if>-->
+                    <if test="gridId != null">and grid_id = #{gridId}</if>
                     <!--<if test="picUrl != null">and pic_url = #{picUrl}</if>-->
                 </otherwise>
             </choose>
