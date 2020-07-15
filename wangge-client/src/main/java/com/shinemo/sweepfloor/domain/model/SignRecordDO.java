@@ -27,4 +27,8 @@ public class SignRecordDO {
     private Date gmtModified;
     /** 备注 */
     private String remark;
+    /** 打卡人名 */
+    private String userName;
+    /** 打卡人手机号 */
+    private String mobile;
 }

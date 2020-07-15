@@ -362,7 +362,7 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         SweepFloorVisitRecordingDO visitRecordingDO = new SweepFloorVisitRecordingDO();
         BeanUtils.copyProperties(request, visitRecordingDO);
         visitRecordingDO.setMarketingUserId(SmartGridContext.getUid());
-        visitRecordingDO.setMarketingUserName(SmartGridContext.getUserName());
+        visitRecordingDO.setMarketingUserName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         visitRecordingDO.setGmtCreate(new Date());
         sweepFloorVisitRecordingMapper.insert(visitRecordingDO);
         return ApiResult.of(0);
@@ -482,6 +482,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             insertDO.setStartTime(new Date());
             insertDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
             insertDO.setUserId(SmartGridContext.getUid());
+            insertDO.setMobile(SmartGridContext.getMobile());
+            insertDO.setUserName(SmartGridContext.getUserName());
             signRecordMapper.insert(insertDO);
         } else {
             SignRecordDO updateDO = new SignRecordDO();

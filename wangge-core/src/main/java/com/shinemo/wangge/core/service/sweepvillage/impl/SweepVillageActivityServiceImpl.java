@@ -189,6 +189,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         signRecordDO.setStartTime(startTime);
         signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordDO.setStartLocation(GsonUtils.toJson(sweepVillageActivityVO.getLocationDetailVO()));
+        signRecordDO.setUserName(SmartGridContext.getUserName());
+        signRecordDO.setMobile(SmartGridContext.getMobile());
         signRecordMapper.insert(signRecordDO);
 
         //同步华为
