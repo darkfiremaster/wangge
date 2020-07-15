@@ -3,9 +3,9 @@ package com.shinemo.wangge.test.web;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
@@ -114,8 +114,12 @@ public class StaticTest {
 
     @Test
     public void ts() {
-        String encrypt = AESUtil.encrypt("15000001171", "71a25f582a266454");
-        System.out.println("encrypt = " + encrypt);
+        String seed = IdUtil.simpleUUID();
+        System.out.println("seed = " + seed);
+        int length = seed.length();
+        System.out.println("length = " + length);
+        //String encrypt = AESUtil.encrypt("15000001171", "71a25f582a266454");
+        //System.out.println("encrypt = " + encrypt);
     }
 
     @Test
