@@ -17,7 +17,6 @@ public enum BusinessConfigEnum {
 	SWEEP_FLOOR_BIZ(6, "扫楼业务"),
 	SWEEP_VILLAGE(7,"扫村工具"),
 	SWEEP_VILLAGE_BIZ(8,"扫村业务"),
-	DANSANJIAO_SUPPORT_BIZ(9,"倒三角支撑"),
 
 
 	;

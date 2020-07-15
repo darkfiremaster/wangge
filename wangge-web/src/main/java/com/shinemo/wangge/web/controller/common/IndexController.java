@@ -256,7 +256,7 @@ public class IndexController {
         bizTypeListBean.add(homePageBean);
 
         BizTypeListVO.BizTypeBean indexBean = new BizTypeListVO.BizTypeBean();
-        indexBean.setBizGroupName(BizGroupEnum.ALL_APPLICATION.getName());
+        indexBean.setBizGroupName(BizGroupEnum.BIZ_HANDLE.getName());
         indexBean.setBizTypeList(indexList);
         bizTypeListBean.add(indexBean);
 
@@ -345,6 +345,7 @@ public class IndexController {
         stallUpBizType.setType(v.getType());
         stallUpBizType.setIcon(v.getIcon());
         stallUpBizType.setCategory(v.getCategory());
+        stallUpBizType.setGroupId(v.getGroupId());
         if (v.getType() == 1) {
             stallUpBizType.setUrl(v.getUrl());
         }
