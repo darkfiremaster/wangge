@@ -26,6 +26,7 @@ public class StallUpStateMachine {
 		.addTransition(StallUpStatusEnum.PREPARE, StallUpStatusEnum.STARTED, StallUpEvent.StallUpEventEnum.SIGN, new SignTransition())
 		.addTransition(StallUpStatusEnum.STARTED, StallUpStatusEnum.END, StallUpEvent.StallUpEventEnum.END, new EndTransition())
 		.addTransition(StallUpStatusEnum.STARTED, StallUpStatusEnum.AUTO_END, StallUpEvent.StallUpEventEnum.AUTO_END, new AutoEndTransition())
+		.addTransition(StallUpStatusEnum.PREPARE, StallUpStatusEnum.AUTO_END, StallUpEvent.StallUpEventEnum.AUTO_END, new AutoEndTransition())
 		.installTopology();
 
 	private static StateMachine<StallUpStatusEnum, StallUpEvent.StallUpEventEnum, StallUpEvent> getStateMachine(StallUpRequest request, StallUpStatusEnum stallUpType) {

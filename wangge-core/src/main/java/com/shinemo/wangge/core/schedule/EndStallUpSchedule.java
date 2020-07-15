@@ -29,7 +29,8 @@ public class EndStallUpSchedule {
 	@Resource
 	private StallUpActivityMapper stallUpActivityMapper;
 
-	@Scheduled(cron = "0 0 0 * * ? ")
+	//@Scheduled(cron = "0 0 0 * * ? ")
+	@Scheduled(cron = "0 */1 * * * ?")
 	public void execute() {
 		long begin = System.currentTimeMillis();
 		log.info("[EndStallUpSchedule] execute start");
