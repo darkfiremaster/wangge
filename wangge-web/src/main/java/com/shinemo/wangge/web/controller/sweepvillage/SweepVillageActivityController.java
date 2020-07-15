@@ -1,13 +1,16 @@
 package com.shinemo.wangge.web.controller.sweepvillage;
 
 import cn.hutool.core.lang.Assert;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.utils.AESUtil;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.*;
@@ -18,6 +21,7 @@ import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +44,9 @@ public class SweepVillageActivityController {
     private StallUpConfig stallUpConfig;
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+
+    @Value("${smartgrid.huawei.aesKey}")
+    public String aeskey;
 
     /**
      * 获取用户上次扫村打卡的村庄
@@ -94,12 +101,52 @@ public class SweepVillageActivityController {
      * 获取扫村活动列表
      */
     @GetMapping("/getSweepVillageActivityList")
-    public ApiResult getSweepVillageActivityList(@RequestParam(required = false) Integer status,
+    public ApiResult getSweepVillageActivityList(@RequestParam Integer status,
                                      @RequestParam(required = false) Long startTime,
                                      @RequestParam(required = false) Long endTime,
                                      @RequestParam(required = false)  Integer pageSize,
-                                     @RequestParam(required = false) Integer currentPage) {
+                                     @RequestParam(required = false) String mobile, @RequestParam(required = false) Integer currentPage) {
+        Assert.notNull(status,"status is null");
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
+        request.setStatus(status);
+
+        if(startTime != null){
+            request.setStartTime(new Date(startTime));
+        }
+        if(endTime != null){
+            request.setEndTime(new Date(endTime));
+        }
+        if(currentPage != null){
+            request.setCurrentPage(currentPage);
+        }
+        if(pageSize != null){
+            request.setPageSize(pageSize);
+        }
+
+
+        return sweepVillageActivityService.getSweepVillageActivityList(request);
+
+    }
+
+    @GetMapping("/getSweepVillageActivityById")
+    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityById(@RequestParam Long sweepVillageActivityId){
+        Assert.notNull(sweepVillageActivityId,"sweepVillageActivityId is null");
+
+        return sweepVillageActivityService.getSweepVillageActivityAndBizById(sweepVillageActivityId);
+    }
+
+    @GetMapping("/getSweepVillageActivityListDetail")
+    public ApiResult getSweepVillageActivityListDetail(@RequestParam(required = false) Integer status,
+                                                       @RequestParam(required = false) Long startTime,
+                                                       @RequestParam(required = false) Long endTime,
+                                                       @RequestParam(required = false)  Integer pageSize,
+                                                       @RequestParam(required = false) String mobile,
+                                                       @RequestParam(required = false) Integer currentPage,
+                                                       @RequestParam String gridId){
+        SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
+        Assert.notNull(gridId,"gridId is null");
+        request.setGridId(gridId);
+
         if(status != null){
             request.setStatus(status);
         }
@@ -115,16 +162,13 @@ public class SweepVillageActivityController {
         if(pageSize != null){
             request.setPageSize(pageSize);
         }
-        return sweepVillageActivityService.getSweepVillageActivityList(request);
 
-    }
+        if(mobile != null){
+            String mobileDecrypt = org.springframework.util.StringUtils.hasText(mobile) ? AESUtil.decrypt(mobile, aeskey) : null;
+            request.setMobile(mobileDecrypt);
+        }
 
-    @GetMapping("/getSweepVillageActivityById")
-    public ApiResult<SweepVillageActivityDetailVO> getSweepVillageActivityById(@RequestParam Long sweepVillageActivityId){
-        Assert.notNull(sweepVillageActivityId,"sweepVillageActivityId is null");
-
-        return sweepVillageActivityService.getSweepVillageActivityAndBizById(sweepVillageActivityId);
-    }
+        return sweepVillageActivityService.getSweepVillageActivityListDetail(request);}
 
 
     /**

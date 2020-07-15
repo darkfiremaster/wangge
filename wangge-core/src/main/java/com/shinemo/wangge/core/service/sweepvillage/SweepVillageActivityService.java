@@ -101,4 +101,11 @@ public interface SweepVillageActivityService {
      * 订正数据 后门调用
      */
     ApiResult<Void> fixDatabase();
+
+    /**
+     * 获取扫村活动详情列表
+     * @param sweepVillageActivityQueryRequest
+     * @return
+     */
+    ApiResult<ListVO<SweepVillageActivityResultVO>> getSweepVillageActivityListDetail(SweepVillageActivityQueryRequest request);
 }
