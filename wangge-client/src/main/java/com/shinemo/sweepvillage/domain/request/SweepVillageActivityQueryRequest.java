@@ -28,6 +28,16 @@ public class SweepVillageActivityQueryRequest extends QueryBase {
     private Long pageSize;
     private Long currentPage;
 
+    /**
+     * 手机号,加密
+     */
+    private String mobile;
+
+    /**
+     * 网格ID
+     */
+    private String gridId;
+
 
 
 }

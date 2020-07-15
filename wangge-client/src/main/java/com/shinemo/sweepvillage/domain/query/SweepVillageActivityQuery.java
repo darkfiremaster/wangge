@@ -30,4 +30,7 @@ public class SweepVillageActivityQuery extends QueryBase {
 
     private String mobile;
 
+    /** 网格ID */
+    private String gridId;
+
 }
