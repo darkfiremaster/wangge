@@ -201,6 +201,9 @@
             <if test="endTime != null">
                 end_time = #{endTime},
             </if>
+            <if test="creatorName != null">
+                creator_name = #{creatorName},
+            </if>
         </set>
         WHERE
         id = #{id}
