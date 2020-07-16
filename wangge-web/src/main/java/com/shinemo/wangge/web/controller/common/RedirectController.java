@@ -25,12 +25,18 @@ public class RedirectController {
     @Resource
     private RedirectService redirectService;
 
+    /**
+     * 获取第三方跳转链接
+     */
     @GetMapping("/getRedirectUrl")
     public ApiResult<String> getRedirectUrl(Integer type) {
         Assert.notNull(type, "type is null");
         return redirectService.getRedirectUrl(type);
     }
 
+    /**
+     * 获取用户是否有权限展示看板
+     */
     @GetMapping("/showTab")
     public ApiResult<ShowTabVO> showTab() {
         return redirectService.showTab();

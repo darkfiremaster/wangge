@@ -3,11 +3,11 @@ package com.shinemo.wangge.core.service.redirect.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.google.common.collect.Lists;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.ShowTabVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.enums.SmartGridRoleEnum;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,13 +74,11 @@ public class RedirectServiceImpl implements RedirectService {
     }
 
     public static void main(String[] args) {
+        String s = "1";
+        if (s.equals(1)) {
 
-        ArrayList<Integer> list1 = Lists.newArrayList(6);
-        ArrayList<Integer> list2 = Lists.newArrayList( 1,2,3,4);
-
-        boolean show = CollUtil.containsAny(list1, list2);
-        System.out.println("show = " + show);
-
+            System.out.println("s = " + s);
+        }
     }
 
     private ApiResult<String> getZhuangyiDataBroadUrl() {
@@ -94,7 +91,19 @@ public class RedirectServiceImpl implements RedirectService {
         formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
         formData.put("areaName", SmartGridContext.getSelectGridUserRoleDetail().getCityName());
         formData.put("countyName", SmartGridContext.getSelectGridUserRoleDetail().getCountyName());
-        formData.put("roleName", SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getName());
+        String roleId = SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getId();
+        //将我们的角色转化为装移那边的角色名称
+        String roleName = "";
+        if (roleId.equals(SmartGridRoleEnum.GRID_CAPTAIN.getId())
+                || roleId.equals(SmartGridRoleEnum.GRID_MANAGER.getId())
+                || roleId.equals(SmartGridRoleEnum.BUSINESS_HALL.getId())) {
+            roleName = "网格长";
+        } else if (roleId.equals(SmartGridRoleEnum.DECORATOR.getId())) {
+            roleName = "一线装维";
+        } else {
+            throw new ApiException("角色错误");
+        }
+        formData.put("roleName", roleName);
         formData.put("timestamp", timestamp);
         String paramData = EncryptUtil.buildParameterString(formData, Boolean.FALSE);
         try {
