@@ -1352,15 +1352,19 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             log.error("[fixSweepFloor] sweepFloorActivityDOS is empty");
             return ApiResult.of(0);
         }
+        int count = 0;
         for (SweepFloorActivityDO activityDO: sweepFloorActivityDOS) {
             String mobile = activityDO.getMobile();
             String huaweiUsername = HuaWeiUtil.getHuaweiUsername(mobile);
             if (huaweiUsername != null) {
-                activityDO.setCreatorName(huaweiUsername);
-                sweepFloorActivityMapper.update(activityDO);
+                SweepFloorActivityDO updateDO = new SweepFloorActivityDO();
+                updateDO.setCreatorName(huaweiUsername);
+                updateDO.setId(activityDO.getId());
+                sweepFloorActivityMapper.update(updateDO);
+                count++;
             }
         }
-        log.info("[fixSweepFloor] fixSweepFloor finished,count = {}",sweepFloorActivityDOS.size());
+        log.info("[fixSweepFloor] fixSweepFloor finished,count = {}",count);
         return ApiResult.of(0);
     }
 

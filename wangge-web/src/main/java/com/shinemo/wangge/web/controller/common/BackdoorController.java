@@ -236,19 +236,23 @@ public class BackdoorController {
         if (CollectionUtils.isEmpty(signRecordDOS)) {
             log.error("[fixSignRecord] signRecordDOS is empty");
         }
+        int count = 0;
         for (SignRecordDO signRecordDO: signRecordDOS) {
             UserProfileInfo userProfileInfo = userProfileServiceWrapper.getUserProfileInfo(signRecordDO.getUserId(), new AaceContext(appType.getId() + ""));
             if (userProfileInfo != null) {
+                SignRecordDO updateDO = new SignRecordDO();
                 String mobile = userProfileInfo.getMobile();
                 String name = userProfileInfo.getName();
-                signRecordDO.setMobile(mobile);
-                signRecordDO.setUserName(name);
-                signRecordMapper.update(signRecordDO);
+                updateDO.setMobile(mobile);
+                updateDO.setUserName(name);
+                updateDO.setId(signRecordDO.getId());
+                signRecordMapper.update(updateDO);
+                count++;
             } else {
                 log.error("[fixSignRecord] userProfileInfo is null,uid = {}",signRecordDO.getUserId());
             }
         }
-        log.info("[fixSignRecord] fixSignRecord finished,count = {}",signRecordDOS.size());
+        log.info("[fixSignRecord] fixSignRecord finished,count = {}",count);
         return "success";
     }
 }
