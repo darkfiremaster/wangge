@@ -1,8 +1,14 @@
 package com.shinemo.wangge.core.service.redirect.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.google.common.collect.Lists;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.ShowTabVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.wangge.core.config.properties.ZhuangweiPropertity;
@@ -13,8 +19,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author shangkaihui
@@ -28,12 +37,51 @@ public class RedirectServiceImpl implements RedirectService {
     @Resource
     private ZhuangweiPropertity zhuangweiPropertity;
 
+    @NacosValue(value = "${show.zhuangwei.databoard}", autoRefreshed = true)
+    private Boolean showZhuangWeiDataBoard;
+
+    @NacosValue(value = "${show.zhuangwei.databoard.roleIdList}", autoRefreshed = true)
+    private String showZhuangWeiDataBoardRoleIdList;
+
     @Override
     public ApiResult<String> getRedirectUrl(Integer type) {
         if (type == 1) {
             return getZhuangyiDataBroadUrl();
         }
         throw new ApiException("type类型错误");
+    }
+
+    @Override
+    public ApiResult<ShowTabVO> showTab() {
+        Boolean tmpShowZhuangWeiDataBoard = false;
+        if (showZhuangWeiDataBoard) {
+            //判断角色
+            List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
+            List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
+            List<String> showRoleIdList = StrUtil.split(showZhuangWeiDataBoardRoleIdList, ',');
+            boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
+            if (!canShow) {
+                log.info("[showTab] 该用户无法看见装维数据看板,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
+                tmpShowZhuangWeiDataBoard = false;
+            } else {
+                tmpShowZhuangWeiDataBoard = true;
+            }
+        }
+
+        ShowTabVO showTabVO = new ShowTabVO();
+        showTabVO.setShowZhuangWeiDataBoard(tmpShowZhuangWeiDataBoard);
+        log.info("[showTab] showTabVO:{}", showTabVO);
+        return ApiResult.of(0, showTabVO);
+    }
+
+    public static void main(String[] args) {
+
+        ArrayList<Integer> list1 = Lists.newArrayList(6);
+        ArrayList<Integer> list2 = Lists.newArrayList( 1,2,3,4);
+
+        boolean show = CollUtil.containsAny(list1, list2);
+        System.out.println("show = " + show);
+
     }
 
     private ApiResult<String> getZhuangyiDataBroadUrl() {

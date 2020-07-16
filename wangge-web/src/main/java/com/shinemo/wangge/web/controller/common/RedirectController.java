@@ -1,6 +1,7 @@
 package com.shinemo.wangge.web.controller.common;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.ShowTabVO;
 import com.shinemo.wangge.core.service.redirect.RedirectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -26,11 +27,12 @@ public class RedirectController {
 
     @GetMapping("/getRedirectUrl")
     public ApiResult<String> getRedirectUrl(Integer type) {
-
         Assert.notNull(type, "type is null");
-
         return redirectService.getRedirectUrl(type);
+    }
 
-
+    @GetMapping("/showTab")
+    public ApiResult<ShowTabVO> showTab() {
+        return redirectService.showTab();
     }
 }
