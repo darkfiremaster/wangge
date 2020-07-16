@@ -175,11 +175,10 @@ public class StallUpConfig {
         tmpUrlMap.put(ThirdHandlerTypeEnum.DAO_SAN_JIAO.getType(), daoSanJiaoHandler);
 
         //倒三角支撑配置
-        DaoSanJiaoSupportConfig daoSanJiaoSupportConfig = config.getDaoSanJiaoSupportConfig();
         DaoSanJiaoSupportHandler daoSanJiaoSupportHandler = new DaoSanJiaoSupportHandler();
-        daoSanJiaoSupportHandler.setDomain(daoSanJiaoSupportConfig.getDomain());
-        daoSanJiaoSupportHandler.setPath(daoSanJiaoSupportConfig.getPath());
-        daoSanJiaoSupportHandler.setSeed(daoSanJiaoSupportConfig.getSeed());
+        daoSanJiaoSupportHandler.setDomain(daoSanJiaoConfig.getDomain());
+        daoSanJiaoSupportHandler.setPath(daoSanJiaoConfig.getPath());
+        daoSanJiaoSupportHandler.setSeed(daoSanJiaoConfig.getSeed());
         tmpUrlMap.put(ThirdHandlerTypeEnum.DANSANJIAO_SUPPORT.getType(), daoSanJiaoSupportHandler);
 
         //稽核工作配置
@@ -314,10 +313,6 @@ public class StallUpConfig {
          */
         private DaoSanJiaoConfig daoSanJiaoConfig;
 
-        /**
-         * 倒三角支撑配置
-         */
-        private DaoSanJiaoSupportConfig daoSanJiaoSupportConfig;
 
         /**
          * 督导配置
@@ -453,23 +448,7 @@ public class StallUpConfig {
         private String seed;
     }
 
-    @Setter
-    @Getter
-    private class DaoSanJiaoSupportConfig {
-        /**
-         * 域名
-         */
-        private String domain;
-        /**
-         * 路径
-         */
-        private String path;
 
-        /**
-         *
-         */
-        private String seed;
-    }
 
 
     @Setter
