@@ -1,0 +1,7 @@
+
+# 发件人（必须正确，否则发送失败）
+from = kaihuishang@163.com
+
+# 密码（授权码）
+pass = QTVBIJANJQHBMCRR
+

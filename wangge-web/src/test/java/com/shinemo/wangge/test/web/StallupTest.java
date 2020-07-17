@@ -7,6 +7,7 @@ import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.model.GridUserDetail;
 import com.shinemo.stallup.domain.request.StallUpCreateRequest;
 import com.shinemo.stallup.domain.request.StallUpSignRequest;
+import com.shinemo.wangge.core.service.common.ExcelService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.web.MainApplication;
 import org.junit.Test;
@@ -28,6 +29,9 @@ public class StallupTest {
 
     @Resource
     private StallUpService stallUpService;
+
+    @Resource
+    private ExcelService excelService;
 
     @Test
     public void testSmsHot() {
@@ -95,4 +99,8 @@ public class StallupTest {
         }
     }
 
+    @Test
+    public void testSendMail() {
+        excelService.sendLoginInfoMail("2020-07-15");
+    }
 }
