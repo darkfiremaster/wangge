@@ -5,6 +5,10 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
@@ -21,6 +25,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -59,6 +64,9 @@ public class ExcelServiceImpl implements ExcelService {
     private String filePath = "/data/logs/excel/";
 
     private String fileSuffix = ".xlsx";
+
+    private static final String onlineDomin = "https://api-gx.uban360.com";
+
 
     @Resource
     private SlaveLoginInfoResultMapper slaveLoginInfoResultMapper;
@@ -129,18 +137,28 @@ public class ExcelServiceImpl implements ExcelService {
     public List<LoginInfoExcelDTO> getLoginInfoExcelDTOList(String queryDate) {
         String date = queryDate;
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
-        String[] split = date.split("-");
-        String tableIndex = split[1];//该表按月分表所以需要先获取月份
-        List<LoginInfoExcelDTO> loginInfoExcelDTOList = slaveLoginInfoResultMapper.getLoginInfoExcelDTOList(date, tableIndex);
-        log.info("[getLoginInfoExcelDTOList] 结果集数量:{}", loginInfoExcelDTOList.size());
-        return loginInfoExcelDTOList;
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("date", date);
+        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginInfoDTOList";
+        String res = HttpUtil.get(url, paramMap);
+        JSONObject jsonObject = JSONUtil.parseObj(res);
+        JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
+        List<LoginInfoExcelDTO> loginInfoExcelDTOS = data.toList(LoginInfoExcelDTO.class);
+        log.info("[exportLoginInfoExcel] 请求地址:{},结果集数量:{}", url, loginInfoExcelDTOS.size());
+        return loginInfoExcelDTOS;
     }
 
     public List<LoginResultExcelDTO> getLoginResultExcelDTOList(String queryDate) {
         String date = queryDate;
         Assert.notBlank(date, "日期不能为空,格式为yyyy-MM-dd");
-        List<LoginResultExcelDTO> loginResultExcelDTOList = slaveLoginInfoResultMapper.getLoginResultExcelDTOList(date);
-        log.info("[getLoginResultExcelDTOList] 结果集数量:{}", loginResultExcelDTOList.size());
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("date", date);
+        String url = onlineDomin + "/cmgr-gx-smartgrid/excel/getLoginResultDTOList";
+        String res = HttpUtil.get(url, paramMap);
+        JSONObject jsonObject = JSONUtil.parseObj(res);
+        JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
+        List<LoginResultExcelDTO> loginResultExcelDTOList = data.toList(LoginResultExcelDTO.class);
+        log.info("[exportLoginResultExcel] 请求地址:{},结果集数量:{}", url, loginResultExcelDTOList.size());
         return loginResultExcelDTOList;
     }
 }
