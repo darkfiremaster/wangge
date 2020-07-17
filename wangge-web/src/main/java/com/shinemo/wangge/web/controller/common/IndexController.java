@@ -33,7 +33,6 @@ import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
 import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.wangge.core.config.StallUpConfig;
-import com.shinemo.wangge.core.config.properties.ZhuangweiPropertity;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
@@ -268,10 +267,13 @@ public class IndexController {
         quickAccessBean.setBizTypeList(quickAccessList);
         bizTypeListBean.add(quickAccessBean);
 
-        BizTypeListVO.BizTypeBean daosanjiaoBean = new BizTypeListVO.BizTypeBean();
-        daosanjiaoBean.setBizGroupName(BizGroupEnum.DAOSANJIAO_SUPPORT.getName());
-        daosanjiaoBean.setBizTypeList(daosanjiaoSupportBizList);
-        bizTypeListBean.add(daosanjiaoBean);
+        if (CollUtil.isNotEmpty(daosanjiaoSupportBizList)) {
+            BizTypeListVO.BizTypeBean daosanjiaoBean = new BizTypeListVO.BizTypeBean();
+            daosanjiaoBean.setBizGroupName(BizGroupEnum.DAOSANJIAO_SUPPORT.getName());
+            daosanjiaoBean.setBizTypeList(daosanjiaoSupportBizList);
+            bizTypeListBean.add(daosanjiaoBean);
+        }
+
 
         BizTypeListVO bizTypeListVO = new BizTypeListVO();
         bizTypeListVO.setBizTypeListBean(bizTypeListBean);
