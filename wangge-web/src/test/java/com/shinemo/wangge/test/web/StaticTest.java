@@ -2,10 +2,8 @@ package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -17,7 +15,6 @@ import com.shinemo.todo.dto.TodoRedirectDetailDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -211,11 +208,11 @@ public class StaticTest {
     }
 
 
-    @Test
-    public void sendMail() {
-        File file = FileUtil.file("/Users/cindy/Desktop/登录信息/登录结果统计2020-07-16.xlsx");
-        MailUtil.sendText("shangkh@shinemo.com", "测试", "测试邮件发送", file);
-    }
+    //@Test
+    //public void sendMail() {
+    //    File file = FileUtil.file("/Users/cindy/Desktop/登录信息/登录结果统计2020-07-16.xlsx");
+    //    MailUtil.sendText("shangkh@shinemo.com", "测试", "测试邮件发送", file);
+    //}
 
     @Test
     public void getZhuangyiUrl() {
