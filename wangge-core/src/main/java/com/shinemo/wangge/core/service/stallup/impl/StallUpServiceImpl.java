@@ -148,7 +148,7 @@ public class StallUpServiceImpl implements StallUpService {
             throw new ApiException(StallUpErrorCodes.FREQUENT_ERROR);
         }
         StallUpCreateRequest request = (StallUpCreateRequest) stallUpRequest;
-
+        Assert.hasText(request.getAddress(), "摆摊地址不能为空");
         //校验距离
         checkDistance(request);
 
