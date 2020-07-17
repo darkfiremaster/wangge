@@ -3,6 +3,7 @@ package com.shinemo.wangge.core.service.common.impl;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.alibaba.excel.EasyExcelFactory;
 import com.alibaba.excel.ExcelWriter;
@@ -30,6 +31,18 @@ import java.util.List;
 @Service
 @Slf4j
 public class ExcelServiceImpl implements ExcelService {
+
+    /**
+     * 发件人地址
+     */
+    @NacosValue(value = "${sendAddress}", autoRefreshed = true)
+    private String sendAddress = "kaihuishang@163.com";
+
+    /**
+     * 发件人密码
+     */
+    @NacosValue(value = "${sendPass}", autoRefreshed = true)
+    private String sendPass = "QTVBIJANJQHBMCRR";
 
     /**
      * 收件人地址
@@ -63,7 +76,10 @@ public class ExcelServiceImpl implements ExcelService {
         String content = "附件为" + queryDate + "智慧网格小屏登录情况统计,请查收.";
         List<String> recipientAddressList = StrUtil.splitTrim(recipientAddress, ',');
         List<String> copyAddressList = StrUtil.splitTrim(copyAddress, ',');
-        MailUtil.send(recipientAddressList, copyAddressList, null, subject, content, false, loginInfoFile, loginResultFile);
+        MailAccount mailAccount = new MailAccount();
+        mailAccount.setFrom(sendAddress);
+        mailAccount.setPass(sendPass);
+        MailUtil.send(mailAccount, recipientAddressList, copyAddressList, null, subject, content, false, loginInfoFile, loginResultFile);
 
         log.info("[sendLoginInfoMail] 发送邮件excel成功");
 

@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -213,7 +215,53 @@ public class StaticTest {
     public void sendMail() {
         File file = FileUtil.file("/Users/cindy/Desktop/登录信息/登录结果统计2020-07-16.xlsx");
         MailUtil.sendText("shangkh@shinemo.com", "测试", "测试邮件发送", file);
+    }
 
+    @Test
+    public void getZhuangyiUrl() {
+        String seed = "8b0f0fdfa4504925b963aa9df415de71";
+        String domain = "http://211.138.252.146:27001";
+        String path = "/hello-mui/ossIntegratedSchedulingWeb/noticeboard/index.html";
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobileTel", "18776892034");
+        formData.put("gridName", "智慧网格");
+        formData.put("areaName","南宁");
+        formData.put("countyName", "县级");
+        //String roleId = SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getId();
+        ////将我们的角色转化为装移那边的角色名称
+        //String roleName = "";
+        //if (roleId.equals(SmartGridRoleEnum.GRID_CAPTAIN.getId())
+        //        || roleId.equals(SmartGridRoleEnum.GRID_MANAGER.getId())
+        //        || roleId.equals(SmartGridRoleEnum.BUSINESS_HALL.getId())) {
+        //    roleName = "网格长";
+        //} else if (roleId.equals(SmartGridRoleEnum.DECORATOR.getId())) {
+        //    roleName = "一线装维";
+        //} else {
+        //    throw new ApiException("角色错误");
+        //}
+        formData.put("roleName", "一线装维");
+        formData.put("timestamp", timestamp);
+        String paramData = EncryptUtil.buildParameterString(formData, Boolean.FALSE);
+        try {
+            log.info("[getZhuangyiDataBroadUrl] 加密前参数paramData:{}", URLDecoder.decode(paramData,"utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramData, seed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+
+        String url = domain + path + "?";
+        StringBuilder sb = new StringBuilder(url);
+        url = sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign).toString();
+
+
+        log.info("[getZhuangyiDataBroadUrl] 生成装移数据看板跳转url:{}", url);
     }
 
 }
