@@ -140,7 +140,7 @@ public class SweepVillageActivityController {
                                                        @RequestParam(required = false) Long startTime,
                                                        @RequestParam(required = false) Long endTime,
                                                        @RequestParam(required = false)  Integer pageSize,
-                                                       @RequestParam(required = false) String mobile,
+                                                       @RequestParam(required = false) String seMobile,
                                                        @RequestParam(required = false) Integer currentPage,
                                                        @RequestParam String gridId){
         SweepVillageActivityQueryRequest request = new SweepVillageActivityQueryRequest();
@@ -163,8 +163,8 @@ public class SweepVillageActivityController {
             request.setPageSize(pageSize);
         }
 
-        if(mobile != null){
-            String mobileDecrypt = org.springframework.util.StringUtils.hasText(mobile) ? AESUtil.decrypt(mobile, aeskey) : null;
+        if(seMobile != null){
+            String mobileDecrypt = org.springframework.util.StringUtils.hasText(seMobile) ? AESUtil.decrypt(seMobile, aeskey) : null;
             request.setMobile(mobileDecrypt);
         }
 
