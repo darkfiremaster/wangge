@@ -29,11 +29,10 @@ import java.util.List;
 @Slf4j
 public class ExcelTest {
 
-    private static final String devDomin = "http://localhost:20014";
-    private static final String testDomin = "https://developer.e.uban360.com";
     private static final String onlineDomin = "https://api-gx.uban360.com";
 
     private String queryDate = "2020-07-16";
+
 
     @Test
     public void exportLoginInfoExcel() throws FileNotFoundException {
@@ -57,7 +56,6 @@ public class ExcelTest {
         sheet.setSheetName(date + "登录信息统计");
         writer.write(loginInfoExcelDTOS, sheet);
         writer.finish();
-
         log.info("[exportLoginInfoExcel] 导出登录信息excel成功");
     }
 
@@ -89,4 +87,6 @@ public class ExcelTest {
 
         log.info("[exportLoginInfoExcel] 导出登录结果excel成功");
     }
+
+
 }

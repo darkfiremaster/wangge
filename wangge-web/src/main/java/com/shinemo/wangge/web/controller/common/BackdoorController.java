@@ -1,5 +1,7 @@
 package com.shinemo.wangge.web.controller.common;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.user.UserProfileServiceWrapper;
@@ -18,6 +20,7 @@ import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
+import com.shinemo.wangge.core.service.common.ExcelService;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
@@ -81,6 +84,8 @@ public class BackdoorController {
     @Resource
     private UserProfileServiceWrapper userProfileServiceWrapper;
 
+    @Resource
+    private ExcelService excelService;
 
     @Resource
     private RedisService redisService;
@@ -253,6 +258,17 @@ public class BackdoorController {
             }
         }
         log.info("[fixSignRecord] fixSignRecord finished,count = {}",count);
+        return "success";
+    }
+
+    @GetMapping("/send/mail")
+    public String sendMail(){
+        DateTime yesterday = DateUtil.yesterday();
+        String queryDate = DateUtil.formatDate(yesterday);
+        log.info("[sendLoginMail] 开始发送邮件,查询时间:{}", queryDate);
+        long startTime = System.currentTimeMillis();
+        excelService.sendLoginInfoMail(queryDate);
+        log.info("[sendLoginMail] 结束邮件发送,耗时:{}ms", System.currentTimeMillis() - startTime);
         return "success";
     }
 }
