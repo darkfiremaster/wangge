@@ -73,14 +73,6 @@ public class RedirectServiceImpl implements RedirectService {
         return ApiResult.of(0, showTabVO);
     }
 
-    public static void main(String[] args) {
-        String s = "1";
-        if (s.equals(1)) {
-
-            System.out.println("s = " + s);
-        }
-    }
-
     private ApiResult<String> getZhuangyiDataBroadUrl() {
         String seed = zhuangweiPropertity.getSeed();
         String domain = zhuangweiPropertity.getDomain();

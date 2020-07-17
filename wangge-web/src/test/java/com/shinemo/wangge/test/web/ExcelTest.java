@@ -2,6 +2,7 @@ package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -32,7 +33,8 @@ public class ExcelTest {
     private static final String testDomin = "https://developer.e.uban360.com";
     private static final String onlineDomin = "https://api-gx.uban360.com";
 
-    private String queryDate = "2020-07-15";
+    private String queryDate = "2020-07-16";
+
     @Test
     public void exportLoginInfoExcel() throws FileNotFoundException {
         String date = queryDate;
@@ -45,13 +47,14 @@ public class ExcelTest {
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
         List<LoginInfoExcelDTO> loginInfoExcelDTOS = data.toList(LoginInfoExcelDTO.class);
         log.info("[exportLoginInfoExcel] 请求地址:{},结果集数量:{}", url, loginInfoExcelDTOS.size());
-
-        String fileName = "/Users/cindy/Desktop/" + "登录信息统计" + date + ".xlsx";
+        String[] split = StrUtil.split(date, "-");
+        date = split[1] + split[2];
+        String fileName = "/Users/cindy/Desktop/" + date + "登录信息统计" + ".xlsx";
         File file = FileUtil.file(fileName);
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         ExcelWriter writer = EasyExcelFactory.getWriter(fileOutputStream);
         Sheet sheet = new Sheet(1, 0, LoginInfoExcelDTO.class);
-        sheet.setSheetName("登录信息统计"+date);
+        sheet.setSheetName(date + "登录信息统计");
         writer.write(loginInfoExcelDTOS, sheet);
         writer.finish();
 
@@ -73,13 +76,14 @@ public class ExcelTest {
         JSONArray data = JSONUtil.parseArray(JSONUtil.toJsonStr(jsonObject.get("data")));
         List<LoginResultExcelDTO> loginResultExcelDTOList = data.toList(LoginResultExcelDTO.class);
         log.info("[exportLoginResultExcel] 请求地址:{},结果集数量:{}", url, loginResultExcelDTOList.size());
-
-        String fileName = "/Users/cindy/Desktop/" + "登录结果统计" + date + ".xlsx";
+        String[] split = StrUtil.split(date, "-");
+        date = split[1] + split[2];
+        String fileName = "/Users/cindy/Desktop/" + date + "登录结果统计" + ".xlsx";
         File file = FileUtil.file(fileName);
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         ExcelWriter writer = EasyExcelFactory.getWriter(fileOutputStream);
         Sheet sheet = new Sheet(1, 0, LoginResultExcelDTO.class);
-        sheet.setSheetName("登录结果统计"+date);
+        sheet.setSheetName(date + "登录结果统计");
         writer.write(loginResultExcelDTOList, sheet);
         writer.finish();
 
