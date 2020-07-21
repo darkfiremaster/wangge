@@ -47,4 +47,6 @@ public class HouseholdVO {
     private String TVBoxRemark;
     /** 电视盒到期时间 */
     private Date TVBoxExpireTime;
+    /** 住房类型 */
+    private String roomType;
 }

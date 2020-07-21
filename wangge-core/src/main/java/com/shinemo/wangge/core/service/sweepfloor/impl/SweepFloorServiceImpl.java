@@ -881,6 +881,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                             }else {
                                 householdVO.setServiceProvider(new ArrayList<>());
                             }
+                            householdVO.setRoomType(huaweiHouseResponse.getRoomType());
+                            householdVO.setBroadbandRemark(huaweiHouseResponse.getBroadbandRemark());
+                            householdVO.setBroadbandMonthlyrent(huaweiHouseResponse.getBroadbandMonthlyrent());
+                            householdVO.setTVBoxRemark(huaweiHouseResponse.getTVBoxRemark());
+                            if (!StringUtils.isBlank(huaweiHouseResponse.getTVBoxTypes())) {
+                                String TVTypes = huaweiHouseResponse.getTVBoxTypes();
+                                String[] split = TVTypes.split(",");
+                                householdVO.setTVBoxTypes(Arrays.asList(split));
+                            }else {
+                                householdVO.setTVBoxTypes(new ArrayList<>());
+                            }
+                            if (huaweiHouseResponse.getTVBoxExpireTime() != null) {
+                                householdVO.setTVBoxExpireTime(DateUtils.stringtoDate(huaweiHouseResponse.getTVBoxExpireTime(),"yyyy-MM-dd"));
+                            }
                             List<HuaweiContactResponse> concactList = huaweiHouseResponse.getConcactList();
                             if (!CollectionUtils.isEmpty(concactList)) {
                                 List<FamilyMember> members = new ArrayList<>();
@@ -953,6 +967,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                             householdVO.setBuildingName(huaweiBuildingResponse.getBuildingName());
                             householdVO.setUnitId(huaweiUnitResponse.getUnitId());
                             householdVO.setUnitName(huaweiUnitResponse.getUnitName());
+                            householdVO.setRoomType(huaweiHouseResponse.getRoomType());
+                            householdVO.setBroadbandRemark(huaweiHouseResponse.getBroadbandRemark());
+                            householdVO.setBroadbandMonthlyrent(huaweiHouseResponse.getBroadbandMonthlyrent());
+                            householdVO.setTVBoxRemark(huaweiHouseResponse.getTVBoxRemark());
+                            if (!StringUtils.isBlank(huaweiHouseResponse.getTVBoxTypes())) {
+                                String TVTypes = huaweiHouseResponse.getTVBoxTypes();
+                                String[] split = TVTypes.split(",");
+                                householdVO.setTVBoxTypes(Arrays.asList(split));
+                            }else {
+                                householdVO.setTVBoxTypes(new ArrayList<>());
+                            }
+                            if (huaweiHouseResponse.getTVBoxExpireTime() != null) {
+                                householdVO.setTVBoxExpireTime(DateUtils.stringtoDate(huaweiHouseResponse.getTVBoxExpireTime(),"yyyy-MM-dd"));
+                            }
                             List<HuaweiContactResponse> concactList = huaweiHouseResponse.getConcactList();
                             if (!CollectionUtils.isEmpty(concactList)) {
                                 List<FamilyMember> members = new ArrayList<>(concactList.size());
@@ -1395,15 +1423,16 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             }
             huaweiRequest.setServiceProvider(type);
         }
-//        if (request.getTVBoxTypes() != null) {
-//            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
-//        }
-//        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
-//        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
-//        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
-//        if (request.getTVBoxExpireTime() != null) {
-//            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
-//        }
+        if (request.getTVBoxTypes() != null) {
+            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
+        }
+        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
+        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
+        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
+        if (request.getTVBoxExpireTime() != null) {
+            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
+        }
+        huaweiRequest.setRoomType(request.getRoomType());
         huaweiRequest.setUnitId(request.getUnitId());
         huaweiRequest.setBroadbandExpireTime(DateUtils.dateToString(request.getBroadbandExpireTime(), "yyyy-MM-dd"));
     }
