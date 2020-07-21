@@ -36,9 +36,21 @@ public class RedirectServiceImpl implements RedirectService {
     @Resource
     private ZhuangweiPropertity zhuangweiPropertity;
 
+    /**
+     * 是否展示装移数据看板
+     */
     @NacosValue(value = "${show.zhuangwei.databoard}", autoRefreshed = true)
     private Boolean showZhuangWeiDataBoard;
 
+    /**
+     * 是否展示智慧小屏
+     */
+    @NacosValue(value = "${show.smart.report}", autoRefreshed = true)
+    private Boolean showSmartReport;
+
+    /**
+     * 能看到装移数据看板的角色
+     */
     @NacosValue(value = "${show.zhuangwei.databoard.roleIdList}", autoRefreshed = true)
     private String showZhuangWeiDataBoardRoleIdList;
 
@@ -52,28 +64,23 @@ public class RedirectServiceImpl implements RedirectService {
 
     @Override
     public ApiResult<ShowTabVO> showTab() {
-        Boolean tmpShowZhuangWeiDataBoard = false;
-        if (showZhuangWeiDataBoard) {
-            //判断角色
-            List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
-            List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
-            List<String> showRoleIdList = StrUtil.split(showZhuangWeiDataBoardRoleIdList, ',');
-            boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
-            if (!canShow) {
-                log.info("[showTab] 该用户无法看见装维数据看板,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
-                tmpShowZhuangWeiDataBoard = false;
-            } else {
-                tmpShowZhuangWeiDataBoard = true;
-            }
-        }
-
         ShowTabVO showTabVO = new ShowTabVO();
-        showTabVO.setShowZhuangWeiDataBoard(tmpShowZhuangWeiDataBoard);
-        log.info("[showTab] showTabVO:{}", showTabVO);
+        showTabVO.setShowZhuangWeiDataBoard(showZhuangWeiDataBoard);
+        showTabVO.setShowSmartReport(showSmartReport);
         return ApiResult.of(0, showTabVO);
     }
 
     private ApiResult<String> getZhuangyiDataBroadUrl() {
+        //判断角色权限
+        List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
+        List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
+        List<String> showRoleIdList = StrUtil.split(showZhuangWeiDataBoardRoleIdList, ',');
+        boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
+        if (!canShow) {
+            log.info("[showTab] 该用户无权查看装维数据看板,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
+            throw new ApiException("您当前无权限查看");
+        }
+
         String seed = zhuangweiPropertity.getSeed();
         String domain = zhuangweiPropertity.getDomain();
         String path = zhuangweiPropertity.getDataBoardUrl();
@@ -83,9 +90,9 @@ public class RedirectServiceImpl implements RedirectService {
         formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
         formData.put("areaName", SmartGridContext.getSelectGridUserRoleDetail().getCityName());
         formData.put("countyName", SmartGridContext.getSelectGridUserRoleDetail().getCountyName());
-        String roleId = SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getId();
-        //将我们的角色转化为装移那边的角色名称
+        //todo 将我们的角色转化为装移那边的角色名称
         String roleName = "";
+        String roleId = SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getId();
         if (roleId.equals(SmartGridRoleEnum.GRID_CAPTAIN.getId())
                 || roleId.equals(SmartGridRoleEnum.GRID_MANAGER.getId())
                 || roleId.equals(SmartGridRoleEnum.BUSINESS_HALL.getId())) {
@@ -99,7 +106,7 @@ public class RedirectServiceImpl implements RedirectService {
         formData.put("timestamp", timestamp);
         String paramData = EncryptUtil.buildParameterString(formData, Boolean.FALSE);
         try {
-            log.info("[getZhuangyiDataBroadUrl] 加密前参数paramData:{}", URLDecoder.decode(paramData,"utf-8"));
+            log.info("[getZhuangyiDataBroadUrl] 加密前参数paramData:{}", URLDecoder.decode(paramData, "utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

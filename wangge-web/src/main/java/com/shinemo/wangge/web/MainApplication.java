@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web;
 
+import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
@@ -36,7 +37,6 @@ import javax.annotation.Resource;
 @EnableScheduling
 @EnableRetry
 public class MainApplication implements WebMvcConfigurer {
-
 
     @Resource
     private IntranetInterceptor intranetInterceptor;
