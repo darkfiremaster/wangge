@@ -274,6 +274,13 @@ public class IndexController {
             bizTypeListBean.add(daosanjiaoBean);
         }
 
+        if (CollUtil.isNotEmpty(daosanjiaoSupportBizList)) {
+            BizTypeListVO.BizTypeBean daosanjiaoBean = new BizTypeListVO.BizTypeBean();
+            daosanjiaoBean.setBizGroupName(BizGroupEnum.DAOSANJIAO_SUPPORT.getName());
+            daosanjiaoBean.setBizTypeList(daosanjiaoSupportBizList);
+            bizTypeListBean.add(daosanjiaoBean);
+        }
+
 
         BizTypeListVO bizTypeListVO = new BizTypeListVO();
         bizTypeListVO.setBizTypeListBean(bizTypeListBean);

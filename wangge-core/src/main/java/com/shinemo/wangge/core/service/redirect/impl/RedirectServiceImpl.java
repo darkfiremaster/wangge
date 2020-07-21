@@ -58,9 +58,12 @@ public class RedirectServiceImpl implements RedirectService {
     public ApiResult<String> getRedirectUrl(Integer type) {
         if (type == 1) {
             return getZhuangyiDataBroadUrl();
+        } else if (type == 2) {
+            return getSmartReportUrl();
         }
         throw new ApiException("type类型错误");
     }
+
 
     @Override
     public ApiResult<ShowTabVO> showTab() {
@@ -68,6 +71,11 @@ public class RedirectServiceImpl implements RedirectService {
         showTabVO.setShowZhuangWeiDataBoard(showZhuangWeiDataBoard);
         showTabVO.setShowSmartReport(showSmartReport);
         return ApiResult.of(0, showTabVO);
+    }
+
+    private ApiResult<String> getSmartReportUrl() {
+        //todo
+        return ApiResult.of(0, "www.baidu.com");
     }
 
     private ApiResult<String> getZhuangyiDataBroadUrl() {

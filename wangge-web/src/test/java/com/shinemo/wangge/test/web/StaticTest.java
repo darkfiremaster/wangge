@@ -43,6 +43,27 @@ public class StaticTest {
     }
 
     @Test
+    public void getYaxinSign() {
+        String seed = "ffd40e661eb946f48fd3c759e6b8ef0b";
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", "13588039023");
+        formData.put("busicode", "DDZP");
+        String paramData = EncryptUtil.buildParameterString(formData, Boolean.FALSE);
+        String encryptData = EncryptUtil.encrypt(paramData, seed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+        String url = "http://xx?";
+        StringBuilder sb = new StringBuilder(url);
+        url = sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign).toString();
+
+        System.out.println("url = " + url);
+    }
+
+    @Test
     public void parseSign() {
 
         String encryptData = "Q-Rf5TNa26Vpa4uoiOX-cxE6H04otjluNgGSL54ptZyPp1aIoioM9PNM3OD8P6aIHZMjdtQI-9XBOKDOEbfIBQi7_9xSx_b1dUGIQBwaCp53xhCZM2aJOLGqJj21EPab0MLHLTqtiARqPJHPVhGHkg";
