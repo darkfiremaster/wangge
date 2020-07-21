@@ -32,6 +32,7 @@ public enum ThirdHandlerTypeEnum {
     QUAN_JING(13, "全景系统", null),
     JI_HE(14, "稽核工作", null),
     DANSANJIAO_SUPPORT(15, "倒三角支撑", DaosanjiaoSupportParams.class),
+    OAO_SERVICE(16, "OAO上门服务", OAOServiceParams.class),
     ;
     @Getter
     private Integer type;

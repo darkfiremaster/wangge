@@ -17,6 +17,7 @@ public enum BizGroupEnum {
     BIZ_HANDLE("业务办理",1),
     QUICK_APPLICATION("快捷入口",2),
     DAOSANJIAO_SUPPORT("倒三角支撑",3),
+    OAO_SERVICE("OAO上门服务",4),
 
     ;
 

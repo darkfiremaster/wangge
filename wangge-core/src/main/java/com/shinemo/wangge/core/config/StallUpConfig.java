@@ -104,10 +104,12 @@ public class StallUpConfig {
         List<StallUpBizType> tmpIndexList = new ArrayList<>();
         List<StallUpBizType> tmpQuickAccessList = new ArrayList<>();
         List<StallUpBizType> tmpDaosanjiaoSupportList = new ArrayList<>();
-        initIndex(tmpMap, config.getIndexList(), tmpIndexList, tmpQuickAccessList, tmpDaosanjiaoSupportList);
+        List<StallUpBizType> tmpOAOServiceList = new ArrayList<>();
+        initIndex(tmpMap, config.getIndexList(), tmpIndexList, tmpQuickAccessList, tmpDaosanjiaoSupportList,tmpOAOServiceList);
         config.setIndexList(tmpIndexList);
         config.setQuickAccessList(tmpQuickAccessList);
         config.setDaosanjiaoSupportBizList(tmpDaosanjiaoSupportList);
+        config.setOaoServiceList(tmpOAOServiceList);
 
         //扫楼配置
         Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
@@ -181,6 +183,14 @@ public class StallUpConfig {
         daoSanJiaoSupportHandler.setSeed(daoSanJiaoConfig.getSeed());
         tmpUrlMap.put(ThirdHandlerTypeEnum.DANSANJIAO_SUPPORT.getType(), daoSanJiaoSupportHandler);
 
+        //OAO上门服务配置
+        OAOServiceHandler oaoServiceHandler = new OAOServiceHandler();
+        oaoServiceHandler.setDomain(daoSanJiaoConfig.getDomain());
+        oaoServiceHandler.setPath(daoSanJiaoConfig.getPath());
+        oaoServiceHandler.setSeed(daoSanJiaoConfig.getSeed());
+        tmpUrlMap.put(ThirdHandlerTypeEnum.OAO_SERVICE.getType(), oaoServiceHandler);
+
+
         //稽核工作配置
         JiHeHandler jiHeHandler = new JiHeHandler();
         jiHeHandler.setDomain(daoSanJiaoConfig.getDomain());
@@ -226,7 +236,9 @@ public class StallUpConfig {
                            List<StallUpBizType> list,
                            List<StallUpBizType> tmpIndexList,
                            List<StallUpBizType> tmpQuickAccessList,
-                           List<StallUpBizType> tmpDaosanjiaoSupportList) {
+                           List<StallUpBizType> tmpDaosanjiaoSupportList,
+                           List<StallUpBizType> tmpOAOServiceList
+                           ) {
         list.stream().map(v -> {
             StallUpBizType stallUpBizType = mergeBizType(tmpMap, v);
             //业务办理
@@ -237,6 +249,8 @@ public class StallUpConfig {
                 tmpQuickAccessList.add(v);
             } else if (stallUpBizType.getGroupId().equals(BizGroupEnum.DAOSANJIAO_SUPPORT.getGroup())) {
                 tmpDaosanjiaoSupportList.add(v);
+            } else if (stallUpBizType.getGroupId().equals(BizGroupEnum.OAO_SERVICE.getGroup())) {
+                tmpOAOServiceList.add(v);
             }
             return stallUpBizType;
         }).collect(Collectors.toList());
@@ -355,6 +369,12 @@ public class StallUpConfig {
          */
         private Map<Long, StallUpBizType> daosanjiaoSupportBizMap;
         private List<StallUpBizType> daosanjiaoSupportBizList;
+
+        /**
+         * OAO上门服务
+         */
+        private Map<Long, StallUpBizType> oaoServiceMap;
+        private List<StallUpBizType> oaoServiceList;
 
         /**
          * 扫楼
