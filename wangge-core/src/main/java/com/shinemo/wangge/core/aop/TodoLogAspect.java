@@ -52,21 +52,21 @@ public class TodoLogAspect {
     public void before(JoinPoint joinPoint) {
         TreeMap<String, Object> request = getRequestArgs(joinPoint);
         this.request = GsonUtils.toJson(request);
-        log.info("[todo-before] request:[{}]", this.request);
+        //log.info("[todo-before] request:[{}]", this.request);
         startTimeMillis = System.currentTimeMillis();
     }
 
 
     @AfterThrowing(pointcut = "point()", throwing = "exception")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable exception) {
-        log.info("[todo-doAfterThrowing] request:[{}], exception:[{}]",  this.request, exception.getMessage());
+        //log.info("[todo-doAfterThrowing] request:[{}], exception:[{}]",  this.request, exception.getMessage());
         TodoLogDO todoLogDO = getTodoDO(joinPoint, null, exception);
         todoService.insertTodoLog(todoLogDO);
     }
 
     @AfterReturning(value = "point()", returning = "result")
     public void afterReturn(JoinPoint joinPoint, Object result) {
-        log.info("[todo-afterReturn] request:[{}], result:[{}]",  this.request, result.toString());
+        //log.info("[todo-afterReturn] request:[{}], result:[{}]",  this.request, result.toString());
         TodoLogDO todoLogDO = getTodoDO(joinPoint, result, null);
         todoService.insertTodoLog(todoLogDO);
     }

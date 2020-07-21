@@ -14,4 +14,9 @@ public class ShowTabVO {
      * 是否展示装维数据看板
      */
     private Boolean showZhuangWeiDataBoard;
+
+    /**
+     * 是否展示智慧小屏
+     */
+    private Boolean showSmartReport;
 }
