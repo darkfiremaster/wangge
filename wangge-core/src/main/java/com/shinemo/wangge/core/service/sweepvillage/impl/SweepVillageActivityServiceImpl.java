@@ -245,15 +245,18 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
         //修改签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
-        signRecordQuery.setUserId(SmartGridContext.getUid());
         signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordQuery.setActivityId(sweepVillageSignVO.getSweepVillageActivityId());
         SignRecordDO signRecordFromDB = signRecordMapper.get(signRecordQuery);
-        signRecordFromDB.setEndTime(endTime);
-        signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
-        signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
-        signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getPicUrl()));
-        signRecordMapper.update(signRecordFromDB);
+        if (signRecordFromDB != null) {
+            signRecordFromDB.setEndTime(endTime);
+            signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
+            signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
+            signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getPicUrl()));
+            signRecordMapper.update(signRecordFromDB);
+        } else {
+            log.error("[finishActivity] 签到记录不存在,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
+        }
 
         //同步华为
         HashMap<String, Object> map = new HashMap<>();
@@ -656,8 +659,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         query.setPageEnable(false);
         query.setGridId(request.getGridId());
         query.setOrderByEnable(true);
-        query.putOrderBy("gmt_create",false);
-        if(request.getCurrentPage() != null && request.getPageSize() != null){
+        query.putOrderBy("gmt_create", false);
+        if (request.getCurrentPage() != null && request.getPageSize() != null) {
             query.setPageEnable(true);
             query.setCurrentPage(request.getCurrentPage());
             query.setPageSize(request.getPageSize());
@@ -708,7 +711,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         query.setPageEnable(false);
         long count = sweepVillageActivityMapper.count(query);
-        return ApiResult.of(0,ListVO.<SweepVillageActivityResultVO>builder()
+        return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder()
                 .rows(resultVOList)
                 .pageSize(request.getPageSize())
                 .currentPage(request.getCurrentPage())
