@@ -11,6 +11,7 @@ import com.shinemo.smartgrid.enums.SmartGridRoleEnum;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
+import com.shinemo.wangge.core.config.properties.YujingPropertity;
 import com.shinemo.wangge.core.config.properties.ZhuangweiPropertity;
 import com.shinemo.wangge.core.service.redirect.RedirectService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,9 @@ public class RedirectServiceImpl implements RedirectService {
 
     @Resource
     private ZhuangweiPropertity zhuangweiPropertity;
+
+    @Resource
+    private YujingPropertity yujingPropertity;
 
     /**
      * 是否展示装移数据看板
@@ -74,8 +78,35 @@ public class RedirectServiceImpl implements RedirectService {
     }
 
     private ApiResult<String> getSmartReportUrl() {
-        //todo
-        return ApiResult.of(0, "www.baidu.com");
+        String seed = yujingPropertity.getSeed();
+        String domain = yujingPropertity.getDomain();
+        String path = yujingPropertity.getSmartReportUrl();
+        long timestamp = System.currentTimeMillis();
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", "13607713224");
+        formData.put("menuId", 1);
+        formData.put("timestamp", timestamp);
+        String paramData = EncryptUtil.buildParameterString(formData);
+        try {
+            log.info("[getSmartReportUrl] 加密前参数paramData:{}", URLDecoder.decode(paramData, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramData, seed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + seed + "," + timestamp);
+
+        String url = domain + path + "?";
+        StringBuilder sb = new StringBuilder(url);
+        url = sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign).toString();
+
+
+        log.info("[getSmartReportUrl] 生成智慧小屏报表跳转url:{}", url);
+        return ApiResult.of(0, url);
     }
 
     private ApiResult<String> getZhuangyiDataBroadUrl() {

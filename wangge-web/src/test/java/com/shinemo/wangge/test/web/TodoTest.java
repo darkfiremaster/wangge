@@ -16,6 +16,7 @@ import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.query.TodoLogQuery;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoUrlQuery;
+import com.shinemo.wangge.core.service.redirect.RedirectService;
 import com.shinemo.wangge.core.service.todo.TodoLogService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.core.service.todo.impl.TodoRedirectUrlServiceImpl;
@@ -232,6 +233,13 @@ public class TodoTest {
                 log.info("修改成功,id:{}", todoDO1.getId());
             }
         }
+    }
 
+    @Resource
+    private RedirectService redirectService;
+    @Test
+    public void getSmartReportUrl() {
+        ApiResult<String> redirectUrl = redirectService.getRedirectUrl(2);
+        System.out.println("redirectUrl = " + redirectUrl);
     }
 }
