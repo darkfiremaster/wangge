@@ -204,7 +204,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
-        //todo 23号联调 同步经纬度
+        map.put("startLocation", sweepVillageActivityVO.getLocationDetailVO().getLocation());
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}", sweepVillageActivityDO.getId());
         return ApiResult.of(0);
@@ -217,8 +217,9 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         //校验参数
         Assert.notNull(sweepVillageSignVO.getSweepVillageActivityId(), "id is null");
         Assert.notEmpty(sweepVillageSignVO.getPicUrl(), "图片不能为空");
-        Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "locationDetail is null");
-        Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "location is null");
+        Assert.notNull(sweepVillageSignVO.getLocationDetailVO(), "地址信息不能为空");
+        Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getLocation(), "打卡坐标不能为空");
+        Assert.hasText(sweepVillageSignVO.getLocationDetailVO().getAddress(), "打卡详细地址不能为空");
         Date endTime = new Date();
         SweepVillageActivityQuery sweepVillageActivityQuery = new SweepVillageActivityQuery();
         sweepVillageActivityQuery.setId(sweepVillageSignVO.getSweepVillageActivityId());
@@ -244,15 +245,18 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
         //修改签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
-        signRecordQuery.setUserId(SmartGridContext.getUid());
         signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_VILLAGE.getId());
         signRecordQuery.setActivityId(sweepVillageSignVO.getSweepVillageActivityId());
         SignRecordDO signRecordFromDB = signRecordMapper.get(signRecordQuery);
-        signRecordFromDB.setEndTime(endTime);
-        signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
-        signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
-        signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getPicUrl()));
-        signRecordMapper.update(signRecordFromDB);
+        if (signRecordFromDB != null) {
+            signRecordFromDB.setEndTime(endTime);
+            signRecordFromDB.setEndLocation(GsonUtils.toJson(sweepVillageSignVO.getLocationDetailVO()));
+            signRecordFromDB.setRemark(sweepVillageSignVO.getRemark());
+            signRecordFromDB.setImgUrl(GsonUtils.toJson(sweepVillageSignVO.getPicUrl()));
+            signRecordMapper.update(signRecordFromDB);
+        } else {
+            log.error("[finishActivity] 签到记录不存在,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
+        }
 
         //同步华为
         HashMap<String, Object> map = new HashMap<>();
@@ -265,7 +269,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             map.put("remark", sweepVillageSignVO.getRemark());
         }
         map.put("picUrl", sweepVillageSignVO.getPicUrl());
-        //todo 23号联调 同步经纬度
+        map.put("endLocation", sweepVillageSignVO.getLocationDetailVO().getLocation());
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
@@ -655,8 +659,8 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         query.setPageEnable(false);
         query.setGridId(request.getGridId());
         query.setOrderByEnable(true);
-        query.putOrderBy("gmt_create",false);
-        if(request.getCurrentPage() != null && request.getPageSize() != null){
+        query.putOrderBy("gmt_create", false);
+        if (request.getCurrentPage() != null && request.getPageSize() != null) {
             query.setPageEnable(true);
             query.setCurrentPage(request.getCurrentPage());
             query.setPageSize(request.getPageSize());
@@ -707,7 +711,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         }
         query.setPageEnable(false);
         long count = sweepVillageActivityMapper.count(query);
-        return ApiResult.of(0,ListVO.<SweepVillageActivityResultVO>builder()
+        return ApiResult.of(0, ListVO.<SweepVillageActivityResultVO>builder()
                 .rows(resultVOList)
                 .pageSize(request.getPageSize())
                 .currentPage(request.getCurrentPage())

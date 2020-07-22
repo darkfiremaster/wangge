@@ -19,5 +19,5 @@ public class YujingPropertity {
     private String seed;
     private String domain;
     private String todoDetailUrl;
-
+    private String smartReportUrl;
 }

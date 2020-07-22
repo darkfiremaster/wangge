@@ -20,6 +20,10 @@ public class SignRecordQuery extends Query {
     private Integer bizType;
     /** 用户id */
     private String userId;
+    /**
+     * 手机号
+     */
+    private String mobile;
     /** 地址信息 */
     private LocationDetailVO locationDetailVO;
 
