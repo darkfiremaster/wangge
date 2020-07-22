@@ -325,7 +325,6 @@ public class SweepFloorController {
         Assert.notNull(request.getBuildingName(),"buildingName is null");
         Assert.notNull(request.getUnitId(),"unitId is null");
         Assert.notNull(request.getHouseNumber(),"houseNumber is null");
-        Assert.notNull(request.getBroadbandFlag(),"broadbandFlag is null");
         return sweepFloorService.addHousehold(request);
     }
 
@@ -344,7 +343,6 @@ public class SweepFloorController {
         Assert.notNull(request.getBuildingName(),"buildingName is null");
         Assert.notNull(request.getUnitId(),"unitId is null");
         Assert.notNull(request.getHouseNumber(),"houseNumber is null");
-        Assert.notNull(request.getBroadbandFlag(),"broadbandFlag is null");
         return sweepFloorService.updateHousehold(request);
     }
 

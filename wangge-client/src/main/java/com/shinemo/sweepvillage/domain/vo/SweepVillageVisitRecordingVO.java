@@ -43,4 +43,6 @@ public class SweepVillageVisitRecordingVO {
     private Date visitTime;
     /** 是否显示删除、编辑按钮 */
     private Integer updateAndDeleteButtonFlag;
+    /** 经纬度 */
+    private String location;
 }

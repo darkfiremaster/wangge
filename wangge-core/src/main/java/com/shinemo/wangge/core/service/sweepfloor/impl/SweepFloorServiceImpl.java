@@ -541,8 +541,12 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             statusList.add(SweepFloorStatusEnum.ABNORMAL_END.getId());
             statusList.add(SweepFloorStatusEnum.CANCEL.getId());
             request.setStatusList(statusList);
-            request.setStartTime(new Date(satrtTime));
-            request.setEndTime(new Date(endTime));
+            if (satrtTime != null) {
+                request.setStartTime(new Date(satrtTime));
+            }
+            if (endTime != null) {
+                request.setEndTime(new Date(endTime));
+            }
         }
 
         List<SweepFloorActivityDO> activityDOS = sweepFloorActivityMapper.find(request);
@@ -1337,6 +1341,9 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                 }
             }
             huaweiRequest.setServiceProvider(type);
+            huaweiRequest.setBroadbandFlag(1);
+        }else {
+            huaweiRequest.setBroadbandFlag(0);
         }
         if (request.getTVBoxTypes() != null) {
             huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
