@@ -248,6 +248,7 @@ public class IndexController {
         List<StallUpBizType> indexList = stallUpConfig.getConfig().getIndexList();
         List<StallUpBizType> quickAccessList = stallUpConfig.getConfig().getQuickAccessList();
         List<StallUpBizType> daosanjiaoSupportBizList = stallUpConfig.getConfig().getDaosanjiaoSupportBizList();
+        List<StallUpBizType> oaoServiceList = stallUpConfig.getConfig().getOaoServiceList();
 
         //拼接到一个List返回给前端
         List<BizTypeListVO.BizTypeBean> bizTypeListBean = new ArrayList<>();
@@ -274,11 +275,11 @@ public class IndexController {
             bizTypeListBean.add(daosanjiaoBean);
         }
 
-        if (CollUtil.isNotEmpty(daosanjiaoSupportBizList)) {
-            BizTypeListVO.BizTypeBean daosanjiaoBean = new BizTypeListVO.BizTypeBean();
-            daosanjiaoBean.setBizGroupName(BizGroupEnum.DAOSANJIAO_SUPPORT.getName());
-            daosanjiaoBean.setBizTypeList(daosanjiaoSupportBizList);
-            bizTypeListBean.add(daosanjiaoBean);
+        if (CollUtil.isNotEmpty(oaoServiceList)) {
+            BizTypeListVO.BizTypeBean oaoServiceBean = new BizTypeListVO.BizTypeBean();
+            oaoServiceBean.setBizGroupName(BizGroupEnum.OAO_SERVICE.getName());
+            oaoServiceBean.setBizTypeList(oaoServiceList);
+            bizTypeListBean.add(oaoServiceBean);
         }
 
 
