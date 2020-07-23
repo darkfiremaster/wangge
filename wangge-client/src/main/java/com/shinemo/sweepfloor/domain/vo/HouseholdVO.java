@@ -1,6 +1,7 @@
 package com.shinemo.sweepfloor.domain.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -42,9 +43,28 @@ public class HouseholdVO {
     /** 宽带月租 */
     private Double broadbandMonthlyrent;
     /** 电视盒类型 */
+
     private List<String> TVBoxTypes;
     /** 电视盒备注 */
     private String TVBoxRemark;
     /** 电视盒到期时间 */
     private Date TVBoxExpireTime;
+    /** 住房类型 */
+    private String roomType;
+
+    public String getHouseId() {
+        return houseId;
+    }
+    @JsonProperty("TVBoxTypes")
+    public List<String> getTVBoxTypes() {
+        return TVBoxTypes;
+    }
+    @JsonProperty("TVBoxRemark")
+    public String getTVBoxRemark() {
+        return TVBoxRemark;
+    }
+    @JsonProperty("TVBoxExpireTime")
+    public Date getTVBoxExpireTime() {
+        return TVBoxExpireTime;
+    }
 }

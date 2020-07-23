@@ -15,5 +15,6 @@ import lombok.ToString;
 public class SearchMapRequest{
 
     private String cellName;
+    private String gridId;
 
 }

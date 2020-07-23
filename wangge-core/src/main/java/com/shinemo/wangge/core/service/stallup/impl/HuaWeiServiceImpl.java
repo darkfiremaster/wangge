@@ -114,6 +114,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         SearchMapRequest searchMapRequest = new SearchMapRequest();
         searchMapRequest.setCellName(request.getKeywords());
+        searchMapRequest.setGridId(request.getGridId());
         String method = HuaweiSweepFloorUrlEnum.QUERY_CELL_LIST.getMethod();
         String param = SmartGridUtils.buildRequestParam(method, searchMapRequest, signkey);
 

@@ -37,4 +37,6 @@ public class SweepVillageVisitRecordingDO {
     private Date gmtModified;
     /** 状态，1正常，0删除 */
     private Integer status;
+    /** 经纬度 */
+    private String location;
 }

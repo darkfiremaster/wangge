@@ -91,9 +91,9 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_NOT_EXIST);
         }
 
-        if (!checkAuth((visitRecordingDO))) {
-            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
-        }
+//        if (!checkAuth((visitRecordingDO))) {
+//            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
+//        }
 
 
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
@@ -242,7 +242,7 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         map.put("tenantsId",visitRecordingDO.getTenantsId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag());
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag());
-
+        map.put("location",visitRecordingDO.getLocation());
         Gson gson = new Gson();
         List<StallUpBizType> businessType = gson.fromJson(visitRecordingDO.getBusinessType(), new TypeToken<List<StallUpBizType>>() {
         }.getType());

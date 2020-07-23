@@ -376,11 +376,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         if (CollectionUtils.isEmpty(doList)) {
             return ApiResult.of(0, new ArrayList<>());
         }
-//        List<Long> activityIds = doList.stream().map(SweepFloorVisitRecordingDO::getActivityId).collect(Collectors.toList());
-//        SweepFloorActivityQuery activityQuery = new SweepFloorActivityQuery();
-//        activityQuery.setIds(activityIds);
-//        List<SweepFloorActivityDO> activityDOS = sweepFloorActivityMapper.find(activityQuery);
-//        Map<Long, Integer> activityMap = activityDOS.stream().collect(Collectors.toMap(SweepFloorActivityDO::getId, SweepFloorActivityDO::getStatus));
 
         List<SweepFloorVisitRecordingVO> vos = new ArrayList<>(doList.size());
         for (SweepFloorVisitRecordingDO visitRecordingDO : doList) {
@@ -403,7 +398,6 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                     visitRecordingVO.setBusinessType(businessType);
                 }
             }
-            //Integer status = activityMap.get(visitRecordingDO.getActivityId());
             if (activityId.equals(visitRecordingDO.getActivityId())) {
                 visitRecordingVO.setType(CommonFlagEnum.ONE_FLAG.getId());
             } else {
@@ -547,37 +541,16 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             statusList.add(SweepFloorStatusEnum.ABNORMAL_END.getId());
             statusList.add(SweepFloorStatusEnum.CANCEL.getId());
             request.setStatusList(statusList);
-        }
-        long count = 0L;
-        List<SweepFloorActivityDO> activityDOS = null;
-        if (satrtTime == null && endTime == null) {
-            activityDOS = sweepFloorActivityMapper.find(request);
-        } else {
-            SignRecordQuery signRecordQuery = new SignRecordQuery();
-            signRecordQuery.setPageSize(pageSize);
-            signRecordQuery.setCurrentPage(currentPage);
-            signRecordQuery.setQueryTotal(true);
-            signRecordQuery.setStartTime(new Date(satrtTime));
-            signRecordQuery.setEndTime(new Date(endTime));
-            signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-            signRecordQuery.setUserId(SmartGridContext.getUid());
-            List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
-            if (CollectionUtils.isEmpty(signRecordDOS)) {
-                return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
+            if (satrtTime != null) {
+                request.setStartTime(new Date(satrtTime));
             }
-            List<Long> idList = signRecordDOS.stream().map(SignRecordDO::getActivityId).collect(Collectors.toList());
-            SweepFloorActivityQuery activityQuery = new SweepFloorActivityQuery();
-            activityQuery.setIds(idList);
-            activityDOS = sweepFloorActivityMapper.find(activityQuery);
-
-            SignRecordQuery countQuery = new SignRecordQuery();
-            countQuery.setStartTime(new Date(satrtTime));
-            countQuery.setEndTime(new Date(endTime));
-            countQuery.setUserId(SmartGridContext.getUid());
-            countQuery.setBizType(SignRecordBizTypeEnum.SWEEP_FLOOR.getId());
-            count = signRecordMapper.count(countQuery);
-
+            if (endTime != null) {
+                request.setEndTime(new Date(endTime));
+            }
         }
+
+        List<SweepFloorActivityDO> activityDOS = sweepFloorActivityMapper.find(request);
+
         if (CollectionUtils.isEmpty(activityDOS)) {
             return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
         }
@@ -587,39 +560,15 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             BeanUtils.copyProperties(activityDO, activityVO);
             vos.add(activityVO);
         }
-        List<String> communityIds = activityDOS.stream().map(SweepFloorActivityDO::getCommunityId).collect(Collectors.toList());
+
         //已结束的活动不需要查询华为接口
-        if (status != null && status.equals(SweepFloorStatusEnum.END.getId())) {
-            //查询实际打卡时间
+        if (status.equals(SweepFloorStatusEnum.END.getId())) {
+//            //查询实际打卡时间
             List<Long> longList = activityDOS.stream().map(SweepFloorActivityDO::getId).collect(Collectors.toList());
-            SignRecordQuery signRecordQuery = new SignRecordQuery();
-            signRecordQuery.setActivityIds(longList);
-            signRecordQuery.setBizType(1);
-            List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
-            if (!CollectionUtils.isEmpty(signRecordDOS)) {
-                Map<Long, SignRecordDO> recordDOMap = signRecordDOS.stream().collect(Collectors.toMap(SignRecordDO::getActivityId, account -> account));
-                for (SweepFloorActivityVO activityVO : vos) {
-                    SignRecordDO signRecordDO = recordDOMap.get(activityVO.getId());
-                    if (signRecordDO != null) {
-                        activityVO.setStartTime(signRecordDO.getStartTime());
-                        activityVO.setEndTime(signRecordDO.getEndTime());
-                    }
-                }
-            }
-            if (count == 0L) {
-                SweepFloorActivityQuery countQuery = new SweepFloorActivityQuery();
-                List<Integer> statusList = new ArrayList<>();
-                statusList.add(status);
-                statusList.add(SweepFloorStatusEnum.ABNORMAL_END.getId());
-                statusList.add(SweepFloorStatusEnum.CANCEL.getId());
-                countQuery.setStatusList(statusList);
-                countQuery.setCreator(SmartGridContext.getUid());
-                count = sweepFloorActivityMapper.count(countQuery);
-            }
+            long count = sweepFloorActivityMapper.count(request);
             //查询办理量
             SweepFloorVisitRecordingQuery visitRecordingQuery = new SweepFloorVisitRecordingQuery();
             visitRecordingQuery.setActivityIds(longList);
-            visitRecordingQuery.setSuccessFlag(CommonFlagEnum.ONE_FLAG.getId());
             List<SweepFloorVisitRecordingDO> recordingDOS = sweepFloorVisitRecordingMapper.find(visitRecordingQuery);
             if (!CollectionUtils.isEmpty(recordingDOS)) {
                 Map<Long, List<SweepFloorVisitRecordingDO>> listMap = recordingDOS.stream().collect(Collectors.groupingBy(SweepFloorVisitRecordingDO::getActivityId));
@@ -655,44 +604,14 @@ public class SweepFloorServiceImpl implements SweepFloorService {
 
             return ApiResult.of(0, ListVO.list(vos, count));
         }
-        HuaweiCellAndBuildingsRequest huaweiRequest = new HuaweiCellAndBuildingsRequest();
-        huaweiRequest.setCellIds(communityIds);
-        ApiResult<List<HuaweiCellsAndBuildingsResponse>> apiResult = huaWeiService.getCellsAndBuildings(huaweiRequest);
-        if (apiResult == null || !apiResult.isSuccess()) {
-            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
-        }
-        List<HuaweiCellsAndBuildingsResponse> apiResultData = apiResult.getData();
-
-        if (!CollectionUtils.isEmpty(apiResultData)) {
-            for (SweepFloorActivityVO activityVO : vos) {
-                for (HuaweiCellsAndBuildingsResponse buildingsResponse : apiResultData) {
-                    if (activityVO.getCommunityId().equals(buildingsResponse.getCellId())) {
-                        List<HuaweiBuildingResponse> buildingList = buildingsResponse.getBuildingList();
-                        if (CollectionUtils.isEmpty(buildingList)) {
-                            activityVO.setBuildingCount(0);
-                            activityVO.setHouseholderCount(0);
-                            activityVO.setRemainingPortCount(0);
-                        } else {
-                            int householderCount = 0;
-                            int remainingPortCount = 0;
-                            for (HuaweiBuildingResponse buildingResponse:buildingList) {
-                                if (buildingResponse.getLiveCount() != null) {
-                                    householderCount += buildingResponse.getLiveCount();
-                                }
-                                if (buildingResponse.getRemainingPortCount() != null) {
-                                    remainingPortCount += buildingResponse.getRemainingPortCount();
-                                }
-                            }
-                            activityVO.setBuildingCount(buildingList.size());
-                            activityVO.setHouseholderCount(householderCount);
-                            activityVO.setRemainingPortCount(remainingPortCount);
-                        }
-                    }
-                }
-            }
+        List<String> communityIds = activityDOS.stream().map(SweepFloorActivityDO::getCommunityId).collect(Collectors.toList());
+        ApiResult apiResult = buildCellDataForActivityList(communityIds, vos);
+        if (apiResult != null) {
+            return apiResult;
         }
         return ApiResult.of(0, ListVO.list(vos, vos.size()));
     }
+
 
     @Override
     public ApiResult<List<BuildingVO>> getBuildings(SweepFloorBuildingQuery request) {
@@ -881,6 +800,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                             }else {
                                 householdVO.setServiceProvider(new ArrayList<>());
                             }
+                            householdVO.setRoomType(huaweiHouseResponse.getRoomType());
+                            householdVO.setBroadbandRemark(huaweiHouseResponse.getBroadbandRemark());
+                            householdVO.setBroadbandMonthlyrent(huaweiHouseResponse.getBroadbandMonthlyrent());
+                            householdVO.setTVBoxRemark(huaweiHouseResponse.getTVBoxRemark());
+                            if (!StringUtils.isBlank(huaweiHouseResponse.getTVBoxTypes())) {
+                                String TVTypes = huaweiHouseResponse.getTVBoxTypes();
+                                String[] split = TVTypes.split(",");
+                                householdVO.setTVBoxTypes(Arrays.asList(split));
+                            }else {
+                                householdVO.setTVBoxTypes(new ArrayList<>());
+                            }
+                            if (huaweiHouseResponse.getTVBoxExpireTime() != null) {
+                                householdVO.setTVBoxExpireTime(DateUtils.stringtoDate(huaweiHouseResponse.getTVBoxExpireTime(),"yyyy-MM-dd"));
+                            }
                             List<HuaweiContactResponse> concactList = huaweiHouseResponse.getConcactList();
                             if (!CollectionUtils.isEmpty(concactList)) {
                                 List<FamilyMember> members = new ArrayList<>();
@@ -953,6 +886,20 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                             householdVO.setBuildingName(huaweiBuildingResponse.getBuildingName());
                             householdVO.setUnitId(huaweiUnitResponse.getUnitId());
                             householdVO.setUnitName(huaweiUnitResponse.getUnitName());
+                            householdVO.setRoomType(huaweiHouseResponse.getRoomType());
+                            householdVO.setBroadbandRemark(huaweiHouseResponse.getBroadbandRemark());
+                            householdVO.setBroadbandMonthlyrent(huaweiHouseResponse.getBroadbandMonthlyrent());
+                            householdVO.setTVBoxRemark(huaweiHouseResponse.getTVBoxRemark());
+                            if (!StringUtils.isBlank(huaweiHouseResponse.getTVBoxTypes())) {
+                                String TVTypes = huaweiHouseResponse.getTVBoxTypes();
+                                String[] split = TVTypes.split(",");
+                                householdVO.setTVBoxTypes(Arrays.asList(split));
+                            }else {
+                                householdVO.setTVBoxTypes(new ArrayList<>());
+                            }
+                            if (huaweiHouseResponse.getTVBoxExpireTime() != null) {
+                                householdVO.setTVBoxExpireTime(DateUtils.stringtoDate(huaweiHouseResponse.getTVBoxExpireTime(),"yyyy-MM-dd"));
+                            }
                             List<HuaweiContactResponse> concactList = huaweiHouseResponse.getConcactList();
                             if (!CollectionUtils.isEmpty(concactList)) {
                                 List<FamilyMember> members = new ArrayList<>(concactList.size());
@@ -1395,15 +1342,16 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             }
             huaweiRequest.setServiceProvider(type);
         }
-//        if (request.getTVBoxTypes() != null) {
-//            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
-//        }
-//        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
-//        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
-//        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
-//        if (request.getTVBoxExpireTime() != null) {
-//            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
-//        }
+        if (request.getTVBoxTypes() != null) {
+            huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
+        }
+        huaweiRequest.setBroadbandRemark(request.getBroadbandRemark());
+        huaweiRequest.setBroadbandMonthlyrent(request.getBroadbandMonthlyrent());
+        huaweiRequest.setTVBoxRemark(request.getTVBoxRemark());
+        if (request.getTVBoxExpireTime() != null) {
+            huaweiRequest.setTVBoxExpireTime(DateUtils.dateToString(request.getTVBoxExpireTime(), "yyyy-MM-dd"));
+        }
+        huaweiRequest.setRoomType(request.getRoomType());
         huaweiRequest.setUnitId(request.getUnitId());
         huaweiRequest.setBroadbandExpireTime(DateUtils.dateToString(request.getBroadbandExpireTime(), "yyyy-MM-dd"));
     }
@@ -1532,5 +1480,50 @@ public class SweepFloorServiceImpl implements SweepFloorService {
         return ApiResult.of(0, dbActivity);
     }
 
+    /**
+     * 拼装扫楼活动的小区信息
+     * @param communityIds
+     * @param vos
+     * @return
+     */
+    private ApiResult buildCellDataForActivityList(List<String> communityIds,List<SweepFloorActivityVO> vos) {
+        HuaweiCellAndBuildingsRequest huaweiRequest = new HuaweiCellAndBuildingsRequest();
+        huaweiRequest.setCellIds(communityIds);
+        ApiResult<List<HuaweiCellsAndBuildingsResponse>> apiResult = huaWeiService.getCellsAndBuildings(huaweiRequest);
+        if (apiResult == null || !apiResult.isSuccess()) {
+            return ApiResultWrapper.fail(SweepFloorErrorCodes.BASE_ERROR);
+        }
+        List<HuaweiCellsAndBuildingsResponse> apiResultData = apiResult.getData();
+
+        if (!CollectionUtils.isEmpty(apiResultData)) {
+            for (SweepFloorActivityVO activityVO : vos) {
+                for (HuaweiCellsAndBuildingsResponse buildingsResponse : apiResultData) {
+                    if (activityVO.getCommunityId().equals(buildingsResponse.getCellId())) {
+                        List<HuaweiBuildingResponse> buildingList = buildingsResponse.getBuildingList();
+                        if (CollectionUtils.isEmpty(buildingList)) {
+                            activityVO.setBuildingCount(0);
+                            activityVO.setHouseholderCount(0);
+                            activityVO.setRemainingPortCount(0);
+                        } else {
+                            int householderCount = 0;
+                            int remainingPortCount = 0;
+                            for (HuaweiBuildingResponse buildingResponse:buildingList) {
+                                if (buildingResponse.getLiveCount() != null) {
+                                    householderCount += buildingResponse.getLiveCount();
+                                }
+                                if (buildingResponse.getRemainingPortCount() != null) {
+                                    remainingPortCount += buildingResponse.getRemainingPortCount();
+                                }
+                            }
+                            activityVO.setBuildingCount(buildingList.size());
+                            activityVO.setHouseholderCount(householderCount);
+                            activityVO.setRemainingPortCount(remainingPortCount);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 }

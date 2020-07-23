@@ -21,12 +21,13 @@
         <result property="tvBoxExpireTime" column="tv_box_expire_time" />
         <result property="remark" column="remark" />
         <result property="status" column="status" />
+        <result property="location" column="location" />
     </resultMap>
 
     <!-- 数据库字段 -->
     <sql id="columns">
         id, gmt_create, gmt_modified, activity_id, mobile, marketing_user_name, tenants_id, contact_name,contact_mobile,complaint_sensitive_customers_flag,success_flag,
-        business_type,broadband_expire_time,tv_box_expire_time,remark,status
+        business_type,broadband_expire_time,tv_box_expire_time,remark,status,location
     </sql>
 
     <sql id="table">
@@ -145,6 +146,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="location != null">
+                location,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             now(),
@@ -188,6 +192,9 @@
             <if test="status != null">
                 #{status},
             </if>
+            <if test="location != null">
+                #{location},
+            </if>
         </trim>
     </insert>
 
@@ -217,6 +224,9 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="location != null">
+                location = #{location},
             </if>
         </set>
         WHERE

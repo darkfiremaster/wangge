@@ -24,4 +24,16 @@ public class HuaweiHouseResponse extends CommonHuaweiResponse {
     private String houseLabel;
     /** 家庭成员集合 */
     private List<HuaweiContactResponse> concactList;
+    /** 住房类型 */
+    private String roomType;
+    /** 宽带备注 */
+    private String broadbandRemark;
+    /** 宽带月租 */
+    private Double broadbandMonthlyrent;
+    /** 电视盒类型 */
+    private String TVBoxTypes;
+    /** 电视盒备注 */
+    private String TVBoxRemark;
+    /** 电视盒过期时间 */
+    private String TVBoxExpireTime;
 }
