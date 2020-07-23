@@ -58,6 +58,13 @@ public class RedirectServiceImpl implements RedirectService {
     @NacosValue(value = "${show.zhuangwei.databoard.roleIdList}", autoRefreshed = true)
     private String showZhuangWeiDataBoardRoleIdList;
 
+    /**
+     * 能看到智慧小屏的角色
+     */
+    @NacosValue(value = "${show.smart.report.roleIdList}", autoRefreshed = true)
+    private String showSmartReportRoleIdList;
+
+
     @Override
     public ApiResult<String> getRedirectUrl(Integer type) {
         if (type == 1) {
@@ -78,6 +85,16 @@ public class RedirectServiceImpl implements RedirectService {
     }
 
     private ApiResult<String> getSmartReportUrl() {
+        //判断角色权限
+        List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
+        List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
+        List<String> showRoleIdList = StrUtil.split(showSmartReportRoleIdList, ',');
+        boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
+        if (!canShow) {
+            log.error("[showTab] 该用户无权查看管理视图,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
+            throw new ApiException("您当前无权限查看");
+        }
+
         String seed = yujingPropertity.getSeed();
         String domain = yujingPropertity.getDomain();
         String path = yujingPropertity.getSmartReportUrl();
@@ -112,7 +129,7 @@ public class RedirectServiceImpl implements RedirectService {
         List<String> showRoleIdList = StrUtil.split(showZhuangWeiDataBoardRoleIdList, ',');
         boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
         if (!canShow) {
-            log.info("[showTab] 该用户无权查看装维数据看板,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
+            log.error("[showTab] 该用户无权查看装维数据看板,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
             throw new ApiException("您当前无权限查看");
         }
 
