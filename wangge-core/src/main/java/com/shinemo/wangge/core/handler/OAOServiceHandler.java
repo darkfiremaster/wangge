@@ -61,7 +61,7 @@ public class OAOServiceHandler implements UrlRedirectHandler{
 		StringBuilder sb = new StringBuilder(url);
 		sb.append("paramData=").append(encryptData)
 				.append("&timestamp=").append(timestamp)
-				.append("&sign=").append(sign);
+				.append("&sign=").append(sign).append("&code=true");
 
 		return sb.toString();
 	}

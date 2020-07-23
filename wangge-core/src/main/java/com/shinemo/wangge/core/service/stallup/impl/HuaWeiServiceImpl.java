@@ -343,6 +343,18 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                                 new GridUserRoleDetail.GridRole("1", "网格长")))
                         .build();
                 gridUserRoleDetailList.add(gridUser);
+            } else if (i == 1) {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("test"+i)
+                        .name("直销队网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("5", "直销队")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
             } else {
                 GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
                         .id("test" + i)
@@ -352,7 +364,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyCode("A2107")
                         .countyName("东区")
                         .roleList(Lists.newArrayList(
-                                new GridUserRoleDetail.GridRole("1", "网格长")))
+                                new GridUserRoleDetail.GridRole("2", "网格经理")))
                         .build();
                 gridUserRoleDetailList.add(gridUser);
             }
