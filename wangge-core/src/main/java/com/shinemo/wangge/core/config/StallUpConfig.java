@@ -183,11 +183,13 @@ public class StallUpConfig {
         daoSanJiaoSupportHandler.setSeed(daoSanJiaoConfig.getSeed());
         tmpUrlMap.put(ThirdHandlerTypeEnum.DANSANJIAO_SUPPORT.getType(), daoSanJiaoSupportHandler);
 
+
         //OAO上门服务配置
+        OaoServiceConfig oaoServiceConfig = config.getOaoServiceConfig();
         OAOServiceHandler oaoServiceHandler = new OAOServiceHandler();
-        oaoServiceHandler.setDomain(daoSanJiaoConfig.getDomain());
-        oaoServiceHandler.setPath(daoSanJiaoConfig.getPath());
-        oaoServiceHandler.setSeed(daoSanJiaoConfig.getSeed());
+        oaoServiceHandler.setDomain(oaoServiceConfig.getDomain());
+        oaoServiceHandler.setPath(oaoServiceConfig.getPath());
+        oaoServiceHandler.setSeed(oaoServiceConfig.getSeed());
         tmpUrlMap.put(ThirdHandlerTypeEnum.OAO_SERVICE.getType(), oaoServiceHandler);
 
 
@@ -327,6 +329,10 @@ public class StallUpConfig {
          */
         private DaoSanJiaoConfig daoSanJiaoConfig;
 
+        /**
+         * OAO上门服务配置
+         */
+        private OaoServiceConfig oaoServiceConfig;
 
         /**
          * 督导配置
@@ -468,7 +474,20 @@ public class StallUpConfig {
         private String seed;
     }
 
+    @Setter
+    @Getter
+    private class OaoServiceConfig {
+        /**
+         * 域名
+         */
+        private String domain;
+        /**
+         * 路径
+         */
+        private String path;
 
+        private String seed;
+    }
 
 
     @Setter
