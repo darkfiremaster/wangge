@@ -83,15 +83,11 @@ public class RedirectServiceImpl implements RedirectService {
         String path = yujingPropertity.getSmartReportUrl();
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", "13607713224");
+        formData.put("mobile", SmartGridContext.getMobile());
         formData.put("menuId", 1);
         formData.put("timestamp", timestamp);
         String paramData = EncryptUtil.buildParameterString(formData);
-        try {
-            log.info("[getSmartReportUrl] 加密前参数paramData:{}", URLDecoder.decode(paramData, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        log.info("[getSmartReportUrl] 加密前参数paramData:{}", paramData);
         //1、加密
         String encryptData = EncryptUtil.encrypt(paramData, seed);
 

@@ -345,7 +345,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                 gridUserRoleDetailList.add(gridUser);
             } else if (i == 1) {
                 GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
-                        .id("test"+i)
+                        .id("test" + i)
                         .name("直销队网格")
                         .cityCode("771")
                         .cityName("南宁")
@@ -353,6 +353,42 @@ public class HuaWeiServiceImpl implements HuaWeiService {
                         .countyName("东区")
                         .roleList(Lists.newArrayList(
                                 new GridUserRoleDetail.GridRole("5", "直销队")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
+            } else if (i == 2) {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("test" + i)
+                        .name("一线装维网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("4", "一线装维")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
+            } else if (i == 3) {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("test" + i)
+                        .name("市级装维网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("9", "市级装维")))
+                        .build();
+                gridUserRoleDetailList.add(gridUser);
+            } else if (i == 4) {
+                GridUserRoleDetail gridUser = GridUserRoleDetail.builder()
+                        .id("test" + i)
+                        .name("县级装维网格")
+                        .cityCode("771")
+                        .cityName("南宁")
+                        .countyCode("A2107")
+                        .countyName("东区")
+                        .roleList(Lists.newArrayList(
+                                new GridUserRoleDetail.GridRole("10", "县级装维")))
                         .build();
                 gridUserRoleDetailList.add(gridUser);
             } else {
@@ -614,7 +650,7 @@ public class HuaWeiServiceImpl implements HuaWeiService {
             //判断手机号是否是明文的还是加密的
             if (queryMobile.length() != 11) {
                 queryMobile = AESUtil.decrypt(queryMobile, aeskey);
-                log.info("[getRedirectUrl] 查询手机号是加密的,解密后的手机号:{}",queryMobile);
+                log.info("[getRedirectUrl] 查询手机号是加密的,解密后的手机号:{}", queryMobile);
             }
             request.setQueryMobile(queryMobile);
         }

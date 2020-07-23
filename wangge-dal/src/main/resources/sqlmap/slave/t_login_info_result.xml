@@ -89,10 +89,10 @@
         count(DISTINCT(if(a.role_id = 4, b.mobile, NULL))) as decoratorLoginPersonCount,
         sum(if(a.role_id = 5, b.login_cnt, 0)) as directSellerLoginCount,
         count(DISTINCT(if(a.role_id = 5, b.mobile, NULL))) as directSellerLoginPersonCount,
-        sum(if(a.role_id = 6, b.login_cnt, 0)) as agentBusinessLoginCount,
-        count(DISTINCT(if(a.role_id = 6, b.mobile, NULL))) as agentBusinessLoginPersonCount,
-        sum(if(a.role_id = 7, b.login_cnt, 0)) as operatingPersonnelLoginCount,
-        count(DISTINCT(if(a.role_id = 7, b.mobile, NULL))) as operatingPersonnelLoginPersonCount
+        sum(if(a.role_id = 98, b.login_cnt, 0)) as agentBusinessLoginCount,
+        count(DISTINCT(if(a.role_id = 98, b.mobile, NULL))) as agentBusinessLoginPersonCount,
+        sum(if(a.role_id = 99, b.login_cnt, 0)) as operatingPersonnelLoginCount,
+        count(DISTINCT(if(a.role_id = 99, b.mobile, NULL))) as operatingPersonnelLoginPersonCount
 
         from
         (select mobile, city_name,city_code, county_name, county_code, grid_name, grid_id,role_name, role_id from t_user_grid_role) a
