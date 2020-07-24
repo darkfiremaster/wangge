@@ -204,7 +204,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
         map.put("updateTime", startTime.getTime());
         map.put("startTime", startTime.getTime());
         map.put("gridId", SmartGridContext.getSelectGridUserRoleDetail().getId());
-        //map.put("startLocation", sweepVillageActivityVO.getLocationDetailVO().getLocation());
+        map.put("startLocation", sweepVillageActivityVO.getLocationDetailVO().getLocation());
         thirdApiMappingService.asyncDispatch(map, "createSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[createSweepVillageActivity] 新建扫村活动成功,活动id:{}", sweepVillageActivityDO.getId());
         return ApiResult.of(0);
@@ -269,7 +269,7 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
             map.put("remark", sweepVillageSignVO.getRemark());
         }
         map.put("picUrl", sweepVillageSignVO.getPicUrl());
-        //map.put("endLocation", sweepVillageSignVO.getLocationDetailVO().getLocation());
+        map.put("endLocation", sweepVillageSignVO.getLocationDetailVO().getLocation());
         thirdApiMappingService.asyncDispatch(map, "updateSweepVillagePlan", SmartGridContext.getMobile());
         log.info("[finishActivity] 结束扫村成功,活动id:{}", sweepVillageSignVO.getSweepVillageActivityId());
         return ApiResult.of(0);
