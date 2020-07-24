@@ -86,14 +86,14 @@ public class RedirectServiceImpl implements RedirectService {
 
     private ApiResult<String> getSmartReportUrl() {
         //判断角色权限
-        List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
-        List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
-        List<String> showRoleIdList = StrUtil.split(showSmartReportRoleIdList, ',');
-        boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
-        if (!canShow) {
-            log.error("[showTab] 该用户无权查看管理视图,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
-            throw new ApiException("您当前无权限查看");
-        }
+        //List<GridUserRoleDetail.GridRole> roleList = SmartGridContext.getSelectGridUserRoleDetail().getRoleList();
+        //List<String> roleIdList = roleList.stream().map(GridUserRoleDetail.GridRole::getId).collect(Collectors.toList());
+        //List<String> showRoleIdList = StrUtil.split(showSmartReportRoleIdList, ',');
+        //boolean canShow = CollUtil.containsAny(roleIdList, showRoleIdList);
+        //if (!canShow) {
+        //    log.error("[showTab] 该用户无权查看管理视图,mobile:{},roleIdList:{}", SmartGridContext.getMobile(), roleIdList);
+        //    throw new ApiException("您当前无权限查看");
+        //}
 
         String seed = yujingPropertity.getSeed();
         String domain = yujingPropertity.getDomain();
