@@ -91,9 +91,9 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
             return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_NOT_EXIST);
         }
 
-//        if (!checkAuth((visitRecordingDO))) {
-//            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
-//        }
+        if (!checkAuth((visitRecordingDO))) {
+            return ApiResultWrapper.fail(SweepVillageErrorCodes.VISIT_RECORDING_UPDATE_NOT_AUTH);
+        }
 
 
         SweepVillageVisitRecordingDO updateVisitRecordingDO = new SweepVillageVisitRecordingDO();
