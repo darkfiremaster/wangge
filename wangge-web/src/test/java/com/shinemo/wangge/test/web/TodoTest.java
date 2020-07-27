@@ -183,21 +183,19 @@ public class TodoTest {
     private ThirdTodoMapper thirdTodoMapper;
     @Test
     public void insertTodo() {
-        String json = " {\n" +
-                "            \"id\": 38,\n" +
-                "            \"gmtCreate\": 1593412724000,\n" +
-                "            \"gmtModified\": 1593412724000,\n" +
-                "            \"thirdId\": \"13588039023\",\n" +
+        String json = "{\n" +
+                "            \"gmtCreate\": \"2020-07-25 16:46:38\",\n" +
+                "            \"gmtModified\": \"2020-07-25 16:46:38\",\n" +
+                "            \"thirdId\": \"C-771-20200718-188957\",\n" +
                 "            \"thirdType\": 4,\n" +
-                "            \"title\": \"测试装维\",\n" +
-                "            \"remark\": \"测试装维\",\n" +
+                "            \"title\": \"平安乡村-新装\",\n" +
+                "            \"remark\": \"工单时限：2020-07-18 20:00:00.0\\n预约时间：2020-07-21 12:00:00 - 2020-07-21 15:00:00\\n装机地址：广西南宁江南区江南区城区白沙大道109号普罗旺斯向日葵庄园(B改H)(含小微)7栋1单元31楼3107\",\n" +
                 "            \"status\": 0,\n" +
-                "            \"label\": \"未返单\",\n" +
-                "            \"operatorTime\": 1592928000000,\n" +
-                "            \"operatorMobile\": \"13588039023\",\n" +
-                "            \"startTime\": 1593792000000\n" +
+                "            \"label\": \"待施工\",\n" +
+                "            \"operatorTime\": \"2020-07-25 16:46:38\",\n" +
+                "            \"operatorMobile\": \"13507713866\"\n" +
                 "        }";
-        TodoDO todoDO = GsonUtils.fromGson2Obj(json, TodoDO.class);
+        TodoDO todoDO = JSONUtil.toBean(json, TodoDO.class);
         System.out.println("todoDO = " + todoDO);
         thirdTodoMapper.insert(todoDO);
     }
