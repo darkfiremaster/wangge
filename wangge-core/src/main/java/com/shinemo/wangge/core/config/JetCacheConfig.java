@@ -1,13 +1,5 @@
 package com.shinemo.wangge.core.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.alicp.jetcache.anno.CacheConsts;
 import com.alicp.jetcache.anno.config.EnableCreateCacheAnnotation;
 import com.alicp.jetcache.anno.config.EnableMethodCache;
@@ -22,10 +14,16 @@ import com.alicp.jetcache.support.JavaValueEncoder;
 import com.shinemo.my.redis.domain.RedisSentinelNode;
 import com.shinemo.rds.RedisConf;
 import com.shinemo.rds.RedisConfProxy;
-
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.util.Pool;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableMethodCache(basePackages = "com.shinemo.wangge.core.service")
@@ -68,7 +66,7 @@ public class JetCacheConfig {
         GlobalCacheConfig globalCacheConfig = new GlobalCacheConfig();
         globalCacheConfig.setLocalCacheBuilders(localBuilders);
         globalCacheConfig.setRemoteCacheBuilders(remoteBuilders);
-        globalCacheConfig.setStatIntervalMinutes(15);
+        globalCacheConfig.setStatIntervalMinutes(0);
         globalCacheConfig.setAreaInCacheName(false);
         return globalCacheConfig;
     }
