@@ -20,6 +20,19 @@
         <module>wangge-web</module>
     </modules>
 
+    <organization>
+        <name>Shine Mo</name>
+        <url>https://www.shinemo.com</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>zengpeng</name>
+            <organization>${project.organization.name}</organization>
+            <organizationUrl>${project.organization.url}</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
         <start-class>com.shinemo.wangge.web.MainApplication</start-class>
         <client-version>1.0.0-SNAPSHOT</client-version>
