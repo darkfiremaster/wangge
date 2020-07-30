@@ -65,6 +65,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private String fileSuffix = ".xlsx";
 
+    @NacosValue(value = "${onlineDomin}", autoRefreshed = true)
     private static final String onlineDomin = "https://api-gx.uban360.com";
 
 
