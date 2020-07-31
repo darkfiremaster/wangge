@@ -27,7 +27,7 @@ public class SendMailSchedule {
     /**
      * 每天10点触发
      */
-    @Scheduled(cron = "0 0 10 * * ?")
+//    @Scheduled(cron = "0 0 10 * * ?")
     public void sendLoginMail() {
         if (openSendMail) {
             DateTime yesterday = DateUtil.yesterday();

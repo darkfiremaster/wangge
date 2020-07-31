@@ -11,6 +11,7 @@ import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.dal.mapper.LoginInfoResultMapper;
 import com.shinemo.wangge.dal.slave.mapper.SlaveLoginInfoResultMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
