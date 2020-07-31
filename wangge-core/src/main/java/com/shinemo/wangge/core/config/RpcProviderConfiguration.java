@@ -4,6 +4,7 @@ import com.shinemo.jce.spring.AaceProviderBean;
 import com.shinemo.schedule.facade.WanggeScheduleFacadeService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.DependsOn;
  *
  * @author zengpeng
  */
+@Configuration
 public class RpcProviderConfiguration {
 
     @Bean(initMethod="init")
