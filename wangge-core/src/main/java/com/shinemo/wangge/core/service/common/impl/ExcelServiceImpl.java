@@ -19,7 +19,6 @@ import com.shinemo.excel.LoginResultExcelDTO;
 import com.shinemo.wangge.core.service.common.ExcelService;
 import com.shinemo.wangge.dal.slave.mapper.SlaveLoginInfoResultMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -67,7 +66,7 @@ public class ExcelServiceImpl implements ExcelService {
     private String fileSuffix = ".xlsx";
 
     @NacosValue(value = "${onlineDomin}", autoRefreshed = true)
-    private static final String onlineDomin = "https://api-gx.uban360.com";
+    private static final String onlineDomin = "https://api-wgapp.gx.chinamobile.com";
 
 
     @Resource
