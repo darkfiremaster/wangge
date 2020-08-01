@@ -101,6 +101,6 @@ public class StallupTest {
 
     @Test
     public void testSendMail() {
-        excelService.sendLoginInfoMail("2020-07-15");
+        excelService.sendLoginInfoMail("2020-07-31");
     }
 }

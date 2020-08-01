@@ -1,7 +1,5 @@
 package com.shinemo.wangge.web.controller.common;
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.user.UserProfileServiceWrapper;
@@ -258,17 +256,6 @@ public class BackdoorController {
             }
         }
         log.info("[fixSignRecord] fixSignRecord finished,count = {}",count);
-        return "success";
-    }
-
-    @GetMapping("/send/mail")
-    public String sendMail(){
-        DateTime yesterday = DateUtil.yesterday();
-        String queryDate = DateUtil.formatDate(yesterday);
-        log.info("[sendLoginMail] 开始发送邮件,查询时间:{}", queryDate);
-        long startTime = System.currentTimeMillis();
-        excelService.sendLoginInfoMail(queryDate);
-        log.info("[sendLoginMail] 结束邮件发送,耗时:{}ms", System.currentTimeMillis() - startTime);
         return "success";
     }
 }
