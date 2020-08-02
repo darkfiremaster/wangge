@@ -22,7 +22,7 @@ public class LoginInfoSchedule {
     @Autowired
     private LoginStatisticsService loginStatisticsService;
 
-//    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void generateLoginInfoResult() {
         log.info("[generateLoginInfoResult] 开始统计登录信息, ");
         long startTime = System.currentTimeMillis();
