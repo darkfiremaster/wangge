@@ -17,4 +17,5 @@ public class UserConfigQuery extends QueryBase {
 
     private Long id;
     private String userId;
+
 }
