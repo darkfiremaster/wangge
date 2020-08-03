@@ -1,6 +1,8 @@
 package com.shinemo.wangge.core.service.groupserviceday.impl;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult getFinishedCount() {
+    public ApiResult getFinishedCount(Integer type) {
         return null;
     }
 
@@ -41,22 +43,22 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult startSign() {
+    public ApiResult startSign(GroupServiceDaySignRequest request) {
         return null;
     }
 
     @Override
-    public ApiResult endSign() {
+    public ApiResult endSign(GroupServiceDaySignRequest request) {
         return null;
     }
 
     @Override
-    public ApiResult cancel() {
+    public ApiResult cancel(Long id) {
         return null;
     }
 
     @Override
-    public ApiResult getPartnerList() {
+    public ApiResult getPartnerList(GroupServiceDayPartnerListRequest request) {
         return null;
     }
 }
