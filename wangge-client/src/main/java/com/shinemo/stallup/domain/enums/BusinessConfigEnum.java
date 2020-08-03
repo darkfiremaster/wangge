@@ -18,7 +18,11 @@ public enum BusinessConfigEnum {
 	SWEEP_VILLAGE(7,"扫村工具"),
 	SWEEP_VILLAGE_BIZ(8,"扫村业务"),
 
-
+	GROUP_SERVICE_DAY_TOOL(9, "集团服务日工具"),
+	PUBLIC_GROUP_SERVICE_DAY_BIZ(10, "集团服务日公共业务"),
+	PUBLIC_GROUP_SERVICE_DAY_BIZ_DATA(11, "集团服务日公共业务数据头"),
+	INFORMATION_GROUP_SERVICE_DAY_BIZ(12,"集团服务日政企专属"),
+	INFORMATION_GROUP_SERVICE_DAY_BIZ_DATA(13,"集团服务日政企专属数据头"),
 	;
 
 	private Integer type;

@@ -74,9 +74,12 @@ public class DateUtils {
         return new String(result);
     }
 
-    public static Date getThisWeekMonday(Date date) {
+    public static Date getThisWeekMonday() {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.setTime(new Date());
         // 获得当前日期是一个星期的第几天
         int dayWeek = cal.get(Calendar.DAY_OF_WEEK);
         if (1 == dayWeek) {

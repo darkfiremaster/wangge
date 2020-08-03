@@ -65,6 +65,8 @@
                     <if test="status != null">and status = #{status}</if>
                     <if test="gridId != null">and grid_id = #{gridId}</if>
                     <if test="extend != null">and extend = #{extend}</if>
+                    <if test="endFilterStartTIme != null"><![CDATA[and real_end_time >= #{endFilterStartTIme}]]></if>
+                    <if test="endFilterEndTIme != null"><![CDATA[and real_end_time <= #{endFilterEndTIme}]]></if>
                 </otherwise>
             </choose>
         </where>

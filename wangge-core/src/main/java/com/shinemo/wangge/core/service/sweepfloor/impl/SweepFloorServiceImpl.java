@@ -218,15 +218,15 @@ public class SweepFloorServiceImpl implements SweepFloorService {
     @Override
     public ApiResult<SweepFloorBusinessCountAndHouseCountVO> getBusinessCountAndHouseCount(Integer type) {
         SweepFloorVisitRecordingQuery query = new SweepFloorVisitRecordingQuery();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        Date zero = calendar.getTime();
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(new Date());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        Date zero = calendar.getTime();
         query.setMarketingUserId(SmartGridContext.getUid());
         if (WEEK_TYPE.equals(type)) {
-            query.setStartTime(DateUtils.getThisWeekMonday(zero));
+            query.setStartTime(DateUtils.getThisWeekMonday());
         } else if (MONTH_TYPE.equals(type)) {
             query.setStartTime(DateUtils.getThisMonthFirstDay());
         }

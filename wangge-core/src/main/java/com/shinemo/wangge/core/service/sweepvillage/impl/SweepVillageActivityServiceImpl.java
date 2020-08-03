@@ -442,17 +442,17 @@ public class SweepVillageActivityServiceImpl implements SweepVillageActivityServ
 
     @Override
     public ApiResult<SweepVillageActivityFinishVO> getFinishResultInfo(Integer type) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        Date zero = calendar.getTime();
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(new Date());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        Date zero = calendar.getTime();
 
         Date startTime = new Date();
         SweepVillageActivityQuery query = new SweepVillageActivityQuery();
         if (WEEK_TYPE.equals(type)) {
-            startTime = DateUtils.getThisWeekMonday(zero);
+            startTime = DateUtils.getThisWeekMonday();
         } else if (MONTH_TYPE.equals(type)) {
             startTime = DateUtils.getThisMonthFirstDay();
         }
