@@ -1,4 +1,4 @@
-package com.shinemo.groupserviceday.domain;
+package com.shinemo.groupserviceday.domain.model;
 
 import lombok.Data;
 

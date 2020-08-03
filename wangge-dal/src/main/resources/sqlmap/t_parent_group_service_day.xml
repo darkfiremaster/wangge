@@ -4,7 +4,7 @@
 <mapper namespace="com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper">
 
     <!-- 结果集对应关系 -->
-    <resultMap id="result" type="com.shinemo.groupserviceday.domain.ParentGroupServiceDayDO" >
+    <resultMap id="result" type="com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO" >
         <id column="id" property="id"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
@@ -71,7 +71,7 @@
 
     <!-- 查询结果集 -->
     <select id="find" resultMap="result"
-            parameterType="com.shinemo.groupserviceday.query.ParentGroupServiceDayQuery">
+            parameterType="com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery">
         select
         <include refid="columns"/>
         from
@@ -89,7 +89,7 @@
     </select>
 
     <!-- 查询某条记录 -->
-    <select id="get" resultMap="result" parameterType="com.shinemo.groupserviceday.query.ParentGroupServiceDayQuery">
+    <select id="get" resultMap="result" parameterType="com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery">
         select
         <include refid="columns"/>
         from
@@ -99,14 +99,14 @@
     </select>
 
     <!-- 统计查询结果数量 -->
-    <select id="count" resultType="long" parameterType="com.shinemo.groupserviceday.query.ParentGroupServiceDayQuery">
+    <select id="count" resultType="long" parameterType="com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery">
         select count(*) from
         <include refid="table"/>
         <include refid="conditions"/>
     </select>
 
     <!-- 删除 -->
-    <delete id="delete" parameterType="com.shinemo.groupserviceday.query.ParentGroupServiceDayQuery">
+    <delete id="delete" parameterType="com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery">
         delete from
         <include refid="table"/>
         where id = #{id}
@@ -114,7 +114,7 @@
 
     <!-- 插入 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.shinemo.groupserviceday.domain.ParentGroupServiceDayDO">
+            parameterType="com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO">
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -242,7 +242,7 @@
     </insert>
 
     <!-- 更新 -->
-    <update id="update" parameterType="com.shinemo.groupserviceday.domain.ParentGroupServiceDayDO">
+    <update id="update" parameterType="com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO">
         UPDATE
         <include refid="table"/>
         <set>

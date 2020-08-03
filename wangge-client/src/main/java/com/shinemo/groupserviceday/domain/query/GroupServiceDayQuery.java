@@ -1,19 +1,25 @@
-package com.shinemo.groupserviceday.query;
+package com.shinemo.groupserviceday.domain.query;
 
 import com.shinemo.client.common.QueryBase;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 /**
  * 查询类
- * @ClassName: TParentGroupServiceDayQuery
+ * @ClassName: TGroupServiceDayQuery
  * @author skh
  * @Date 2020-08-03 15:30:45
  */
-@Data
-public class ParentGroupServiceDayQuery extends QueryBase {
+@Getter
+@Setter
+public class GroupServiceDayQuery extends QueryBase {
 	private Long id;
+    /**
+    * 父集团服务日id
+    */
+	private Long parentId;
     /**
     * 创建时间
     */
@@ -35,10 +41,6 @@ public class ParentGroupServiceDayQuery extends QueryBase {
     */
 	private String groupName;
     /**
-    * 集团地址
-    */
-	private String groupAddress;
-    /**
     * 集团详情
     */
 	private String groupDetail;
@@ -46,10 +48,6 @@ public class ParentGroupServiceDayQuery extends QueryBase {
     * 创建人id
     */
 	private Long creatorId;
-    /**
-    * 创建人组织id
-    */
-	private Long creatorOrgId;
     /**
     * 创建人名称
     */
@@ -59,13 +57,17 @@ public class ParentGroupServiceDayQuery extends QueryBase {
     */
 	private String mobile;
     /**
+    * 名称
+    */
+	private String name;
+    /**
     * 计划开始时间
     */
 	private Date planStartTime;
     /**
     * 计划结束时间
     */
-	private Date planEndTime;
+	private Date planEntTime;
     /**
     * 实际开始时间
     */
@@ -74,6 +76,10 @@ public class ParentGroupServiceDayQuery extends QueryBase {
     * 实际结束时间
     */
 	private Date realEndTime;
+    /**
+    * 地址
+    */
+	private String address;
     /**
     * 坐标
     */

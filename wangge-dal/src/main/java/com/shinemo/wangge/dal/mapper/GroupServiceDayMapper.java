@@ -1,8 +1,8 @@
 package com.shinemo.wangge.dal.mapper;
 
 import com.shinemo.common.db.dao.BaseMapper;
-import com.shinemo.groupserviceday.domain.GroupServiceDayDO;
-import com.shinemo.groupserviceday.query.GroupServiceDayQuery;
+import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
+import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 
 /**
  * Mapper

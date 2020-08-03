@@ -1,4 +1,4 @@
-package com.shinemo.groupserviceday.domain;
+package com.shinemo.groupserviceday.domain.model;
 
 import lombok.Data;
 
@@ -12,8 +12,7 @@ import java.util.Date;
  * @since 2020-08-03 13:57:52
  */
 @Data
-public class ParentGroupServiceDayDO implements Serializable {
-    private static final long serialVersionUID = -91121727471670268L;
+public class ParentGroupServiceDayDO {
 
     private Long id;
     /**
