@@ -24,4 +24,35 @@ public interface GroupServiceDayService {
      * 获取最近营销的集团列表
      */
     ApiResult getLatestMarketingGroupList();
+
+    /**
+     * 获取已结束办理量、活动次数
+     */
+    ApiResult getFinishedCount();
+
+    /**
+     * 获取活动列表
+     */
+    ApiResult getActivityListByStatus();
+
+    /**
+     * 开始打卡
+     */
+    ApiResult startSign();
+
+    /**
+     * 结束打卡
+     */
+    ApiResult endSign();
+
+    /**
+     * 活动取消
+     */
+    ApiResult cancel();
+
+    /**
+     * 获取参与人列表
+     */
+    ApiResult getPartnerList();
+
 }

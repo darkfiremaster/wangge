@@ -29,4 +29,34 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     public ApiResult getLatestMarketingGroupList() {
         return null;
     }
+
+    @Override
+    public ApiResult getFinishedCount() {
+        return null;
+    }
+
+    @Override
+    public ApiResult getActivityListByStatus() {
+        return null;
+    }
+
+    @Override
+    public ApiResult startSign() {
+        return null;
+    }
+
+    @Override
+    public ApiResult endSign() {
+        return null;
+    }
+
+    @Override
+    public ApiResult cancel() {
+        return null;
+    }
+
+    @Override
+    public ApiResult getPartnerList() {
+        return null;
+    }
 }
