@@ -29,5 +29,10 @@
             <groupId>com.shinemo.cmmc.report</groupId>
             <artifactId>cmmc-report-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.0.10.Final</version>
+        </dependency>
     </dependencies>
 </project>
