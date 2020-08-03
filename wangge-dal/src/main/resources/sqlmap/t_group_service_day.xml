@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.GroupServiceDayMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.groupserviceday.domain.model.GroupServiceDayDO" >
+        <id column="id" property="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="title" column="title"/>
+        <result property="groupId" column="group_id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupDetail" column="group_detail"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="mobile" column="mobile"/>
+        <result property="name" column="name"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEntTime" column="plan_ent_time"/>
+        <result property="realStartTime" column="real_start_time"/>
+        <result property="realEndTime" column="real_end_time"/>
+        <result property="address" column="address"/>
+        <result property="location" column="location"/>
+        <result property="partner" column="partner"/>
+        <result property="status" column="status"/>
+        <result property="gridId" column="grid_id"/>
+        <result property="extend" column="extend"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, address, location, partner, status, grid_id, extend
+    </sql>
+
+    <sql id="table">
+        t_group_service_day
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="parentId != null">and parent_id = #{parentId}</if>
+                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+                    <if test="title != null">and title = #{title}</if>
+                    <if test="groupId != null">and group_id = #{groupId}</if>
+                    <if test="groupName != null">and group_name = #{groupName}</if>
+                    <if test="groupDetail != null">and group_detail = #{groupDetail}</if>
+                    <if test="creatorId != null">and creator_id = #{creatorId}</if>
+                    <if test="creatorName != null">and creator_name = #{creatorName}</if>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="name != null">and name = #{name}</if>
+                    <if test="planStartTime != null">and plan_start_time = #{planStartTime}</if>
+                    <if test="planEntTime != null">and plan_ent_time = #{planEntTime}</if>
+                    <if test="realStartTime != null">and real_start_time = #{realStartTime}</if>
+                    <if test="realEndTime != null">and real_end_time = #{realEndTime}</if>
+                    <if test="address != null">and address = #{address}</if>
+                    <if test="location != null">and location = #{location}</if>
+                    <if test="partner != null">and partner = #{partner}</if>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="gridId != null">and grid_id = #{gridId}</if>
+                    <if test="extend != null">and extend = #{extend}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
+        delete from
+        <include refid="table"/>
+        where id = #{id}
+    </delete>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.groupserviceday.domain.model.GroupServiceDayDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="title != null">
+                title,
+            </if>
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="groupName != null">
+                group_name,
+            </if>
+            <if test="groupDetail != null">
+                group_detail,
+            </if>
+            <if test="creatorId != null">
+                creator_id,
+            </if>
+            <if test="creatorName != null">
+                creator_name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="planStartTime != null">
+                plan_start_time,
+            </if>
+            <if test="planEntTime != null">
+                plan_ent_time,
+            </if>
+            <if test="realStartTime != null">
+                real_start_time,
+            </if>
+            <if test="realEndTime != null">
+                real_end_time,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="partner != null">
+                partner,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gridId != null">
+                grid_id,
+            </if>
+            <if test="extend != null">
+                extend,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            <if test="parentId != null">
+                #{parentId, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="title != null">
+                #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="groupId != null">
+                #{groupId, jdbcType=VARCHAR},
+            </if>
+            <if test="groupName != null">
+                #{groupName, jdbcType=VARCHAR},
+            </if>
+            <if test="groupDetail != null">
+                #{groupDetail, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="planStartTime != null">
+                #{planStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="planEntTime != null">
+                #{planEntTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+                #{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+                #{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="partner != null">
+                #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
+            </if>
+            <if test="gridId != null">
+                #{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null">
+                #{extend, jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.groupserviceday.domain.model.GroupServiceDayDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId, jdbcType=BIGINT},
+            </if>
+            gmt_modified = now(),
+            <if test="title != null">
+                title = #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="groupId != null">
+                group_id = #{groupId, jdbcType=VARCHAR},
+            </if>
+            <if test="groupName != null">
+                group_name = #{groupName, jdbcType=VARCHAR},
+            </if>
+            <if test="groupDetail != null">
+                group_detail = #{groupDetail, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="creatorId != null">
+                creator_id = #{creatorId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorName != null">
+                creator_name = #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="planStartTime != null">
+                plan_start_time = #{planStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="planEntTime != null">
+                plan_ent_time = #{planEntTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+                real_start_time = #{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+                real_end_time = #{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="address != null">
+                address = #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                location = #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="partner != null">
+                partner = #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="gridId != null">
+                grid_id = #{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null">
+                extend = #{extend, jdbcType=LONGVARCHAR}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

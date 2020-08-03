@@ -4,6 +4,8 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 
+import java.util.Map;
+
 /**
  * @Author shangkaihui
  * @Date 2020/8/3 11:37
@@ -14,7 +16,7 @@ public interface GroupServiceDayService {
     /**
      * 获取集团列表
      */
-    ApiResult getGroupList();
+    ApiResult<Map<String, Object>> getGroupList(String groupName);
 
     /**
      * 新建集团服务日
