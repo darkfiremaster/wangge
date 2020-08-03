@@ -75,6 +75,13 @@ public class StallUpConfig {
         config.setSweepVillageList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE.getType()));
         config.setSweepVillageBizList(bizConfigMap.get(BusinessConfigEnum.SWEEP_VILLAGE_BIZ.getType()));
 
+        //集团服务日配置
+        config.setGroupServiceDayToolList(bizConfigMap.get(BusinessConfigEnum.GROUP_SERVICE_DAY_TOOL.getType()));
+        config.setPublicGroupServiceDayBizList(bizConfigMap.get(BusinessConfigEnum.PUBLIC_GROUP_SERVICE_DAY_BIZ.getType()));
+        config.setPublicGroupServiceDayBizDataList(bizConfigMap.get(BusinessConfigEnum.PUBLIC_GROUP_SERVICE_DAY_BIZ_DATA.getType()));
+        config.setInformationGroupServiceDayBizList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ.getType()));
+        config.setInformationGroupServiceDayBizDataList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ_DATA.getType()));
+
         //查询全量业务列表
         SmartGridBizQuery bizQuery = new SmartGridBizQuery();
         bizQuery.setStatus(1);
@@ -396,15 +403,25 @@ public class StallUpConfig {
         /**
          * 扫村
          */
-        private Map<Long, StallUpBizType> sweepVillageMap;
+//        private Map<Long, StallUpBizType> sweepVillageMap;
         private List<StallUpBizType> sweepVillageList;
 
 
         /**
          * 扫村业务
          */
-        private List<StallUpBizType> sweepVillageBizMap;
+//        private Map<StallUpBizType> sweepVillageBizMap;
         private List<StallUpBizType> sweepVillageBizList;
+
+
+        /**
+         * 集团服务日业务
+         */
+        private List<StallUpBizType> groupServiceDayToolList;
+        private List<StallUpBizType> publicGroupServiceDayBizList;
+        private List<StallUpBizType> publicGroupServiceDayBizDataList;
+        private List<StallUpBizType> informationGroupServiceDayBizList;
+        private List<StallUpBizType> informationGroupServiceDayBizDataList;
 
         /**
          * url参数拼接map
