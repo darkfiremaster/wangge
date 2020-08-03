@@ -32,5 +32,5 @@ public interface WanggeScheduleFacadeService {
     /**
      * 定时任务:发送邮件
      */
-    Result<Void> sendEmail();
+    //Result<Void> sendEmail();
 }
