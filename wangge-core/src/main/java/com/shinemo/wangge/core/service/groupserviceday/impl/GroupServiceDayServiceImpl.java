@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.service.groupserviceday.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
@@ -9,8 +10,10 @@ import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
+import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
@@ -108,6 +111,13 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Override
     public ApiResult startSign(GroupServiceDaySignRequest request) {
+        GroupServiceDayQuery groupServiceDayQuery = new GroupServiceDayQuery();
+        groupServiceDayQuery.setId(request.getId());
+        GroupServiceDayDO groupServiceDayDO = groupServiceDayMapper.get(groupServiceDayQuery);
+        if (groupServiceDayDO == null) {
+            ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+
         return null;
     }
 
