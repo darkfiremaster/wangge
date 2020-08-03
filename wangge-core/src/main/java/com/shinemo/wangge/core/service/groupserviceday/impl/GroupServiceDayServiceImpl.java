@@ -6,38 +6,35 @@ import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
+import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
-import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
-import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.DateUtils;
-import com.shinemo.stallup.common.error.StallUpErrorCodes;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
 import com.shinemo.wangge.core.util.ValidatorUtil;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
-import com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper;
-import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
+import com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,12 +52,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private GroupServiceDayMapper groupServiceDayMapper;
     @Resource
     private GroupServiceDayMarketingNumberMapper groupServiceDayMarketingNumberMapper;
-
     @Resource
     private ParentGroupServiceDayMapper parentGroupServiceDayMapper;
-
-    @Resource
-    private GroupServiceDayMapper groupServiceDayMapper;
 
 
     @Override
