@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.Do.GroupServiceDayMarketingNumberMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO">
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="userId" column="user_id"/>
+        <result property="groupServiceDayId" column="group_service_day_id"/>
+        <result property="count" column="count"/>
+        <result property="detail" column="detail"/>
+        <result property="publicBizRemark" column="public_biz_remark"/>
+        <result property="informationBizRemark" column="information_biz_remark"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id,
+        gmt_create,
+        gmt_modified,
+        user_id,
+        group_service_day_id,
+        count,
+        detail,
+        public_biz_remark,
+        information_biz_remark
+    </sql>
+
+    <sql id="table">
+        t_group_service_day_marketing_number
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+
+                    <if test="groupServiceDayId != null">and group_service_day_id = #{groupServiceDayId}</if>
+
+                    <if test="groupServiceDayIds != null and groupServiceDayIds.size() > 0">
+                        and group_service_day_id in
+                        <foreach collection="groupServiceDayIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
+
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="groupServiceDayId != null">
+                group_service_day_id,
+            </if>
+            <if test="count != null">
+                count,
+            </if>
+            <if test="detail != null">
+                detail,
+            </if>
+            <if test="publicBizRemark != null">
+                public_biz_remark,
+            </if>
+            <if test="informationBizRemark != null">
+                information_biz_remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            now(),
+            now(),
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="groupServiceDayId != null">
+                #{groupServiceDayId},
+            </if>
+            <if test="count != null">
+                #{count},
+            </if>
+            <if test="detail != null">
+                #{detail},
+            </if>
+            <if test="publicBizRemark != null">
+                #{publicBizRemark},
+            </if>
+            <if test="informationBizRemark != null">
+                #{informationBizRemark},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="groupServiceDayId != null">
+                group_service_day_id = #{groupServiceDayId},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+            <if test="publicBizRemark != null">
+                public_biz_remark = #{publicBizRemark},
+            </if>
+            <if test="informationBizRemark != null">
+                information_biz_remark = #{informationBizRemark}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+
+</mapper>
