@@ -126,7 +126,7 @@ public class TodoServiceImpl implements TodoService {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            log.info("[createTodo] create todo success,  todoDTO:{}", todoDTO);
+            //log.info("[createTodo] create todo success,  todoDTO:{}", todoDTO);
         }
 
         return ApiResult.of(0);
@@ -153,7 +153,7 @@ public class TodoServiceImpl implements TodoService {
         //修改
         thirdTodoMapper.update(todoDO);
 
-        log.info("[updateTodo] update todo success,todoDTO:{}", todoDTO);
+        //log.info("[updateTodo] update todo success,todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
@@ -174,7 +174,7 @@ public class TodoServiceImpl implements TodoService {
         //删除
         thirdTodoMapper.delete(todoDO.getId());
 
-        log.info("[deleteTodo] delete todo success, todoDTO:{}", todoDTO);
+        //log.info("[deleteTodo] delete todo success, todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 

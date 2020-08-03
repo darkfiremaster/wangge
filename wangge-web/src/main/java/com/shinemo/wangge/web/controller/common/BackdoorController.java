@@ -1,6 +1,8 @@
 package com.shinemo.wangge.web.controller.common;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.user.UserProfileServiceWrapper;
 import com.shinemo.client.ace.user.domain.UserProfileInfo;
@@ -9,6 +11,9 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.operate.domain.LoginInfoResultDO;
 import com.shinemo.smartgrid.domain.model.BackdoorLoginDO;
+import com.shinemo.smartgrid.domain.model.UserConfigDO;
+import com.shinemo.smartgrid.domain.query.UserConfigQuery;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.ParentStallUpActivity;
 import com.shinemo.stallup.domain.model.StallUpCommunityDO;
 import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
@@ -23,10 +28,7 @@ import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
-import com.shinemo.wangge.dal.mapper.BackdoorLoginMapper;
-import com.shinemo.wangge.dal.mapper.ParentStallUpActivityMapper;
-import com.shinemo.wangge.dal.mapper.SignRecordMapper;
-import com.shinemo.wangge.dal.mapper.StallUpCommunityMapper;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -64,6 +66,9 @@ public class BackdoorController {
 
     @Resource
     private LoginStatisticsService loginStatisticsService;
+
+    @Resource
+    private UserConfigMapper userConfigMapper;
 
     @Resource
     private BackdoorLoginMapper backdoorLoginMapper;
@@ -178,7 +183,7 @@ public class BackdoorController {
     public String refreshCommunity() {
         ParentStallUpActivityQuery parentStallUpActivityQuery = new ParentStallUpActivityQuery();
         List<ParentStallUpActivity> historyForRefreshCommunity = parentStallUpActivityMapper.findHistoryForRefreshCommunity(parentStallUpActivityQuery);
-        log.info("[refreshCommunity] 历史摆摊数量:{}",historyForRefreshCommunity.size());
+        log.info("[refreshCommunity] 历史摆摊数量:{}", historyForRefreshCommunity.size());
         if (!CollectionUtils.isEmpty(historyForRefreshCommunity)) {
             List<StallUpCommunityDO> stallUpCommunityDOS = new ArrayList<>(historyForRefreshCommunity.size());
             for (ParentStallUpActivity stallUpActivity : historyForRefreshCommunity) {
@@ -199,7 +204,7 @@ public class BackdoorController {
                 }
             }
 
-            log.info("[refreshCommunity] 需要更新的数量:{}",stallUpCommunityDOS.size());
+            log.info("[refreshCommunity] 需要更新的数量:{}", stallUpCommunityDOS.size());
             for (int i = 0; i < stallUpCommunityDOS.size(); i += 50) {
                 stallUpCommunityMapper.batchInsert(stallUpCommunityDOS.subList(i, Math.min(i + 50, stallUpCommunityDOS.size())));
             }
@@ -209,10 +214,11 @@ public class BackdoorController {
 
     /**
      * 订正扫村活动数据库数据
+     *
      * @return
      */
     @GetMapping("/sweepVillage/fixDatabase")
-    public String fixDatabase(){
+    public String fixDatabase() {
         ApiResult<Void> voidApiResult = sweepVillageActivityService.fixDBWithCreatorName();
         return voidApiResult.getMsg();
 
@@ -220,27 +226,29 @@ public class BackdoorController {
 
     /**
      * 订正扫楼创建人名
+     *
      * @return
      */
     @GetMapping("/sweepFloor/fixDatabase")
-    public String fixSweepFloor(){
+    public String fixSweepFloor() {
         ApiResult<Void> voidApiResult = sweepFloorService.fixSweepFloor();
         return voidApiResult.getMsg();
     }
 
     /**
      * 订正签到表手机号、签到人名字段
+     *
      * @return
      */
     @GetMapping("/fixSignRecord")
-    public String fixSignRecord(){
+    public String fixSignRecord() {
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
         if (CollectionUtils.isEmpty(signRecordDOS)) {
             log.error("[fixSignRecord] signRecordDOS is empty");
         }
         int count = 0;
-        for (SignRecordDO signRecordDO: signRecordDOS) {
+        for (SignRecordDO signRecordDO : signRecordDOS) {
             UserProfileInfo userProfileInfo = userProfileServiceWrapper.getUserProfileInfo(signRecordDO.getUserId(), new AaceContext(appType.getId() + ""));
             if (userProfileInfo != null) {
                 SignRecordDO updateDO = new SignRecordDO();
@@ -252,10 +260,39 @@ public class BackdoorController {
                 signRecordMapper.update(updateDO);
                 count++;
             } else {
-                log.error("[fixSignRecord] userProfileInfo is null,uid = {}",signRecordDO.getUserId());
+                log.error("[fixSignRecord] userProfileInfo is null,uid = {}", signRecordDO.getUserId());
             }
         }
-        log.info("[fixSignRecord] fixSignRecord finished,count = {}",count);
+        log.info("[fixSignRecord] fixSignRecord finished,count = {}", count);
+        return "success";
+    }
+
+
+    /**
+     * 订正t_user_config表里grid_biz字段,去除指定的id
+     *
+     * @param id 需要去除的id
+     * @return
+     */
+    @GetMapping("/fixUserConfig")
+    public String fixUserConfig(Integer id) {
+        List<UserConfigDO> userConfigDOS = userConfigMapper.find(new UserConfigQuery());
+        int count = 0;
+        if (CollUtil.isNotEmpty(userConfigDOS)) {
+
+            for (UserConfigDO userConfigDO : userConfigDOS) {
+                String gridBiz = userConfigDO.getGridBiz();
+                List<Integer> gridBizList = JSONUtil.parseArray(gridBiz).toList(Integer.class);
+                if (gridBizList.contains(id)) {
+                    gridBizList.remove(id);
+                    userConfigDO.setGridBiz(GsonUtils.toJson(gridBizList));
+                    userConfigMapper.update(userConfigDO);
+                    count++;
+                }
+            }
+            log.info("[fixUserConfig] 订正数据的数量:{}", count);
+        }
         return "success";
     }
 }
+

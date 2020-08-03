@@ -42,9 +42,6 @@
         from
         <include refid="table" />
         <include refid="conditions" />
-        <if test="queryTotal">
-            limit #{startRow},#{pageSize}
-        </if>
     </select>
 
     <!-- 查询某条记录 -->
