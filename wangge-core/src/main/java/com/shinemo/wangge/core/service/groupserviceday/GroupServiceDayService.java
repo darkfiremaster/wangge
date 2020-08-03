@@ -1,6 +1,8 @@
 package com.shinemo.wangge.core.service.groupserviceday;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 
 /**
  * @Author shangkaihui
@@ -28,7 +30,7 @@ public interface GroupServiceDayService {
     /**
      * 获取已结束办理量、活动次数
      */
-    ApiResult getFinishedCount();
+    ApiResult getFinishedCount(Integer type);
 
     /**
      * 获取活动列表
@@ -38,21 +40,21 @@ public interface GroupServiceDayService {
     /**
      * 开始打卡
      */
-    ApiResult startSign();
+    ApiResult startSign(GroupServiceDaySignRequest request);
 
     /**
      * 结束打卡
      */
-    ApiResult endSign();
+    ApiResult endSign(GroupServiceDaySignRequest request);
 
     /**
      * 活动取消
      */
-    ApiResult cancel();
+    ApiResult cancel(Long id);
 
     /**
      * 获取参与人列表
      */
-    ApiResult getPartnerList();
+    ApiResult getPartnerList(GroupServiceDayPartnerListRequest request);
 
 }
