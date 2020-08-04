@@ -2,6 +2,7 @@ package com.shinemo.groupserviceday.domain.request;
 
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -53,12 +54,15 @@ public class GroupServiceDayRequest {
      * 参与人详情
      */
     @NotEmpty(message = "参与人不能为空")
+    @Valid
     private List<PartnerBean> partner;
 
     @Data
     public static class PartnerBean {
-        private String mobile;
 
+        @NotBlank(message = "参与人手机号不能为空")
+        private String mobile;
+        @NotBlank(message = "参与人名字不能为空")
         private String name;
 
         private String gridId;
