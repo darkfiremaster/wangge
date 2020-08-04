@@ -1,6 +1,6 @@
 package com.shinemo.groupserviceday.domain.request;
 
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBizDetailVO;
 import lombok.Data;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class GroupServiceDayBusinessRequest {
     /**
      * 大众业务办理列表
      */
-    private List<GroupServiceDayMarketNumberVO> publicBizList;
+    private List<GroupServiceDayBizDetailVO> publicBizList;
 
     /**
      * 大众业务办理备注
@@ -30,7 +30,7 @@ public class GroupServiceDayBusinessRequest {
     /**
      * 信息化业务办理列表
      */
-    private List<GroupServiceDayMarketNumberVO> informationBizLis;
+    private List<GroupServiceDayBizDetailVO> informationBizList;
 
     /**
      * 信息化业务办理备注

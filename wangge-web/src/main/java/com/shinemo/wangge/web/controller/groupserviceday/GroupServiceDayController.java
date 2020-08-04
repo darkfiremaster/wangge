@@ -176,7 +176,6 @@ public class GroupServiceDayController {
     public ApiResult addBusiness(GroupServiceDayBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"groupServiceDay activityId is null");
-
-        return ApiResult.success();
+        return groupServiceDayMarketingNumberService.enterMarketingNumber(request);
     }
 }
