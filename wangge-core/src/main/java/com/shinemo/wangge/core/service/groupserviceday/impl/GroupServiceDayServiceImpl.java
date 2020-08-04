@@ -317,6 +317,41 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return thirdApiMappingService.dispatch(requestData, "getPartnerList");
     }
 
+    @Override
+    public ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO) {
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        signRecordQuery.setActivityId(serviceDayDO.getId());
+        signRecordQuery.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+        SignRecordDO signRecordDO = signRecordMapper.get(signRecordQuery);
+
+        int status = GroupServiceDayStatusEnum.AUTO_END.getId();
+        Date endTime = new Date();
+
+        //更新签到表
+        if (signRecordDO == null) {
+            signRecordDO = new SignRecordDO();
+            signRecordDO.setEndTime(endTime);
+            signRecordDO.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+            signRecordDO.setUserId(serviceDayDO.getCreatorId().toString());
+            signRecordDO.setActivityId(serviceDayDO.getId());
+            signRecordDO.setMobile(serviceDayDO.getMobile());
+            signRecordMapper.insert(signRecordDO);
+        }else {
+            SignRecordDO newSignRecordDO = new SignRecordDO();
+            newSignRecordDO.setId(signRecordDO.getId());
+            newSignRecordDO.setEndTime(endTime);
+            signRecordMapper.update(newSignRecordDO);
+        }
+
+        //更新子活动表
+        serviceDayDO.setStatus(status);
+        groupServiceDayMapper.update(serviceDayDO);
+        //更新父活动表
+        updateParentStatus(serviceDayDO,status,endTime);
+
+        return ApiResult.of(0);
+    }
+
     /**
      * 更新父活动状态
      * @param groupServiceDayDO
@@ -332,7 +367,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             parentGroupServiceDayDO.setRealStartTime(time);
         }else if (status == GroupServiceDayStatusEnum.END.getId() ||
                 status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
-                || status == GroupServiceDayStatusEnum.CANCEL.getId()) {
+                || status == GroupServiceDayStatusEnum.CANCEL.getId()
+                || status == GroupServiceDayStatusEnum.AUTO_END.getId()) {
             //所有子活动结束，父活动即为结束
             GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
             serviceDayQuery.setParentId(groupServiceDayDO.getParentId());
