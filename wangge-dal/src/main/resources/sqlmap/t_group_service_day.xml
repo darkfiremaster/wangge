@@ -101,6 +101,8 @@
         <include refid="conditions"/>
     </select>
 
+
+
     <!-- 删除 -->
     <delete id="delete" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
         delete from
@@ -310,4 +312,24 @@
         WHERE
         id = #{id}
     </update>
+
+
+    <select id="getLatestMarketingGroupList" resultType="com.shinemo.groupserviceday.domain.model.GroupDO">
+        select t.*
+        from (
+                 select a.group_id      as groupId,
+                        a.group_name    as groupName,
+                        a.group_address as groupAddress,
+                        a.location      as location,
+                        a.gmt_create    as createTime
+                 from t_parent_group_service_day a
+                          left join t_group_service_day b on a.id = b.parent_id
+                 where a.mobile = #{mobile}
+                    or b.mobile = #{mobile}
+                 order by a.gmt_create desc
+             ) t
+        group by t.groupId,t.createTime
+        order by t.createTime desc
+        limit 10
+    </select>
 </mapper>
