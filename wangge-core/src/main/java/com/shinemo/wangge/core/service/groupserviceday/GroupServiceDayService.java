@@ -1,9 +1,12 @@
 package com.shinemo.wangge.core.service.groupserviceday;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,13 +24,13 @@ public interface GroupServiceDayService {
     /**
      * 新建集团服务日
      */
-    ApiResult createGroupServiceDay();
+    ApiResult<Void> createGroupServiceDay(GroupServiceDayRequest groupServiceDayRequest);
 
 
     /**
      * 获取最近营销的集团列表
      */
-    ApiResult getLatestMarketingGroupList();
+    ApiResult<List<GroupDO>> getLatestMarketingGroupList();
 
     /**
      * 获取已结束办理量、活动次数

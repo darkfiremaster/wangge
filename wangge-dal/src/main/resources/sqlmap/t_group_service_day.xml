@@ -21,7 +21,7 @@
         <result property="planEntTime" column="plan_ent_time"/>
         <result property="realStartTime" column="real_start_time"/>
         <result property="realEndTime" column="real_end_time"/>
-        <result property="address" column="address"/>
+        <result property="groupAddress" column="group_address"/>
         <result property="location" column="location"/>
         <result property="partner" column="partner"/>
         <result property="status" column="status"/>
@@ -31,7 +31,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, address, location, partner, status, grid_id, extend
+        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, group_address, location, partner, status, grid_id, extend
     </sql>
 
     <sql id="table">
@@ -59,7 +59,7 @@
                     <if test="planEntTime != null">and plan_ent_time = #{planEntTime}</if>
                     <if test="realStartTime != null">and real_start_time = #{realStartTime}</if>
                     <if test="realEndTime != null">and real_end_time = #{realEndTime}</if>
-                    <if test="address != null">and address = #{address}</if>
+                    <if test="groupAddress != null">and group_address = #{groupAddress}</if>
                     <if test="location != null">and location = #{location}</if>
                     <if test="partner != null">and partner = #{partner}</if>
                     <if test="status != null">and status = #{status}</if>
@@ -81,15 +81,7 @@
         from
         <include refid="table"/>
         <include refid="conditions"/>
-        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
-            order by
-            <foreach collection="orderByList" item="orderBy" separator=",">
-                ${orderBy.column} ${orderBy.sort}
-            </foreach>
-        </if>
-        <if test="pageEnable">
-            limit #{startRow}, #{pageSize}
-        </if>
+
     </select>
 
     <!-- 查询某条记录 -->
@@ -108,6 +100,8 @@
         <include refid="table"/>
         <include refid="conditions"/>
     </select>
+
+
 
     <!-- 删除 -->
     <delete id="delete" parameterType="com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery">
@@ -166,8 +160,8 @@
             <if test="realEndTime != null">
                 real_end_time,
             </if>
-            <if test="address != null">
-                address,
+            <if test="groupAddress != null">
+                group_address,
             </if>
             <if test="location != null">
                 location,
@@ -230,8 +224,8 @@
             <if test="realEndTime != null">
                 #{realEndTime, jdbcType=TIMESTAMP},
             </if>
-            <if test="address != null">
-                #{address, jdbcType=VARCHAR},
+            <if test="groupAddress != null">
+                #{groupAddress, jdbcType=VARCHAR},
             </if>
             <if test="location != null">
                 #{location, jdbcType=VARCHAR},
@@ -296,8 +290,8 @@
             <if test="realEndTime != null">
                 real_end_time = #{realEndTime, jdbcType=TIMESTAMP},
             </if>
-            <if test="address != null">
-                address = #{address, jdbcType=VARCHAR},
+            <if test="groupAddress != null">
+                group_address = #{groupAddress, jdbcType=VARCHAR},
             </if>
             <if test="location != null">
                 location = #{location, jdbcType=VARCHAR},
@@ -318,4 +312,24 @@
         WHERE
         id = #{id}
     </update>
+
+
+    <select id="getLatestMarketingGroupList" resultType="com.shinemo.groupserviceday.domain.model.GroupDO">
+        select t.*
+        from (
+                 select a.group_id      as groupId,
+                        a.group_name    as groupName,
+                        a.group_address as groupAddress,
+                        a.location      as location,
+                        a.gmt_create    as createTime
+                 from t_parent_group_service_day a
+                          left join t_group_service_day b on a.id = b.parent_id
+                 where a.mobile = #{mobile}
+                    or b.mobile = #{mobile}
+                 order by a.gmt_create desc
+             ) t
+        group by t.groupId,t.createTime
+        order by t.createTime desc
+        limit 10
+    </select>
 </mapper>
