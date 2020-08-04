@@ -172,8 +172,8 @@ public class GroupServiceDayController {
      * @param request
      * @return
      */
-    @GetMapping("/addBusiness")
-    public ApiResult addBusiness(GroupServiceDayBusinessRequest request) {
+    @PostMapping("/addBusiness")
+    public ApiResult addBusiness(@RequestBody GroupServiceDayBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"groupServiceDay activityId is null");
         return groupServiceDayMarketingNumberService.enterMarketingNumber(request);

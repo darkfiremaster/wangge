@@ -88,6 +88,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 .build();
         GroupServiceDayMarketingNumberDO marketingNumberDO = GroupServiceDayMarketingNumberDO.builder()
                 .groupServiceDayId(request.getActivityId())
+                .userId(SmartGridContext.getUid())
                 .detail(GsonUtil.toJson(detail))
                 .publicBizRemark(request.getPublicBizRemark())
                 .informationBizRemark(request.getInformationRemark())

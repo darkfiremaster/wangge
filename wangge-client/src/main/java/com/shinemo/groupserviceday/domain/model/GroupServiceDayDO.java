@@ -1,5 +1,6 @@
 package com.shinemo.groupserviceday.domain.model;
 
+import com.shinemo.client.common.BaseDO;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +13,7 @@ import java.util.Date;
  * @Date 2020-08-03 15:30:45
  */
 @Data
-public class GroupServiceDayDO  {
+public class GroupServiceDayDO extends BaseDO {
 	private Long id;
 	/**
 	* 父集团服务日id
