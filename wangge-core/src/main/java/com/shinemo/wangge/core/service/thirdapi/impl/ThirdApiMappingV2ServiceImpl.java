@@ -29,7 +29,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -43,8 +42,14 @@ import java.util.Objects;
 public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingService {
 
 
-    @Value("${smartgrid.huawei.domain}")
-    public String domain;
+    @Value("${smartgrid.huawei.accessKeyId}")
+    public String accessKeyId;
+    @Value("${smartgrid.huawei.secretKey}")
+    public String secretKey;
+    @Value("${smartgrid.huawei.auth.domain}")
+    public String authDomain;
+
+
     @Value("${smartgrid.huawei.signkey}")
     public String signkey;
     @Value("${smartgrid.huawei.aesKey}")
@@ -85,7 +90,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingService {
 
             Map<String, Object> header = SmartGridUtils.buildHeader(SmartGridContext.getMobile(), accessKeyId, secretKey);
             String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
-            HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
+            HttpResult httpResult = HttpConnectionUtils.httpPost(authDomain + thirdApiMappingDO.getUrl(), param, header);
 
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
 
