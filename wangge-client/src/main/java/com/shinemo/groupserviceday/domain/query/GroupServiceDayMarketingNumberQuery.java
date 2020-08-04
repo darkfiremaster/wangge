@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class GroupServiceDayMarketingNumberQuery {
+    private Long id;
     private Long groupServiceDayId;
     private List<Long> groupServiceDayIds;
 }
