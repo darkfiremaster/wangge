@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @Author shangkaihui
  * @Date 2020/5/8 14:03
- * @Desc
+ * @Desc 老接口
  */
 public interface ThirdApiMappingService {
 
