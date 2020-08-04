@@ -67,9 +67,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Resource
     private ParentGroupServiceDayMapper parentGroupServiceDayMapper;
 
-    @Value("${sign.distance.switch}")
-    public boolean signSwitch;
-
 
 
     @Override
