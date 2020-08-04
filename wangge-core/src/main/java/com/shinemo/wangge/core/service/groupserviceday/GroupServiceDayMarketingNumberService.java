@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.service.groupserviceday;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 
 /**
@@ -15,4 +16,6 @@ public interface GroupServiceDayMarketingNumberService {
      * @return
      */
     ApiResult<GroupServiceDayMarketNumberVO> getByActivityId(Long activityId);
+
+    ApiResult enterMarketingNumber(GroupServiceDayBusinessRequest request);
 }
