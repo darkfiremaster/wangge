@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
 import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
@@ -127,8 +128,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
 
     @Override
-    public ApiResult getLatestMarketingGroupList() {
-        return null;
+    public ApiResult<List<GroupDO>> getLatestMarketingGroupList() {
+        List<GroupDO> latestGroupList = groupServiceDayMapper.getLatestMarketingGroupList(SmartGridContext.getMobile());
+        return ApiResult.of(0,latestGroupList);
     }
 
     @Override
