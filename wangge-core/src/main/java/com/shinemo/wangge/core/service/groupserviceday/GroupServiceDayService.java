@@ -1,12 +1,15 @@
 package com.shinemo.wangge.core.service.groupserviceday;
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +45,7 @@ public interface GroupServiceDayService {
     /**
      * 获取活动列表
      */
-    ApiResult getActivityListByStatus();
+    ApiResult<ListVO<GroupServiceDayVO>> getActivityListByStatus(GroupServiceListRequest request);
 
     /**
      * 开始打卡

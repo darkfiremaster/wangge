@@ -1,14 +1,17 @@
 package com.shinemo.wangge.web.controller.groupserviceday;
 
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBusinessIndexVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
@@ -164,5 +167,15 @@ public class GroupServiceDayController {
     @GetMapping("/getGroupServiceDayMarketNumber")
     public ApiResult<GroupServiceDayMarketNumberVO> getGroupServiceDayBizDetail(@RequestParam Long activityId) {
         return groupServiceDayMarketingNumberService.getByActivityId(activityId);
+    }
+
+    /**
+     * 获取活动列表
+     * @return
+     */
+    @GetMapping("/getActivityListByStatus")
+    public ApiResult<ListVO<GroupServiceDayVO>> getActivityListByStatus(GroupServiceListRequest request) {
+
+        return groupServiceDayService.getActivityListByStatus(request);
     }
 }
