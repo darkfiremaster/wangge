@@ -17,7 +17,7 @@ import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.thirdapi.domain.model.ThirdApiMappingDO;
 import com.shinemo.wangge.core.config.exception.HuaweiApiTimeoutException;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
-import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +39,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingService {
+public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
 
 
     @Value("${smartgrid.huawei.accessKeyId}")
