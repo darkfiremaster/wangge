@@ -2,6 +2,7 @@ package com.shinemo.wangge.core.service.groupserviceday;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
+import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
@@ -62,5 +63,10 @@ public interface GroupServiceDayService {
      * 获取参与人列表
      */
     ApiResult<Map<String, Object>> getPartnerList(Map<String,Object> requestData);
+
+    /**
+     * 自动结束活动
+     */
+    ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO);
 
 }
