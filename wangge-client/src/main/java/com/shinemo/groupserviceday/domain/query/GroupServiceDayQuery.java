@@ -100,4 +100,13 @@ public class GroupServiceDayQuery extends QueryBase {
     * 扩展字段
     */
 	private String extend;
+	/**
+	 * 根据结束时间进行过滤的开始时间
+	 */
+	private Date endFilterStartTIme;
+	/**
+	 * 根据结束时间进行过滤的结束时间
+	 */
+	private Date endFilterEndTIme;
+
 }

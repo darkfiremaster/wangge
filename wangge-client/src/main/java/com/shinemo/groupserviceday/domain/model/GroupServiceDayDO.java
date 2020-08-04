@@ -39,6 +39,10 @@ public class GroupServiceDayDO  {
 	*/
 	private String groupName;
 	/**
+	 * 集团地址
+	 */
+	private String groupAddress;
+	/**
 	* 集团详情
 	*/
 	private String groupDetail;
@@ -74,10 +78,7 @@ public class GroupServiceDayDO  {
 	* 实际结束时间
 	*/
 	private Date realEndTime;
-	/**
-	* 地址
-	*/
-	private String address;
+
 	/**
 	* 坐标
 	*/
