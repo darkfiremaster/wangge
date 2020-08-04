@@ -197,6 +197,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
+        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+        }
+
         //校验当前活动状态
         if (GroupServiceDayStatusEnum.NOT_START.getId() != groupServiceDayDO.getStatus()) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_START_ERROR);
@@ -242,6 +246,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
+        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+        }
+
         //校验活动状态
         if (!groupServiceDayDO.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_END_ERROR);
@@ -283,7 +291,23 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Override
     public ApiResult cancel(Long id) {
-        return null;
+
+        GroupServiceDayDO groupServiceDayDO = getDOById(id);
+        if (groupServiceDayDO == null) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+        }
+        //更新子活动
+        GroupServiceDayDO updateDO = new GroupServiceDayDO();
+        updateDO.setId(groupServiceDayDO.getId());
+        updateDO.setStatus(GroupServiceDayStatusEnum.CANCEL.getId());
+        groupServiceDayMapper.update(updateDO);
+        //更新父活动
+        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.CANCEL.getId(),new Date());
+
+        return ApiResult.of(0);
     }
 
     @Override
@@ -304,13 +328,16 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
             parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
             parentGroupServiceDayDO.setRealStartTime(time);
-        }else if (status == GroupServiceDayStatusEnum.END.getId()) {
+        }else if (status == GroupServiceDayStatusEnum.END.getId() ||
+                status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
+                || status == GroupServiceDayStatusEnum.CANCEL.getId()) {
             //所有子活动结束，父活动即为结束
             GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
             serviceDayQuery.setParentId(groupServiceDayDO.getParentId());
             List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
             List<GroupServiceDayDO> notEndList = groupServiceDayDOS.stream().
-                    filter(a -> !a.getStatus().equals(GroupServiceDayStatusEnum.END.getId())).
+                    filter(a -> a.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId()) ||
+                            a.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())).
                     collect(Collectors.toList());
             if (CollectionUtils.isEmpty(notEndList)) {
                 //更新父活动状态未已结束
