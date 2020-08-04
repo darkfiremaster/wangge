@@ -5,6 +5,7 @@ import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public interface GroupServiceDayService {
     /**
      * 获取已结束办理量、活动次数
      */
-    ApiResult getFinishedCount(Integer type);
+    ApiResult<GroupServiceDayFinishedVO> getFinishedCount(Integer type);
 
     /**
      * 获取活动列表
@@ -45,21 +46,21 @@ public interface GroupServiceDayService {
     /**
      * 开始打卡
      */
-    ApiResult startSign(GroupServiceDaySignRequest request);
+    ApiResult<Void> startSign(GroupServiceDaySignRequest request);
 
     /**
      * 结束打卡
      */
-    ApiResult endSign(GroupServiceDaySignRequest request);
+    ApiResult<Void> endSign(GroupServiceDaySignRequest request);
 
     /**
      * 活动取消
      */
-    ApiResult cancel(Long id);
+    ApiResult<Void> cancel(Long id);
 
     /**
      * 获取参与人列表
      */
-    ApiResult getPartnerList(GroupServiceDayPartnerListRequest request);
+    ApiResult<Map<String, Object>> getPartnerList(Map<String,Object> requestData);
 
 }

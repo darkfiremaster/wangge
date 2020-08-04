@@ -114,8 +114,8 @@ public class GroupServiceDayController {
      * @return
      */
     @GetMapping("/getPartnerList")
-    public ApiResult<Map<String, Object>> getPartnerList(GroupServiceDayPartnerListRequest request) {
-        return groupServiceDayService.getPartnerList(request);
+    public ApiResult<Map<String, Object>> getPartnerList(@RequestBody Map<String,Object> requestData) {
+        return groupServiceDayService.getPartnerList(requestData);
     }
 
 
