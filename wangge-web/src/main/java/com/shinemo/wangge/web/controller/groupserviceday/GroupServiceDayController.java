@@ -76,7 +76,7 @@ public class GroupServiceDayController {
     @PostMapping("/sign")
     public ApiResult<Void> sign(@RequestBody GroupServiceDaySignRequest request) {
         Assert.notNull(request, "request is null");
-        Assert.notNull(request.getLocation(), "location is null");
+        Assert.notNull(request.getLocationDetailVO(), "locationDetailVO is null");
         return groupServiceDayService.startSign(request);
     }
 
@@ -88,7 +88,7 @@ public class GroupServiceDayController {
     @PostMapping("/endSign")
     public ApiResult<Void> endSign(@RequestBody GroupServiceDaySignRequest request) {
         Assert.notNull(request, "request is null");
-        Assert.notNull(request.getLocation(), "location is null");
+        Assert.notNull(request.getLocationDetailVO(), "locationDetailVO is null");
         return groupServiceDayService.endSign(request);
     }
 

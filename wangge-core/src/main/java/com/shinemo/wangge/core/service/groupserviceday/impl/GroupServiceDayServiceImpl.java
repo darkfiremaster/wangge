@@ -19,6 +19,13 @@ import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.common.error.StallUpErrorCodes;
+import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
+import com.shinemo.sweepfloor.common.error.SweepFloorErrorCodes;
+import com.shinemo.sweepfloor.domain.model.SignRecordDO;
+import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -26,7 +33,9 @@ import com.shinemo.wangge.core.util.ValidatorUtil;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
 import com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper;
+import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -54,7 +63,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Resource
     private GroupServiceDayMarketingNumberMapper groupServiceDayMarketingNumberMapper;
     @Resource
+    private SignRecordMapper signRecordMapper;
+    @Resource
     private ParentGroupServiceDayMapper parentGroupServiceDayMapper;
+
 
 
     @Override
@@ -176,21 +188,97 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return null;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult startSign(GroupServiceDaySignRequest request) {
-        GroupServiceDayQuery groupServiceDayQuery = new GroupServiceDayQuery();
-        groupServiceDayQuery.setId(request.getId());
-        GroupServiceDayDO groupServiceDayDO = groupServiceDayMapper.get(groupServiceDayQuery);
+
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
         if (groupServiceDayDO == null) {
-            ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-        return null;
+        //校验当前活动状态
+        if (GroupServiceDayStatusEnum.NOT_START.getId() != groupServiceDayDO.getStatus()) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_START_ERROR);
+        }
+
+        //校验是否存在进行中活动
+        ApiResult checkResult = checkStatusWhenStart();
+        if (checkResult != null) {
+            return checkResult;
+        }
+
+        //插入签到表
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        signRecordQuery.setActivityId(groupServiceDayDO.getId());
+        signRecordQuery.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+        SignRecordDO signRecordDO = new SignRecordDO();
+        signRecordDO.setUserName(SmartGridContext.getUserName());
+        signRecordDO.setMobile(SmartGridContext.getMobile());
+        signRecordDO.setActivityId(groupServiceDayDO.getId());
+        signRecordDO.setUserId(SmartGridContext.getUid());
+        signRecordDO.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+        signRecordDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
+        signRecordDO.setStartTime(new Date());
+        signRecordMapper.insert(signRecordDO);
+        //更新子活动状态
+        Date startTime = new Date();
+        GroupServiceDayDO updateActivityDO = new GroupServiceDayDO();
+        updateActivityDO.setId(groupServiceDayDO.getId());
+        updateActivityDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+        updateActivityDO.setRealStartTime(startTime);
+        groupServiceDayMapper.update(updateActivityDO);
+        //更新父活动状态
+        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.PROCESSING.getId(),startTime);
+
+        return ApiResult.of(0);
     }
 
     @Override
     public ApiResult endSign(GroupServiceDaySignRequest request) {
-        return null;
+
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
+        if (groupServiceDayDO == null) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+
+        //校验活动状态
+        if (!groupServiceDayDO.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_END_ERROR);
+        }
+
+        //距离校验
+        String location = request.getLocationDetailVO().getLocation();
+        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
+        if (!apiResult.isSuccess()) {
+            return apiResult;
+        }
+        //更新签到表
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        signRecordQuery.setActivityId(groupServiceDayDO.getId());
+        SignRecordDO signRecordDO = signRecordMapper.get(signRecordQuery);
+        if (signRecordDO == null) {
+            log.error("[endSign] signRecordDO is null,activityId = {}",groupServiceDayDO.getId());
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.BASE_ERROR);
+        }
+        SignRecordDO updateSignDO = new SignRecordDO();
+        updateSignDO.setId(signRecordDO.getId());
+        updateSignDO.setRemark(request.getRemark());
+        updateSignDO.setEndTime(new Date());
+        updateSignDO.setEndLocation(GsonUtils.toJson(request.getLocationDetailVO()));
+        updateSignDO.setImgUrl(GsonUtils.toJson(request.getPicUrls()));
+        signRecordMapper.update(updateSignDO);
+        //更新子活动表
+        Date endTime = new Date();
+        GroupServiceDayDO updateActivityDO = new GroupServiceDayDO();
+        updateActivityDO.setId(groupServiceDayDO.getId());
+        updateActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+        updateActivityDO.setRealEndTime(endTime);
+        groupServiceDayMapper.update(updateActivityDO);
+        //更新父活动
+        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.END.getId(),endTime);
+
+        return ApiResult.of(0);
     }
 
     @Override
@@ -202,4 +290,78 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     public ApiResult getPartnerList(GroupServiceDayPartnerListRequest request) {
         return null;
     }
+
+    /**
+     * 更新父活动状态
+     * @param groupServiceDayDO
+     * @param status
+     */
+    private void updateParentStatus(GroupServiceDayDO groupServiceDayDO,Integer status,Date time) {
+
+        ParentGroupServiceDayDO parentGroupServiceDayDO = new ParentGroupServiceDayDO();
+        //子活动有一个开始，父活动即为开始
+        if (status == GroupServiceDayStatusEnum.PROCESSING.getId()) {
+            parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
+            parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+            parentGroupServiceDayDO.setRealStartTime(time);
+        }else if (status == GroupServiceDayStatusEnum.END.getId()) {
+            //所有子活动结束，父活动即为结束
+            GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
+            serviceDayQuery.setParentId(groupServiceDayDO.getParentId());
+            List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
+            List<GroupServiceDayDO> notEndList = groupServiceDayDOS.stream().
+                    filter(a -> !a.getStatus().equals(GroupServiceDayStatusEnum.END.getId())).
+                    collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(notEndList)) {
+                //更新父活动状态未已结束
+                parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+                parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
+                parentGroupServiceDayDO.setRealEndTime(time);
+            }
+        }
+        parentGroupServiceDayMapper.update(parentGroupServiceDayDO);
+    }
+
+    private GroupServiceDayDO getDOById(Long id) {
+        GroupServiceDayQuery groupServiceDayQuery = new GroupServiceDayQuery();
+        groupServiceDayQuery.setId(id);
+        return groupServiceDayMapper.get(groupServiceDayQuery);
+    }
+
+    /**
+     * 校验是否有进行中活动
+     * @return
+     */
+    private ApiResult checkStatusWhenStart() {
+
+        GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
+        serviceDayQuery.setMobile(SmartGridContext.getMobile());
+        serviceDayQuery.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+        List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
+        if (!CollectionUtils.isEmpty(groupServiceDayDOS)) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.STARTED_ACTIVITY_EXIT);
+        }
+        return null;
+    }
+
+    /**
+     * 距离校验
+     * @param dbLocation
+     * @param reqLocation
+     * @return
+     */
+    private ApiResult checkDistaneWhencSign(String dbLocation, String reqLocation) {
+        String[] dbSplit = dbLocation.split(",");
+        String[] reqSplit = reqLocation.split(",");
+        double Lat1 = Double.parseDouble(dbSplit[1]);
+        double Lon1 = Double.parseDouble(dbSplit[0]);
+        double Lat2 = Double.parseDouble(reqSplit[1]);
+        double Lon2 = Double.parseDouble(reqSplit[0]);
+        double distance = DistanceUtils.getDistanceFromCoordinates(Lat1, Lon1, Lat2, Lon2);
+        if (distance > 5) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
+        }
+        return ApiResult.of(0);
+    }
+
 }

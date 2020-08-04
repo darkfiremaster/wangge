@@ -6,6 +6,10 @@ public interface GroupServiceDayErrorCodes {
     ErrorCode BASE_ERROR = new ErrorCode(500, "系统错误，请稍后尝试");
 
     ErrorCode ACTIVITY_NOT_EXIT = new ErrorCode(500, "集团服务日活动不存在");
+    ErrorCode STARTED_ACTIVITY_EXIT = new ErrorCode(500, "已存在进行中的集团服务日活动！");
+    ErrorCode ACTIVITY_START_ERROR = new ErrorCode(500, "当前活动不可以进行打卡操作！");
+    ErrorCode GROUP_SERVICE_SIGN_DISTANCE_ERROR = new ErrorCode(500, "当前位置不在打卡范围！");
+    ErrorCode ACTIVITY_END_ERROR = new ErrorCode(500, "当前活动不可以进行签离操作！");
 
 
 }
