@@ -89,6 +89,18 @@ public class SmartGridUtils {
         return prefix + "**";
     }
 
+    public static Map<String,Object> buildHeader(String mobile,String accessKeyId,String secretKey) {
+        Map<String,Object> header = new TreeMap<>();
+        long timeMillis = System.currentTimeMillis();
+        header.put("accessKeyId",accessKeyId);
+        header.put("timestamp",timeMillis);
+        header.put("userPhone", mobile);
+        String source = "accessKeyId=" + accessKeyId + "&timestamp=" + timeMillis + "&userPhone=" + mobile;
+        String signature = SHA256Encoder.encodeHmacSHA256(source,secretKey);
+        header.put("signature",signature);
+        return header;
+    }
+
     public static void main(String[] args) {
 //        Map<String,Object> map = new TreeMap<>();
 //        TodoDTO request = new TodoDTO();
