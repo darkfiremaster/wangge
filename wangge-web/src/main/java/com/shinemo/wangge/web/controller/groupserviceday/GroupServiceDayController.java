@@ -3,6 +3,7 @@ package com.shinemo.wangge.web.controller.groupserviceday;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
@@ -164,5 +165,18 @@ public class GroupServiceDayController {
     @GetMapping("/getGroupServiceDayMarketNumber")
     public ApiResult<GroupServiceDayMarketNumberVO> getGroupServiceDayBizDetail(@RequestParam Long activityId) {
         return groupServiceDayMarketingNumberService.getByActivityId(activityId);
+    }
+
+    /**
+     * 业务列表录入接口
+     * @param request
+     * @return
+     */
+    @GetMapping("/addBusiness")
+    public ApiResult addBusiness(GroupServiceDayBusinessRequest request) {
+        Assert.notNull(request,"request is null");
+        Assert.notNull(request.getActivityId(),"groupServiceDay activityId is null");
+
+        return ApiResult.success();
     }
 }
