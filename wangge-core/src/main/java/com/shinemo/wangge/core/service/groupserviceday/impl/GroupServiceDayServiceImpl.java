@@ -146,7 +146,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult getFinishedCount(Integer type) {
+    public ApiResult<GroupServiceDayFinishedVO> getFinishedCount(Integer type) {
 
         GroupServiceDayFinishedVO result = new GroupServiceDayFinishedVO();
 
@@ -190,7 +190,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ApiResult startSign(GroupServiceDaySignRequest request) {
+    public ApiResult<Void> startSign(GroupServiceDaySignRequest request) {
 
         GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
         if (groupServiceDayDO == null) {
@@ -238,8 +238,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return ApiResult.of(0);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ApiResult endSign(GroupServiceDaySignRequest request) {
+    public ApiResult<Void> endSign(GroupServiceDaySignRequest request) {
 
         GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
         if (groupServiceDayDO == null) {
@@ -289,8 +290,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return ApiResult.of(0);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ApiResult cancel(Long id) {
+    public ApiResult<Void> cancel(Long id) {
 
         GroupServiceDayDO groupServiceDayDO = getDOById(id);
         if (groupServiceDayDO == null) {
@@ -311,8 +313,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult getPartnerList(GroupServiceDayPartnerListRequest request) {
-        return null;
+    public ApiResult<Map<String, Object>> getPartnerList(Map<String,Object> requestData) {
+        return thirdApiMappingService.dispatch(requestData, "getPartnerList");
     }
 
     /**
