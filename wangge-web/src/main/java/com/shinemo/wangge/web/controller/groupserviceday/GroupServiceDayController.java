@@ -1,19 +1,17 @@
 package com.shinemo.wangge.web.controller.groupserviceday;
 
 
-import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBusinessIndexVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
-import com.shinemo.stallup.domain.model.StallUpBizType;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageBizListVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +29,9 @@ public class GroupServiceDayController {
 
     @Resource
     private StallUpConfig stallUpConfig;
+
+    @Resource
+    private GroupServiceDayMarketingNumberService groupServiceDayMarketingNumberService;
 
     /**
      * 获取首页：已结束活动、业务办理量次数
@@ -84,9 +85,13 @@ public class GroupServiceDayController {
     }
 
 
+    /**
+     * 集团服务日业务查询首页
+     * @return
+     */
     @GetMapping("/getGroupServiceDayBizDetail")
     public ApiResult<GroupServiceDayBusinessIndexVO> getGroupServiceDayBizDetail() {
-        //获取摆摊配置
+        //获取配置
         StallUpConfig.ConfigDetail config = stallUpConfig.getConfig();
         GroupServiceDayBusinessIndexVO groupServiceDayBusinessIndexVO = new GroupServiceDayBusinessIndexVO();
 
@@ -115,5 +120,16 @@ public class GroupServiceDayController {
 
 
         return ApiResult.of(0,groupServiceDayBusinessIndexVO);
+    }
+
+
+    /**
+     * 业务列表查询接口
+     * @param activityId
+     * @return
+     */
+    @GetMapping("/getGroupServiceDayMarketNumber")
+    public ApiResult<GroupServiceDayMarketNumberVO> getGroupServiceDayBizDetail(@RequestParam Long activityId) {
+        return groupServiceDayMarketingNumberService.getByActivityId(activityId);
     }
 }
