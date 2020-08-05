@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.handler;
 
+import cn.hutool.core.util.StrUtil;
 import com.shinemo.common.tools.http.URLEncodedUtils;
 import com.shinemo.smartgrid.domain.UrlRedirectHandlerRequest;
 import com.shinemo.stallup.domain.params.MaDianParams;
@@ -16,21 +17,26 @@ import java.nio.charset.Charset;
  */
 public class MaDianAdHandler extends MaDianCommonHandler {
 
-	@Setter
-	protected String path;
+    @Setter
+    protected String path;
 
-	private static final String body = "{\"request\":{\"body\":{\"userPhone\":\"%s\",\"adType\":%s},\"header\":{\"appId\":\"%s\"}}}";
+    private static final String body = "{\"request\":{\"body\":{\"userPhone\":\"%s\",\"adType\":%s,\"activityId\":%s},\"header\":{\"appId\":\"%s\"}}}";
 
-	@Override
-	public String getUrl(UrlRedirectHandlerRequest request) {
-		MaDianParams maDianParams = request.getBizParams();
-		Integer adType = maDianParams.getAdType();
-		String requestBody = String.format(body, request.getUserPhone(), adType, appId);
-		StringBuilder url = new StringBuilder();
-		url.append(domain)
-			.append(path)
-			.append("?sign=").append(DigestUtils.md5Hex(requestBody + key))
-			.append("&reqdata=").append(URLEncodedUtils.encodePath(requestBody, Charset.forName("utf8")));
-		return url.toString();
-	}
+    @Override
+    public String getUrl(UrlRedirectHandlerRequest request) {
+        MaDianParams maDianParams = request.getBizParams();
+        Integer adType = maDianParams.getAdType();
+        String requestBody;
+        if (StrUtil.isNotBlank(request.getActivityStrId())) {
+            requestBody = String.format(body, request.getUserPhone(), adType, request.getActivityStrId(), appId);
+        } else {
+            requestBody = String.format(body, request.getUserPhone(), adType, "", appId);
+        }
+        StringBuilder url = new StringBuilder();
+        url.append(domain)
+                .append(path)
+                .append("?sign=").append(DigestUtils.md5Hex(requestBody + key))
+                .append("&reqdata=").append(URLEncodedUtils.encodePath(requestBody, Charset.forName("utf8")));
+        return url.toString();
+    }
 }
