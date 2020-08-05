@@ -32,7 +32,6 @@ public class MaDianAdHandler extends MaDianCommonHandler {
 				.append(path)
 				.append("?sign=").append(DigestUtils.md5Hex(requestBody + key))
 				.append("&reqdata=").append(URLEncodedUtils.encodePath(requestBody, Charset.forName("utf8")));
-		System.out.println("url = " + url);
 		return url.toString();
 	}
 }
