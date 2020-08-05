@@ -119,29 +119,52 @@ public class StallUpConfig {
         config.setOaoServiceList(tmpOAOServiceList);
 
         //扫楼配置
-//        Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepFloorList = initListAndMap(tmpMap, config.getSweepFloorList(), tmpSweepFloorMap);
-//        config.setSweepFloorList(tmpSweepFloorList);
+        Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepFloorList = initListAndMap(tmpMap, config.getSweepFloorList(), tmpSweepFloorMap);
+        config.setSweepFloorList(tmpSweepFloorList);
 //        config.setSweepFloorMap(tmpSweepFloorMap);
 
         //扫楼业务配置
-//        Map<Long, StallUpBizType> tmpSweepFloorBizMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
-//        config.setSweepFloorBizList(tmpSweepFloorBizList);
+        Map<Long, StallUpBizType> tmpSweepFloorBizMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
+        config.setSweepFloorBizList(tmpSweepFloorBizList);
 //        config.setSweepFloorBizMap(tmpSweepFloorBizMap);
 
         //扫村配置
-//        Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
-//        config.setSweepVillageList(tmpSweepVillageList);
+        Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
+        config.setSweepVillageList(tmpSweepVillageList);
 //        config.setSweepVillageMap(tmpSweepVillageMap);
 
         //扫村业务配置
-//        Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
-//        config.setSweepFloorBizList(tmpSweepVillageBizList);
+        Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
+        config.setSweepFloorBizList(tmpSweepVillageBizList);
 //        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
 
+        /**
+         * 集团服务日配置
+         */
+        Map<Long, StallUpBizType> tmpGroupServiceDayToolMap = new HashMap<>();
+        List<StallUpBizType> tmpGroupServiceDayToolList = initListAndMap(tmpMap, config.getGroupServiceDayToolList(), tmpGroupServiceDayToolMap);
+        config.setGroupServiceDayToolList(tmpGroupServiceDayToolList);
+
+        Map<Long, StallUpBizType> tmpPublicGroupServiceDayBizMap = new HashMap<>();
+        List<StallUpBizType> tmpPublicGroupServiceDayBizList = initListAndMap(tmpMap, config.getPublicGroupServiceDayBizList(), tmpPublicGroupServiceDayBizMap);
+        config.setPublicGroupServiceDayBizList(tmpPublicGroupServiceDayBizList);
+
+        Map<Long, StallUpBizType> tmpPublicGroupServiceDayBizDataMap = new HashMap<>();
+        List<StallUpBizType> tmpPublicGroupServiceDayBizDataList = initListAndMap(tmpMap, config.getPublicGroupServiceDayBizDataList(), tmpPublicGroupServiceDayBizDataMap);
+        config.setPublicGroupServiceDayBizDataList(tmpPublicGroupServiceDayBizDataList);
+
+
+        Map<Long, StallUpBizType> tmpInformationGroupServiceDayBizMap = new HashMap<>();
+        List<StallUpBizType> tmpInformationGroupServiceDayBizList = initListAndMap(tmpMap, config.getInformationGroupServiceDayBizList(), tmpInformationGroupServiceDayBizMap);
+        config.setInformationGroupServiceDayBizList(tmpInformationGroupServiceDayBizList);
+
+        Map<Long, StallUpBizType> tmpInformationGroupServiceDayBizDataMap = new HashMap<>();
+        List<StallUpBizType> tmpInformationGroupServiceDayBizDataList = initListAndMap(tmpMap, config.getInformationGroupServiceDayBizDataList(), tmpInformationGroupServiceDayBizDataMap);
+        config.setInformationGroupServiceDayBizDataList(tmpInformationGroupServiceDayBizDataList);
 
         //初始化url参数拼接handler
         MaDianConfig MaDianConfig = config.getMaDianConfig();
@@ -269,6 +292,9 @@ public class StallUpConfig {
     private List<StallUpBizType> initListAndMap(Map<Long, StallUpBizType> tmpMap,
                                                 List<StallUpBizType> list,
                                                 Map<Long, StallUpBizType> map) {
+        if(list == null){
+            return new ArrayList<>();
+        }
         list.stream().map(v -> {
             StallUpBizType stallUpBizType = mergeBizType(tmpMap, v);
             map.put(stallUpBizType.getId(), stallUpBizType);
@@ -392,12 +418,12 @@ public class StallUpConfig {
         /**
          * 扫楼
          */
-        private Map<Long, StallUpBizType> sweepFloorMap;
+//        private Map<Long, StallUpBizType> sweepFloorMap;
         private List<StallUpBizType> sweepFloorList;
         /**
          * 扫楼业务
          */
-        private Map<Long, StallUpBizType> sweepFloorBizMap;
+//        private Map<Long, StallUpBizType> sweepFloorBizMap;
         private List<StallUpBizType> sweepFloorBizList;
 
         /**
@@ -410,7 +436,7 @@ public class StallUpConfig {
         /**
          * 扫村业务
          */
-//        private Map<StallUpBizType> sweepVillageBizMap;
+//        private Map<Long, StallUpBizType> sweepVillageBizMap;
         private List<StallUpBizType> sweepVillageBizList;
 
 
