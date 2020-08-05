@@ -56,4 +56,6 @@ public class SweepVillageTenantsVO {
     private Date visitTime;
     /** 距离 */
     private String distance;
+    /** 创建人手机号 */
+    private String createMobile;
 }

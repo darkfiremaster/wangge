@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.controller.sweepvillage;
 
 import com.google.gson.*;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
@@ -39,15 +40,21 @@ public class TenantsController {
         JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("rows"))).getAsJsonArray();
         List<SweepVillageTenantsVO> list = GsonUtils.jsonArrayToList(jsonArray, SweepVillageTenantsVO.class);
         if (!CollectionUtils.isEmpty(list)) {
-
+            String createMobile = SmartGridContext.getMobile();
             for (SweepVillageTenantsVO tenantsVO: list) {
                 String contactMobile = tenantsVO.getContactMobile();
                 String contactPerson = tenantsVO.getContactPerson();
-                //脱敏手机号、姓名
-                String mobile = SmartGridUtils.desensitizationMobile(contactMobile);
-                String name = SmartGridUtils.desensitizationName(contactPerson);
-                tenantsVO.setContactPerson(name);
-                tenantsVO.setContactMobile(mobile);
+                if (createMobile.equals(tenantsVO.getCreateMobile())) {
+                    tenantsVO.setContactPerson(contactPerson);
+                    tenantsVO.setContactMobile(contactMobile);
+                }else {
+                    //脱敏手机号、姓名
+                    String mobile = SmartGridUtils.desensitizationMobile(contactMobile);
+                    String name = SmartGridUtils.desensitizationName(contactPerson);
+                    tenantsVO.setContactPerson(name);
+                    tenantsVO.setContactMobile(mobile);
+                }
+
                 SweepVillageVisitRecordingQuery visitRecordingQuery = new SweepVillageVisitRecordingQuery();
                 visitRecordingQuery.setTenantsId(tenantsVO.getId());
                 visitRecordingQuery.setStatus(1);
