@@ -16,4 +16,9 @@ public class SuiShenXingParams extends BizParams{
 	 * 类型 1-新入网 2-随身行
 	 */
 	private Integer type;
+
+	/**
+	 * 类型 003-上门开户
+	 */
+	private String busiCode;
 }

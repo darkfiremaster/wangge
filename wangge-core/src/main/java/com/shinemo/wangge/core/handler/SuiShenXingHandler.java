@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.handler;
 
+import cn.hutool.core.util.StrUtil;
 import com.shinemo.smartgrid.domain.UrlRedirectHandlerRequest;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.params.SuiShenXingParams;
@@ -26,7 +27,11 @@ public class SuiShenXingHandler implements UrlRedirectHandler {
 
 		Map<String, Object> formData = new HashMap<>();
 		formData.put("downloadUrl", params.getDownloadUrl() + "?timestamp=" + System.currentTimeMillis());
-		formData.put("type", params.getType());
+		if (StrUtil.isNotBlank(params.getBusiCode())) {
+			formData.put("BusiCode", params.getBusiCode());
+		} else {
+			formData.put("type", params.getType());
+		}
 
 		return GsonUtils.toJson(formData);
 	}
