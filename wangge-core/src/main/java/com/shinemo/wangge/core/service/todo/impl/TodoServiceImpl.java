@@ -108,10 +108,10 @@ public class TodoServiceImpl implements TodoService {
 
     private ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
-        Assert.notBlank(todoDTO.getTitle(), "title is null");
-        Assert.notBlank(todoDTO.getRemark(), "remark is null");
+        Assert.notNull(todoDTO.getTitle(), "title is null");
+        Assert.notNull(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
-        Assert.notBlank(todoDTO.getLabel(), "label is null");
+        //Assert.notBlank(todoDTO.getLabel(), "label is null");
         Assert.notBlank(todoDTO.getOperatorTime(), "operatorTime is null");
 
         TodoQuery todoQuery = new TodoQuery();
