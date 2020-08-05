@@ -119,28 +119,28 @@ public class StallUpConfig {
         config.setOaoServiceList(tmpOAOServiceList);
 
         //扫楼配置
-//        Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepFloorList = initListAndMap(tmpMap, config.getSweepFloorList(), tmpSweepFloorMap);
-//        config.setSweepFloorList(tmpSweepFloorList);
-//        config.setSweepFloorMap(tmpSweepFloorMap);
+        Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepFloorList = initListAndMap(tmpMap, config.getSweepFloorList(), tmpSweepFloorMap);
+        config.setSweepFloorList(tmpSweepFloorList);
+        config.setSweepFloorMap(tmpSweepFloorMap);
 
         //扫楼业务配置
-//        Map<Long, StallUpBizType> tmpSweepFloorBizMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
-//        config.setSweepFloorBizList(tmpSweepFloorBizList);
-//        config.setSweepFloorBizMap(tmpSweepFloorBizMap);
+        Map<Long, StallUpBizType> tmpSweepFloorBizMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
+        config.setSweepFloorBizList(tmpSweepFloorBizList);
+        config.setSweepFloorBizMap(tmpSweepFloorBizMap);
 
         //扫村配置
-//        Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
-//        config.setSweepVillageList(tmpSweepVillageList);
-//        config.setSweepVillageMap(tmpSweepVillageMap);
+        Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
+        config.setSweepVillageList(tmpSweepVillageList);
+        config.setSweepVillageMap(tmpSweepVillageMap);
 
         //扫村业务配置
-//        Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
-//        List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
-//        config.setSweepFloorBizList(tmpSweepVillageBizList);
-//        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
+        Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
+        config.setSweepFloorBizList(tmpSweepVillageBizList);
+        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
 
 
         //初始化url参数拼接handler
@@ -403,14 +403,14 @@ public class StallUpConfig {
         /**
          * 扫村
          */
-//        private Map<Long, StallUpBizType> sweepVillageMap;
+        private Map<Long, StallUpBizType> sweepVillageMap;
         private List<StallUpBizType> sweepVillageList;
 
 
         /**
          * 扫村业务
          */
-//        private Map<StallUpBizType> sweepVillageBizMap;
+        private Map<Long,StallUpBizType> sweepVillageBizMap;
         private List<StallUpBizType> sweepVillageBizList;
 
 
