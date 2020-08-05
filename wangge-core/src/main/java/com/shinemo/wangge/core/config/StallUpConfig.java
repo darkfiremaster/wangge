@@ -122,25 +122,25 @@ public class StallUpConfig {
         Map<Long, StallUpBizType> tmpSweepFloorMap = new HashMap<>();
         List<StallUpBizType> tmpSweepFloorList = initListAndMap(tmpMap, config.getSweepFloorList(), tmpSweepFloorMap);
         config.setSweepFloorList(tmpSweepFloorList);
-//        config.setSweepFloorMap(tmpSweepFloorMap);
+        config.setSweepFloorMap(tmpSweepFloorMap);
 
         //扫楼业务配置
         Map<Long, StallUpBizType> tmpSweepFloorBizMap = new HashMap<>();
         List<StallUpBizType> tmpSweepFloorBizList = initListAndMap(tmpMap, config.getSweepFloorBizList(), tmpSweepFloorBizMap);
         config.setSweepFloorBizList(tmpSweepFloorBizList);
-//        config.setSweepFloorBizMap(tmpSweepFloorBizMap);
+        config.setSweepFloorBizMap(tmpSweepFloorBizMap);
 
         //扫村配置
         Map<Long, StallUpBizType> tmpSweepVillageMap = new HashMap<>();
         List<StallUpBizType> tmpSweepVillageList = initListAndMap(tmpMap, config.getSweepVillageList(), tmpSweepVillageMap);
         config.setSweepVillageList(tmpSweepVillageList);
-//        config.setSweepVillageMap(tmpSweepVillageMap);
+        config.setSweepVillageMap(tmpSweepVillageMap);
 
         //扫村业务配置
         Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
         List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
         config.setSweepFloorBizList(tmpSweepVillageBizList);
-//        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
+        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
 
         /**
          * 集团服务日配置
@@ -418,25 +418,25 @@ public class StallUpConfig {
         /**
          * 扫楼
          */
-//        private Map<Long, StallUpBizType> sweepFloorMap;
+        private Map<Long, StallUpBizType> sweepFloorMap;
         private List<StallUpBizType> sweepFloorList;
         /**
          * 扫楼业务
          */
-//        private Map<Long, StallUpBizType> sweepFloorBizMap;
+        private Map<Long, StallUpBizType> sweepFloorBizMap;
         private List<StallUpBizType> sweepFloorBizList;
 
         /**
          * 扫村
          */
-//        private Map<Long, StallUpBizType> sweepVillageMap;
+        private Map<Long, StallUpBizType> sweepVillageMap;
         private List<StallUpBizType> sweepVillageList;
 
 
         /**
          * 扫村业务
          */
-//        private Map<Long, StallUpBizType> sweepVillageBizMap;
+        private Map<Long,StallUpBizType> sweepVillageBizMap;
         private List<StallUpBizType> sweepVillageBizList;
 
 
