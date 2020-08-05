@@ -1341,6 +1341,9 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                 }
             }
             huaweiRequest.setServiceProvider(type);
+            huaweiRequest.setBroadbandFlag(1);
+        }else {
+            huaweiRequest.setBroadbandFlag(0);
         }
         if (request.getTVBoxTypes() != null) {
             huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));
