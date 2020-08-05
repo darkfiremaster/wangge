@@ -72,12 +72,13 @@ public class EncryptUtil {
                 sb.append(key);
             }
             if (params.get(key) instanceof Map) {
+                //map的toString方法,会多一个空格,需要去掉这个空格
                 sb.append("=").append(URLEncoder.encode(StringUtils.trimAllWhitespace(params.get(key).toString()))).append("&");
             } else {
                 sb.append("=").append(URLEncoder.encode(String.valueOf(params.get(key)))).append("&");
             }
         }
-        String str = sb.substring(0, sb.length()-1).trim();
+        String str = sb.substring(0, sb.length()-1);
         return str;
     }
 
