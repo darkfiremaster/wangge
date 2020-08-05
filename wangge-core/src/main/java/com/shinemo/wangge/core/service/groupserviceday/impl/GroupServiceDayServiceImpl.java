@@ -2,6 +2,7 @@ package com.shinemo.wangge.core.service.groupserviceday.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
@@ -13,7 +14,9 @@ import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
+import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
@@ -35,16 +38,14 @@ import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
 import com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -184,8 +185,41 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult getActivityListByStatus() {
-        return null;
+    public ApiResult<ListVO<GroupServiceDayVO>> getActivityListByStatus(GroupServiceListRequest request) {
+        GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
+        serviceDayQuery.setStatus(request.getStatus());
+        serviceDayQuery.setMobile(SmartGridContext.getMobile());
+        serviceDayQuery.setEndFilterStartTIme(request.getStartTime());
+        serviceDayQuery.setEndFilterEndTIme(request.getEndTime());
+        if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
+            serviceDayQuery.setPageEnable(true);
+        }
+        List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
+        if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
+            return ApiResult.of(0,ListVO.list(new ArrayList<>(),0));
+        }
+        //DO-->VO
+        List<GroupServiceDayVO> vos = new ArrayList<>(groupServiceDayDOS.size());
+        for (GroupServiceDayDO serviceDayDO: groupServiceDayDOS) {
+            GroupServiceDayVO serviceDayVO = new GroupServiceDayVO();
+            BeanUtils.copyProperties(serviceDayDO,serviceDayVO);
+            vos.add(serviceDayVO);
+        }
+        if (!request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
+            return ApiResult.of(0,ListVO.list(vos,vos.size()));
+        }
+        long count = groupServiceDayMapper.count(serviceDayQuery);
+        //查询办理量
+        List<Long> activityIds = vos.stream().map(GroupServiceDayVO::getId).collect(Collectors.toList());
+        GroupServiceDayMarketingNumberQuery numberQuery = new GroupServiceDayMarketingNumberQuery();
+        numberQuery.setGroupServiceDayIds(activityIds);
+        List<GroupServiceDayMarketingNumberDO> groupServiceDayMarketingNumberDOS = groupServiceDayMarketingNumberMapper.find(numberQuery);
+        Map<Long, List<GroupServiceDayMarketingNumberDO>> map = groupServiceDayMarketingNumberDOS.stream().collect(Collectors.groupingBy(GroupServiceDayMarketingNumberDO::getGroupServiceDayId));
+        for (GroupServiceDayVO serviceDayVO: vos) {
+            GroupServiceDayMarketingNumberDO numberDO = map.get(serviceDayVO.getId()).get(0);
+            serviceDayVO.setBusinessCount(numberDO.getCount());
+        }
+        return ApiResult.of(0,ListVO.list(vos,count));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -317,6 +351,41 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return thirdApiMappingService.dispatch(requestData, "getPartnerList");
     }
 
+    @Override
+    public ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO) {
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        signRecordQuery.setActivityId(serviceDayDO.getId());
+        signRecordQuery.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+        SignRecordDO signRecordDO = signRecordMapper.get(signRecordQuery);
+
+        int status = GroupServiceDayStatusEnum.AUTO_END.getId();
+        Date endTime = new Date();
+
+        //更新签到表
+        if (signRecordDO == null) {
+            signRecordDO = new SignRecordDO();
+            signRecordDO.setEndTime(endTime);
+            signRecordDO.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+            signRecordDO.setUserId(serviceDayDO.getCreatorId().toString());
+            signRecordDO.setActivityId(serviceDayDO.getId());
+            signRecordDO.setMobile(serviceDayDO.getMobile());
+            signRecordMapper.insert(signRecordDO);
+        }else {
+            SignRecordDO newSignRecordDO = new SignRecordDO();
+            newSignRecordDO.setId(signRecordDO.getId());
+            newSignRecordDO.setEndTime(endTime);
+            signRecordMapper.update(newSignRecordDO);
+        }
+
+        //更新子活动表
+        serviceDayDO.setStatus(status);
+        groupServiceDayMapper.update(serviceDayDO);
+        //更新父活动表
+        updateParentStatus(serviceDayDO,status,endTime);
+
+        return ApiResult.of(0);
+    }
+
     /**
      * 更新父活动状态
      * @param groupServiceDayDO
@@ -332,7 +401,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             parentGroupServiceDayDO.setRealStartTime(time);
         }else if (status == GroupServiceDayStatusEnum.END.getId() ||
                 status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
-                || status == GroupServiceDayStatusEnum.CANCEL.getId()) {
+                || status == GroupServiceDayStatusEnum.CANCEL.getId()
+                || status == GroupServiceDayStatusEnum.AUTO_END.getId()) {
             //所有子活动结束，父活动即为结束
             GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
             serviceDayQuery.setParentId(groupServiceDayDO.getParentId());

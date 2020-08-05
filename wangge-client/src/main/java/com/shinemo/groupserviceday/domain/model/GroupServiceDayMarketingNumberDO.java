@@ -1,7 +1,7 @@
 package com.shinemo.groupserviceday.domain.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.shinemo.client.common.BaseDO;
+import lombok.*;
 
 import java.util.Date;
 
@@ -13,7 +13,10 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class GroupServiceDayMarketingNumberDO {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class GroupServiceDayMarketingNumberDO extends BaseDO {
 
 
     private Long id;
@@ -25,7 +28,7 @@ public class GroupServiceDayMarketingNumberDO {
     private Date gmtModified;
 
 
-    private Long userId;
+    private String userId;
 
 
     private Long groupServiceDayId;

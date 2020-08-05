@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 查询类
@@ -108,5 +109,9 @@ public class GroupServiceDayQuery extends QueryBase {
 	 * 根据结束时间进行过滤的结束时间
 	 */
 	private Date endFilterEndTIme;
+	/**
+	 * 状态列表
+	 */
+	private List<Integer> statusList;
 
 }
