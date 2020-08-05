@@ -40,6 +40,10 @@ public class UrlRedirectHandlerRequest {
 	/** 小区名 */
 	private String communityName;
 
+	/**
+	 * 活动Id,由前端拼接活动前缀,用于码店业务办理跳转
+	 */
+	private String activityStrId;
 
 	public <T extends BizParams> T getBizParams() {
 		if (bizParams != null) {
