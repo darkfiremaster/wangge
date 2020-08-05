@@ -20,18 +20,13 @@ public class MaDianAdHandler extends MaDianCommonHandler {
     @Setter
     protected String path;
 
-    private static final String body = "{\"request\":{\"body\":{\"userPhone\":\"%s\",\"adType\":%s,\"activityId\":%s},\"header\":{\"appId\":\"%s\"}}}";
+    private static final String body = "{\"request\":{\"body\":{\"userPhone\":\"%s\",\"adType\":%s,\"activityId\":\"%s\"},\"header\":{\"appId\":\"%s\"}}}";
 
     @Override
     public String getUrl(UrlRedirectHandlerRequest request) {
         MaDianParams maDianParams = request.getBizParams();
         Integer adType = maDianParams.getAdType();
-        String requestBody;
-        if (StrUtil.isNotBlank(request.getActivityStrId())) {
-            requestBody = String.format(body, request.getUserPhone(), adType, request.getActivityStrId(), appId);
-        } else {
-            requestBody = String.format(body, request.getUserPhone(), adType, "", appId);
-        }
+        String requestBody = String.format(body, request.getUserPhone(), adType, StrUtil.isNotBlank(request.getActivityStrId()) ? request.getActivityStrId() : "", appId);
         StringBuilder url = new StringBuilder();
         url.append(domain)
                 .append(path)
