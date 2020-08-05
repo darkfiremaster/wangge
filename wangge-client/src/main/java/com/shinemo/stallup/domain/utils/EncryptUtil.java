@@ -77,7 +77,7 @@ public class EncryptUtil {
                 sb.append("=").append(URLEncoder.encode(String.valueOf(params.get(key)))).append("&");
             }
         }
-        String str = sb.substring(0, sb.length()-1);
+        String str = sb.substring(0, sb.length()-1).trim();
         return str;
     }
 
