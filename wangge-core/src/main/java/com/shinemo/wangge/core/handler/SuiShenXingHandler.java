@@ -20,19 +20,19 @@ import java.util.Map;
 @Component
 public class SuiShenXingHandler implements UrlRedirectHandler {
 
-	@Override
-	public String getUrl(UrlRedirectHandlerRequest request) {
+    @Override
+    public String getUrl(UrlRedirectHandlerRequest request) {
 
-		SuiShenXingParams params = request.getBizParams();
+        SuiShenXingParams params = request.getBizParams();
 
-		Map<String, Object> formData = new HashMap<>();
-		formData.put("downloadUrl", params.getDownloadUrl() + "?timestamp=" + System.currentTimeMillis());
-		if (StrUtil.isNotBlank(params.getBusiCode())) {
-			formData.put("BusiCode", params.getBusiCode());
-		} else {
-			formData.put("type", params.getType());
-		}
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("downloadUrl", params.getDownloadUrl() + "?timestamp=" + System.currentTimeMillis());
+        if (StrUtil.isNotBlank(params.getBusiCode())) {
+            formData.put("BusiCode", params.getBusiCode());
+        } else {
+            formData.put("type", params.getType());
+        }
 
-		return GsonUtils.toJson(formData);
-	}
+        return GsonUtils.toJson(formData);
+    }
 }
