@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @Author shangkaihui
  * @Date 2020/5/8 14:03
- * @Desc 华为新接口的映射,新接口都用这个类
+ * @Desc 华为新接口的调用方式, 接口4.39(包含)以后的接口都用这个类
  */
 public interface ThirdApiMappingV2Service {
 
