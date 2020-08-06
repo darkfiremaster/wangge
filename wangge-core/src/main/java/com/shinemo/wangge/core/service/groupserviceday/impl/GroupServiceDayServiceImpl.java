@@ -5,13 +5,14 @@ import cn.hutool.core.util.StrUtil;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
+import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
 import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
@@ -22,24 +23,20 @@ import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
-import com.shinemo.smartgrid.utils.GsonUtils;
-import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
-import com.shinemo.sweepfloor.common.error.SweepFloorErrorCodes;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
-import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
 import com.shinemo.wangge.core.util.ValidatorUtil;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
 import com.shinemo.wangge.dal.mapper.ParentGroupServiceDayMapper;
-import com.shinemo.wangge.dal.mapper.*;
+import com.shinemo.wangge.dal.mapper.SignRecordMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -58,7 +55,7 @@ import java.util.stream.Collectors;
 public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Resource
-    private ThirdApiMappingService thirdApiMappingService;
+    private ThirdApiMappingV2Service thirdApiMappingService; //todo 等华为确定接口返回格式
     @Resource
     private GroupServiceDayMapper groupServiceDayMapper;
     @Resource
@@ -69,7 +66,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private ParentGroupServiceDayMapper parentGroupServiceDayMapper;
 
 
-
     @Override
     public ApiResult<Map<String, Object>> getGroupList(String groupName) {
         //透传华为
@@ -78,72 +74,40 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             map.put("groupName", groupName);
         }
         map.put("mobile", SmartGridContext.getMobile());
-        //todo 修改apiName
-        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, "getGroupList");
+        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, HuaweiGroupServiceDayUrlEnum.GET_GROUP_LIST.getApiName());
         return result;
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ApiResult<Void> createGroupServiceDay(GroupServiceDayRequest groupServiceDayRequest) {
         ValidatorUtil.validateEntity(groupServiceDayRequest);
 
-        //生成父活动
-        ParentGroupServiceDayDO parentGroupServiceDayDO = new ParentGroupServiceDayDO();
-        parentGroupServiceDayDO.setTitle(groupServiceDayRequest.getTitle());
-        parentGroupServiceDayDO.setGroupId(groupServiceDayRequest.getGroupId());
-        parentGroupServiceDayDO.setGroupName(groupServiceDayRequest.getGroupName());
-        parentGroupServiceDayDO.setGroupAddress(groupServiceDayRequest.getGroupAddress());
-        parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
-        parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
-        parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
-        parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
-        parentGroupServiceDayDO.setPlanStartTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanStartTime()));
-        parentGroupServiceDayDO.setPlanEndTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanEndTime()));
-        parentGroupServiceDayDO.setLocation(groupServiceDayRequest.getLocation());
-        parentGroupServiceDayDO.setPartner(GsonUtils.toJson(groupServiceDayRequest.getPartner()));
-        parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
-        try {
-            parentGroupServiceDayDO.setGridId(SmartGridContext.getSelectGridUserRoleDetail().getId());
-        } catch (Exception e) {
-            log.error("[createGroupServiceDay] 该用户无网格,mobile:{}", SmartGridContext.getMobile());
-            parentGroupServiceDayDO.setGridId("");
-        }
+        //创建父活动
+        ParentGroupServiceDayDO parentGroupServiceDayDO = getParentGroupServiceDayDO(groupServiceDayRequest);
         parentGroupServiceDayMapper.insert(parentGroupServiceDayDO);
 
         List<GroupServiceDayRequest.PartnerBean> partnerList = groupServiceDayRequest.getPartner();
         for (GroupServiceDayRequest.PartnerBean partnerBean : partnerList) {
-            //生成子活动
-            GroupServiceDayDO groupServiceDayDO = new GroupServiceDayDO();
-            groupServiceDayDO.setParentId(parentGroupServiceDayDO.getId());
-            groupServiceDayDO.setTitle(parentGroupServiceDayDO.getTitle());
-            groupServiceDayDO.setGroupId(parentGroupServiceDayDO.getGroupId());
-            groupServiceDayDO.setGroupName(parentGroupServiceDayDO.getGroupName());
-            groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
-            groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
-            groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
-            groupServiceDayDO.setPlanEntTime(parentGroupServiceDayDO.getPlanEndTime());
-            groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
-            groupServiceDayDO.setLocation(parentGroupServiceDayDO.getLocation());
-            groupServiceDayDO.setPartner(parentGroupServiceDayDO.getPartner());
-            groupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
-            groupServiceDayDO.setMobile(partnerBean.getMobile());
-            groupServiceDayDO.setName(partnerBean.getName());
-            groupServiceDayDO.setGridId(partnerBean.getGridId());
+            //创建子活动
+            GroupServiceDayDO groupServiceDayDO = getGroupServiceDayDO(parentGroupServiceDayDO, partnerBean);
             groupServiceDayMapper.insert(groupServiceDayDO);
 
-            //todo 同步华为
+            //同步华为
+            createGroupServiceDaySyncHuaWei(parentGroupServiceDayDO, partnerList, groupServiceDayDO);
         }
 
-        log.info("[createGroupServiceDay] 新建集团服务日成功, id:{},mobile:{}", parentGroupServiceDayDO.getId(), parentGroupServiceDayDO.getMobile());
+        log.info("[createGroupServiceDay] 新建集团服务日成功, 父活动id:{},创建人mobile:{}", parentGroupServiceDayDO.getId(), parentGroupServiceDayDO.getMobile());
         return ApiResult.of(0);
     }
+
+
 
 
     @Override
     public ApiResult<List<GroupDO>> getLatestMarketingGroupList() {
         List<GroupDO> latestGroupList = groupServiceDayMapper.getLatestMarketingGroupList(SmartGridContext.getMobile());
-        return ApiResult.of(0,latestGroupList);
+        return ApiResult.of(0, latestGroupList);
     }
 
     @Override
@@ -167,7 +131,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             log.error("[getFinishedCount] activityList is empty!");
             result.setActivityCount(0);
             result.setBusinessCount(0);
-            return ApiResult.of(0,result);
+            return ApiResult.of(0, result);
         }
         result.setActivityCount(groupServiceDayDOS.size());
         List<Long> activityIdList = groupServiceDayDOS.stream().map(GroupServiceDayDO::getId).collect(Collectors.toList());
@@ -177,11 +141,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         if (CollectionUtils.isEmpty(numberDOS)) {
             log.error("[getFinishedCount] market number list is empty!");
             result.setBusinessCount(0);
-            return ApiResult.of(0,result);
+            return ApiResult.of(0, result);
         }
         Integer businessCount = numberDOS.stream().collect(Collectors.summingInt(GroupServiceDayMarketingNumberDO::getCount));
         result.setBusinessCount(businessCount);
-        return ApiResult.of(0,result);
+        return ApiResult.of(0, result);
     }
 
     @Override
@@ -196,17 +160,17 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         }
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
-            return ApiResult.of(0,ListVO.list(new ArrayList<>(),0));
+            return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
         }
         //DO-->VO
         List<GroupServiceDayVO> vos = new ArrayList<>(groupServiceDayDOS.size());
-        for (GroupServiceDayDO serviceDayDO: groupServiceDayDOS) {
+        for (GroupServiceDayDO serviceDayDO : groupServiceDayDOS) {
             GroupServiceDayVO serviceDayVO = new GroupServiceDayVO();
-            BeanUtils.copyProperties(serviceDayDO,serviceDayVO);
+            BeanUtils.copyProperties(serviceDayDO, serviceDayVO);
             vos.add(serviceDayVO);
         }
         if (!request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
-            return ApiResult.of(0,ListVO.list(vos,vos.size()));
+            return ApiResult.of(0, ListVO.list(vos, vos.size()));
         }
         long count = groupServiceDayMapper.count(serviceDayQuery);
         //查询办理量
@@ -215,11 +179,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         numberQuery.setGroupServiceDayIds(activityIds);
         List<GroupServiceDayMarketingNumberDO> groupServiceDayMarketingNumberDOS = groupServiceDayMarketingNumberMapper.find(numberQuery);
         Map<Long, List<GroupServiceDayMarketingNumberDO>> map = groupServiceDayMarketingNumberDOS.stream().collect(Collectors.groupingBy(GroupServiceDayMarketingNumberDO::getGroupServiceDayId));
-        for (GroupServiceDayVO serviceDayVO: vos) {
+        for (GroupServiceDayVO serviceDayVO : vos) {
             GroupServiceDayMarketingNumberDO numberDO = map.get(serviceDayVO.getId()).get(0);
             serviceDayVO.setBusinessCount(numberDO.getCount());
         }
-        return ApiResult.of(0,ListVO.list(vos,count));
+        return ApiResult.of(0, ListVO.list(vos, count));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -267,7 +231,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         updateActivityDO.setRealStartTime(startTime);
         groupServiceDayMapper.update(updateActivityDO);
         //更新父活动状态
-        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.PROCESSING.getId(),startTime);
+        updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.PROCESSING.getId(), startTime);
+
+        //todo 同步华为
 
         return ApiResult.of(0);
     }
@@ -301,7 +267,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         signRecordQuery.setActivityId(groupServiceDayDO.getId());
         SignRecordDO signRecordDO = signRecordMapper.get(signRecordQuery);
         if (signRecordDO == null) {
-            log.error("[endSign] signRecordDO is null,activityId = {}",groupServiceDayDO.getId());
+            log.error("[endSign] signRecordDO is null,activityId = {}", groupServiceDayDO.getId());
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.BASE_ERROR);
         }
         SignRecordDO updateSignDO = new SignRecordDO();
@@ -319,8 +285,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         updateActivityDO.setRealEndTime(endTime);
         groupServiceDayMapper.update(updateActivityDO);
         //更新父活动
-        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.END.getId(),endTime);
+        updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.END.getId(), endTime);
 
+        //todo 同步华为
         return ApiResult.of(0);
     }
 
@@ -341,13 +308,14 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         updateDO.setStatus(GroupServiceDayStatusEnum.CANCEL.getId());
         groupServiceDayMapper.update(updateDO);
         //更新父活动
-        updateParentStatus(groupServiceDayDO,GroupServiceDayStatusEnum.CANCEL.getId(),new Date());
+        updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.CANCEL.getId(), new Date());
 
+        //todo 同步华为
         return ApiResult.of(0);
     }
 
     @Override
-    public ApiResult<Map<String, Object>> getPartnerList(Map<String,Object> requestData) {
+    public ApiResult<Map<String, Object>> getPartnerList(Map<String, Object> requestData) {
         return thirdApiMappingService.dispatch(requestData, "getPartnerList");
     }
 
@@ -370,7 +338,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             signRecordDO.setActivityId(serviceDayDO.getId());
             signRecordDO.setMobile(serviceDayDO.getMobile());
             signRecordMapper.insert(signRecordDO);
-        }else {
+        } else {
             SignRecordDO newSignRecordDO = new SignRecordDO();
             newSignRecordDO.setId(signRecordDO.getId());
             newSignRecordDO.setEndTime(endTime);
@@ -381,17 +349,18 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         serviceDayDO.setStatus(status);
         groupServiceDayMapper.update(serviceDayDO);
         //更新父活动表
-        updateParentStatus(serviceDayDO,status,endTime);
+        updateParentStatus(serviceDayDO, status, endTime);
 
         return ApiResult.of(0);
     }
 
     /**
      * 更新父活动状态
+     *
      * @param groupServiceDayDO
      * @param status
      */
-    private void updateParentStatus(GroupServiceDayDO groupServiceDayDO,Integer status,Date time) {
+    private void updateParentStatus(GroupServiceDayDO groupServiceDayDO, Integer status, Date time) {
 
         ParentGroupServiceDayDO parentGroupServiceDayDO = new ParentGroupServiceDayDO();
         //子活动有一个开始，父活动即为开始
@@ -399,7 +368,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
             parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
             parentGroupServiceDayDO.setRealStartTime(time);
-        }else if (status == GroupServiceDayStatusEnum.END.getId() ||
+        } else if (status == GroupServiceDayStatusEnum.END.getId() ||
                 status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
                 || status == GroupServiceDayStatusEnum.CANCEL.getId()
                 || status == GroupServiceDayStatusEnum.AUTO_END.getId()) {
@@ -429,6 +398,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     /**
      * 校验是否有进行中活动
+     *
      * @return
      */
     private ApiResult checkStatusWhenStart() {
@@ -445,6 +415,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     /**
      * 距离校验
+     *
      * @param dbLocation
      * @param reqLocation
      * @return
@@ -461,6 +432,73 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
         return ApiResult.of(0);
+    }
+
+    private void createGroupServiceDaySyncHuaWei(ParentGroupServiceDayDO parentGroupServiceDayDO, List<GroupServiceDayRequest.PartnerBean> partnerList, GroupServiceDayDO groupServiceDayDO) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
+        map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("creatorMobile", parentGroupServiceDayDO.getMobile());
+        map.put("creatorGridId", parentGroupServiceDayDO.getGridId());
+        map.put("creatorName", parentGroupServiceDayDO.getCreatorName());
+        map.put("participantMobile", groupServiceDayDO.getMobile());
+        map.put("participantGridId", groupServiceDayDO.getGridId());
+        map.put("participantName", groupServiceDayDO.getName());
+        map.put("title", groupServiceDayDO.getTitle());
+        map.put("startTime", String.valueOf(parentGroupServiceDayDO.getPlanStartTime().getTime()));
+        map.put("entTime", String.valueOf(parentGroupServiceDayDO.getPlanEndTime().getTime()));
+        map.put("status", groupServiceDayDO.getStatus());
+        map.put("groupId", groupServiceDayDO.getGroupId());
+        map.put("groupName", groupServiceDayDO.getGroupName());
+        map.put("groupAddress", groupServiceDayDO.getGroupAddress());
+        map.put("createTime", String.valueOf(System.currentTimeMillis()));
+        map.put("updateTime", String.valueOf(System.currentTimeMillis()));
+        map.put("participantList", partnerList);
+        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.CREATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+    }
+
+    private GroupServiceDayDO getGroupServiceDayDO(ParentGroupServiceDayDO parentGroupServiceDayDO, GroupServiceDayRequest.PartnerBean partnerBean) {
+        GroupServiceDayDO groupServiceDayDO = new GroupServiceDayDO();
+        groupServiceDayDO.setParentId(parentGroupServiceDayDO.getId());
+        groupServiceDayDO.setTitle(parentGroupServiceDayDO.getTitle());
+        groupServiceDayDO.setGroupId(parentGroupServiceDayDO.getGroupId());
+        groupServiceDayDO.setGroupName(parentGroupServiceDayDO.getGroupName());
+        groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
+        groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
+        groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
+        groupServiceDayDO.setPlanEntTime(parentGroupServiceDayDO.getPlanEndTime());
+        groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
+        groupServiceDayDO.setLocation(parentGroupServiceDayDO.getLocation());
+        groupServiceDayDO.setPartner(parentGroupServiceDayDO.getPartner());
+        groupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
+        groupServiceDayDO.setMobile(partnerBean.getMobile());
+        groupServiceDayDO.setName(partnerBean.getName());
+        groupServiceDayDO.setGridId(partnerBean.getGridId());
+        return groupServiceDayDO;
+    }
+
+    private ParentGroupServiceDayDO getParentGroupServiceDayDO(GroupServiceDayRequest groupServiceDayRequest) {
+        ParentGroupServiceDayDO parentGroupServiceDayDO = new ParentGroupServiceDayDO();
+        parentGroupServiceDayDO.setTitle(groupServiceDayRequest.getTitle());
+        parentGroupServiceDayDO.setGroupId(groupServiceDayRequest.getGroupId());
+        parentGroupServiceDayDO.setGroupName(groupServiceDayRequest.getGroupName());
+        parentGroupServiceDayDO.setGroupAddress(groupServiceDayRequest.getGroupAddress());
+        parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
+        parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
+        parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
+        parentGroupServiceDayDO.setPlanStartTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanStartTime()));
+        parentGroupServiceDayDO.setPlanEndTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanEndTime()));
+        parentGroupServiceDayDO.setLocation(groupServiceDayRequest.getLocation());
+        parentGroupServiceDayDO.setPartner(GsonUtils.toJson(groupServiceDayRequest.getPartner()));
+        parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
+        try {
+            parentGroupServiceDayDO.setGridId(SmartGridContext.getSelectGridUserRoleDetail().getId());
+        } catch (Exception e) {
+            log.error("[createGroupServiceDay] 该用户无网格,mobile:{}", SmartGridContext.getMobile());
+            parentGroupServiceDayDO.setGridId("");
+        }
+        return parentGroupServiceDayDO;
     }
 
 }
