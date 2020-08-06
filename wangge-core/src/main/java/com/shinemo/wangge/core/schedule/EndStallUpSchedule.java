@@ -9,7 +9,6 @@ import com.shinemo.stallup.domain.request.StallUpEndRequest;
 import com.shinemo.wangge.core.config.StallUpStateMachine;
 import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -29,7 +28,7 @@ public class EndStallUpSchedule {
 	@Resource
 	private StallUpActivityMapper stallUpActivityMapper;
 
-	@Scheduled(cron = "0 0 0 * * ? ")
+	//@Scheduled(cron = "0 0 0 * * ? ")
 	//@Scheduled(cron = "0 */1 * * * ?")
 	public void execute() {
 		long begin = System.currentTimeMillis();

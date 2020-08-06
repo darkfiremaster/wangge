@@ -4,7 +4,6 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -27,7 +26,7 @@ public class GetGridMobileSchedule {
 	@Resource
 	private HuaWeiService huaWeiService;
 
-	@Scheduled(cron = "0 0 2 * * ?")
+	//@Scheduled(cron = "0 0 2 * * ?")
 	public void execute() {
 		long begin = System.currentTimeMillis();
 		log.info("[GetGridMobileSchedule] execute start");
