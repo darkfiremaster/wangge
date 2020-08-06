@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.groupserviceday.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.shinemo.client.common.ListVO;
@@ -233,7 +234,16 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         //更新父活动状态
         updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.PROCESSING.getId(), startTime);
 
-        //todo 同步华为
+        //同步华为
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
+        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("mobile", groupServiceDayDO.getMobile());
+        map.put("status", GroupServiceDayStatusEnum.PROCESSING.getId());
+        map.put("updateTime",String.valueOf(System.currentTimeMillis()));
+        map.put("startLocation",request.getLocationDetailVO().getLocation());
+        map.put("startAddress",request.getLocationDetailVO().getAddress());
+        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
 
         return ApiResult.of(0);
     }
@@ -288,6 +298,17 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.END.getId(), endTime);
 
         //todo 同步华为
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
+        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("mobile", groupServiceDayDO.getMobile());
+        map.put("status", GroupServiceDayStatusEnum.END.getId());
+        map.put("updateTime",String.valueOf(System.currentTimeMillis()));
+        map.put("endLocation",request.getLocationDetailVO().getLocation());
+        map.put("endAddress",request.getLocationDetailVO().getAddress());
+        map.put("remark",request.getRemark());
+        map.put("picUrl",CollUtil.join(request.getPicUrls(), ","));
+        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
         return ApiResult.of(0);
     }
 
@@ -310,7 +331,14 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         //更新父活动
         updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.CANCEL.getId(), new Date());
 
-        //todo 同步华为
+        //同步华为
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
+        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("mobile", groupServiceDayDO.getMobile());
+        map.put("status", GroupServiceDayStatusEnum.CANCEL.getId());
+        map.put("updateTime",String.valueOf(System.currentTimeMillis()));
+        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
         return ApiResult.of(0);
     }
 
@@ -350,6 +378,15 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayMapper.update(serviceDayDO);
         //更新父活动表
         updateParentStatus(serviceDayDO, status, endTime);
+
+        //同步华为
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getId());
+        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getParentId());
+        map.put("mobile", serviceDayDO.getMobile());
+        map.put("status", GroupServiceDayStatusEnum.AUTO_END.getId());
+        map.put("updateTime",String.valueOf(System.currentTimeMillis()));
+        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
 
         return ApiResult.of(0);
     }
@@ -428,7 +465,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         double Lat2 = Double.parseDouble(reqSplit[1]);
         double Lon2 = Double.parseDouble(reqSplit[0]);
         double distance = DistanceUtils.getDistanceFromCoordinates(Lat1, Lon1, Lat2, Lon2);
-        if (distance > 5) {
+        if (distance > 5000) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
         return ApiResult.of(0);
