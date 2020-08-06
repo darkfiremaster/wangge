@@ -108,10 +108,10 @@ public class TodoServiceImpl implements TodoService {
 
     private ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
-        Assert.notBlank(todoDTO.getTitle(), "title is null");
-        Assert.notBlank(todoDTO.getRemark(), "remark is null");
+        Assert.notNull(todoDTO.getTitle(), "title is null");
+        Assert.notNull(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
-        Assert.notBlank(todoDTO.getLabel(), "label is null");
+        //Assert.notBlank(todoDTO.getLabel(), "label is null");
         Assert.notBlank(todoDTO.getOperatorTime(), "operatorTime is null");
 
         TodoQuery todoQuery = new TodoQuery();
@@ -126,7 +126,6 @@ public class TodoServiceImpl implements TodoService {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            log.info("[createTodo] create todo success,  todoDTO:{}", todoDTO);
         }
 
         return ApiResult.of(0);
@@ -153,7 +152,6 @@ public class TodoServiceImpl implements TodoService {
         //修改
         thirdTodoMapper.update(todoDO);
 
-        log.info("[updateTodo] update todo success,todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
@@ -174,7 +172,6 @@ public class TodoServiceImpl implements TodoService {
         //删除
         thirdTodoMapper.delete(todoDO.getId());
 
-        log.info("[deleteTodo] delete todo success, todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
