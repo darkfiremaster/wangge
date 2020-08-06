@@ -59,6 +59,10 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     private HuaweiApiLogMapper huaweiApiLogMapper;
 
     private static final String HUAWEI_SUCCESS_CODE = "0";
+    private static final String HUAWEI_RESPONSE_PARAM_CODE = "resultCode";
+    private static final String HUAWEI_RESPONSE_PARAM_DATA = "data";
+    private static final String HUAWEI_RESPONSE_PARAM_MESSAGE = "resultDesc";
+    private static final String MOBILE_PARAM = "mobile";
 
 
     @Override
@@ -81,15 +85,15 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             String mobile = getMobile();
             if (StringUtils.isBlank(mobile)) {
                 //当异步调用时,会无法从SmartGridContext获取到手机号,所以从请求参数中获取
-                mobile = (String) requestData.get("mobile");
+                mobile = (String) requestData.get(MOBILE_PARAM);
             }
 
             if (!thirdApiMappingDO.isIgnoreMobile()) {
-                requestData.put("mobile", mobile);
+                requestData.put(MOBILE_PARAM, mobile);
             }
 
-            Map<String, Object> header = SmartGridUtils.buildHeader(SmartGridContext.getMobile(), accessKeyId, secretKey);
-            String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
+            Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+            String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
             HttpResult httpResult = HttpConnectionUtils.httpPost(authDomain + thirdApiMappingDO.getUrl(), param, header);
 
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
@@ -118,8 +122,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
         return ApiResultWrapper.fail(ThirdApiErrorCodes.BASE_ERROR);
     }
 
-    private String getRequestParam(Map<String, Object> requestData, String method, String mobile) {
-        //requestData.put("mobile", mobile);
+    private String getRequestParam(Map<String, Object> requestData, String method) {
         return SmartGridUtils.buildRequestParam(method, requestData, signkey);
     }
 
@@ -155,10 +158,10 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             if (!huaweiRequestSuccess(huaweiResponse)) {
                 log.error("[dispatch] huawei api error,url={}, request={}, param={}, huaweiResponse = {}",
                         thirdApiMappingDO.getUrl(), requestData, param, huaweiResponse);
-                return ApiResult.fail(huaweiResponse.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
+                return ApiResult.fail(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
 
-            Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get("data")));
+            Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
             dealPage(thirdApiMappingDO, result);
             return ApiResult.of(0, result);
         }
@@ -170,12 +173,12 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
         log.info("[dispatch] 返回mock数据,url:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), requestData, thirdApiMappingDO.getMockData());
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
         if (huaweiRequestSuccess(result)) {
-            Map<String, Object> objectMap = getJsonMap(GsonUtils.toJson(result.get("data")));
+            Map<String, Object> objectMap = getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA)));
             dealPage(thirdApiMappingDO, objectMap);
-            result.put("data", objectMap);
-            return ApiResult.of(0, getJsonMap(GsonUtils.toJson(result.get("data"))));
+            result.put(HUAWEI_RESPONSE_PARAM_DATA, objectMap);
+            return ApiResult.of(0, getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA))));
         } else {
-            return ApiResult.fail(result.get("message").toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
+            return ApiResult.fail(result.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
         }
     }
 
@@ -190,7 +193,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     }
 
     private Boolean huaweiRequestSuccess(Map<String, Object> huaweiResponse) {
-        String code = String.valueOf(huaweiResponse.get("resultCode"));
+        String code = String.valueOf(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_CODE));
         if (Objects.equals(HUAWEI_SUCCESS_CODE, code)) {
             return true;
         } else {

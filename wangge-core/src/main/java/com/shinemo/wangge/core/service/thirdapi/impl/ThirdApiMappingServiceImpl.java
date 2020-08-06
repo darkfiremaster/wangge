@@ -85,7 +85,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
                 requestData.put("mobile", mobile);
             }
 
-            String param = getRequestParam(requestData, thirdApiMappingDO.getMethod(), mobile);
+            String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, new HashMap<>());
 
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
@@ -114,8 +114,7 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
         return ApiResultWrapper.fail(ThirdApiErrorCodes.BASE_ERROR);
     }
 
-    private String getRequestParam(Map<String, Object> requestData, String method, String mobile) {
-        //requestData.put("mobile", mobile);
+    private String getRequestParam(Map<String, Object> requestData, String method) {
         return SmartGridUtils.buildRequestParam(method, requestData, signkey);
     }
 
