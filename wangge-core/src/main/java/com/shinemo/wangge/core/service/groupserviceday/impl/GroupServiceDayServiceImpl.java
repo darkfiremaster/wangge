@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Resource
-    private ThirdApiMappingV2Service thirdApiMappingService; //todo 等华为确定接口返回格式
+    private ThirdApiMappingV2Service thirdApiMappingV2Service;
     @Resource
     private GroupServiceDayMapper groupServiceDayMapper;
     @Resource
@@ -75,7 +75,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             map.put("groupName", groupName);
         }
         map.put("mobile", SmartGridContext.getMobile());
-        ApiResult<Map<String, Object>> result = thirdApiMappingService.dispatch(map, HuaweiGroupServiceDayUrlEnum.GET_GROUP_LIST.getApiName());
+        ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiGroupServiceDayUrlEnum.GET_GROUP_LIST.getApiName());
         return result;
     }
 
@@ -249,7 +249,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("updateTime",String.valueOf(System.currentTimeMillis()));
         map.put("startLocation",request.getLocationDetailVO().getLocation());
         map.put("startAddress",request.getLocationDetailVO().getAddress());
-        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -317,7 +317,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("endAddress",request.getLocationDetailVO().getAddress());
         map.put("remark",request.getRemark());
         map.put("picUrl", CollUtil.join(request.getPicUrls(), ","));
-        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -351,12 +351,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("mobile", groupServiceDayDO.getMobile());
         map.put("status", GroupServiceDayStatusEnum.CANCEL.getId());
         map.put("updateTime",String.valueOf(System.currentTimeMillis()));
-        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
     @Override
     public ApiResult<Map<String, Object>> getPartnerList(Map<String, Object> requestData) {
-        return thirdApiMappingService.dispatch(requestData, "getPartnerList");
+        return thirdApiMappingV2Service.dispatch(requestData, "getPartnerList");
     }
 
     @Override
@@ -404,7 +404,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("mobile", serviceDayDO.getMobile());
         map.put("status", GroupServiceDayStatusEnum.AUTO_END.getId());
         map.put("updateTime",String.valueOf(System.currentTimeMillis()));
-        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
     /**
@@ -507,7 +507,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("createTime", String.valueOf(System.currentTimeMillis()));
         map.put("updateTime", String.valueOf(System.currentTimeMillis()));
         map.put("participantList", partnerList);
-        thirdApiMappingService.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.CREATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.CREATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
     private GroupServiceDayDO getGroupServiceDayDO(ParentGroupServiceDayDO parentGroupServiceDayDO, GroupServiceDayRequest.PartnerBean partnerBean) {
