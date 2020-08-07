@@ -1328,8 +1328,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             huaweiRequest.setFamilyMembers(request.getFamilyMembers());
         }
 
-
-        if (!CollectionUtils.isEmpty(request.getServiceProvider())) {
+        List<String> serviceProvider = request.getServiceProvider();
+        if (!CollectionUtils.isEmpty(serviceProvider) && !serviceProvider.get(0).equals("无")) {
             List<String> types = request.getServiceProvider();
             String type = "";
             for (int i = 0;i < types.size();i++) {
