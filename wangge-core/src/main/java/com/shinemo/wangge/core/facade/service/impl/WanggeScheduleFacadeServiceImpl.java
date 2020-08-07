@@ -56,10 +56,10 @@ public class WanggeScheduleFacadeServiceImpl implements WanggeScheduleFacadeServ
         return Result.success();
     }
 
-    //@Override
-    //@Async
-    //public Result<Void> sendEmail() {
-    //    sendMailSchedule.sendLoginMail();
-    //    return Result.success();
-    //}
+    @Override
+    @Async
+    public Result<Void> sendEmail() {
+        sendMailSchedule.sendLoginMail();
+        return Result.success();
+    }
 }
