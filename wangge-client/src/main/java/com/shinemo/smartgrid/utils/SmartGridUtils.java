@@ -30,7 +30,7 @@ public class SmartGridUtils {
     public static String genSign(Map<String,Object> map) {
 
         try {
-            return MD5Util.encodeMD5(objectMapper.writeValueAsString(map)).toLowerCase();
+            return MD5Util.encodeMD5(GsonUtils.toJson(map)).toLowerCase();
         } catch (Exception e) {
             return null;
         }
