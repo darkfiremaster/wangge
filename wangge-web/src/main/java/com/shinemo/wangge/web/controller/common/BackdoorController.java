@@ -314,7 +314,7 @@ public class BackdoorController {
     public String refreshSweepVillageVisit() {
         SweepVillageVisitRecordingQuery query = new SweepVillageVisitRecordingQuery();
         List<SweepVillageVisitRecordingDO> recordingDOS = sweepVillageVisitRecordingMapper.refreshCreateMobile(query);
-        if (!CollectionUtils.isEmpty(recordingDOS)) {
+        if (CollectionUtils.isEmpty(recordingDOS)) {
             return "success";
         }
         int count = 0;
