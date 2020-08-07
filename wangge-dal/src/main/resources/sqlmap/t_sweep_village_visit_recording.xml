@@ -70,6 +70,15 @@
         </if>
     </select>
 
+    <!-- 查询订正结果集 -->
+    <select id="refreshCreateMobile" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
+        select
+        <include refid="columns" />
+        from
+        <include refid="table" />
+        where create_tenants_mobile is null
+    </select>
+
 
     <!-- 查询某条记录 -->
     <select id="get" resultMap="result" parameterType="com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery">
@@ -234,6 +243,9 @@
             </if>
             <if test="location != null">
                 location = #{location},
+            </if>
+            <if test="createTenantsMobile != null">
+                create_tenants_mobile = #{createTenantsMobile},
             </if>
         </set>
         WHERE

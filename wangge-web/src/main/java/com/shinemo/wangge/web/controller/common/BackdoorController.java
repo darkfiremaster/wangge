@@ -20,6 +20,8 @@ import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
 import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
+import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
@@ -28,6 +30,7 @@ import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 后门
@@ -92,6 +97,12 @@ public class BackdoorController {
 
     @Resource
     private RedisService redisService;
+
+    @Resource
+    private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
+
+    @Resource
+    private ThirdApiMappingService thirdApiMappingService;
 
     private final AppTypeEnum appType = AppTypeEnum.GUANGXI;
 
@@ -294,5 +305,40 @@ public class BackdoorController {
         }
         return "success";
     }
+
+    /**
+     *
+     * @return
+     */
+    @GetMapping("/refreshSweepVillageVisit")
+    public String refreshSweepVillageVisit() {
+        SweepVillageVisitRecordingQuery query = new SweepVillageVisitRecordingQuery();
+        List<SweepVillageVisitRecordingDO> recordingDOS = sweepVillageVisitRecordingMapper.refreshCreateMobile(query);
+        if (!CollectionUtils.isEmpty(recordingDOS)) {
+            return "success";
+        }
+        int count = 0;
+        for (SweepVillageVisitRecordingDO visitRecordingDO: recordingDOS) {
+            Map<String, Object> requestData = new HashMap<>();
+            requestData.put("id",visitRecordingDO.getTenantsId());
+            requestData.put("mobile",visitRecordingDO.getMobile());
+            ApiResult<Map<String, Object>> apiResult = thirdApiMappingService.dispatch(requestData, "getTenantsDetail");
+            if (!apiResult.isSuccess()) {
+                log.error("[refreshSweepVillageVisit] api error, tenantsId = {},mobile = {}",visitRecordingDO.getTenantsId(),visitRecordingDO.getMobile());
+                continue;
+            }
+            Map<String, Object> data = apiResult.getData();
+            if (!CollectionUtils.isEmpty(data)) {
+                SweepVillageVisitRecordingDO updateDO = new SweepVillageVisitRecordingDO();
+                updateDO.setId(visitRecordingDO.getId());
+                updateDO.setCreateTenantsMobile((String)data.get("createMobile"));
+                sweepVillageVisitRecordingMapper.update(updateDO);
+                count++;
+            }
+        }
+        log.info("[refreshSweepVillageVisit] refresh finished,count = {}",count);
+        return "success";
+    }
+
 }
 
