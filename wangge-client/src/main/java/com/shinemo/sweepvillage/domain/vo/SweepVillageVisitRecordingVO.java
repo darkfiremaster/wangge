@@ -45,4 +45,6 @@ public class SweepVillageVisitRecordingVO {
     private Integer updateAndDeleteButtonFlag;
     /** 经纬度 */
     private String location;
+    /** 住户创建人手机号  */
+    private String createTenantsMobile;
 }

@@ -11,6 +11,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.stallup.domain.model.GridUserRoleDetail;
 import com.shinemo.stallup.domain.model.SimpleStallUpBizType;
 import com.shinemo.stallup.domain.model.StallUpBizType;
@@ -143,12 +144,21 @@ public class VisitRecordingServiceImpl implements VisitRecordingService {
         if (CollectionUtils.isEmpty(doList)) {
             return ApiResult.of(0,new ArrayList<>());
         }
+        String mobile = SmartGridContext.getMobile();
         List<SweepVillageVisitRecordingVO> vos = new ArrayList<>();
         for (SweepVillageVisitRecordingDO visitRecordingDO: doList) {
             SweepVillageVisitRecordingVO visitRecordingVO = new SweepVillageVisitRecordingVO();
             BeanUtils.copyProperties(visitRecordingDO,visitRecordingVO);
             visitRecordingVO.setVisitTime(visitRecordingDO.getGmtCreate());
             convertBusinessType(visitRecordingDO,visitRecordingVO);
+            if (!StringUtils.isBlank(visitRecordingDO.getCreateTenantsMobile())
+                    && !visitRecordingDO.getCreateTenantsMobile().equals(mobile)) {
+                //脱敏
+                String desensitizationMobile = SmartGridUtils.desensitizationMobile(visitRecordingDO.getContactMobile());
+                String desensitizationName = SmartGridUtils.desensitizationName(visitRecordingDO.getContactName());
+                visitRecordingVO.setContactMobile(desensitizationMobile);
+                visitRecordingVO.setContactName(desensitizationName);
+            }
             vos.add(visitRecordingVO);
         }
         return ApiResult.of(0,vos);
