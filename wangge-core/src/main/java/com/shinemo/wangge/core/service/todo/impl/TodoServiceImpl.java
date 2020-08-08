@@ -142,7 +142,9 @@ public class TodoServiceImpl implements TodoService {
 
         TodoDO todoDOFromDB = thirdTodoMapper.get(todoQuery);
         if (todoDOFromDB == null) {
-            return ApiResultWrapper.fail(TodoErrorCodes.DATA_NOT_EXIST);
+            TodoDO todoDO = getTodoDO(todoDTO);
+            thirdTodoMapper.insert(todoDO);
+            return ApiResult.of(0);
         }
 
         //转换对象
@@ -295,8 +297,6 @@ public class TodoServiceImpl implements TodoService {
 
         return ApiResult.of(0, todoTypeVO);
     }
-
-
 
 
     private TodoDO getTodoDO(TodoDTO todoDTO) {
