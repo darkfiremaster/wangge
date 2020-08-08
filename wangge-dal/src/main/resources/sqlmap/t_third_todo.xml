@@ -102,34 +102,34 @@
             </if>
             gmt_create,
             gmt_modified,
-            <if test="thirdId != null and thirdId != ''">
+            <if test="thirdId != null">
                 third_id,
             </if>
             <if test="thirdType != null">
                 third_type,
             </if>
-            <if test="title != null and title != ''">
+            <if test="title != null ">
                 title,
             </if>
-            <if test="remark != null and remark != '' ">
+            <if test="remark != null ">
                 remark,
             </if>
             <if test="status != null">
                 status,
             </if>
-            <if test="label != null and label != '' ">
+            <if test="label != null ">
                 label,
             </if>
             <if test="operatorTime != null">
                 operator_time,
             </if>
-            <if test="operatorMobile != null and operatorMobile!='' ">
+            <if test="operatorMobile != null ">
                 operator_mobile,
             </if>
             <if test="startTime != null ">
                 start_time,
             </if>
-            <if test="extend != null and extend!='' ">
+            <if test="extend != null  ">
                 extend,
             </if>
         </trim>
@@ -139,7 +139,7 @@
             </if>
             now(),
             now(),
-            <if test="thirdId != null and thirdId != '' ">
+            <if test="thirdId != null  ">
                 #{thirdId, jdbcType=VARCHAR},
             </if>
             <if test="thirdType != null">
@@ -160,7 +160,7 @@
             <if test="operatorTime != null">
                 #{operatorTime},
             </if>
-            <if test="operatorMobile != null and operatorMobile!='' ">
+            <if test="operatorMobile != null ">
                 #{operatorMobile, jdbcType=VARCHAR},
             </if>
             <if test="startTime != null">
@@ -178,13 +178,13 @@
         <include refid="table"/>
         <set>
             gmt_modified = now(),
-            <if test="thirdId != null and thirdId!='' ">
+            <if test="thirdId != null  ">
                 third_id = #{thirdId, jdbcType=VARCHAR},
             </if>
             <if test="thirdType != null">
                 third_type = #{thirdType, jdbcType=INTEGER},
             </if>
-            <if test="title != null and title!=''">
+            <if test="title != null ">
                 title = #{title, jdbcType=VARCHAR},
             </if>
             <if test="remark != null ">
@@ -199,7 +199,7 @@
             <if test="operatorTime != null">
                 operator_time = #{operatorTime},
             </if>
-            <if test="operatorMobile != null and operatorMobile!=''">
+            <if test="operatorMobile != null ">
                 operator_mobile = #{operatorMobile, jdbcType=VARCHAR},
             </if>
             <if test="startTime != null">

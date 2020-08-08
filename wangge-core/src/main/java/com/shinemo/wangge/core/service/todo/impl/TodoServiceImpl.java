@@ -111,8 +111,8 @@ public class TodoServiceImpl implements TodoService {
         Assert.notNull(todoDTO.getTitle(), "title is null");
         Assert.notNull(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
-        //Assert.notBlank(todoDTO.getLabel(), "label is null");
-        Assert.notBlank(todoDTO.getOperatorTime(), "operatorTime is null");
+        Assert.notNull(todoDTO.getLabel(), "label is null");
+        Assert.notNull(todoDTO.getOperatorTime(), "operatorTime is null");
 
         TodoQuery todoQuery = new TodoQuery();
         todoQuery.setThirdId(todoDTO.getThirdId());
