@@ -33,4 +33,8 @@ public interface WanggeScheduleFacadeService {
      * 定时任务:发送邮件
      */
     Result<Void> sendEmail();
+
+    Result<Void> test1();
+    Result<Void> test2() throws InterruptedException;
+    Result<Void> test3();
 }

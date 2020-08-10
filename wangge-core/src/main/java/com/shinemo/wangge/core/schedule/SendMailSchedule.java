@@ -6,6 +6,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.wangge.core.service.common.ExcelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -37,5 +38,12 @@ public class SendMailSchedule {
             excelService.sendLoginInfoMail(queryDate);
             log.info("[sendLoginMail] 结束邮件发送,耗时:{}ms", System.currentTimeMillis() - startTime);
         }
+    }
+
+    @Async
+    public void testSend() throws InterruptedException {
+        log.info("[testSend] threadName:"+Thread.currentThread().getName());
+        Thread.sleep(1000);
+
     }
 }
