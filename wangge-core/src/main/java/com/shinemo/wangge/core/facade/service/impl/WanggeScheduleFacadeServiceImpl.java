@@ -62,4 +62,25 @@ public class WanggeScheduleFacadeServiceImpl implements WanggeScheduleFacadeServ
         sendMailSchedule.sendLoginMail();
         return Result.success();
     }
+
+    @Override
+    @Async
+    public Result<Void> test1() {
+        log.info("[test1] threadName: " + Thread.currentThread().getName());
+        return Result.success();
+    }
+
+    @Override
+    @Async
+    public Result<Void> test2() {
+        log.info("[test2] threadName: " + Thread.currentThread().getName());
+        return Result.success();
+    }
+
+    @Override
+    @Async
+    public Result<Void> test3() {
+        log.info("[test3] threadName: " + Thread.currentThread().getName());
+        return Result.success();
+    }
 }
