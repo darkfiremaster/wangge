@@ -108,11 +108,11 @@ public class TodoServiceImpl implements TodoService {
 
     private ApiResult<Void> createTodo(TodoDTO todoDTO) {
         //校验参数
-        Assert.notBlank(todoDTO.getTitle(), "title is null");
-        Assert.notBlank(todoDTO.getRemark(), "remark is null");
+        Assert.notNull(todoDTO.getTitle(), "title is null");
+        Assert.notNull(todoDTO.getRemark(), "remark is null");
         Assert.notNull(todoDTO.getStatus(), "status is null");
-        Assert.notBlank(todoDTO.getLabel(), "label is null");
-        Assert.notBlank(todoDTO.getOperatorTime(), "operatorTime is null");
+        Assert.notNull(todoDTO.getLabel(), "label is null");
+        Assert.notNull(todoDTO.getOperatorTime(), "operatorTime is null");
 
         TodoQuery todoQuery = new TodoQuery();
         todoQuery.setThirdId(todoDTO.getThirdId());
@@ -121,12 +121,13 @@ public class TodoServiceImpl implements TodoService {
         TodoDO todoDB = thirdTodoMapper.get(todoQuery);
         if (todoDB != null) {
             //修改
-            updateTodo(todoDTO);
+            TodoDO todoDO = getTodoDO(todoDTO);
+            todoDO.setId(todoDB.getId());
+            thirdTodoMapper.update(todoDO);
         } else {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            //log.info("[createTodo] create todo success,  todoDTO:{}", todoDTO);
         }
 
         return ApiResult.of(0);
@@ -143,17 +144,16 @@ public class TodoServiceImpl implements TodoService {
 
         TodoDO todoDOFromDB = thirdTodoMapper.get(todoQuery);
         if (todoDOFromDB == null) {
-            return ApiResultWrapper.fail(TodoErrorCodes.DATA_NOT_EXIST);
+            TodoDO todoDO = getTodoDO(todoDTO);
+            thirdTodoMapper.insert(todoDO);
+        } else {
+            //转换对象
+            TodoDO todoDO = getTodoDO(todoDTO);
+            todoDO.setId(todoDOFromDB.getId());
+            //修改
+            thirdTodoMapper.update(todoDO);
         }
 
-        //转换对象
-        TodoDO todoDO = getTodoDO(todoDTO);
-        todoDO.setId(todoDOFromDB.getId());
-
-        //修改
-        thirdTodoMapper.update(todoDO);
-
-        //log.info("[updateTodo] update todo success,todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
@@ -174,7 +174,6 @@ public class TodoServiceImpl implements TodoService {
         //删除
         thirdTodoMapper.delete(todoDO.getId());
 
-        //log.info("[deleteTodo] delete todo success, todoDTO:{}", todoDTO);
         return ApiResult.of(0);
     }
 
@@ -298,8 +297,6 @@ public class TodoServiceImpl implements TodoService {
 
         return ApiResult.of(0, todoTypeVO);
     }
-
-
 
 
     private TodoDO getTodoDO(TodoDTO todoDTO) {

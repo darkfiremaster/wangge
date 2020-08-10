@@ -47,7 +47,6 @@ public class UrlRedirectHandlerRequest {
 	 */
 	private String activityStrId;
 
-
 	public <T extends BizParams> T getBizParams() {
 		if (bizParams != null) {
 			return (T) bizParams;
