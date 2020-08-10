@@ -1328,8 +1328,8 @@ public class SweepFloorServiceImpl implements SweepFloorService {
             huaweiRequest.setFamilyMembers(request.getFamilyMembers());
         }
 
-
-        if (!CollectionUtils.isEmpty(request.getServiceProvider())) {
+        List<String> serviceProvider = request.getServiceProvider();
+        if (!CollectionUtils.isEmpty(serviceProvider)) {
             List<String> types = request.getServiceProvider();
             String type = "";
             for (int i = 0;i < types.size();i++) {
@@ -1341,6 +1341,13 @@ public class SweepFloorServiceImpl implements SweepFloorService {
                 }
             }
             huaweiRequest.setServiceProvider(type);
+            if (type.equals("无")) {
+                huaweiRequest.setBroadbandFlag(0);
+            }else {
+                huaweiRequest.setBroadbandFlag(1);
+            }
+        }else {
+            huaweiRequest.setBroadbandFlag(0);
         }
         if (request.getTVBoxTypes() != null) {
             huaweiRequest.setTVBoxTypes(String.join(",", request.getTVBoxTypes()));

@@ -3,6 +3,7 @@ package com.shinemo.stallup.domain.utils;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -70,11 +71,18 @@ public class EncryptUtil {
             }else{
                 sb.append(key);
             }
-            sb.append("=").append(URLEncoder.encode(String.valueOf(params.get(key)))).append("&");
+            if (params.get(key) instanceof Map) {
+                //map的toString方法,会多一个空格,需要去掉这个空格
+                sb.append("=").append(URLEncoder.encode(StringUtils.trimAllWhitespace(params.get(key).toString()))).append("&");
+            } else {
+                sb.append("=").append(URLEncoder.encode(String.valueOf(params.get(key)))).append("&");
+            }
         }
         String str = sb.substring(0, sb.length()-1);
         return str;
     }
+
+
 
     public static String buildParameterString(Map<String, Object> param) {
         String paramString = sortString(param, true);
@@ -227,7 +235,11 @@ public class EncryptUtil {
     }
 
     public static void main(String[] args) {
-        test();
+        Map<String, String> map = new HashMap();
+        map.put("name", "skh");
+        map.put("age", "10");
+        String s = StringUtils.trimAllWhitespace(map.toString());
+        System.out.println("s = " + s);
     }
 
 }

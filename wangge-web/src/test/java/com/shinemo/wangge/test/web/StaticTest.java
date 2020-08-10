@@ -230,11 +230,7 @@ public class StaticTest {
     }
 
 
-    //@Test
-    //public void sendMail() {
-    //    File file = FileUtil.file("/Users/cindy/Desktop/登录信息/登录结果统计2020-07-16.xlsx");
-    //    MailUtil.sendText("shangkh@shinemo.com", "测试", "测试邮件发送", file);
-    //}
+
 
     @Test
     public void getZhuangyiUrl() {
