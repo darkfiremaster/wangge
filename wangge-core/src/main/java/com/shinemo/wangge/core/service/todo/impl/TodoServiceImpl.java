@@ -121,7 +121,9 @@ public class TodoServiceImpl implements TodoService {
         TodoDO todoDB = thirdTodoMapper.get(todoQuery);
         if (todoDB != null) {
             //修改
-            updateTodo(todoDTO);
+            TodoDO todoDO = getTodoDO(todoDTO);
+            todoDO.setId(todoDB.getId());
+            thirdTodoMapper.update(todoDO);
         } else {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
@@ -144,15 +146,13 @@ public class TodoServiceImpl implements TodoService {
         if (todoDOFromDB == null) {
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
-            return ApiResult.of(0);
+        } else {
+            //转换对象
+            TodoDO todoDO = getTodoDO(todoDTO);
+            todoDO.setId(todoDOFromDB.getId());
+            //修改
+            thirdTodoMapper.update(todoDO);
         }
-
-        //转换对象
-        TodoDO todoDO = getTodoDO(todoDTO);
-        todoDO.setId(todoDOFromDB.getId());
-
-        //修改
-        thirdTodoMapper.update(todoDO);
 
         return ApiResult.of(0);
     }
