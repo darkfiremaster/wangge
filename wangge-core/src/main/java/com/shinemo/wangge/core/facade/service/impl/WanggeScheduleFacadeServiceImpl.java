@@ -71,14 +71,13 @@ public class WanggeScheduleFacadeServiceImpl implements WanggeScheduleFacadeServ
     }
 
     @Override
-    @Async
     public Result<Void> test2() {
         log.info("[test2] threadName: " + Thread.currentThread().getName());
+        sendMailSchedule.testSend();
         return Result.success();
     }
 
     @Override
-    @Async
     public Result<Void> test3() {
         log.info("[test3] threadName: " + Thread.currentThread().getName());
         return Result.success();
