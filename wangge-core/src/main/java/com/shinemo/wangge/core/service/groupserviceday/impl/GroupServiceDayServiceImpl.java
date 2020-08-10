@@ -360,6 +360,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
+    public ApiResult<Map<String, Object>> getAreaInformation(Map<String, Object> requestData) {
+        return thirdApiMappingV2Service.dispatch(requestData, "getAreaInformation");
+    }
+
+    @Override
     public ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO) {
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityId(serviceDayDO.getId());

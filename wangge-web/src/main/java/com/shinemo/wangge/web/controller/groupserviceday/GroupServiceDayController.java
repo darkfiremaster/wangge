@@ -120,6 +120,16 @@ class GroupServiceDayController {
         return groupServiceDayService.getPartnerList(requestData);
     }
 
+    /**
+     * 地区查询接口
+     *
+     * @return
+     */
+    @GetMapping("/getAreaInformation")
+    public ApiResult<Map<String, Object>> getAreaInformation(@RequestBody Map<String,Object> requestData) {
+        return groupServiceDayService.getAreaInformation(requestData);
+    }
+
 
     /**
      * 集团服务日业务查询首页
