@@ -33,4 +33,12 @@ public interface WanggeScheduleFacadeService {
      * 定时任务:发送邮件
      */
     Result<Void> sendEmail();
+
+    /**
+     * 测试代码
+     * @return
+     */
+    public Result<Void> test1();
+    public Result<Void> test2();
+    public Result<Void> test3();
 }

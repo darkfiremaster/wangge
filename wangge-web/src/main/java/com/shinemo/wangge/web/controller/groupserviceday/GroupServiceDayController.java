@@ -115,9 +115,19 @@ class GroupServiceDayController {
      *
      * @return
      */
-    @GetMapping("/getPartnerList")
+    @PostMapping("/getPartnerList")
     public ApiResult<Map<String, Object>> getPartnerList(@RequestBody Map<String,Object> requestData) {
         return groupServiceDayService.getPartnerList(requestData);
+    }
+
+    /**
+     * 地区查询接口
+     *
+     * @return
+     */
+    @PostMapping("/getAreaInformation")
+    public ApiResult<Map<String, Object>> getAreaInformation(@RequestBody Map<String,Object> requestData) {
+        return groupServiceDayService.getAreaInformation(requestData);
     }
 
 

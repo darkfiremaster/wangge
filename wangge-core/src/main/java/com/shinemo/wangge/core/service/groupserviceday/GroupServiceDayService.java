@@ -68,6 +68,11 @@ public interface GroupServiceDayService {
     ApiResult<Map<String, Object>> getPartnerList(Map<String,Object> requestData);
 
     /**
+     * 获取地区信息接口
+     */
+    ApiResult<Map<String, Object>> getAreaInformation(Map<String,Object> requestData);
+
+    /**
      * 自动结束活动
      */
     ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO);
