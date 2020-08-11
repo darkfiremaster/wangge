@@ -13,7 +13,7 @@ public enum HuaweiGroupServiceDayUrlEnum {
     UPDATE_GROUP_SERVICE_DAY("/CMCC_GX_market/api/v2/","更新集团服务日计划","","updateGroupServiceDay"),
 
 
-    ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA("/CMCC_GX_market/api/v2/", "集团服务日新增走访记录接口","","")
+    ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA("/CMCC_GX_market/api/v2/", "集团服务日新增走访记录接口","","addBusiness")
 
     ;
 
