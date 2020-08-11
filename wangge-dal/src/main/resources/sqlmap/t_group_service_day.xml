@@ -67,6 +67,12 @@
                     <if test="extend != null">and extend = #{extend}</if>
                     <if test="endFilterStartTIme != null"><![CDATA[and real_end_time >= #{endFilterStartTIme}]]></if>
                     <if test="endFilterEndTIme != null"><![CDATA[and real_end_time <= #{endFilterEndTIme}]]></if>
+                    <if test="statusList != null and statusList.size()>0">
+                        and status in
+                        <foreach collection="statusList" open="(" separator="," close=")" item="value">
+                            #{value}
+                        </foreach>
+                    </if>
                 </otherwise>
             </choose>
         </where>
