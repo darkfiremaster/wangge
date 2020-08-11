@@ -12,9 +12,7 @@ import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBizDetailVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
-import com.shinemo.sweepvillage.domain.enums.HuaweiSweepVillageUrlEnum;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
-import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -116,15 +114,15 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         List<HuaweiGroupServiceDayBiz> bizList = new ArrayList<>();
         HuaweiGroupServiceDayBiz publicBiz = new HuaweiGroupServiceDayBiz();
         publicBiz.setBizTypeId(HuaweiBizTypeEnum.PUBLIC.getId());
-        publicBiz.setInformationBizRemark(marketingNumberDO.getPublicBizRemark());
-        publicBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
+        publicBiz.setBizRemark(marketingNumberDO.getPublicBizRemark());
+        publicBiz.setBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
         bizList.add(publicBiz);
 
         if(request.getInformationBizList() != null){
             HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
             informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
-            informationBiz.setInformationBizRemark(marketingNumberDO.getInformationBizRemark());
-            informationBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
+            informationBiz.setBizRemark(marketingNumberDO.getInformationBizRemark());
+            informationBiz.setBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
             bizList.add(informationBiz);
         }
 
