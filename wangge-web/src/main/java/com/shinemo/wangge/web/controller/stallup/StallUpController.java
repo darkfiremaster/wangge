@@ -386,6 +386,17 @@ public class StallUpController {
 		return stallUpService.getRedirctSmsHotUrl(activityId);
 	}
 
+	/**
+	 * 集团服务日跳转企业信息url
+	 * @param groupId
+	 * @return
+	 */
+	@GetMapping("getRedirctGrouSerUrl")
+	@SmIgnore
+	public ApiResult<String> redirctGroupServiceInfo(@RequestParam Long groupId) {
+		Assert.notNull(groupId, "groupId is null");
+		return stallUpService.getRedirctSmsHotUrl(groupId);
+	}
 
 
 	@GetMapping("getRecentCommunity")

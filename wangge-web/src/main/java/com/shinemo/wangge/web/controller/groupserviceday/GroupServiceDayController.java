@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.controller.groupserviceday;
 
 
 import com.shinemo.client.common.ListVO;
+import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest;
@@ -200,4 +201,6 @@ class GroupServiceDayController {
         Assert.notNull(request.getActivityId(),"groupServiceDay activityId is null");
         return groupServiceDayMarketingNumberService.enterMarketingNumber(request);
     }
+
+
 }
