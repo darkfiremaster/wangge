@@ -16,6 +16,7 @@ import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO
 import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
+import com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
@@ -85,8 +86,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Transactional(rollbackFor = Exception.class)
     public ApiResult<Void> createGroupServiceDay(GroupServiceDayRequest groupServiceDayRequest) {
         ValidatorUtil.validateEntity(groupServiceDayRequest);
-
-        //todo 校验是否存在进行中活动或未开始的活动
 
         //创建父活动
         ParentGroupServiceDayDO parentGroupServiceDayDO = getParentGroupServiceDayDO(groupServiceDayRequest);
@@ -480,9 +479,13 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         ParentGroupServiceDayDO parentGroupServiceDayDO = new ParentGroupServiceDayDO();
         //子活动有一个开始，父活动即为开始
         if (status == GroupServiceDayStatusEnum.PROCESSING.getId()) {
-            parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
-            parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
-            parentGroupServiceDayDO.setRealStartTime(time);
+            //判断父活动是否已开始
+            ParentGroupServiceDayDO parentGroupServiceDay = getParentGroupServiceDayById(groupServiceDayDO.getParentId());
+            if (parentGroupServiceDay.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId())) {
+                parentGroupServiceDayDO.setId(groupServiceDayDO.getParentId());
+                parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+                parentGroupServiceDayDO.setRealStartTime(time);
+            }
         } else if (status == GroupServiceDayStatusEnum.END.getId() ||
                 status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
                 || status == GroupServiceDayStatusEnum.CANCEL.getId()
@@ -502,7 +505,15 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
                 parentGroupServiceDayDO.setRealEndTime(time);
             }
         }
+
         parentGroupServiceDayMapper.update(parentGroupServiceDayDO);
+    }
+
+    private ParentGroupServiceDayDO getParentGroupServiceDayById(Long id) {
+        ParentGroupServiceDayQuery parentGroupServiceDayQuery = new ParentGroupServiceDayQuery();
+        parentGroupServiceDayQuery.setId(id);
+        ParentGroupServiceDayDO parentActivity = parentGroupServiceDayMapper.get(parentGroupServiceDayQuery);
+        return parentActivity;
     }
 
     private GroupServiceDayDO getDOById(Long id) {

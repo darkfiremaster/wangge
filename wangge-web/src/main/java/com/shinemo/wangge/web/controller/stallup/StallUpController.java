@@ -387,7 +387,6 @@ public class StallUpController {
 	}
 
 
-
 	@GetMapping("getRecentCommunity")
 	public ApiResult<List<CommunityVO>> getRecentCommunity() {
 
