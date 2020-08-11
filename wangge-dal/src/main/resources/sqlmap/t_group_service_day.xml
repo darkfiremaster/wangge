@@ -31,7 +31,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, group_address, location, partner, status, grid_id, extend
+        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_address,group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, group_address, location, partner, status, grid_id, extend
     </sql>
 
     <sql id="table">
@@ -133,6 +133,9 @@
             <if test="groupName != null">
                 group_name,
             </if>
+            <if test="groupAddress != null">
+                group_address,
+            </if>
             <if test="groupDetail != null">
                 group_detail,
             </if>
@@ -159,9 +162,6 @@
             </if>
             <if test="realEndTime != null">
                 real_end_time,
-            </if>
-            <if test="groupAddress != null">
-                group_address,
             </if>
             <if test="location != null">
                 location,
@@ -197,6 +197,9 @@
             <if test="groupName != null">
                 #{groupName, jdbcType=VARCHAR},
             </if>
+            <if test="groupAddress != null">
+                #{groupAddress, jdbcType=VARCHAR},
+            </if>
             <if test="groupDetail != null">
                 #{groupDetail, jdbcType=LONGVARCHAR},
             </if>
@@ -223,9 +226,6 @@
             </if>
             <if test="realEndTime != null">
                 #{realEndTime, jdbcType=TIMESTAMP},
-            </if>
-            <if test="groupAddress != null">
-                #{groupAddress, jdbcType=VARCHAR},
             </if>
             <if test="location != null">
                 #{location, jdbcType=VARCHAR},
@@ -263,6 +263,9 @@
             <if test="groupName != null">
                 group_name = #{groupName, jdbcType=VARCHAR},
             </if>
+            <if test="groupAddress != null">
+                group_address = #{groupAddress, jdbcType=VARCHAR},
+            </if>
             <if test="groupDetail != null">
                 group_detail = #{groupDetail, jdbcType=LONGVARCHAR},
             </if>
@@ -289,9 +292,6 @@
             </if>
             <if test="realEndTime != null">
                 real_end_time = #{realEndTime, jdbcType=TIMESTAMP},
-            </if>
-            <if test="groupAddress != null">
-                group_address = #{groupAddress, jdbcType=VARCHAR},
             </if>
             <if test="location != null">
                 location = #{location, jdbcType=VARCHAR},
@@ -328,7 +328,7 @@
                     or b.mobile = #{mobile}
                  order by a.gmt_create desc
              ) t
-        group by t.groupId,t.createTime
+        group by t.groupId
         order by t.createTime desc
         limit 10
     </select>
