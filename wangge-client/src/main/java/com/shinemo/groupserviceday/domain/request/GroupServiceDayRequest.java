@@ -49,6 +49,7 @@ public class GroupServiceDayRequest {
     /**
      * 集团坐标
      */
+    @NotBlank(message = "集团坐标不能为空")
     private String location;
     /**
      * 参与人详情
@@ -65,7 +66,7 @@ public class GroupServiceDayRequest {
         @NotBlank(message = "参与人名字不能为空")
         private String name;
 
-        private String gridId;
+        private String userId;
     }
 
 }

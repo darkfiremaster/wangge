@@ -74,7 +74,7 @@
                     b.gmt_create desc
             ) t
         group by
-            t.community_id,t.createTime
+            t.community_id
         order by
             t.createTime desc
         limit 10
