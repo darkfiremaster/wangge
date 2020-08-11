@@ -393,7 +393,7 @@ public class StallUpController {
 	 */
 	@GetMapping("getRedirctGrouSerUrl")
 	@SmIgnore
-	public ApiResult<String> redirctGroupServiceInfo(@RequestParam Long groupId) {
+	public ApiResult<String> redirctGroupServiceInfo(@RequestParam String groupId) {
 		Assert.notNull(groupId, "groupId is null");
 		return stallUpService.getRedirctGrouSerUrl(groupId);
 	}

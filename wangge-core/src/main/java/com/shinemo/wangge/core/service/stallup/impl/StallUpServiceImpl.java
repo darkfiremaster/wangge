@@ -1205,7 +1205,7 @@ public class StallUpServiceImpl implements StallUpService {
      * @return
      */
     @Override
-    public ApiResult<String> getRedirctGrouSerUrl(Long groupId) {
+    public ApiResult<String> getRedirctGrouSerUrl(String groupId) {
         long timestamp = System.currentTimeMillis();
 
         Map<String, Object> formData = new HashMap<>();
