@@ -109,30 +109,30 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             groupServiceDayMarketingNumberMapper.update(marketingNumberDO);
         }
         //4.同步给华为
-//        Map<String, Object> map = new HashMap<>(16);
-//        GroupServiceDayMarketNumberDetail detailNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
-//                new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
-//
-//        List<HuaweiGroupServiceDayBiz> bizList = new ArrayList<>();
-//        HuaweiGroupServiceDayBiz publicBiz = new HuaweiGroupServiceDayBiz();
-//        publicBiz.setBizTypeId(HuaweiBizTypeEnum.PUBLIC.getId());
-//        publicBiz.setInformationBizRemark(marketingNumberDO.getPublicBizRemark());
-//        publicBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
-//        bizList.add(publicBiz);
-//
-//        if(request.getInformationBizList() != null){
-//            HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
-//            informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
-//            informationBiz.setInformationBizRemark(marketingNumberDO.getInformationBizRemark());
-//            informationBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
-//            bizList.add(informationBiz);
-//        }
-//
-//        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
-//        map.put("mobile", SmartGridContext.getMobile());
-//        map.put("bizTypeList", bizList);
-//
-//        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
+        Map<String, Object> map = new HashMap<>(16);
+        GroupServiceDayMarketNumberDetail detailNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
+                new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
+
+        List<HuaweiGroupServiceDayBiz> bizList = new ArrayList<>();
+        HuaweiGroupServiceDayBiz publicBiz = new HuaweiGroupServiceDayBiz();
+        publicBiz.setBizTypeId(HuaweiBizTypeEnum.PUBLIC.getId());
+        publicBiz.setInformationBizRemark(marketingNumberDO.getPublicBizRemark());
+        publicBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
+        bizList.add(publicBiz);
+
+        if(request.getInformationBizList() != null){
+            HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
+            informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
+            informationBiz.setInformationBizRemark(marketingNumberDO.getInformationBizRemark());
+            informationBiz.setPublicBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
+            bizList.add(informationBiz);
+        }
+
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
+        map.put("mobile", SmartGridContext.getMobile());
+        map.put("bizTypeList", bizList);
+
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
 
         return ApiResult.success();
     }
