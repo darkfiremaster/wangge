@@ -395,7 +395,7 @@ public class StallUpController {
 	@SmIgnore
 	public ApiResult<String> redirctGroupServiceInfo(@RequestParam Long groupId) {
 		Assert.notNull(groupId, "groupId is null");
-		return stallUpService.getRedirctSmsHotUrl(groupId);
+		return stallUpService.getRedirctGrouSerUrl(groupId);
 	}
 
 
