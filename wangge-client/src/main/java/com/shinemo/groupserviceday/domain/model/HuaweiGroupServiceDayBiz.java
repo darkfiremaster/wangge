@@ -22,12 +22,12 @@ public class HuaweiGroupServiceDayBiz {
     /**
      * 大众市场业务列表
      */
-    private List<HuaweiGroupServiceDayBizDetail> publicBizInfoList;
+    private List<HuaweiGroupServiceDayBizDetail> bizInfoList;
 
     /**
      * 备注
      */
-    private String informationBizRemark;
+    private String bizRemark;
 
     /**
      * 业务分类ID
