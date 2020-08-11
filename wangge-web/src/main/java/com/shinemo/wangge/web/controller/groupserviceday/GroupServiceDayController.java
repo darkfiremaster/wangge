@@ -38,6 +38,7 @@ class GroupServiceDayController {
     @Resource
     private StallUpConfig stallUpConfig;
 
+    @Resource
     private GroupSerDayRedirctService groupSerDayRedirctService;
 
     @Resource
@@ -214,8 +215,8 @@ class GroupServiceDayController {
      */
     @GetMapping("getRedirctGrouSerUrl")
     @SmIgnore
-    public ApiResult<String> redirctGroupServiceInfo(@RequestParam Long groupId) {
-        Assert.notNull(groupId, "groupId is null");
+    public ApiResult<String> redirctGroupServiceInfo(@RequestParam String groupId) {
+        Assert.hasText(groupId, "groupId is null");
         return groupSerDayRedirctService.getRedirctGrouSerUrl(groupId);
     }
 }
