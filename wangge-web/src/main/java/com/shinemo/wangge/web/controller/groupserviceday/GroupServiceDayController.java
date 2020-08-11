@@ -14,6 +14,7 @@ import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.service.groupserviceday.GroupSerDayRedirctService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,8 @@ class GroupServiceDayController {
 
     @Resource
     private StallUpConfig stallUpConfig;
+
+    private GroupSerDayRedirctService groupSerDayRedirctService;
 
     @Resource
     private GroupServiceDayMarketingNumberService groupServiceDayMarketingNumberService;
@@ -203,4 +206,16 @@ class GroupServiceDayController {
     }
 
 
+
+    /**
+     * 集团服务日跳转企业信息url
+     * @param groupId
+     * @return
+     */
+    @GetMapping("getRedirctGrouSerUrl")
+    @SmIgnore
+    public ApiResult<String> redirctGroupServiceInfo(@RequestParam Long groupId) {
+        Assert.notNull(groupId, "groupId is null");
+        return groupSerDayRedirctService.getRedirctGrouSerUrl(groupId);
+    }
 }
