@@ -260,9 +260,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
-            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
-        }
+//        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+//            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+//        }
 
         //校验当前活动状态
         if (GroupServiceDayStatusEnum.NOT_START.getId() != groupServiceDayDO.getStatus()) {
@@ -327,9 +327,9 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
-            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
-        }
+//        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+//            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+//        }
 
         //校验活动状态
         if (!groupServiceDayDO.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())) {
