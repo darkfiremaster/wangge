@@ -107,7 +107,7 @@ public class ThirdApiMappingDO {
      */
     public Boolean dataArrarFlag() {
         if (flag != null) {
-            return (flag.intValue() & 3) == 3;
+            return (flag.intValue() & 4) == 4;
         }
         return false;
     }
