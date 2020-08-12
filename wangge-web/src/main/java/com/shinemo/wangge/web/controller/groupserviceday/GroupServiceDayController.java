@@ -8,10 +8,7 @@ import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBusinessIndexVO;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
+import com.shinemo.groupserviceday.domain.vo.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
@@ -126,7 +123,7 @@ class GroupServiceDayController {
      * @return
      */
     @PostMapping("/getAreaInformation")
-    public ApiResult<Map<String, Object>> getAreaInformation(@RequestBody Map<String,Object> requestData) {
+    public ApiResult<List<GroupServiceDayAreaInfoVO>> getAreaInformation(@RequestBody Map<String,Object> requestData) {
         return groupServiceDayService.getAreaInformation(requestData);
     }
 

@@ -3,6 +3,8 @@ package com.shinemo.wangge.core.service.groupserviceday.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
@@ -17,6 +19,7 @@ import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayAreaInfoVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
@@ -28,6 +31,8 @@ import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
+import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -360,8 +365,20 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     }
 
     @Override
-    public ApiResult<Map<String, Object>> getAreaInformation(Map<String, Object> requestData) {
-        return thirdApiMappingV2Service.dispatch(requestData, "getAreaInformation");
+    public ApiResult<List<GroupServiceDayAreaInfoVO>> getAreaInformation(Map<String, Object> requestData) {
+        ApiResult<Map<String, Object>> apiResult = thirdApiMappingV2Service.dispatch(requestData, "getAreaInformation");
+        if (apiResult != null && apiResult.isSuccess()) {
+            Map<String, Object> data = apiResult.getData();
+            if (!CollectionUtils.isEmpty(data)) {
+                JsonParser parser = new JsonParser();
+                JsonArray jsonArray = parser.parse(GsonUtils.toJson(data.get("data"))).getAsJsonArray();
+                List<GroupServiceDayAreaInfoVO> list = GsonUtils.jsonArrayToList(jsonArray, GroupServiceDayAreaInfoVO.class);
+                return ApiResult.of(0,list);
+            }else {
+                return ApiResult.of(0,new ArrayList<>());
+            }
+        }
+        return ApiResultWrapper.fail(ThirdApiErrorCodes.HUA_WEI_ERROR);
     }
 
     @Override
