@@ -7,6 +7,10 @@ import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
+import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.domain.GetSimpleInfoResponse;
 import com.shinemo.smartgrid.domain.OutsideMarketingNumVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
@@ -33,6 +37,7 @@ import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
 import com.shinemo.sweepvillage.enums.SweepVillageStatusEnum;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
@@ -72,6 +77,9 @@ public class IndexController {
 
     @Resource
     private SweepVillageActivityService sweepVillageActivityService;
+
+    @Resource
+    private GroupServiceDayService groupServiceDayService;
 
     @Resource
     private HuaWeiService huaWeiService;
@@ -130,6 +138,19 @@ public class IndexController {
         }
         ApiResult<SweepVillageActivityFinishVO> finishResultInfo = sweepVillageActivityService.getFinishResultInfo(1);
         response.setSweepVillageActivityFinishVO(finishResultInfo.getData());
+
+        // 集团服务日相关 获取进行中的活动信息以及 '周营销数据'
+        GroupServiceListRequest groupServiceListRequest = new GroupServiceListRequest();
+        groupServiceListRequest.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+        ApiResult<ListVO<GroupServiceDayVO>> activityListByStatus = groupServiceDayService.getActivityListByStatus(groupServiceListRequest);
+        if (CollUtil.isNotEmpty(activityListByStatus.getData().getRows())) {
+            GroupServiceDayVO groupServiceDayVO = activityListByStatus.getData().getRows().get(0);
+            response.setGroupServiceDayVO(groupServiceDayVO);
+        } else {
+            response.setGroupServiceDayVO(null);
+        }
+        ApiResult<GroupServiceDayFinishedVO> finishedCount = groupServiceDayService.getFinishedCount(1);
+        response.setGroupServiceDayFinishedVO(finishedCount.getData());
 
         // 首页
         List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(uid + "").stream()
