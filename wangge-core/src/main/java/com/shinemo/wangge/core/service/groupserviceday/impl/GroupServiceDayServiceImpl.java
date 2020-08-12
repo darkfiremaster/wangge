@@ -338,10 +338,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         //距离校验
         String location = request.getLocationDetailVO().getLocation();
-        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
-        if (!apiResult.isSuccess()) {
-            return apiResult;
-        }
+//        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
+//        if (!apiResult.isSuccess()) {
+//            return apiResult;
+//        }
         //更新签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityId(groupServiceDayDO.getId());
