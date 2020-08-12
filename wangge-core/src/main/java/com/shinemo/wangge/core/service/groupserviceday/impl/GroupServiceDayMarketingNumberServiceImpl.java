@@ -12,10 +12,16 @@ import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBizDetailVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
+import com.shinemo.sweepvillage.domain.vo.SweepVillageBizDetail;
+import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMarketingNumberMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -42,6 +48,9 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
     @Autowired
     private ThirdApiMappingV2Service thirdApiMappingV2Service;
 
+    @Resource
+    private StallUpConfig stallUpConfig;
+
     @Override
     public ApiResult<GroupServiceDayMarketNumberVO> getByActivityId(Long activityId) {
         Assert.notNull(activityId,"activityId is null");
@@ -50,10 +59,28 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         query.setGroupServiceDayId(activityId);
 
         GroupServiceDayMarketingNumberDO marketingNumberDO = groupServiceDayMarketingNumberMapper.get(query);
-        if(marketingNumberDO == null){
-            log.error("[getByActivityId] is null,query:{}",query);
-            return ApiResult.fail("marketNumber is null",500);
+//        if(marketingNumberDO == null){
+//            log.error("[getByActivityId] is null,query:{}",query);
+//            return ApiResult.fail("marketNumber is null",500);
+//        }
+
+
+        GroupServiceDayMarketNumberVO numberVO = new GroupServiceDayMarketNumberVO();
+        if (marketingNumberDO == null) {
+            List<StallUpBizType> groupServiceBizList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
+            List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
+            for (StallUpBizType bizType : groupServiceBizList) {
+                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                details.add(bizDetail);
+            }
+            numberVO.setPublicBizInfoList(details);
+            return ApiResult.of(0, numberVO);
         }
+
+
 
 
         GroupServiceDayMarketNumberDetail detail = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
