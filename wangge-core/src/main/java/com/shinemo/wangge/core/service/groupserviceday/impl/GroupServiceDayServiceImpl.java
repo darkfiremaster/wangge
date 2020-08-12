@@ -214,8 +214,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
         serviceDayQuery.setStatus(request.getStatus());
         serviceDayQuery.setMobile(SmartGridContext.getMobile());
-        serviceDayQuery.setEndFilterStartTime(request.getStartTime());
-        serviceDayQuery.setEndFilterEndTime(request.getEndTime());
+        if (request.getStartTime() != null) {
+            serviceDayQuery.setEndFilterStartTime(new Date(request.getStartTime()));
+        }
+        if (request.getEndTime() != null) {
+            serviceDayQuery.setEndFilterEndTime(new Date(request.getEndTime()));
+        }
         if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
             serviceDayQuery.setPageEnable(true);
         }
@@ -251,14 +255,14 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Override
     public ApiResult<Void> startSign(GroupServiceDaySignRequest request) {
 
-        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getActivityId());
         if (groupServiceDayDO == null) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
-            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
-        }
+//        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+//            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+//        }
 
         //校验当前活动状态
         if (GroupServiceDayStatusEnum.NOT_START.getId() != groupServiceDayDO.getStatus()) {
@@ -318,14 +322,14 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Override
     public ApiResult<Void> endSign(GroupServiceDaySignRequest request) {
 
-        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getActivityId());
         if (groupServiceDayDO == null) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
-            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
-        }
+//        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
+//            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+//        }
 
         //校验活动状态
         if (!groupServiceDayDO.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())) {
@@ -334,10 +338,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         //距离校验
         String location = request.getLocationDetailVO().getLocation();
-        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
-        if (!apiResult.isSuccess()) {
-            return apiResult;
-        }
+//        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
+//        if (!apiResult.isSuccess()) {
+//            return apiResult;
+//        }
         //更新签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityId(groupServiceDayDO.getId());
@@ -586,7 +590,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
         groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
         groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
-        groupServiceDayDO.setPlanEntTime(parentGroupServiceDayDO.getPlanEndTime());
+        groupServiceDayDO.setPlanEndTime(parentGroupServiceDayDO.getPlanEndTime());
         groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
         groupServiceDayDO.setLocation(parentGroupServiceDayDO.getLocation());
         groupServiceDayDO.setPartner(GsonUtils.toJson(parentGroupServiceDayDO.getPartner()));

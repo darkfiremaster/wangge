@@ -9,6 +9,6 @@ public class GroupServiceListRequest {
     private Integer status;
     private Integer pageSize;
     private Integer currentPage;
-    private Date startTime;
-    private Date endTime;
+    private Long startTime;
+    private Long endTime;
 }

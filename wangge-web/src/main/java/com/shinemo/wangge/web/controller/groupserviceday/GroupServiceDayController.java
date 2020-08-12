@@ -5,10 +5,7 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
-import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
+import com.shinemo.groupserviceday.domain.request.*;
 import com.shinemo.groupserviceday.domain.vo.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupSerDayRedirctService;
@@ -107,9 +104,10 @@ class GroupServiceDayController {
      * @return
      */
     @PostMapping("/cancel")
-    public ApiResult<Void> cancel(@RequestBody Long id) {
-        Assert.notNull(id, "id is null");
-        return groupServiceDayService.cancel(id);
+    public ApiResult<Void> cancel(@RequestBody GroupServiceCancelRequest request) {
+        Assert.notNull(request, "id is null");
+        Assert.notNull(request.getId(), "id is null");
+        return groupServiceDayService.cancel(request.getId());
     }
 
     /**
