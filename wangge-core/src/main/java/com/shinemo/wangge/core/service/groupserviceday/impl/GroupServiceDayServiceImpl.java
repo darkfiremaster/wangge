@@ -182,8 +182,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         //查询已结束活动:实际结束时间 >= startTime && 实际结束时间 <= endTime
         GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
         serviceDayQuery.setMobile(mobile);
-        serviceDayQuery.setEndFilterStartTIme(startTime);
-        serviceDayQuery.setEndFilterEndTIme(new Date());
+        serviceDayQuery.setEndFilterStartTime(startTime);
+        serviceDayQuery.setEndFilterEndTime(new Date());
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
             log.error("[getFinishedCount] activityList is empty!");
@@ -211,8 +211,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
         serviceDayQuery.setStatus(request.getStatus());
         serviceDayQuery.setMobile(SmartGridContext.getMobile());
-        serviceDayQuery.setEndFilterStartTIme(request.getStartTime());
-        serviceDayQuery.setEndFilterEndTIme(request.getEndTime());
+        serviceDayQuery.setEndFilterStartTime(request.getStartTime());
+        serviceDayQuery.setEndFilterEndTime(request.getEndTime());
         if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
             serviceDayQuery.setPageEnable(true);
         }
