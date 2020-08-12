@@ -590,7 +590,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
         groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
         groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
-        groupServiceDayDO.setPlanEntTime(parentGroupServiceDayDO.getPlanEndTime());
+        groupServiceDayDO.setPlanEndTime(parentGroupServiceDayDO.getPlanEndTime());
         groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
         groupServiceDayDO.setLocation(parentGroupServiceDayDO.getLocation());
         groupServiceDayDO.setPartner(GsonUtils.toJson(parentGroupServiceDayDO.getPartner()));

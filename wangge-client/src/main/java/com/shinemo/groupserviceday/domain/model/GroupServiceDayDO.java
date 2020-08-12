@@ -69,7 +69,7 @@ public class GroupServiceDayDO {
 	/**
 	* 计划结束时间
 	*/
-	private Date planEntTime;
+	private Date planEndTime;
 	/**
 	* 实际开始时间
 	*/

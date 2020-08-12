@@ -45,7 +45,7 @@ public class EndGroupServiceDaySchedule {
 		groupServiceDayQuery.setStatusList(statusList);
 		List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(groupServiceDayQuery);
 		for (GroupServiceDayDO serviceDayDO: groupServiceDayDOS) {
-			if (serviceDayDO.getPlanEntTime().getTime() < begin) {
+			if (serviceDayDO.getPlanEndTime().getTime() < begin) {
 				//自动结束
 
 			}

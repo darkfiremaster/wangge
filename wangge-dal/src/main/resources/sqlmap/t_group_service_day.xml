@@ -18,7 +18,7 @@
         <result property="mobile" column="mobile"/>
         <result property="name" column="name"/>
         <result property="planStartTime" column="plan_start_time"/>
-        <result property="planEntTime" column="plan_ent_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
         <result property="realStartTime" column="real_start_time"/>
         <result property="realEndTime" column="real_end_time"/>
         <result property="groupAddress" column="group_address"/>
@@ -31,7 +31,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_address,group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_ent_time, real_start_time, real_end_time, group_address, location, partner, status, grid_id, extend
+        id, parent_id, gmt_create, gmt_modified, title, group_id, group_name, group_address,group_detail, creator_id, creator_name, mobile, name, plan_start_time, plan_end_time, real_start_time, real_end_time, group_address, location, partner, status, grid_id, extend
     </sql>
 
     <sql id="table">
@@ -56,7 +56,7 @@
                     <if test="mobile != null">and mobile = #{mobile}</if>
                     <if test="name != null">and name = #{name}</if>
                     <if test="planStartTime != null">and plan_start_time = #{planStartTime}</if>
-                    <if test="planEntTime != null">and plan_ent_time = #{planEntTime}</if>
+                    <if test="planEndTime != null">and plan_end_time = #{planEndTime}</if>
                     <if test="realStartTime != null">and real_start_time = #{realStartTime}</if>
                     <if test="realEndTime != null">and real_end_time = #{realEndTime}</if>
                     <if test="location != null">and location = #{location}</if>
@@ -159,8 +159,8 @@
             <if test="planStartTime != null">
                 plan_start_time,
             </if>
-            <if test="planEntTime != null">
-                plan_ent_time,
+            <if test="planEndTime != null">
+                plan_end_time,
             </if>
             <if test="realStartTime != null">
                 real_start_time,
@@ -223,8 +223,8 @@
             <if test="planStartTime != null">
                 #{planStartTime, jdbcType=TIMESTAMP},
             </if>
-            <if test="planEntTime != null">
-                #{planEntTime, jdbcType=TIMESTAMP},
+            <if test="planEndTime != null">
+                #{planEndTime, jdbcType=TIMESTAMP},
             </if>
             <if test="realStartTime != null">
                 #{realStartTime, jdbcType=TIMESTAMP},
@@ -289,8 +289,8 @@
             <if test="planStartTime != null">
                 plan_start_time = #{planStartTime, jdbcType=TIMESTAMP},
             </if>
-            <if test="planEntTime != null">
-                plan_ent_time = #{planEntTime, jdbcType=TIMESTAMP},
+            <if test="planEndTime != null">
+                plan_end_time = #{planEndTime, jdbcType=TIMESTAMP},
             </if>
             <if test="realStartTime != null">
                 real_start_time = #{realStartTime, jdbcType=TIMESTAMP},
