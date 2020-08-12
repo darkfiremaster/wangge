@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class GroupServiceDaySignRequest {
     /** 活动id */
-    private Long id;
+    private Long activityId;
     /** 位置信息 */
     private LocationDetailVO locationDetailVO;
     /** 备注 */

@@ -255,7 +255,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Override
     public ApiResult<Void> startSign(GroupServiceDaySignRequest request) {
 
-        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getActivityId());
         if (groupServiceDayDO == null) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
@@ -322,7 +322,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     @Override
     public ApiResult<Void> endSign(GroupServiceDaySignRequest request) {
 
-        GroupServiceDayDO groupServiceDayDO = getDOById(request.getId());
+        GroupServiceDayDO groupServiceDayDO = getDOById(request.getActivityId());
         if (groupServiceDayDO == null) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
