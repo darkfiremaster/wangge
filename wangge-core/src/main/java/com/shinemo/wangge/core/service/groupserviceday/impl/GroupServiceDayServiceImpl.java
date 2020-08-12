@@ -214,8 +214,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
         serviceDayQuery.setStatus(request.getStatus());
         serviceDayQuery.setMobile(SmartGridContext.getMobile());
-        serviceDayQuery.setEndFilterStartTime(request.getStartTime());
-        serviceDayQuery.setEndFilterEndTime(request.getEndTime());
+        if (request.getStartTime() != null) {
+            serviceDayQuery.setEndFilterStartTime(new Date(request.getStartTime()));
+        }
+        if (request.getEndTime() != null) {
+            serviceDayQuery.setEndFilterEndTime(new Date(request.getEndTime()));
+        }
         if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
             serviceDayQuery.setPageEnable(true);
         }
