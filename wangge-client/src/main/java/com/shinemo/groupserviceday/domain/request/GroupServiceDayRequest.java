@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -39,13 +40,13 @@ public class GroupServiceDayRequest {
     /**
      * 计划开始时间
      */
-    @NotBlank(message = "开始时间不能为空")
-    private String planStartTime;
+    @NotNull(message = "开始时间不能为空")
+    private Long planStartTime;
     /**
      * 计划结束时间
      */
-    @NotBlank(message = "结束时间不能为空")
-    private String planEndTime;
+    @NotNull(message = "结束时间不能为空")
+    private Long planEndTime;
     /**
      * 集团坐标
      */

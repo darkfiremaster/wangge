@@ -112,8 +112,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         HuaWeiCreateGroupServiceDayRequest huaWeiCreateGroupServiceDayRequest = new HuaWeiCreateGroupServiceDayRequest();
         huaWeiCreateGroupServiceDayRequest.setParentActivityId(GroupServiceDayConstants.ID_PREFIX + parentGroupServiceDayDO.getId());
         huaWeiCreateGroupServiceDayRequest.setTitle(groupServiceDayRequest.getTitle());
-        huaWeiCreateGroupServiceDayRequest.setStartTime(groupServiceDayRequest.getPlanStartTime());
-        huaWeiCreateGroupServiceDayRequest.setEndTime(groupServiceDayRequest.getPlanEndTime());
+        huaWeiCreateGroupServiceDayRequest.setStartTime(DateUtil.formatDateTime(parentGroupServiceDayDO.getPlanStartTime()));
+        huaWeiCreateGroupServiceDayRequest.setEndTime(DateUtil.formatDateTime(parentGroupServiceDayDO.getPlanEndTime()));
         huaWeiCreateGroupServiceDayRequest.setStatus(String.valueOf(parentGroupServiceDayDO.getStatus()));
         huaWeiCreateGroupServiceDayRequest.setGroupId(groupServiceDayRequest.getGroupId());
 
@@ -149,9 +149,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
                 participantList.add(participant);
             }
-
             childGroupServiceDay.setParticipantList(participantList);
-
             childGroupServiceDayList.add(childGroupServiceDay);
         }
 
@@ -578,7 +576,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
         groupServiceDayDO.setMobile(partnerBean.getMobile());
         groupServiceDayDO.setName(partnerBean.getName());
-        //groupServiceDayDO.setGridId(partnerBean.getUserId());
         return groupServiceDayDO;
     }
 
@@ -592,8 +589,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
         parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
-        parentGroupServiceDayDO.setPlanStartTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanStartTime()));
-        parentGroupServiceDayDO.setPlanEndTime(DateUtil.parseDateTime(groupServiceDayRequest.getPlanEndTime()));
+        parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
+        parentGroupServiceDayDO.setPlanEndTime(new Date(groupServiceDayRequest.getPlanEndTime()));
         parentGroupServiceDayDO.setLocation(groupServiceDayRequest.getLocation());
         parentGroupServiceDayDO.setPartner(GsonUtils.toJson(groupServiceDayRequest.getPartner()));
         parentGroupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
@@ -601,7 +598,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             parentGroupServiceDayDO.setGridId(SmartGridContext.getSelectGridUserRoleDetail().getId());
         } catch (Exception e) {
             log.error("[createGroupServiceDay] 该用户无网格,mobile:{}", SmartGridContext.getMobile());
-            parentGroupServiceDayDO.setGridId("");
+            parentGroupServiceDayDO.setGridId("0");
         }
         return parentGroupServiceDayDO;
     }
