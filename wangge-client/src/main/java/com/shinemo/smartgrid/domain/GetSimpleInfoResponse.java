@@ -1,6 +1,8 @@
 package com.shinemo.smartgrid.domain;
 
 import com.google.gson.JsonElement;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.stallup.domain.model.StallUpBizTotal;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.model.StallUpDetailVO;
@@ -23,12 +25,17 @@ public class GetSimpleInfoResponse {
 	//摆摊
 	private StallUpBizTotal stallUpWeekDetail;
 	private StallUpDetailVO stallUpStartedDetail;
-	//todo 扫楼
+	//扫楼
 	private SweepFloorActivityVO sweepFloorActivityVO;
 	private SweepFloorBizTotal sweepFloorBizTotal;
 	//扫村
 	private SweepVillageActivityResultVO sweepVillageActivityResultVO;
 	private SweepVillageActivityFinishVO sweepVillageActivityFinishVO;
+
+	//集团服务日
+	private GroupServiceDayVO groupServiceDayVO;
+	private GroupServiceDayFinishedVO groupServiceDayFinishedVO;
+
 	private Long todayToDo;
 	private Long weekToDo;
 	private Long monthDone;

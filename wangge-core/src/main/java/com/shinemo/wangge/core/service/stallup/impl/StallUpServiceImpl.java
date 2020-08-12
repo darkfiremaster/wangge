@@ -1195,6 +1195,7 @@ public class StallUpServiceImpl implements StallUpService {
         return ApiResult.of(0, smsHotUrl);
     }
 
+
     /**
      * 获取待开始和已开始的VO
      */

@@ -47,9 +47,10 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     public String accessKeyId;
     @Value("${smartgrid.huawei.secretKey}")
     public String secretKey;
-    @Value("${smartgrid.huawei.auth.domain}")
-    public String authDomain;
-
+    //@Value("${smartgrid.huawei.auth.domain}")
+    //public String authDomain;
+    @Value("${smartgrid.huawei.domain}")
+    public String domain;
 
     @Value("${smartgrid.huawei.signkey}")
     public String signkey;
@@ -96,7 +97,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
             String param = GsonUtils.toJson(requestData);
             //String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
-            HttpResult httpResult = HttpConnectionUtils.httpPost(authDomain + thirdApiMappingDO.getUrl(), param, header);
+            HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
 

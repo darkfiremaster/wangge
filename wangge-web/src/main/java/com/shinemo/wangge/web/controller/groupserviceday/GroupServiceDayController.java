@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.controller.groupserviceday;
 
 
 import com.shinemo.client.common.ListVO;
+import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayBusinessRequest;
@@ -10,6 +11,7 @@ import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
 import com.shinemo.groupserviceday.domain.vo.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.service.groupserviceday.GroupSerDayRedirctService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayMarketingNumberService;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ class GroupServiceDayController {
 
     @Resource
     private StallUpConfig stallUpConfig;
+
+    @Resource
+    private GroupSerDayRedirctService groupSerDayRedirctService;
 
     @Resource
     private GroupServiceDayMarketingNumberService groupServiceDayMarketingNumberService;
@@ -191,10 +196,24 @@ class GroupServiceDayController {
      * @param request
      * @return
      */
-    @PostMapping("/addBusiness")
+    @PostMapping("/saveGroupSerPlanBusi")
     public ApiResult addBusiness(@RequestBody GroupServiceDayBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"groupServiceDay activityId is null");
         return groupServiceDayMarketingNumberService.enterMarketingNumber(request);
+    }
+
+
+
+    /**
+     * 集团服务日跳转企业信息url
+     * @param groupId
+     * @return
+     */
+    @GetMapping("getRedirctGrouSerUrl")
+    @SmIgnore
+    public ApiResult<String> redirctGroupServiceInfo(@RequestParam String groupId) {
+        Assert.hasText(groupId, "groupId is null");
+        return groupSerDayRedirctService.getRedirctGrouSerUrl(groupId);
     }
 }

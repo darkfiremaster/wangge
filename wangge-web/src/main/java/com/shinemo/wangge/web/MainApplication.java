@@ -1,6 +1,5 @@
 package com.shinemo.wangge.web;
 
-import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.annotation.NacosProperties;
 import com.alibaba.nacos.spring.context.annotation.config.EnableNacosConfig;
 import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
@@ -67,7 +66,6 @@ public class MainApplication implements WebMvcConfigurer {
     }
 
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         SmCommonProperties properties = authCheckerAutoConfiguration.getProperties();
@@ -95,8 +93,10 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/operate/**")
                 .addPathPatterns("/todo/thing/**")
                 .addPathPatterns("/targetcustomer/getByMobile/**")
+                .addPathPatterns("/groupServiceDay/**")
                 .excludePathPatterns("/backdoor/**",
-                        "/error","/todo/operateTodoThing",
+                        "/error",
+                        "/todo/operateTodoThing",
                         "/todo/thing/log/**",
                         "/excel/**",
                         properties.getCheckStatusPath())

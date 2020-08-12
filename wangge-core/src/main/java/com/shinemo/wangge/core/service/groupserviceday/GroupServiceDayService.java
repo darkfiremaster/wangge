@@ -4,7 +4,6 @@ import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayPartnerListRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
@@ -63,6 +62,13 @@ public interface GroupServiceDayService {
      */
     ApiResult<Void> cancel(Long id);
 
+
+    /**
+     * 自动结束活动
+     */
+    ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO);
+
+
     /**
      * 获取参与人列表
      */
@@ -73,9 +79,5 @@ public interface GroupServiceDayService {
      */
     ApiResult<List<GroupServiceDayAreaInfoVO>> getAreaInformation(Map<String,Object> requestData);
 
-    /**
-     * 自动结束活动
-     */
-    ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO);
 
 }
