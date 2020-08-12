@@ -41,6 +41,10 @@ public class GroupServiceDayQuery extends QueryBase {
     * 集团名称
     */
 	private String groupName;
+	/**
+	 * 地址
+	 */
+	private String groupAddress;
     /**
     * 集团详情
     */
@@ -77,10 +81,7 @@ public class GroupServiceDayQuery extends QueryBase {
     * 实际结束时间
     */
 	private Date realEndTime;
-    /**
-    * 地址
-    */
-	private String address;
+
     /**
     * 坐标
     */
