@@ -105,11 +105,11 @@ public class GroupServiceDayQuery extends QueryBase {
 	/**
 	 * 根据结束时间进行过滤的开始时间
 	 */
-	private Date endFilterStartTIme;
+	private Date endFilterStartTime;
 	/**
 	 * 根据结束时间进行过滤的结束时间
 	 */
-	private Date endFilterEndTIme;
+	private Date endFilterEndTime;
 	/**
 	 * 状态列表
 	 */

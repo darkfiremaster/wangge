@@ -101,4 +101,15 @@ public class ThirdApiMappingDO {
         return false;
     }
 
+    /**
+     * data是否是数组
+     * @return
+     */
+    public Boolean dataArrarFlag() {
+        if (flag != null) {
+            return (flag.intValue() & 3) == 3;
+        }
+        return false;
+    }
+
 }

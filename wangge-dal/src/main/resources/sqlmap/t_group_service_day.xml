@@ -59,14 +59,13 @@
                     <if test="planEntTime != null">and plan_ent_time = #{planEntTime}</if>
                     <if test="realStartTime != null">and real_start_time = #{realStartTime}</if>
                     <if test="realEndTime != null">and real_end_time = #{realEndTime}</if>
-                    <if test="groupAddress != null">and group_address = #{groupAddress}</if>
                     <if test="location != null">and location = #{location}</if>
                     <if test="partner != null">and partner = #{partner}</if>
                     <if test="status != null">and status = #{status}</if>
                     <if test="gridId != null">and grid_id = #{gridId}</if>
                     <if test="extend != null">and extend = #{extend}</if>
-                    <if test="endFilterStartTIme != null"><![CDATA[and real_end_time >= #{endFilterStartTIme}]]></if>
-                    <if test="endFilterEndTIme != null"><![CDATA[and real_end_time <= #{endFilterEndTIme}]]></if>
+                    <if test="endFilterStartTime != null"><![CDATA[and real_end_time >= #{endFilterStartTime}]]></if>
+                    <if test="endFilterEndTime != null"><![CDATA[and real_end_time <= #{endFilterEndTime}]]></if>
                     <if test="statusList != null and statusList.size()>0">
                         and status in
                         <foreach collection="statusList" open="(" separator="," close=")" item="value">

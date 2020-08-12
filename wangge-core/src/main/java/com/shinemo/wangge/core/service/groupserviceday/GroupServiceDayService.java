@@ -7,6 +7,7 @@ import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayAreaInfoVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 
@@ -76,7 +77,7 @@ public interface GroupServiceDayService {
     /**
      * 获取地区信息接口
      */
-    ApiResult<Map<String, Object>> getAreaInformation(Map<String,Object> requestData);
+    ApiResult<List<GroupServiceDayAreaInfoVO>> getAreaInformation(Map<String,Object> requestData);
 
 
 }

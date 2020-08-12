@@ -29,6 +29,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -174,8 +175,14 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     private ApiResult<Map<String, Object>> handleMockRequest(Map<String, Object> requestData, ThirdApiMappingDO thirdApiMappingDO) {
         log.info("[dispatch] 返回mock数据,url:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), requestData, thirdApiMappingDO.getMockData());
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
+        Map<String, Object> objectMap = new HashMap<>();
         if (huaweiRequestSuccess(result)) {
-            Map<String, Object> objectMap = getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            if (thirdApiMappingDO.dataArrarFlag()) {
+                objectMap.put("data",result.get(HUAWEI_RESPONSE_PARAM_DATA));
+                return ApiResult.of(0,objectMap);
+            }else {
+                objectMap = getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            }
             dealPage(thirdApiMappingDO, objectMap);
             result.put(HUAWEI_RESPONSE_PARAM_DATA, objectMap);
             return ApiResult.of(0, getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA))));
