@@ -30,8 +30,8 @@
             <choose>
                 <when test="id != null">and id = #{id}</when>
                 <otherwise>
-                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
-                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+                    <if test="gmtCreate != null">and gmt_create >= #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified >= #{gmtModified}</if>
                     <if test="userId != null">and user_id = #{userId}</if>
                     <if test="sweepStreetId != null">and sweep_street_id = #{sweepStreetId}</if>
                     <if test="count != null">and count = #{count}</if>

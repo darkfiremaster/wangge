@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shinemo.dal.SweepStreetVisitRecording.mapper.TSweepStreetVisitRecordingMapper">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SweepStreetVisitRecordingMapper">
 
     <!-- 结果集对应关系 -->
-    <resultMap id="result" type="com.shinemo.client.SweepStreetVisitRecording.domain.TSweepStreetVisitRecording" >
+    <resultMap id="result" type="com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO" >
         <id column="id" property="id"/>
         <result property="activityId" column="activity_id"/>
         <result property="mobile" column="mobile"/>
@@ -64,8 +64,8 @@
                     <if test="tvBoxRemark != null">and tv_box_remark = #{tvBoxRemark}</if>
                     <if test="tvBoxExpireTime != null">and tv_box_expire_time = #{tvBoxExpireTime}</if>
                     <if test="remark != null">and remark = #{remark}</if>
-                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
-                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+                    <if test="gmtCreate != null">and gmt_create >= #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified >= #{gmtModified}</if>
                     <if test="status != null">and status = #{status}</if>
                     <if test="location != null">and location = #{location}</if>
                     <if test="createMerchantMobile != null">and create_merchant_mobile = #{createMerchantMobile}</if>
@@ -77,7 +77,7 @@
 
     <!-- 查询结果集 -->
     <select id="find" resultMap="result"
-            parameterType="com.shinemo.client.SweepStreetVisitRecording.query.TSweepStreetVisitRecordingQuery">
+            parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery">
         select
         <include refid="columns"/>
         from
@@ -95,7 +95,7 @@
     </select>
 
     <!-- 查询某条记录 -->
-    <select id="get" resultMap="result" parameterType="com.shinemo.client.SweepStreetVisitRecording.query.TSweepStreetVisitRecordingQuery">
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery">
         select
         <include refid="columns"/>
         from
@@ -105,22 +105,16 @@
     </select>
 
     <!-- 统计查询结果数量 -->
-    <select id="count" resultType="long" parameterType="com.shinemo.client.SweepStreetVisitRecording.query.TSweepStreetVisitRecordingQuery">
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery">
         select count(*) from
         <include refid="table"/>
         <include refid="conditions"/>
     </select>
 
-    <!-- 删除 -->
-    <delete id="delete" parameterType="com.shinemo.client.SweepStreetVisitRecording.query.TSweepStreetVisitRecordingQuery">
-        delete from
-        <include refid="table"/>
-        where id = #{id}
-    </delete>
 
     <!-- 插入 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.shinemo.client.SweepStreetVisitRecording.domain.TSweepStreetVisitRecording">
+            parameterType="com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO">
         insert into
         <include refid="table"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -266,7 +260,7 @@
     </insert>
 
     <!-- 更新 -->
-    <update id="update" parameterType="com.shinemo.client.SweepStreetVisitRecording.domain.TSweepStreetVisitRecording">
+    <update id="update" parameterType="com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO">
         UPDATE
         <include refid="table"/>
         <set>
