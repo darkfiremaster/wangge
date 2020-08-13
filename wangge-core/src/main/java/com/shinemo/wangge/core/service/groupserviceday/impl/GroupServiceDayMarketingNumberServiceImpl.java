@@ -14,6 +14,7 @@ import com.shinemo.groupserviceday.domain.vo.GroupServiceDayMarketNumberVO;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.stallup.domain.model.SweepFloorBizDetail;
 import com.shinemo.sweepvillage.domain.request.SweepVillageBusinessRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageBizDetail;
 import com.shinemo.wangge.core.config.StallUpConfig;
@@ -25,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -110,6 +112,8 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         query.setGroupServiceDayId(request.getActivityId());
         GroupServiceDayMarketingNumberDO queryResult = groupServiceDayMarketingNumberMapper.get(query);
 
+
+
         //3.插入或更新
         GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
                 .publicBizInfoList(request.getPublicBizList())
@@ -123,6 +127,23 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 .informationBizRemark(request.getInformationRemark())
                 .count(count)
                 .build();
+
+        //若未传入办理量 默认填充0值
+        if(CollectionUtils.isEmpty(request.getPublicBizList())){
+            marketingNumberDO.setCount(0);
+            List<StallUpBizType> sweepFloorBizList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
+            List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
+            for (StallUpBizType bizType : sweepFloorBizList) {
+                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                details.add(bizDetail);
+            }
+            detail.setPublicBizInfoList(details);
+            marketingNumberDO.setDetail(GsonUtils.toJson(detail));
+        }
+
 
         if(queryResult == null){
             //插入
