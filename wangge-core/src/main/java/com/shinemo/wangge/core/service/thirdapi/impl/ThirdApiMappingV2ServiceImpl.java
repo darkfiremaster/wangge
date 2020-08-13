@@ -163,8 +163,14 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
                         thirdApiMappingDO.getUrl(), requestData, param, huaweiResponse);
                 return ApiResult.fail(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
-
-            Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            Map<String, Object> result = new HashMap<>();
+            if (thirdApiMappingDO.dataArrarFlag()) {
+                result.put("data",huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA));
+                return ApiResult.of(0,result);
+            }else {
+                result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            }
+           // Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
             dealPage(thirdApiMappingDO, result);
             return ApiResult.of(0, result);
         }
