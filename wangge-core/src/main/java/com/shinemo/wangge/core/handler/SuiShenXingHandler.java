@@ -33,6 +33,10 @@ public class SuiShenXingHandler implements UrlRedirectHandler {
             formData.put("type", params.getType());
         }
 
+        if (StrUtil.isNotBlank(request.getActivityStrId())) {
+            formData.put("TaskId", request.getActivityStrId());
+        }
+
         return GsonUtils.toJson(formData);
     }
 }
