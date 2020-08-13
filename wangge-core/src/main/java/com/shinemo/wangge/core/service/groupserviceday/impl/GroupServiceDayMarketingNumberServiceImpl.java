@@ -102,7 +102,10 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         //1.统计办理量
         List<GroupServiceDayBizDetailVO> informationBizList = request.getInformationBizList();
         List<GroupServiceDayBizDetailVO> publicBizList = request.getPublicBizList();
-        int count = publicBizList.stream().mapToInt(p -> p.getNum()).sum();
+        int count = 0;
+        if(publicBizList != null){
+            count = publicBizList.stream().mapToInt(p -> p.getNum()).sum();
+        }
         if(informationBizList != null){
             count = count + informationBizList.stream().mapToInt(p -> p.getNum()).sum();
         }
