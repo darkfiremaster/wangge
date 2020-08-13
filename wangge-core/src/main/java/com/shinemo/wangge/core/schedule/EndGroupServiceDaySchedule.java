@@ -10,6 +10,7 @@ import com.shinemo.stallup.domain.model.StallUpActivity;
 import com.shinemo.stallup.domain.query.StallUpActivityQuery;
 import com.shinemo.stallup.domain.request.StallUpEndRequest;
 import com.shinemo.wangge.core.config.StallUpStateMachine;
+import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
 import com.shinemo.wangge.dal.mapper.StallUpActivityMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ public class EndGroupServiceDaySchedule {
 
 	@Resource
 	private GroupServiceDayMapper groupServiceDayMapper;
+	@Resource
+	private GroupServiceDayService groupServiceDayService;
 
 	@Scheduled(cron = "0 0 0 * * ? ")
 	//@Scheduled(cron = "0 */1 * * * ?")
@@ -47,7 +50,7 @@ public class EndGroupServiceDaySchedule {
 		for (GroupServiceDayDO serviceDayDO: groupServiceDayDOS) {
 			if (serviceDayDO.getPlanEndTime().getTime() < begin) {
 				//自动结束
-
+				groupServiceDayService.autoEnd(serviceDayDO);
 			}
 		}
 
