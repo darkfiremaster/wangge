@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.SweepStreetMarketingNumberMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="userId" column="user_id"/>
+        <result property="sweepStreetId" column="sweep_street_id"/>
+        <result property="count" column="count"/>
+        <result property="detail" column="detail"/>
+        <result property="bizRemark" column="biz_remark"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, user_id, sweep_street_id, count, detail, biz_remark
+    </sql>
+
+    <sql id="table">
+        t_sweep_street_marketing_number
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified = #{gmtModified}</if>
+                    <if test="userId != null">and user_id = #{userId}</if>
+                    <if test="sweepStreetId != null">and sweep_street_id = #{sweepStreetId}</if>
+                    <if test="count != null">and count = #{count}</if>
+                    <if test="detail != null">and detail = #{detail}</if>
+                    <if test="bizRemark != null">and biz_remark = #{bizRemark}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="sweepStreetId != null">
+                sweep_street_id,
+            </if>
+            <if test="count != null">
+                count,
+            </if>
+            <if test="detail != null">
+                detail,
+            </if>
+            <if test="bizRemark != null">
+                biz_remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="userId != null">
+                #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="sweepStreetId != null">
+                #{sweepStreetId, jdbcType=BIGINT},
+            </if>
+            <if test="count != null">
+                #{count, jdbcType=INTEGER},
+            </if>
+            <if test="detail != null">
+                #{detail, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bizRemark != null">
+                #{bizRemark, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="userId != null">
+                user_id = #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="sweepStreetId != null">
+                sweep_street_id = #{sweepStreetId, jdbcType=BIGINT},
+            </if>
+            <if test="count != null">
+                count = #{count, jdbcType=INTEGER},
+            </if>
+            <if test="detail != null">
+                detail = #{detail, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="bizRemark != null">
+                biz_remark = #{bizRemark, jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.ParentSweepStreetActivityMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.sweepstreet.domain.model.ParentSweepStreetActivityDO" >
+        <id column="id" property="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="title" column="title"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorOrgId" column="creator_org_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="mobile" column="mobile"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
+        <result property="realStartTime" column="real_start_time"/>
+        <result property="realEndTime" column="real_end_time"/>
+        <result property="location" column="location"/>
+        <result property="partner" column="partner"/>
+        <result property="status" column="status"/>
+        <result property="gridId" column="grid_id"/>
+        <result property="extend" column="extend"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, gmt_create, gmt_modified, title, creator_id, creator_org_id, creator_name, mobile, plan_start_time, plan_end_time, real_start_time, real_end_time, location, partner, status, grid_id, extend
+    </sql>
+
+    <sql id="table">
+        t_parent_sweep_street_activity
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="gmtCreate != null">and gmt_create >= #{gmtCreate}</if>
+                    <if test="gmtModified != null">and gmt_modified >= #{gmtModified}</if>
+                    <if test="title != null">and title = #{title}</if>
+                    <if test="creatorId != null">and creator_id = #{creatorId}</if>
+                    <if test="creatorOrgId != null">and creator_org_id = #{creatorOrgId}</if>
+                    <if test="creatorName != null">and creator_name = #{creatorName}</if>
+                    <if test="mobile != null">and mobile = #{mobile}</if>
+                    <if test="planStartTime != null">and plan_start_time >= #{planStartTime}</if>
+                    <if test="planEndTime != null">and plan_end_time >= #{planEndTime}</if>
+                    <if test="realStartTime != null">and real_start_time >= #{realStartTime}</if>
+                    <if test="realEndTime != null">and real_end_time >= #{realEndTime}</if>
+                    <if test="location != null">and location = #{location}</if>
+                    <if test="status != null">and status = #{status}</if>
+                    <if test="gridId != null">and grid_id = #{gridId}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.sweepstreet.domain.model.ParentSweepStreetActivityDO">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
+            <if test="title != null">
+                title,
+            </if>
+            <if test="creatorId != null">
+                creator_id,
+            </if>
+            <if test="creatorOrgId != null">
+                creator_org_id,
+            </if>
+            <if test="creatorName != null">
+                creator_name,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="planStartTime != null">
+                plan_start_time,
+            </if>
+            <if test="planEndTime != null">
+                plan_end_time,
+            </if>
+            <if test="realStartTime != null">
+                real_start_time,
+            </if>
+            <if test="realEndTime != null">
+                real_end_time,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="partner != null">
+                partner,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="gridId != null">
+                grid_id,
+            </if>
+            <if test="extend != null">
+                extend,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            now(),
+            now(),
+            <if test="title != null">
+                #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="creatorId != null">
+                #{creatorId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorOrgId != null">
+                #{creatorOrgId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="planStartTime != null">
+                #{planStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="planEndTime != null">
+                #{planEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+                #{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+                #{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="location != null">
+                #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="partner != null">
+                #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                #{status, jdbcType=INTEGER},
+            </if>
+            <if test="gridId != null">
+                #{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null">
+                #{extend, jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.sweepstreet.domain.model.ParentSweepStreetActivityDO">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            gmt_modified = now(),
+            <if test="title != null">
+                title = #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="creatorId != null">
+                creator_id = #{creatorId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorOrgId != null">
+                creator_org_id = #{creatorOrgId, jdbcType=BIGINT},
+            </if>
+            <if test="creatorName != null">
+                creator_name = #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="planStartTime != null">
+                plan_start_time = #{planStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="planEndTime != null">
+                plan_end_time = #{planEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realStartTime != null">
+                real_start_time = #{realStartTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="realEndTime != null">
+                real_end_time = #{realEndTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="location != null">
+                location = #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="partner != null">
+                partner = #{partner, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status, jdbcType=INTEGER},
+            </if>
+            <if test="gridId != null">
+                grid_id = #{gridId, jdbcType=VARCHAR},
+            </if>
+            <if test="extend != null">
+                extend = #{extend, jdbcType=LONGVARCHAR}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>
