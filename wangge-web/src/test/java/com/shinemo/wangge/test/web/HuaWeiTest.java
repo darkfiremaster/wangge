@@ -1,6 +1,8 @@
 package com.shinemo.wangge.test.web;
 
 import cn.hutool.json.JSONUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.shinemo.smartgrid.http.HttpConnectionUtils;
 import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -26,9 +29,18 @@ public class HuaWeiTest {
     //@Value("${smartgrid.huawei.domain}")
     public String domain = "http://112.54.48.61:13003";
 
+    private void printResult(Map<String, Object> header, HashMap<String, Object> requestData, HttpResult httpResult) {
+        HashMap<String,Object> requestMap = new LinkedHashMap<>();
+        requestMap.put("header", header);
+        requestMap.put("body",requestData);
+        requestMap.put("result", JSONUtil.parseObj(httpResult.getContent()));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        log.info("result:{}", gson.toJson(requestMap));
+    }
+
     @Test
     public void testGetGroupList() {
-        String mobile = "15978197192";
+        String mobile = "13607713224";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
@@ -39,19 +51,18 @@ public class HuaWeiTest {
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
-        HashMap<String,Object> requestMap = new HashMap<>();
-        requestMap.put("header", header);
-        requestMap.put("body",requestData);
-        System.out.println("requestMap = " + requestMap);
-        log.info("httpRequest:{}", JSONUtil.toJsonStr(requestMap));
-
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
+
+        printResult(header, requestData, httpResult);
     }
+
+
+
 
     @Test
     public void testGetGridUserInfo() {
-        String mobile = "15978197192";
+        String mobile = "13607713224";
         String huaweiUrl = "/CMCC_GX_market/CMCC_GX_SmartGridAuth/auth/getUserInfo.do";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
@@ -63,6 +74,9 @@ public class HuaWeiTest {
 
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
+
+        printResult(header, requestData, httpResult);
+
     }
 
     @Test

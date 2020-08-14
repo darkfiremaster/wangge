@@ -108,7 +108,6 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
 
             Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
             String param = GsonUtils.toJson(requestData);
-            //String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
             //添加请求头
