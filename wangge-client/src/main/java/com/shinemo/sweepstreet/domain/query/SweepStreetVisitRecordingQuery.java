@@ -34,6 +34,10 @@ public class SweepStreetVisitRecordingQuery extends QueryBase {
     */
 	private String merchantId;
     /**
+    * 商户名称
+    */
+	private String merchantName;
+    /**
     * 联系人姓名
     */
 	private String contactName;

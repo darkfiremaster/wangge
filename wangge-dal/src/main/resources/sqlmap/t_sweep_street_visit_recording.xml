@@ -10,6 +10,7 @@
         <result property="mobile" column="mobile"/>
         <result property="marketingUserName" column="marketing_user_name"/>
         <result property="merchantId" column="merchant_id"/>
+        <result property="merchantName" column="merchant_name"/>
         <result property="contactName" column="contact_name"/>
         <result property="contactMobile" column="contact_mobile"/>
         <result property="complaintSensitiveCustomersFlag" column="complaint_sensitive_customers_flag"/>
@@ -33,7 +34,7 @@
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, activity_id, mobile, marketing_user_name, merchant_id, contact_name, contact_mobile, complaint_sensitive_customers_flag, success_flag, business_type, home_broadband, broadband_monthly_rent, broadband_remark, broadband_expire_time, home_tv_box, tv_box_monthly_rent, tv_box_remark, tv_box_expire_time, remark, gmt_create, gmt_modified, status, location, create_merchant_mobile
+        id, activity_id, mobile, marketing_user_name, merchant_id,merchant_name, contact_name, contact_mobile, complaint_sensitive_customers_flag, success_flag, business_type, home_broadband, broadband_monthly_rent, broadband_remark, broadband_expire_time, home_tv_box, tv_box_monthly_rent, tv_box_remark, tv_box_expire_time, remark, gmt_create, gmt_modified, status, location, create_merchant_mobile
     </sql>
 
     <sql id="table">
@@ -50,6 +51,7 @@
                     <if test="mobile != null">and mobile = #{mobile}</if>
                     <if test="marketingUserName != null">and marketing_user_name = #{marketingUserName}</if>
                     <if test="merchantId != null">and merchant_id = #{merchantId}</if>
+                    <if test="merchantName != null">and merchant_name = #{merchantName}</if>
                     <if test="contactName != null">and contact_name = #{contactName}</if>
                     <if test="contactMobile != null">and contact_mobile = #{contactMobile}</if>
                     <if test="complaintSensitiveCustomersFlag != null">and complaint_sensitive_customers_flag = #{complaintSensitiveCustomersFlag}</if>
@@ -133,6 +135,9 @@
             <if test="merchantId != null">
                 merchant_id,
             </if>
+            <if test="merchantName != null">
+                merchant_name,
+            </if>
             <if test="contactName != null">
                 contact_name,
             </if>
@@ -202,6 +207,9 @@
             </if>
             <if test="merchantId != null">
                 #{merchantId, jdbcType=VARCHAR},
+            </if>
+            <if test="merchantName != null">
+                #{merchantName, jdbcType=VARCHAR},
             </if>
             <if test="contactName != null">
                 #{contactName, jdbcType=VARCHAR},
@@ -275,6 +283,9 @@
             </if>
             <if test="merchantId != null">
                 merchant_id = #{merchantId, jdbcType=VARCHAR},
+            </if>
+            <if test="merchantName != null">
+                merchant_name = #{merchantName, jdbcType=VARCHAR},
             </if>
             <if test="contactName != null">
                 contact_name = #{contactName, jdbcType=VARCHAR},

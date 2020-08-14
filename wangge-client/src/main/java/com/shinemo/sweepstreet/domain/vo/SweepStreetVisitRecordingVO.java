@@ -1,11 +1,10 @@
-package com.shinemo.sweepstreet.domain.model;
+package com.shinemo.sweepstreet.domain.vo;
 
-import java.util.Date;
-
+import com.shinemo.client.common.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.shinemo.client.common.BaseDO;
+import java.util.Date;
 
 
 /**
@@ -16,7 +15,7 @@ import com.shinemo.client.common.BaseDO;
  */
 @Getter
 @Setter
-public class SweepStreetVisitRecordingDO extends BaseDO {
+public class SweepStreetVisitRecordingVO extends BaseDO {
 	private Long id;
 	/**
 	* 子扫街活动id
@@ -35,8 +34,8 @@ public class SweepStreetVisitRecordingDO extends BaseDO {
 	*/
 	private String merchantId;
 	/**
-	 * 商户名称
-	 */
+	* 商户名称
+	*/
 	private String merchantName;
 	/**
 	* 联系人姓名
