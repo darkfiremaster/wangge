@@ -1,5 +1,7 @@
 package com.shinemo.wangge.core.service.thirdapi.impl;
 
+import com.shinemo.client.util.EnvUtil;
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -15,10 +17,12 @@ import com.shinemo.thirdapi.common.enums.ThirdApiStatusEnum;
 import com.shinemo.thirdapi.common.enums.ThirdApiTypeEnum;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.thirdapi.domain.model.ThirdApiMappingDO;
+import com.shinemo.thirdapi.domain.query.ThirdApiMappingQuery;
 import com.shinemo.wangge.core.config.exception.HuaweiApiTimeoutException;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiCacheManager;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.HuaweiApiLogMapper;
+import com.shinemo.wangge.dal.mapper.ThirdApiMappingMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,8 +51,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     public String accessKeyId;
     @Value("${smartgrid.huawei.secretKey}")
     public String secretKey;
-    //@Value("${smartgrid.huawei.auth.domain}")
-    //public String authDomain;
+
     @Value("${smartgrid.huawei.domain}")
     public String domain;
 
@@ -59,7 +62,8 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
 
     @Resource
     private HuaweiApiLogMapper huaweiApiLogMapper;
-
+    @Resource
+    private ThirdApiMappingMapper thirdApiMappingMapper;
     private static final String HUAWEI_SUCCESS_CODE = "0";
     private static final String HUAWEI_RESPONSE_PARAM_CODE = "resultCode";
     private static final String HUAWEI_RESPONSE_PARAM_DATA = "data";
@@ -69,8 +73,15 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
 
     @Override
     public ApiResult<Map<String, Object>> dispatch(Map<String, Object> requestData, String apiName) {
+        ThirdApiMappingDO thirdApiMappingDO = null;
         //从缓存中获取数据
-        ThirdApiMappingDO thirdApiMappingDO = ThirdApiCacheManager.THIRD_API_CACHE.get(apiName);
+        if (EnvUtil.isDaily()) {
+            ThirdApiMappingQuery thirdApiMappingQuery = new ThirdApiMappingQuery();
+            thirdApiMappingQuery.setApiName(apiName);
+            thirdApiMappingDO = thirdApiMappingMapper.get(thirdApiMappingQuery);
+        } else {
+            thirdApiMappingDO = ThirdApiCacheManager.THIRD_API_CACHE.get(apiName);
+        }
 
         if (thirdApiMappingDO == null) {
             log.error("[dispatch] url不存在,apiName:{},request:{}", apiName, requestData);
@@ -90,16 +101,21 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
                 mobile = (String) requestData.get(MOBILE_PARAM);
             }
 
-            if (!thirdApiMappingDO.isIgnoreMobile()) {
-                requestData.put(MOBILE_PARAM, mobile);
+            if (thirdApiMappingDO.isIgnoreMobile()) {
+                requestData.remove(MOBILE_PARAM);
             }
+
 
             Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
             String param = GsonUtils.toJson(requestData);
             //String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
-            insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
+            //添加请求头
+            HashMap<String,Object> requestMap = new HashMap<>();
+            requestMap.put("header", header);
+            requestMap.put("body",requestData);
+            insertApiLog(thirdApiMappingDO.getUrl(), httpResult, GsonUtil.toJson(requestMap), mobile);
 
             return handleResult(requestData, thirdApiMappingDO, param, httpResult);
         }
@@ -163,8 +179,14 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
                         thirdApiMappingDO.getUrl(), requestData, param, huaweiResponse);
                 return ApiResult.fail(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
-
-            Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            Map<String, Object> result = new HashMap<>();
+            if (thirdApiMappingDO.dataArrarFlag()) {
+                result.put("data",huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA));
+                return ApiResult.of(0,result);
+            }else {
+                result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            }
+           // Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
             dealPage(thirdApiMappingDO, result);
             return ApiResult.of(0, result);
         }
@@ -178,9 +200,9 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
         Map<String, Object> objectMap = new HashMap<>();
         if (huaweiRequestSuccess(result)) {
             if (thirdApiMappingDO.dataArrarFlag()) {
-                objectMap.put("data",result.get(HUAWEI_RESPONSE_PARAM_DATA));
-                return ApiResult.of(0,objectMap);
-            }else {
+                objectMap.put("data", result.get(HUAWEI_RESPONSE_PARAM_DATA));
+                return ApiResult.of(0, objectMap);
+            } else {
                 objectMap = getJsonMap(GsonUtils.toJson(result.get(HUAWEI_RESPONSE_PARAM_DATA)));
             }
             dealPage(thirdApiMappingDO, objectMap);

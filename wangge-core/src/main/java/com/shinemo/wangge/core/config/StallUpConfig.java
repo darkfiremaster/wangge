@@ -139,8 +139,8 @@ public class StallUpConfig {
         //扫村业务配置
         Map<Long, StallUpBizType> tmpSweepVillageBizMap = new HashMap<>();
         List<StallUpBizType> tmpSweepVillageBizList = initListAndMap(tmpMap, config.getSweepVillageBizList(), tmpSweepVillageBizMap);
-        config.setSweepFloorBizList(tmpSweepVillageBizList);
-        config.setSweepFloorBizMap(tmpSweepVillageBizMap);
+        config.setSweepVillageBizList(tmpSweepVillageBizList);
+        config.setSweepVillageBizMap(tmpSweepVillageBizMap);
 
         /**
          * 集团服务日配置
