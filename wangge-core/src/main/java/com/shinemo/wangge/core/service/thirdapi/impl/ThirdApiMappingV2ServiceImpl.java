@@ -112,9 +112,9 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
             //添加请求头
-            HashMap<String,String> requestMap = new HashMap<>();
-            requestMap.put("header", GsonUtil.toJson(header));
-            requestMap.put("body",param);
+            HashMap<String,Object> requestMap = new HashMap<>();
+            requestMap.put("header", header);
+            requestMap.put("body",requestData);
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, GsonUtil.toJson(requestMap), mobile);
 
             return handleResult(requestData, thirdApiMappingDO, param, httpResult);

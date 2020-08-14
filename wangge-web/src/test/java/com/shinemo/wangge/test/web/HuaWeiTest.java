@@ -1,5 +1,6 @@
 package com.shinemo.wangge.test.web;
 
+import cn.hutool.json.JSONUtil;
 import com.shinemo.smartgrid.http.HttpConnectionUtils;
 import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -37,6 +38,12 @@ public class HuaWeiTest {
         requestData.put("groupName", "银行");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
+
+        HashMap<String,Object> requestMap = new HashMap<>();
+        requestMap.put("header", header);
+        requestMap.put("body",requestData);
+        System.out.println("requestMap = " + requestMap);
+        log.info("httpRequest:{}", JSONUtil.toJsonStr(requestMap));
 
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
