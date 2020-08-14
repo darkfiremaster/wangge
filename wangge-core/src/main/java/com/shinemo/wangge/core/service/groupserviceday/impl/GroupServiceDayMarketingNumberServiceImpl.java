@@ -178,7 +178,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         }
 
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
-        map.put("mobile", SmartGridContext.getMobile());
+//        map.put("mobile", SmartGridContext.getMobile());
         map.put("bizTypeList", bizList);
 
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
