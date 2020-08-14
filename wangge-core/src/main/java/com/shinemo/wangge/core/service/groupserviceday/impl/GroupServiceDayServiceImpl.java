@@ -227,7 +227,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             List<Integer> statusList = new ArrayList<>();
             statusList.add(GroupServiceDayStatusEnum.END.getId());
             statusList.add(GroupServiceDayStatusEnum.AUTO_END.getId());
-            statusList.add(GroupServiceDayStatusEnum.CANCEL.getId());
             statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
             serviceDayQuery.setStatusList(statusList);
             serviceDayQuery.setStatus(null);

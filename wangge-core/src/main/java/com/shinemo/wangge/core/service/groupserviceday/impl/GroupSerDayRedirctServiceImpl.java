@@ -76,8 +76,7 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
     public ApiResult<String> getRedirctSmsHotUrl(Long activityId) {
 
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("buildingId","G7710125987");
-        map.put("buildingName","南宁市蓝天钢管厂");
+        map.put("G7710125987","南宁市蓝天钢管厂");
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", "17377273810");
