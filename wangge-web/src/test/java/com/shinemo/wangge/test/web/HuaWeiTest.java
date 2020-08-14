@@ -40,4 +40,42 @@ public class HuaWeiTest {
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
     }
+
+    @Test
+    public void test2() {
+        String mobile = "17377273810";
+        String huaweiUrl = "/SGCoreMarketing/groupService/getGroupPlanParticipant";
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        HashMap<String, Object> requestData = new HashMap<>();
+        requestData.put("areaId","771");
+        requestData.put("areaLevel","2");
+        requestData.put("pageNum","1");
+        requestData.put("pageSize","20");
+        String param = GsonUtils.toJson(requestData);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+    }
+
+    @Test
+    public void test3() {
+        String mobile = "17377273810";
+        String huaweiUrl = "/SGCoreCommon/common/config/getAreaInformation.do";
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        HashMap<String, Object> requestData = new HashMap<>();
+        requestData.put("startLevel","2");
+        requestData.put("endLevel","2");
+        String param = GsonUtils.toJson(requestData);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+    }
 }

@@ -9,4 +9,6 @@ public interface GroupSerDayRedirctService {
      * @return
      */
     ApiResult<String> getRedirctGrouSerUrl(String activityId);
+
+    ApiResult<String> getRedirctSmsHotUrl(Long activityId);
 }

@@ -12,10 +12,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
 import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
 import com.shinemo.groupserviceday.domain.huawei.HuaWeiCreateGroupServiceDayRequest;
-import com.shinemo.groupserviceday.domain.model.GroupDO;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
-import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
+import com.shinemo.groupserviceday.domain.model.*;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery;
@@ -23,6 +20,7 @@ import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDaySignRequest;
 import com.shinemo.groupserviceday.domain.request.GroupServiceListRequest;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayAreaInfoVO;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBizDetailVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
@@ -30,12 +28,14 @@ import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
+import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -73,6 +73,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private SignRecordMapper signRecordMapper;
     @Resource
     private ParentGroupServiceDayMapper parentGroupServiceDayMapper;
+    @Resource
+    private StallUpConfig stallUpConfig;
 
 
     @Override
@@ -222,6 +224,13 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         }
         if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
             serviceDayQuery.setPageEnable(true);
+            List<Integer> statusList = new ArrayList<>();
+            statusList.add(GroupServiceDayStatusEnum.END.getId());
+            statusList.add(GroupServiceDayStatusEnum.AUTO_END.getId());
+            statusList.add(GroupServiceDayStatusEnum.CANCEL.getId());
+            statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
+            serviceDayQuery.setStatusList(statusList);
+            serviceDayQuery.setStatus(null);
         }
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
@@ -245,8 +254,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         List<GroupServiceDayMarketingNumberDO> groupServiceDayMarketingNumberDOS = groupServiceDayMarketingNumberMapper.find(numberQuery);
         Map<Long, List<GroupServiceDayMarketingNumberDO>> map = groupServiceDayMarketingNumberDOS.stream().collect(Collectors.groupingBy(GroupServiceDayMarketingNumberDO::getGroupServiceDayId));
         for (GroupServiceDayVO serviceDayVO : vos) {
-            GroupServiceDayMarketingNumberDO numberDO = map.get(serviceDayVO.getId()).get(0);
-            serviceDayVO.setBusinessCount(numberDO.getCount());
+            List<GroupServiceDayMarketingNumberDO> numberDOS = map.get(serviceDayVO.getId());
+            if (CollectionUtils.isEmpty(numberDOS)) {
+                serviceDayVO.setBusinessCount(0);
+            }else {
+                serviceDayVO.setBusinessCount(numberDOS.get(0).getCount());
+            }
         }
         return ApiResult.of(0, ListVO.list(vos, count));
     }
@@ -441,6 +454,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         return ApiResultWrapper.fail(ThirdApiErrorCodes.HUA_WEI_ERROR);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ApiResult<Void> autoEnd(GroupServiceDayDO serviceDayDO) {
         SignRecordQuery signRecordQuery = new SignRecordQuery();
@@ -472,6 +486,31 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayMapper.update(serviceDayDO);
         //更新父活动表
         updateParentStatus(serviceDayDO, status, endTime);
+
+        //更新办理量
+        GroupServiceDayMarketingNumberQuery numberQuery = new GroupServiceDayMarketingNumberQuery();
+        numberQuery.setGroupServiceDayId(serviceDayDO.getId());
+        GroupServiceDayMarketingNumberDO numberDO = groupServiceDayMarketingNumberMapper.get(numberQuery);
+        if (numberDO == null) {
+            numberDO = new GroupServiceDayMarketingNumberDO();
+            numberDO.setCount(0);
+            List<StallUpBizType> sweepFloorBizList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
+            List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
+            for (StallUpBizType bizType : sweepFloorBizList) {
+                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                details.add(bizDetail);
+            }
+            GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
+                    .publicBizInfoList(details)
+                    .build();
+            numberDO.setDetail(GsonUtils.toJson(detail));
+            numberDO.setGroupServiceDayId(serviceDayDO.getId());
+            numberDO.setUserId(serviceDayDO.getCreatorId().toString());
+            groupServiceDayMarketingNumberMapper.insert(numberDO);
+        }
 
         //同步华为
         autoEndSyncHuaWei(serviceDayDO);
