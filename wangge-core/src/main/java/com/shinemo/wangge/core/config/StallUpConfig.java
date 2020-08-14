@@ -403,7 +403,7 @@ public class StallUpConfig {
         /**
          * 扫村业务
          */
-        private List<StallUpBizType> sweepVillageBizMap;
+        private Map<Long, StallUpBizType>sweepVillageBizMap;
         private List<StallUpBizType> sweepVillageBizList;
 
         /**
