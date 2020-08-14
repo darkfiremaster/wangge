@@ -483,6 +483,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         //更新子活动表
         serviceDayDO.setStatus(status);
+        serviceDayDO.setRealEndTime(endTime);
         groupServiceDayMapper.update(serviceDayDO);
         //更新父活动表
         updateParentStatus(serviceDayDO, status, endTime);
