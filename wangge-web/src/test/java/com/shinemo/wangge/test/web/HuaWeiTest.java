@@ -44,7 +44,7 @@ public class HuaWeiTest {
 
     @Test
     public void testGetGridUserInfo() {
-        String mobile = "13607713224";
+        String mobile = "15978197192";
         String huaweiUrl = "/CMCC_GX_market/CMCC_GX_SmartGridAuth/auth/getUserInfo.do";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
