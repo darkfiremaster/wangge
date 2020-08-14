@@ -26,7 +26,7 @@ public class HuaWeiTest {
     public String domain = "http://112.54.48.61:13003";
 
     @Test
-    public void test1() {
+    public void testGetGroupList() {
         String mobile = "15978197192";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
@@ -45,7 +45,7 @@ public class HuaWeiTest {
     @Test
     public void testGetGridUserInfo() {
         String mobile = "13607713224";
-        String huaweiUrl = "/getUserInfo";
+        String huaweiUrl = "/CMCC_GX_market/CMCC_GX_SmartGridAuth/auth/getUserInfo.do";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
         log.info("header:{}", header);
