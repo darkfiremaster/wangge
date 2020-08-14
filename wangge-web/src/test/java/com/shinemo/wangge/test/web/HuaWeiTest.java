@@ -26,9 +26,26 @@ public class HuaWeiTest {
     public String domain = "http://112.54.48.61:13003";
 
     @Test
-    public void test1() {
-        String mobile = "13607713224";
+    public void testGetGroupList() {
+        String mobile = "15978197192";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        HashMap<String, Object> requestData = new HashMap<>();
+        requestData.put("groupName", "银行");
+        String param = GsonUtils.toJson(requestData);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+    }
+
+    @Test
+    public void testGetGridUserInfo() {
+        String mobile = "13607713224";
+        String huaweiUrl = "/CMCC_GX_market/CMCC_GX_SmartGridAuth/auth/getUserInfo.do";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
         log.info("header:{}", header);
