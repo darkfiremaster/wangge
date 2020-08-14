@@ -1,6 +1,7 @@
 package com.shinemo.wangge.core.service.thirdapi.impl;
 
 import com.shinemo.client.util.EnvUtil;
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -100,16 +101,21 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
                 mobile = (String) requestData.get(MOBILE_PARAM);
             }
 
-            if (!thirdApiMappingDO.isIgnoreMobile()) {
-                requestData.put(MOBILE_PARAM, mobile);
+            if (thirdApiMappingDO.isIgnoreMobile()) {
+                requestData.remove(MOBILE_PARAM);
             }
+
 
             Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
             String param = GsonUtils.toJson(requestData);
             //String param = getRequestParam(requestData, thirdApiMappingDO.getMethod());
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
-            insertApiLog(thirdApiMappingDO.getUrl(), httpResult, param, mobile);
+            //添加请求头
+            HashMap<String,String> requestMap = new HashMap<>();
+            requestMap.put("header", GsonUtil.toJson(header));
+            requestMap.put("body",param);
+            insertApiLog(thirdApiMappingDO.getUrl(), httpResult, GsonUtil.toJson(requestMap), mobile);
 
             return handleResult(requestData, thirdApiMappingDO, param, httpResult);
         }
