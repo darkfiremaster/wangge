@@ -111,9 +111,9 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             HttpResult httpResult = HttpConnectionUtils.httpPost(domain + thirdApiMappingDO.getUrl(), param, header);
 
             //添加请求头
-            HashMap<String,Object> requestMap = new HashMap<>();
+            HashMap<String, Object> requestMap = new HashMap<>();
             requestMap.put("header", header);
-            requestMap.put("body",requestData);
+            requestMap.put("body", requestData);
             insertApiLog(thirdApiMappingDO.getUrl(), httpResult, GsonUtil.toJson(requestMap), mobile);
 
             return handleResult(requestData, thirdApiMappingDO, param, httpResult);
@@ -180,12 +180,12 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             }
             Map<String, Object> result = new HashMap<>();
             if (thirdApiMappingDO.dataArrarFlag()) {
-                result.put("data",huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA));
-                return ApiResult.of(0,result);
-            }else {
+                result.put("data", huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA));
+                return ApiResult.of(0, result);
+            } else {
                 result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
             }
-           // Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
+            // Map<String, Object> result = getJsonMap(GsonUtils.toJson(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_DATA)));
             dealPage(thirdApiMappingDO, result);
             return ApiResult.of(0, result);
         }
@@ -194,7 +194,8 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     }
 
     private ApiResult<Map<String, Object>> handleMockRequest(Map<String, Object> requestData, ThirdApiMappingDO thirdApiMappingDO) {
-        log.info("[dispatch] 返回mock数据,url:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), requestData, thirdApiMappingDO.getMockData());
+        Map<String, Object> header = SmartGridUtils.buildHeader(getMobile(), accessKeyId, secretKey);
+        log.info("[dispatch] 返回mock数据,url:{},header:{}, request:{}, result:{}", thirdApiMappingDO.getUrl(), header, requestData, thirdApiMappingDO.getMockData());
         Map<String, Object> result = getJsonMap(thirdApiMappingDO.getMockData());
         Map<String, Object> objectMap = new HashMap<>();
         if (huaweiRequestSuccess(result)) {

@@ -1,8 +1,12 @@
 package com.shinemo.wangge.test.web;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
+import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.http.HttpConnectionUtils;
 import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -10,6 +14,7 @@ import com.shinemo.smartgrid.utils.SmartGridUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,14 +45,14 @@ public class HuaWeiTest {
 
     @Test
     public void testGetGroupList() {
-        String mobile = "13607713224";
+        String mobile = "13588039023";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
         log.info("header:{}", header);
 
         HashMap<String, Object> requestData = new HashMap<>();
-        requestData.put("groupName", "银行");
+        //requestData.put("groupName", "银行");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
@@ -57,8 +62,73 @@ public class HuaWeiTest {
         printResult(header, requestData, httpResult);
     }
 
+    @Test
+    public void testCreateGroupServiceDay() {
+        String mobile = "13607713224";
+        String huaweiUrl = HuaweiGroupServiceDayUrlEnum.CREATE_GROUP_SERVICE_DAY.getUrl();
 
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
 
+        //HashMap<String, Object> requestData = new HashMap<>();
+        //requestData.put("groupName", "银行");
+        //String param = GsonUtils.toJson(requestData);
+
+        String param = "{\n" +
+                "    \"parentActivityId\":\"GSD_ACTIVITY_19\",\n" +
+                "    \"title\":\"测试活动\",\n" +
+                "    \"startTime\":\"1970-01-19 19:43:07\",\n" +
+                "    \"endTime\":\"1970-01-19 19:43:10\",\n" +
+                "    \"status\":\"0\",\n" +
+                "    \"groupId\":\"G7717362086\",\n" +
+                "    \"childrenList\":[\n" +
+                "        {\n" +
+                "            \"activityId\":\"GSD_ACTIVITY_28\",\n" +
+                "            \"participantList\":[\n" +
+                "                {\n" +
+                "                    \"userSource\":\"2\",\n" +
+                "                    \"userName\":\"吴健\",\n" +
+                "                    \"userPhone\":\"13607713224\",\n" +
+                "                    \"userType\":\"1\"\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+
+        //printResult(header, requestData, httpResult);
+    }
+
+    @Test
+    public void testUpdateGroupServiceDay() {
+        String mobile = "13607713224";
+        String huaweiUrl = HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getUrl();
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("activityId", "GSD_ACTIVITY_28");
+        map.put("parentAcitvityId","GSD_ACTIVITY_19");
+        map.put("status", GroupServiceDayStatusEnum.PROCESSING.getId());
+        String location = "120.0687009006076,30.28182427300347";
+        String[] locations = StrUtil.split(location, ",");
+        map.put("startLongitude", locations[0]);
+        map.put("startLatitude ", locations[1]);
+        map.put("startAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
+        map.put("startTime", DateUtil.formatDateTime(new Date()));
+        String param = GsonUtils.toJson(map);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+
+        //printResult(header, requestData, httpResult);
+    }
 
     @Test
     public void testGetGridUserInfo() {

@@ -33,7 +33,6 @@ import com.shinemo.stallup.domain.utils.DistanceUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
-import com.shinemo.sweepvillage.domain.vo.SweepVillageTenantsVO;
 import com.shinemo.thirdapi.common.error.ThirdApiErrorCodes;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
@@ -105,7 +104,6 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             GroupServiceDayDO groupServiceDayDO = getGroupServiceDayDO(parentGroupServiceDayDO, partnerBean);
             groupServiceDayMapper.insert(groupServiceDayDO);
             childActivityList.add(groupServiceDayDO);
-
         }
 
         //同步华为
@@ -162,7 +160,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         huaWeiCreateGroupServiceDayRequest.setChildrenList(childGroupServiceDayList);
         Map<String, Object> map = BeanUtil.beanToMap(huaWeiCreateGroupServiceDayRequest, false, true);
-        log.info("[syncCreateGroupServiceDay] 新建集团服务日同步华为,请求参数:{}", map);
+        log.info("[syncCreateGroupServiceDay] 新建集团服务日同步华为,请求参数:{}", GsonUtils.toJson(map));
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.CREATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
 
