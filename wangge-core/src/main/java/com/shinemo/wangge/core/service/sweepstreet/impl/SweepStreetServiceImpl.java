@@ -214,7 +214,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         if (signRecordDO == null) {
             signRecordDO = new SignRecordDO();
             signRecordDO.setEndTime(endTime);
-            signRecordDO.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+            signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
             signRecordDO.setUserId(streetActivityDO.getCreatorId().toString());
             signRecordDO.setActivityId(streetActivityDO.getId());
             signRecordDO.setMobile(streetActivityDO.getMobile());
