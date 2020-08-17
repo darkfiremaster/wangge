@@ -2,9 +2,11 @@ package com.shinemo.wangge.core.service.sweepstreet;
 
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.sweepstreet.domain.model.SweepStreetActivityDO;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,4 +24,8 @@ public interface SweepStreetService {
     ApiResult endSign(SweepStreetSignRequest request);
 
     ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO);
+
+    ApiResult<SweepStreetActivityFinishedVO> getFinishedCount(Integer type);
+
+
 }

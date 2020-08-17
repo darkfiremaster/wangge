@@ -2,8 +2,8 @@ package com.shinemo.sweepstreet.domain.model;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.shinemo.client.annotation.AdminLog;
+import lombok.*;
 
 import com.shinemo.client.common.BaseDO;
 
@@ -16,6 +16,9 @@ import com.shinemo.client.common.BaseDO;
  */
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SweepStreetMarketingNumberDO extends BaseDO {
 	private Long id;
 	private Date gmtCreate;

@@ -23,7 +23,10 @@ public enum BusinessConfigEnum {
 	PUBLIC_GROUP_SERVICE_DAY_BIZ_DATA(11, "集团服务日公共业务数据头"),
 	INFORMATION_GROUP_SERVICE_DAY_BIZ(12,"集团服务日政企专属"),
 	INFORMATION_GROUP_SERVICE_DAY_BIZ_DATA(13,"集团服务日政企专属数据头"),
-	;
+
+	SWEEP_STREET_TOOL(14, "扫街工具"),
+	SWEEP_STREET_BIZ(15, "扫街业务"),
+	SWEEP_STREET_BIZ_DATA(16, "扫街业务数据头");
 
 	private Integer type;
 	private String desc;

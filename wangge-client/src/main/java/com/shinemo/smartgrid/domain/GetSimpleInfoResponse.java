@@ -8,6 +8,8 @@ import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.stallup.domain.model.StallUpDetailVO;
 import com.shinemo.stallup.domain.model.SweepFloorBizTotal;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
 import lombok.Data;
@@ -35,6 +37,10 @@ public class GetSimpleInfoResponse {
 	//集团服务日
 	private GroupServiceDayVO groupServiceDayVO;
 	private GroupServiceDayFinishedVO groupServiceDayFinishedVO;
+
+	//扫街
+	private SweepStreetActivityVO sweepStreetActivityVO;
+	private SweepStreetActivityFinishedVO sweepStreetActivityFinishedVO;
 
 	private Long todayToDo;
 	private Long weekToDo;

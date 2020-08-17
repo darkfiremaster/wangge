@@ -3,8 +3,14 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
+import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
+import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
+import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
+import com.shinemo.groupserviceday.domain.vo.GroupServiceDayFinishedVO;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
@@ -18,6 +24,7 @@ import com.shinemo.sweepstreet.domain.query.SweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
@@ -230,6 +237,43 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         //更新父活动表
         updateParentStatus(streetActivityDO, status, endTime);
         return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<SweepStreetActivityFinishedVO> getFinishedCount(Integer type) {
+        SweepStreetActivityFinishedVO result = new SweepStreetActivityFinishedVO();
+
+        //默认查询本周
+        Date startTime = DateUtils.getThisWeekMonday();
+        String mobile = SmartGridContext.getMobile();
+        if (type == 2) {
+            startTime = DateUtils.getThisMonthFirstDay();
+        }
+        //查询已结束活动:实际结束时间 >= startTime && 实际结束时间 <= endTime
+        SweepStreetActivityQuery query = new SweepStreetActivityQuery();
+        query.setMobile(mobile);
+        query.setEndFilterStartTime(startTime);
+        query.setEndFilterEndTime(new Date());
+        List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper.find(query);
+        if (CollectionUtils.isEmpty(sweepStreetActivityDOS)) {
+            log.error("[getFinishedCount] activityList is empty!");
+            result.setActivityCount(0);
+            result.setBusinessCount(0);
+            return ApiResult.of(0, result);
+        }
+        result.setActivityCount(sweepStreetActivityDOS.size());
+        List<Long> activityIdList = sweepStreetActivityDOS.stream().map(SweepStreetActivityDO::getId).collect(Collectors.toList());
+        SweepStreetMarketingNumberQuery numberQuery = new SweepStreetMarketingNumberQuery();
+        numberQuery.setActivityIds(activityIdList);
+        List<SweepStreetMarketingNumberDO> numberDOS = sweepStreetMarketingNumberMapper.find(numberQuery);
+        if (CollectionUtils.isEmpty(numberDOS)) {
+            log.error("[getFinishedCount] market number list is empty!");
+            result.setBusinessCount(0);
+            return ApiResult.of(0, result);
+        }
+        Integer businessCount = numberDOS.stream().collect(Collectors.summingInt(SweepStreetMarketingNumberDO::getCount));
+        result.setBusinessCount(businessCount);
+        return ApiResult.of(0, result);
     }
 
     private SweepStreetActivityDO getDOById(Long id) {

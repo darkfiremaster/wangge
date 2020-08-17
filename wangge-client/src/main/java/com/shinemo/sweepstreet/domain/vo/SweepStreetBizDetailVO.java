@@ -1,5 +1,6 @@
-package com.shinemo.groupserviceday.domain.vo;
+package com.shinemo.sweepstreet.domain.vo;
 
+import com.shinemo.client.common.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupServiceDayBizDetailVO {
+public class SweepStreetBizDetailVO extends BaseDO {
 
     private Long id;
     private String name;
