@@ -11,6 +11,7 @@ public interface GroupServiceDayErrorCodes {
     ErrorCode GROUP_SERVICE_SIGN_DISTANCE_ERROR = new ErrorCode(500, "当前位置不在打卡范围！");
     ErrorCode ACTIVITY_END_ERROR = new ErrorCode(500, "当前活动不可以进行签离操作！");
     ErrorCode AUTH_ERROR = new ErrorCode(500, "权限不足！");
+    ErrorCode ACTIVITY_SEARCH_ERROR = new ErrorCode(500, "子活动数查询异常！");
 
 
 }
