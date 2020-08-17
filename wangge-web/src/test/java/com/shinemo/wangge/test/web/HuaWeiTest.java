@@ -220,7 +220,7 @@ public class HuaWeiTest {
         requestData.put("endLevel","4");
         List<String> list = new ArrayList<>();
         list.add("A2107");
-        requestData.put("countyIds",list);
+        requestData.put("countryIds",list);
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
