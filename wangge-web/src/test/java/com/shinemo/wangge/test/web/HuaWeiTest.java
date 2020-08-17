@@ -169,7 +169,7 @@ public class HuaWeiTest {
 
     @Test
     public void test3() {
-        String mobile = "15978197192";
+        String mobile = "17377273810";
         String huaweiUrl = "/SGCoreCommon/common/config/getAreaInformation.do";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
