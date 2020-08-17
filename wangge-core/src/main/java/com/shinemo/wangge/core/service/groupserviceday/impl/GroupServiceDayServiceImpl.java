@@ -83,7 +83,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         if (StrUtil.isNotBlank(groupName)) {
             map.put("groupName", groupName);
         }
-        map.put("mobile", SmartGridContext.getMobile());
+        //map.put("mobile", SmartGridContext.getMobile());
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiGroupServiceDayUrlEnum.GET_GROUP_LIST.getApiName());
         return result;
     }

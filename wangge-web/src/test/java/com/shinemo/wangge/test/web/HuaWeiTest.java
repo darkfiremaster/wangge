@@ -49,7 +49,8 @@ public class HuaWeiTest {
         log.info("header:{}", header);
 
         HashMap<String, Object> requestData = new HashMap<>();
-        //requestData.put("groupName", "银行");
+        requestData.put("groupName", "银行");
+        //requestData.put("mobile", "13607713224");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
