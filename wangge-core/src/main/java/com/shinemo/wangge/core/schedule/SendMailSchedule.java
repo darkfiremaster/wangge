@@ -41,7 +41,9 @@ public class SendMailSchedule {
     }
 
     @Async
-    public void testSend() {
-        log.info("[testSend] ThreadName: ", Thread.currentThread().getName());
+    public void testSend() throws InterruptedException {
+        log.info("[testSend] threadName:"+Thread.currentThread().getName());
+        Thread.sleep(1000);
+
     }
 }
