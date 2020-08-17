@@ -98,4 +98,17 @@ class SweepStreetActivityController {
         return sweepStreetService.startSign(request);
     }
 
+    /**
+     * 结束打卡
+     * @param request
+     * @return
+     */
+    @PostMapping("/endSign")
+    public ApiResult endSign(@RequestBody SweepStreetSignRequest request) {
+        Assert.notNull(request,"request is null");
+        Assert.notNull(request.getActivityId(),"activityId is null");
+        Assert.notNull(request.getLocationDetailVO(),"locationDetailVO is null");
+        return sweepStreetService.endSign(request);
+    }
+
 }

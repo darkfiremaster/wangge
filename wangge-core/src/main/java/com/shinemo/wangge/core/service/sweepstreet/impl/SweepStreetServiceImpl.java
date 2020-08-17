@@ -163,6 +163,83 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         return ApiResult.of(0);
     }
 
+    @Override
+    public ApiResult endSign(SweepStreetSignRequest request) {
+        SweepStreetActivityDO sweepStreetActivityDO = getDOById(request.getActivityId());
+        if (sweepStreetActivityDO == null) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+
+        //校验当前活动状态，非进行中状态不可签离
+        if (GroupServiceDayStatusEnum.PROCESSING.getId() != sweepStreetActivityDO.getStatus()) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_END_ERROR);
+        }
+        /*更新子活动表的个人活动数据*/
+        SignRecordQuery query =new SignRecordQuery();
+        query.setActivityId(request.getActivityId());
+        query.setUserId(SmartGridContext.getUid());
+        SignRecordDO signRecordDO=signRecordMapper.get(query);
+
+        if (signRecordDO == null) {
+            log.error("[endSign] signRecordDO is null,activityId = {}", sweepStreetActivityDO.getId());
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_SEARCH_ERROR);
+        }
+
+        SignRecordDO updateSignDO = new SignRecordDO();
+        updateSignDO.setId(signRecordDO.getId());
+        updateSignDO.setRemark(request.getRemark());
+        updateSignDO.setEndTime(new Date());
+        updateSignDO.setEndLocation(GsonUtils.toJson(request.getLocationDetailVO()));
+        updateSignDO.setImgUrl(GsonUtils.toJson(request.getPicUrls()));
+        signRecordMapper.update(updateSignDO);
+
+        /*更新子表活动记录*/
+        Date endTime = new Date();
+        SweepStreetActivityDO updateStreetActivityDO=new SweepStreetActivityDO();
+        updateStreetActivityDO.setId(sweepStreetActivityDO.getId());
+        updateStreetActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+        updateStreetActivityDO.setRealEndTime(endTime);
+        sweepStreetActivityMapper.update(updateStreetActivityDO);
+        //更新父活动
+        updateParentStatus(sweepStreetActivityDO, GroupServiceDayStatusEnum.END.getId(), endTime);
+
+        return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO) {
+        SignRecordQuery query =new SignRecordQuery();
+        query.setActivityId(streetActivityDO.getId());
+        query.setUserId(SmartGridContext.getUid());
+        SignRecordDO signRecordDO=signRecordMapper.get(query);
+
+        int status = GroupServiceDayStatusEnum.AUTO_END.getId();
+        Date endTime = new Date();
+
+        //更新签到表
+        if (signRecordDO == null) {
+            signRecordDO = new SignRecordDO();
+            signRecordDO.setEndTime(endTime);
+            signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
+            signRecordDO.setUserId(streetActivityDO.getCreatorId().toString());
+            signRecordDO.setActivityId(streetActivityDO.getId());
+            signRecordDO.setMobile(streetActivityDO.getMobile());
+            signRecordMapper.insert(signRecordDO);
+        } else {
+            SignRecordDO newSignRecordDO = new SignRecordDO();
+            newSignRecordDO.setId(signRecordDO.getId());
+            newSignRecordDO.setEndTime(endTime);
+            signRecordMapper.update(newSignRecordDO);
+        }
+
+        //更新子活动表
+        streetActivityDO.setStatus(status);
+        sweepStreetActivityMapper.update(streetActivityDO);
+        //更新父活动表
+        updateParentStatus(streetActivityDO, status, endTime);
+        return ApiResult.of(0);
+    }
+
     private SweepStreetActivityDO getDOById(Long id) {
         SweepStreetActivityQuery streetActivityQuery = new SweepStreetActivityQuery();
         streetActivityQuery.setId(id);

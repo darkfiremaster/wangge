@@ -47,4 +47,6 @@ public class GroupServiceDayVO {
     private Date realEndTime;
     /** 办理量总计 */
     private Integer businessCount = 0;
+    /** 状态 */
+    private Integer status;
 }

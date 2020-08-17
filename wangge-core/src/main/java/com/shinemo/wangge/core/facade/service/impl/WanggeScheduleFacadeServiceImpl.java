@@ -71,7 +71,7 @@ public class WanggeScheduleFacadeServiceImpl implements WanggeScheduleFacadeServ
     }
 
     @Override
-    public Result<Void> test2() {
+    public Result<Void> test2() throws InterruptedException {
         log.info("[test2] threadName: " + Thread.currentThread().getName());
         sendMailSchedule.testSend();
         return Result.success();
