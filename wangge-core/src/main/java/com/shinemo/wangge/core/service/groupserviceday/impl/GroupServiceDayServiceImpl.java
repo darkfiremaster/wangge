@@ -653,8 +653,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         parentGroupServiceDayDO.setGroupId(groupServiceDayRequest.getGroupId());
         parentGroupServiceDayDO.setGroupName(groupServiceDayRequest.getGroupName());
         parentGroupServiceDayDO.setGroupAddress(groupServiceDayRequest.getGroupAddress());
-        parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
-        parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        if (StrUtil.isNotBlank(SmartGridContext.getUid())) {
+            parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
+        }
+        if (StrUtil.isNotBlank(SmartGridContext.getOrgId())) {
+            parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        }
         parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
         parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
