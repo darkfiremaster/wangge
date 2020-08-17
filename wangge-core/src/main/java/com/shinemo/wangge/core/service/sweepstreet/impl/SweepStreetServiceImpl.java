@@ -3,14 +3,6 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayMarketingNumberDO;
-import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.query.GroupServiceDayMarketingNumberQuery;
-import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
-import com.shinemo.groupserviceday.domain.query.ParentGroupServiceDayQuery;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayVO;
-import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -69,7 +61,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         if (request.getEndTime() != null) {
             streetActivityQuery.setEndFilterEndTime(new Date(request.getEndTime()));
         }
-        if (request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
+        if (request.getStatus().equals(SweepStreetStatusEnum.END.getId())) {
             streetActivityQuery.setPageEnable(true);
             List<Integer> statusList = new ArrayList<>();
             statusList.add(SweepStreetStatusEnum.ABNORMAL_END.getId());
@@ -127,7 +119,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 //        }
 
         //校验当前活动状态
-        if (GroupServiceDayStatusEnum.NOT_START.getId() != sweepStreetActivityDO.getStatus()) {
+        if (SweepStreetStatusEnum.NOT_START.getId() != sweepStreetActivityDO.getStatus()) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_START_ERROR);
         }
 
@@ -143,7 +135,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         signRecordDO.setMobile(SmartGridContext.getMobile());
         signRecordDO.setActivityId(sweepStreetActivityDO.getId());
         signRecordDO.setUserId(SmartGridContext.getUid());
-        signRecordDO.setBizType(SignRecordBizTypeEnum.GROUP_SERVICE_DAY.getId());
+        signRecordDO.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
         signRecordDO.setStartLocation(GsonUtils.toJson(request.getLocationDetailVO()));
         signRecordDO.setStartTime(new Date());
         signRecordMapper.insert(signRecordDO);
@@ -151,7 +143,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         Date startTime = new Date();
         SweepStreetActivityDO updateActivityDO = new SweepStreetActivityDO();
         updateActivityDO.setId(sweepStreetActivityDO.getId());
-        updateActivityDO.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+        updateActivityDO.setStatus(SweepStreetStatusEnum.PROCESSING.getId());
         updateActivityDO.setRealStartTime(startTime);
         sweepStreetActivityMapper.update(updateActivityDO);
         //更新父活动状态
@@ -171,7 +163,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         }
 
         //校验当前活动状态，非进行中状态不可签离
-        if (GroupServiceDayStatusEnum.PROCESSING.getId() != sweepStreetActivityDO.getStatus()) {
+        if (SweepStreetStatusEnum.PROCESSING.getId() != sweepStreetActivityDO.getStatus()) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_END_ERROR);
         }
         /*更新子活动表的个人活动数据*/
@@ -197,11 +189,11 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         Date endTime = new Date();
         SweepStreetActivityDO updateStreetActivityDO=new SweepStreetActivityDO();
         updateStreetActivityDO.setId(sweepStreetActivityDO.getId());
-        updateStreetActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+        updateStreetActivityDO.setStatus(SweepStreetStatusEnum.END.getId());
         updateStreetActivityDO.setRealEndTime(endTime);
         sweepStreetActivityMapper.update(updateStreetActivityDO);
         //更新父活动
-        updateParentStatus(sweepStreetActivityDO, GroupServiceDayStatusEnum.END.getId(), endTime);
+        updateParentStatus(sweepStreetActivityDO, SweepStreetStatusEnum.END.getId(), endTime);
 
         return ApiResult.of(0);
     }
@@ -213,7 +205,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         query.setUserId(SmartGridContext.getUid());
         SignRecordDO signRecordDO=signRecordMapper.get(query);
 
-        int status = GroupServiceDayStatusEnum.AUTO_END.getId();
+        int status = SweepStreetStatusEnum.AUTO_END.getId();
         Date endTime = new Date();
 
         //更新签到表
@@ -255,7 +247,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         SweepStreetActivityQuery streetActivityQuery = new SweepStreetActivityQuery();
         streetActivityQuery.setMobile(SmartGridContext.getMobile());
-        streetActivityQuery.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+        streetActivityQuery.setStatus(SweepStreetStatusEnum.PROCESSING.getId());
         List<SweepStreetActivityDO> streetActivityDOS = sweepStreetActivityMapper.find(streetActivityQuery);
         if (!CollectionUtils.isEmpty(streetActivityDOS)) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.STARTED_ACTIVITY_EXIT);
@@ -273,29 +265,29 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         ParentSweepStreetActivityDO parentActivityDo = new ParentSweepStreetActivityDO();
         //子活动有一个开始，父活动即为开始
-        if (status == GroupServiceDayStatusEnum.PROCESSING.getId()) {
+        if (status == SweepStreetStatusEnum.PROCESSING.getId()) {
             //判断父活动是否已开始
             ParentSweepStreetActivityDO parentSweepStreetActivityDO = getParentGroupServiceDayById(sweepStreetActivityDO.getParentId());
-            if (parentSweepStreetActivityDO.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId())) {
+            if (parentSweepStreetActivityDO.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId())) {
                 parentActivityDo.setId(sweepStreetActivityDO.getParentId());
-                parentActivityDo.setStatus(GroupServiceDayStatusEnum.PROCESSING.getId());
+                parentActivityDo.setStatus(SweepStreetStatusEnum.PROCESSING.getId());
                 parentActivityDo.setRealStartTime(time);
             }
-        } else if (status == GroupServiceDayStatusEnum.END.getId() ||
-                status == GroupServiceDayStatusEnum.ABNORMAL_END.getId()
-                || status == GroupServiceDayStatusEnum.CANCEL.getId()
-                || status == GroupServiceDayStatusEnum.AUTO_END.getId()) {
+        } else if (status == SweepStreetStatusEnum.END.getId() ||
+                status == SweepStreetStatusEnum.ABNORMAL_END.getId()
+                || status == SweepStreetStatusEnum.CANCEL.getId()
+                || status == SweepStreetStatusEnum.AUTO_END.getId()) {
             //所有子活动结束，父活动即为结束
             SweepStreetActivityQuery streetActivityQuery = new SweepStreetActivityQuery();
             streetActivityQuery.setParentId(sweepStreetActivityDO.getParentId());
             List<SweepStreetActivityDO> streetActivityDOS = sweepStreetActivityMapper.find(streetActivityQuery);
             List<SweepStreetActivityDO> notEndList = streetActivityDOS.stream().
-                    filter(a -> a.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId()) ||
-                            a.getStatus().equals(GroupServiceDayStatusEnum.PROCESSING.getId())).
+                    filter(a -> a.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId()) ||
+                            a.getStatus().equals(SweepStreetStatusEnum.PROCESSING.getId())).
                     collect(Collectors.toList());
             if (CollectionUtils.isEmpty(notEndList)) {
                 //更新父活动状态未已结束
-                parentActivityDo.setStatus(GroupServiceDayStatusEnum.END.getId());
+                parentActivityDo.setStatus(SweepStreetStatusEnum.END.getId());
                 parentActivityDo.setId(sweepStreetActivityDO.getParentId());
                 parentActivityDo.setRealEndTime(time);
             }
