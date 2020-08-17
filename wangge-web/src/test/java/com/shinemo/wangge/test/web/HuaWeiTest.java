@@ -159,6 +159,7 @@ public class HuaWeiTest {
         requestData.put("areaLevel","2");
         requestData.put("pageNum","1");
         requestData.put("pageSize","20");
+        requestData.put("userName","李化");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
@@ -225,4 +226,26 @@ public class HuaWeiTest {
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
     }
+
+    @Test
+    public void test6() {
+        String mobile = "15978197192";
+        String huaweiUrl = "/SGCoreMarketing/groupService/getGroupPlanParticipant";
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        HashMap<String, Object> requestData = new HashMap<>();
+        requestData.put("areaId","0");
+        requestData.put("areaLevel","1");
+        requestData.put("pageNum","1");
+        requestData.put("pageSize","20");
+        requestData.put("userName","20");
+        String param = GsonUtils.toJson(requestData);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+    }
+
 }
