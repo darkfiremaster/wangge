@@ -95,7 +95,7 @@ class SweepStreetActivityController {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         Assert.notNull(request.getLocationDetailVO(),"locationDetailVO is null");
-        return null;
+        return sweepStreetService.startSign(request);
     }
 
 }

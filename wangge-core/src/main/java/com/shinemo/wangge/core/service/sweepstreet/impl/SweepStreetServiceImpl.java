@@ -17,6 +17,7 @@ import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
+import com.shinemo.sweepfloor.domain.vo.LocationDetailVO;
 import com.shinemo.sweepstreet.domain.model.ParentSweepStreetActivityDO;
 import com.shinemo.sweepstreet.domain.model.SweepStreetActivityDO;
 import com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO;
@@ -88,7 +89,11 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             BeanUtils.copyProperties(activityDO, activityVO);
             vos.add(activityVO);
         }
-        if (!request.getStatus().equals(GroupServiceDayStatusEnum.END.getId())) {
+        if (!request.getStatus().equals(SweepStreetStatusEnum.END.getId())) {
+            if (request.getStatus().equals(SweepStreetStatusEnum.PROCESSING.getId())) {
+                //进行中的查询打卡地址
+                buildLocation(vos);
+            }
             return ApiResult.of(0, ListVO.list(vos, vos.size()));
         }
         long count = sweepStreetActivityMapper.count(streetActivityQuery);
@@ -108,6 +113,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         }
         return ApiResult.of(0, ListVO.list(vos, count));
     }
+
 
     @Override
     public ApiResult startSign(SweepStreetSignRequest request) {
@@ -226,6 +232,33 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         parentSweepStreetActivityQuery.setId(id);
         ParentSweepStreetActivityDO parentActivity = parentSweepStreetActivityMapper.get(parentSweepStreetActivityQuery);
         return parentActivity;
+    }
+
+    /**
+     * 拼装活动打卡位置信息
+     * @param vos
+     */
+    private void buildLocation(List<SweepStreetActivityVO> vos) {
+        if (CollectionUtils.isEmpty(vos)) {
+            return;
+        }
+        List<Long> activityIds = vos.stream().map(SweepStreetActivityVO::getId).collect(Collectors.toList());
+        SignRecordQuery signRecordQuery = new SignRecordQuery();
+        signRecordQuery.setActivityIds(activityIds);
+        signRecordQuery.setBizType(5);
+        List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
+        if (CollectionUtils.isEmpty(signRecordDOS)) {
+            return;
+        }
+        Map<Long, List<SignRecordDO>> listMap = signRecordDOS.stream().collect(Collectors.groupingBy(SignRecordDO::getActivityId));
+        for (SweepStreetActivityVO activityVO:vos) {
+            List<SignRecordDO> recordDOS = listMap.get(activityVO.getId());
+            if (!CollectionUtils.isEmpty(recordDOS)) {
+                LocationDetailVO locationDetailVO = GsonUtils.fromGson2Obj(recordDOS.get(0).getStartLocation(), LocationDetailVO.class);
+                activityVO.setLocation(locationDetailVO.getLocation());
+                activityVO.setAddress(locationDetailVO.getAddress());
+            }
+        }
     }
 
 
