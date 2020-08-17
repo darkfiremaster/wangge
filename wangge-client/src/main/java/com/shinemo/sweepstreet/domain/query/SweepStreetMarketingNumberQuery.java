@@ -1,6 +1,7 @@
 package com.shinemo.sweepstreet.domain.query;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,4 +37,6 @@ public class SweepStreetMarketingNumberQuery extends QueryBase {
     * 业务统计备注
     */
 	private String bizRemark;
+
+	private List<Long> activityIds;
 }
