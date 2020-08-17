@@ -34,11 +34,7 @@ public interface WanggeScheduleFacadeService {
      */
     Result<Void> sendEmail();
 
-    /**
-     * 测试代码
-     * @return
-     */
-    public Result<Void> test1();
-    public Result<Void> test2();
-    public Result<Void> test3();
+    Result<Void> test1();
+    Result<Void> test2() throws InterruptedException;
+    Result<Void> test3();
 }

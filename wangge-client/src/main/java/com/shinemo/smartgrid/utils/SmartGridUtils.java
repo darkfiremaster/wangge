@@ -91,6 +91,7 @@ public class SmartGridUtils {
 
     public static Map<String,Object> buildHeader(String mobile,String accessKeyId,String secretKey) {
         Map<String,Object> header = new TreeMap<>();
+
         long timeMillis = System.currentTimeMillis();
         header.put("accessKeyId",accessKeyId);
         header.put("timestamp",timeMillis);

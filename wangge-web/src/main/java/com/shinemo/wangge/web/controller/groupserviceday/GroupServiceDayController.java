@@ -214,4 +214,12 @@ class GroupServiceDayController {
         Assert.hasText(groupId, "groupId is null");
         return groupSerDayRedirctService.getRedirctGrouSerUrl(groupId);
     }
+
+    @GetMapping("getRedirctSmsHotUrl")
+    @SmIgnore
+    public ApiResult<String> redirctSmsHot(@RequestParam Long activityId) {
+        Assert.notNull(activityId, "id is null");
+        return groupSerDayRedirctService.getRedirctSmsHotUrl(activityId);
+    }
+
 }
