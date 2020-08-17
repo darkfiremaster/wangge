@@ -79,7 +79,6 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
 
         //根据业务类型判断调谁的接口
         if (isHuaweiApi(thirdApiMappingDO)) {
-
             if (EnvUtil.isDaily()) {
                 //走mock数据
                 if (StrUtil.isNotBlank(mockMobile)) {
