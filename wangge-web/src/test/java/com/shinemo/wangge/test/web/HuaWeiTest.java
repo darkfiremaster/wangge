@@ -31,6 +31,8 @@ public class HuaWeiTest {
     //@Value("${smartgrid.huawei.domain}")
     public String domain = "http://112.54.48.61:13003";
 
+
+
     private void printResult(Map<String, Object> header, HashMap<String, Object> requestData, HttpResult httpResult) {
         HashMap<String,Object> requestMap = new LinkedHashMap<>();
         requestMap.put("header", header);
