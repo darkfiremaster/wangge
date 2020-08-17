@@ -42,14 +42,14 @@ public class HuaWeiTest {
 
     @Test
     public void testGetGroupList() {
-        String mobile = "13607713224";
+        String mobile = "15978197192";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
         log.info("header:{}", header);
 
         HashMap<String, Object> requestData = new HashMap<>();
-        requestData.put("groupName", "银行");
+        //requestData.put("groupName", "银行");
         //requestData.put("mobile", "13607713224");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
