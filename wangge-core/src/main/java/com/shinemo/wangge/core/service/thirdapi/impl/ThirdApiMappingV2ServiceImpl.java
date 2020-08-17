@@ -74,6 +74,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     private static final String HUAWEI_RESPONSE_PARAM_CODE = "resultCode";
     private static final String HUAWEI_RESPONSE_PARAM_DATA = "data";
     private static final String HUAWEI_RESPONSE_PARAM_MESSAGE = "resultDesc";
+    private static final String HUAWEI_RESPONSE_PARAM_INFO = "resultInfo";
     private static final String MOBILE_PARAM = "mobile";
 
 
@@ -194,7 +195,11 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             if (!huaweiRequestSuccess(huaweiResponse)) {
                 log.error("[dispatch] huawei api error,url={}, request={}, param={}, huaweiResponse = {}",
                         thirdApiMappingDO.getUrl(), requestData, param, huaweiResponse);
-                return ApiResult.fail(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
+                Object resultDesc = huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE);
+                if (resultDesc == null) {
+                    resultDesc = huaweiResponse.get(HUAWEI_RESPONSE_PARAM_INFO);
+                }
+                return ApiResult.fail(resultDesc.toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
             Map<String, Object> result = new HashMap<>();
             if (thirdApiMappingDO.dataArrarFlag()) {

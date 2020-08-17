@@ -435,6 +435,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         requestData.remove("queryParam");
         requestData.put("userName",param);
         requestData.put("userPhone",param);
+        if (requestData.get("pageNum") == null) {
+            requestData.put("pageNum","1");
+        }
+        if (requestData.get("pageSize") == null) {
+            requestData.put("pageSize","20");
+        }
         return thirdApiMappingV2Service.dispatch(requestData, "getPartnerList");
     }
 
