@@ -215,11 +215,11 @@ public class HuaWeiTest {
         log.info("header:{}", header);
 
         HashMap<String, Object> requestData = new HashMap<>();
-        requestData.put("startLevel","3");
-        requestData.put("endLevel","3");
+        requestData.put("startLevel","4");
+        requestData.put("endLevel","4");
         List<String> list = new ArrayList<>();
-        list.add("771");
-        requestData.put("cityIds",list);
+        list.add("A2107");
+        requestData.put("countyIds",list);
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
@@ -240,7 +240,7 @@ public class HuaWeiTest {
         requestData.put("areaLevel","1");
         requestData.put("pageNum","1");
         requestData.put("pageSize","20");
-        requestData.put("userName","20");
+        requestData.put("userName","马正军");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
