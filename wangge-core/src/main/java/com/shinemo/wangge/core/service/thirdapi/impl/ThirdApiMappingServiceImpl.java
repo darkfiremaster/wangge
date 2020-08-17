@@ -1,5 +1,8 @@
 package com.shinemo.wangge.core.service.thirdapi.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.client.util.EnvUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -49,6 +53,8 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
     public String signkey;
     @Value("${smartgrid.huawei.aesKey}")
     public String aeskey;
+    @NacosValue(value = "${third.api.mock.mobile}", autoRefreshed = true)
+    public String mockMobile;
 
     @Resource
     private HuaweiApiLogMapper huaweiApiLogMapper;
@@ -68,14 +74,27 @@ public class ThirdApiMappingServiceImpl implements ThirdApiMappingService {
             throw new ApiException("url不存在");
         }
 
+        //调华为接口
+        String mobile = getMobile();
+
         //根据业务类型判断调谁的接口
         if (isHuaweiApi(thirdApiMappingDO)) {
-            if (isMock(thirdApiMappingDO)) {
-                return handleMockRequest(requestData, thirdApiMappingDO);
+
+            if (EnvUtil.isDaily()) {
+                //走mock数据
+                if (StrUtil.isNotBlank(mockMobile)) {
+                    List<String> mockMobileList = StrUtil.split(mockMobile, ',');
+                    if (mockMobileList.contains(mobile)) {
+                        log.info("[dispatch] 用户是模拟用户,mobile:{}", mobile);
+                        return handleMockRequest(requestData, thirdApiMappingDO);
+                    }
+                }
+
+                if (isMock(thirdApiMappingDO)) {
+                    return handleMockRequest(requestData, thirdApiMappingDO);
+                }
             }
 
-            //调华为接口
-            String mobile = getMobile();
             if (StringUtils.isBlank(mobile)) {
                 //当异步调用时,会无法从SmartGridContext获取到手机号,所以从请求参数中获取
                 mobile = (String) requestData.get("mobile");
