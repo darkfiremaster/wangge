@@ -14,13 +14,7 @@ import com.shinemo.smartgrid.utils.SmartGridUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author shangkaihui
@@ -48,7 +42,7 @@ public class HuaWeiTest {
 
     @Test
     public void testGetGroupList() {
-        String mobile = "13588039023";
+        String mobile = "13607713224";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
@@ -78,7 +72,7 @@ public class HuaWeiTest {
         //String param = GsonUtils.toJson(requestData);
 
         String param = "{\n" +
-                "    \"parentActivityId\":\"GSD_ACTIVITY_19\",\n" +
+                "    \"parentActivityId\":\"GSD_ACTIVITY_20\",\n" +
                 "    \"title\":\"测试活动\",\n" +
                 "    \"startTime\":\"1970-01-19 19:43:07\",\n" +
                 "    \"endTime\":\"1970-01-19 19:43:10\",\n" +
@@ -86,7 +80,7 @@ public class HuaWeiTest {
                 "    \"groupId\":\"G7717362086\",\n" +
                 "    \"childrenList\":[\n" +
                 "        {\n" +
-                "            \"activityId\":\"GSD_ACTIVITY_28\",\n" +
+                "            \"activityId\":\"GSD_ACTIVITY_29\",\n" +
                 "            \"participantList\":[\n" +
                 "                {\n" +
                 "                    \"userSource\":\"2\",\n" +
@@ -115,8 +109,8 @@ public class HuaWeiTest {
         log.info("header:{}", header);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("activityId", "GSD_ACTIVITY_28");
-        map.put("parentAcitvityId","GSD_ACTIVITY_19");
+        map.put("activityId", "GSD_ACTIVITY_29");
+        map.put("parentAcitvityId","GSD_ACTIVITY_20");
         map.put("status", GroupServiceDayStatusEnum.PROCESSING.getId());
         String location = "120.0687009006076,30.28182427300347";
         String[] locations = StrUtil.split(location, ",");
