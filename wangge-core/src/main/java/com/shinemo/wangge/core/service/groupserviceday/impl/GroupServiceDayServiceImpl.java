@@ -317,12 +317,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private void startSignSyncHuaWei(GroupServiceDaySignRequest request, GroupServiceDayDO groupServiceDayDO) {
         Map<String, Object> map = new HashMap<>();
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
-        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
         map.put("status", GroupServiceDayStatusEnum.PROCESSING.getId());
         String location = request.getLocationDetailVO().getLocation();
         String[] locations = StrUtil.split(location, ",");
         map.put("startLongitude", locations[0]);
-        map.put("startLatitude ", locations[1]);
+        map.put("startLatitude", locations[1]);
         map.put("startAddress", request.getLocationDetailVO().getAddress());
         map.put("startTime", DateUtil.formatDateTime(groupServiceDayDO.getRealStartTime()));
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
@@ -385,11 +385,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private void endSignSyncHuaWei(GroupServiceDaySignRequest request, GroupServiceDayDO groupServiceDayDO) {
         Map<String, Object> map = new HashMap<>();
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
-        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
         map.put("status", GroupServiceDayStatusEnum.END.getId());
         String[] split = StrUtil.split(request.getLocationDetailVO().getLocation(), ",");
         map.put("endLongitude", split[0]);
-        map.put("endLatitude ", split[1]);
+        map.put("endLatitude", split[1]);
         map.put("endAddress", request.getLocationDetailVO().getAddress());
         map.put("endTime", DateUtil.formatDateTime(groupServiceDayDO.getRealEndTime()));
         map.put("remark", request.getRemark());
@@ -424,7 +424,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private void cancelSyncHuaWei(GroupServiceDayDO groupServiceDayDO) {
         Map<String, Object> map = new HashMap<>();
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getId());
-        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
+        map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + groupServiceDayDO.getParentId());
         map.put("status", GroupServiceDayStatusEnum.CANCEL.getId());
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }
@@ -519,7 +519,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
     private void autoEndSyncHuaWei(GroupServiceDayDO serviceDayDO) {
         Map<String, Object> map = new HashMap<>();
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getId());
-        map.put("parentAcitvityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getParentId());
+        map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getParentId());
         map.put("status", GroupServiceDayStatusEnum.AUTO_END.getId());
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
     }

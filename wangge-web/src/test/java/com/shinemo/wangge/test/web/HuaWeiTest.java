@@ -110,12 +110,12 @@ public class HuaWeiTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("activityId", "GSD_ACTIVITY_29");
-        map.put("parentAcitvityId","GSD_ACTIVITY_20");
-        map.put("status", GroupServiceDayStatusEnum.PROCESSING.getId());
+        map.put("parentActivityId","GSD_ACTIVITY_20");
+        map.put("status", GroupServiceDayStatusEnum.END.getId());
         String location = "120.0687009006076,30.28182427300347";
         String[] locations = StrUtil.split(location, ",");
         map.put("startLongitude", locations[0]);
-        map.put("startLatitude ", locations[1]);
+        map.put("startLatitude", locations[1]);
         map.put("startAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
         map.put("startTime", DateUtil.formatDateTime(new Date()));
         String param = GsonUtils.toJson(map);
