@@ -431,6 +431,10 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
     @Override
     public ApiResult<Map<String, Object>> getPartnerList(Map<String, Object> requestData) {
+        String param = (String)requestData.get("queryParam");
+        requestData.remove("queryParam");
+        requestData.put("userName",param);
+        requestData.put("userPhone",param);
         return thirdApiMappingV2Service.dispatch(requestData, "getPartnerList");
     }
 
