@@ -158,11 +158,11 @@ public class HuaWeiTest {
         log.info("header:{}", header);
 
         HashMap<String, Object> requestData = new HashMap<>();
-        requestData.put("areaId","771");
-        requestData.put("areaLevel","2");
+        requestData.put("areaId","0");
+        requestData.put("areaLevel","1");
         requestData.put("pageNum","1");
-        requestData.put("pageSize","20");
-        requestData.put("userName","李化");
+        requestData.put("pageSize","100");
+        //requestData.put("userName","李化");
         String param = GsonUtils.toJson(requestData);
         log.info("param:{}", param);
 
