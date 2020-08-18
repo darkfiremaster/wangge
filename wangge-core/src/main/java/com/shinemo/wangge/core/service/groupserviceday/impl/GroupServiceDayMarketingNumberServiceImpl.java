@@ -142,7 +142,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 .build();
 
         //若未传入办理量 默认填充0值
-        if(CollectionUtils.isEmpty(marketNumberDetail.getPublicBizInfoList())){
+        if(CollectionUtils.isEmpty(request.getPublicBizList()) && CollectionUtils.isEmpty(marketNumberDetail.getPublicBizInfoList())){
             marketingNumberDO.setCount(0);
             List<StallUpBizType> groupServiceDayBizDataList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
@@ -156,7 +156,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             detail.setPublicBizInfoList(details);
         }
 
-        if(CollectionUtils.isEmpty(marketNumberDetail.getInformationBizInfoList())){
+        if(CollectionUtils.isEmpty(request.getInformationBizList()) &&CollectionUtils.isEmpty(marketNumberDetail.getInformationBizInfoList())){
             //政企
             List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
