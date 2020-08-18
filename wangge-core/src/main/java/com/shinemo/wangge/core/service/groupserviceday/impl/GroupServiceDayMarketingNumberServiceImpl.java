@@ -150,7 +150,9 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 details.add(bizDetail);
             }
             detail.setPublicBizInfoList(details);
+        }
 
+        if(CollectionUtils.isEmpty(request.getInformationBizList())){
             //政企
             List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
