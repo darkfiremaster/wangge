@@ -120,9 +120,12 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         GroupServiceDayMarketingNumberQuery query = new GroupServiceDayMarketingNumberQuery();
         query.setGroupServiceDayId(request.getActivityId());
         GroupServiceDayMarketingNumberDO queryResult = groupServiceDayMarketingNumberMapper.get(query);
-        GroupServiceDayMarketNumberDetail marketNumberDetail = GsonUtil.
-                fromGson2Obj(queryResult.getDetail(), new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
 
+        GroupServiceDayMarketNumberDetail marketNumberDetail = null;
+        if(queryResult != null){
+            marketNumberDetail = GsonUtil.
+                    fromGson2Obj(queryResult.getDetail(), new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
+        }
 
         //3.插入或更新
         GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
