@@ -314,7 +314,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         List<Long> activityIds = vos.stream().map(SweepStreetActivityVO::getId).collect(Collectors.toList());
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityIds(activityIds);
-        signRecordQuery.setBizType(5);
+        signRecordQuery.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
         List<SignRecordDO> signRecordDOS = signRecordMapper.find(signRecordQuery);
         if (CollectionUtils.isEmpty(signRecordDOS)) {
             return;
@@ -329,6 +329,4 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             }
         }
     }
-
-
 }
