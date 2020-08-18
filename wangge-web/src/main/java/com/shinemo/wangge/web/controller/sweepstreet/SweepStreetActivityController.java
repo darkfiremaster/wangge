@@ -85,18 +85,18 @@ class SweepStreetActivityController {
      */
     @GetMapping("/getSweepStreetMarketNumber")
     public ApiResult<SweepStreetMarketNumberVO> getSweepStreetBizDetail(@RequestParam Long activityId) {
-        return null;
+        return sweepStreetMarketService.getByActivityId(activityId);
     }
     /**
      * 业务列表录入接口
      * @param request
      * @return
      */
-    @PostMapping("/saveSweepStreetBusiness")
+    @PostMapping("/saveSweepStreetActivityBusi")
     public ApiResult addBusiness(@RequestBody SweepStreetBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
-        return null;
+        return sweepStreetMarketService.enterMarketingNumber(request);
     }
 
 
