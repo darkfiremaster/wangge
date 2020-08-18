@@ -146,7 +146,7 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         map.put("activityId", SweepStreetActivityConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
         map.put("bizTypeList", sweepStreetBizs);
 
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_SWEEP_STREET_ACTIVITY_DATA.getApiName(), SmartGridContext.getMobile());
 
         return ApiResult.success();
     }
