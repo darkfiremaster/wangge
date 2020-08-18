@@ -136,6 +136,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
                     //来自网格
                     participant.setUserSource("1");
                     participant.setUserId(partnerBean.getUserId());
+                    participant.setUserPhone(partnerBean.getMobile());
                 } else {
                     //来自通讯录
                     participant.setUserSource("2");

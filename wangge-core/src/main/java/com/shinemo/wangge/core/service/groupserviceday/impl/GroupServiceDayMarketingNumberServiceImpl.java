@@ -61,11 +61,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         query.setGroupServiceDayId(activityId);
 
         GroupServiceDayMarketingNumberDO marketingNumberDO = groupServiceDayMarketingNumberMapper.get(query);
-//        if(marketingNumberDO == null){
-//            log.error("[getByActivityId] is null,query:{}",query);
-//            return ApiResult.fail("marketNumber is null",500);
-//        }
-
 
         GroupServiceDayMarketNumberVO numberVO = new GroupServiceDayMarketNumberVO();
         if (marketingNumberDO == null) {
@@ -79,6 +74,17 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 details.add(bizDetail);
             }
             numberVO.setPublicBizInfoList(details);
+
+            List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
+            List<GroupServiceDayBizDetailVO> informationDetails = new ArrayList<>();
+            for (StallUpBizType bizType : informationGroupServiceDayBizDataList) {
+                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                informationDetails.add(bizDetail);
+            }
+            numberVO.setInformationBizInfoList(informationDetails);
             return ApiResult.of(0, numberVO);
         }
 
@@ -134,9 +140,9 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         //若未传入办理量 默认填充0值
         if(CollectionUtils.isEmpty(request.getPublicBizList())){
             marketingNumberDO.setCount(0);
-            List<StallUpBizType> sweepFloorBizList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
+            List<StallUpBizType> groupServiceDayBizDataList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
-            for (StallUpBizType bizType : sweepFloorBizList) {
+            for (StallUpBizType bizType : groupServiceDayBizDataList) {
                 GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
                 bizDetail.setId(bizType.getId());
                 bizDetail.setName(bizType.getName());
@@ -144,6 +150,19 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 details.add(bizDetail);
             }
             detail.setPublicBizInfoList(details);
+
+            //政企
+            List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
+            List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
+            for (StallUpBizType bizType : informationGroupServiceDayBizDataList) {
+                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
+                bizDetail.setId(bizType.getId());
+                bizDetail.setName(bizType.getName());
+                bizDetail.setNum(0);
+                informationList.add(bizDetail);
+            }
+            detail.setInformationBizInfoList(informationList);
+
             marketingNumberDO.setDetail(GsonUtils.toJson(detail));
         }
 
