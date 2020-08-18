@@ -83,4 +83,6 @@ public class SweepStreetActivityVO {
     private Integer businessCount;
 
     private String address;
+
+    private Integer visitCount = 0;
 }

@@ -31,4 +31,6 @@ public class SweepVillageVisitRecordingQuery extends Query {
     private Date startTime;
     private Date endTime;
 
+    private List<Long> activityIds;
+
 }
