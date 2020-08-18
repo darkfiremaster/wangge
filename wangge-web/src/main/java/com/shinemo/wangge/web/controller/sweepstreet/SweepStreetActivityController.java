@@ -152,17 +152,28 @@ class SweepStreetActivityController {
     @GetMapping("/findMerchantList")
     public ApiResult findMerchantList(@RequestParam(required = false) String queryParam,
                                       @RequestParam String location,
-                                      @RequestParam(required = false) Integer pageSize,
-                                      @RequestParam(required = false) Integer currentPage,
-                                      @RequestParam(required = false) Boolean pageFlag){
+                                      @RequestParam Integer pageSize,
+                                      @RequestParam Integer currentPage){
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
                 .queryParam(queryParam)
                 .location(location)
                 .pageSize(pageSize)
                 .currentPage(currentPage)
-                .pageFlag(pageFlag)
                 .build());
+    }
 
+    @GetMapping("/findMerchantListWithMap")
+    public ApiResult findMerchantListWithMap(@RequestParam(required = false) String queryParam,
+                                      @RequestParam String location,
+                                      @RequestParam Integer pageSize,
+                                      @RequestParam Integer currentPage){
+        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
+                .queryParam(queryParam)
+                .location(location)
+                .pageSize(pageSize)
+                .currentPage(currentPage)
+                .radius("1000")
+                .build());
     }
 
 }
