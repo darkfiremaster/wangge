@@ -37,6 +37,12 @@
                     <if test="count != null">and count = #{count}</if>
                     <if test="detail != null">and detail = #{detail}</if>
                     <if test="bizRemark != null">and biz_remark = #{bizRemark}</if>
+                    <if test="activityIds != null and activityIds.size() > 0">
+                        and sweep_street_id in
+                        <foreach collection="activityIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
                 </otherwise>
             </choose>
         </where>

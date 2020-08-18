@@ -58,6 +58,12 @@
                     <if test="location != null">and location = #{location}</if>
                     <if test="status != null">and status = #{status}</if>
                     <if test="gridId != null">and grid_id = #{gridId}</if>
+                    <if test="statusList != null and statusList.size()>0">
+                        and status in
+                        <foreach collection="statusList" open="(" separator="," close=")" item="value">
+                            #{value}
+                        </foreach>
+                    </if>
                 </otherwise>
             </choose>
         </where>
