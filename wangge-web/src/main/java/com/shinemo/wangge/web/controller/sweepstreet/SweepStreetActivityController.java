@@ -7,6 +7,7 @@ import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.model.GroupDO;
 import com.shinemo.groupserviceday.domain.request.*;
 import com.shinemo.groupserviceday.domain.vo.*;
+import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetBusinessRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
@@ -51,6 +52,17 @@ class SweepStreetActivityController {
     }
 
 
+    /**
+     * 创建扫街活动
+     * @param request
+     * @return
+     */
+    @PostMapping("/createSweepStreetActivity")
+    public ApiResult createSweepStreetActivity(@RequestBody SweepStreetActivityRequest request) {
+        Assert.notNull(request,"request is null");
+
+        return sweepStreetService.createSweepStreet(request);
+    }
     /**
      * 业务列表查询接口
      * @param activityId
@@ -109,6 +121,18 @@ class SweepStreetActivityController {
         Assert.notNull(request.getActivityId(),"activityId is null");
         Assert.notNull(request.getLocationDetailVO(),"locationDetailVO is null");
         return sweepStreetService.endSign(request);
+    }
+
+
+    /**
+     * 周，月办理量
+     * @param type
+     * @return
+     */
+    @GetMapping("/getFinishedCount")
+    public ApiResult getFinishedCount(Integer type) {
+
+        return sweepStreetService.getFinishedCount(type);
     }
 
 }
