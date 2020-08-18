@@ -125,7 +125,11 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 //插入
                 log.info("[enterMarketingNumber] insert marketingNumberDO:{}",insert);
                 groupServiceDayMarketingNumberMapper.insert(insert);
+                //同步华为
+                syncGroupServiceDayMarketNumber(insert);
+                return ApiResult.success();
             }
+            syncGroupServiceDayMarketNumber(queryResult);
             return ApiResult.success();
         }
 
