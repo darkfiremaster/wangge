@@ -121,6 +121,10 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 GroupServiceDayMarketingNumberDO insert = GroupServiceDayMarketingNumberDO.builder()
                         .detail(GsonUtil.toJson(detail))
                         .count(0)
+                        .groupServiceDayId(request.getActivityId())
+                        .userId(SmartGridContext.getUid())
+                        .publicBizRemark(request.getPublicBizRemark())
+                        .informationBizRemark(request.getInformationRemark())
                         .build();
                 //插入
                 log.info("[enterMarketingNumber] insert marketingNumberDO:{}",insert);
