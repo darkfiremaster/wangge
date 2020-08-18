@@ -71,6 +71,12 @@
                     <if test="status != null">and status = #{status}</if>
                     <if test="location != null">and location = #{location}</if>
                     <if test="createMerchantMobile != null">and create_merchant_mobile = #{createMerchantMobile}</if>
+                    <if test="activityIds != null and activityIds.size()>0">
+                        and activity_id in
+                        <foreach collection="activityIds" open="(" separator="," close=")" item="value">
+                            #{value}
+                        </foreach>
+                    </if>
                 </otherwise>
             </choose>
         </where>

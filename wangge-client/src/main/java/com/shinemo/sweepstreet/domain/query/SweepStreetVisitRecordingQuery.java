@@ -1,6 +1,7 @@
 package com.shinemo.sweepstreet.domain.query;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -113,4 +114,6 @@ public class SweepStreetVisitRecordingQuery extends QueryBase {
     * 商户创建人手机号
     */
 	private String createMerchantMobile;
+
+	private List<Long> activityIds;
 }

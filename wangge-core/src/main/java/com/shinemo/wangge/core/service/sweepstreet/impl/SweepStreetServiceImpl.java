@@ -26,9 +26,11 @@ import com.shinemo.sweepstreet.domain.huawei.HuaWeiCreateSweepStreetActivityRequ
 import com.shinemo.sweepstreet.domain.model.ParentSweepStreetActivityDO;
 import com.shinemo.sweepstreet.domain.model.SweepStreetActivityDO;
 import com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO;
+import com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO;
 import com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery;
+import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
@@ -72,7 +74,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     private ThirdApiMappingV2Service thirdApiMappingV2Service;
 
     @Resource
-    private SweepVillageVisitRecordingMapper sweepVillageVisitRecordingMapper;
+    private SweepStreetVisitRecordingMapper sweepStreetVisitRecordingMapper;
 
     @Override
     public ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request) {
@@ -120,12 +122,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         List<SweepStreetMarketingNumberDO> numberDOS = sweepStreetMarketingNumberMapper.find(numberQuery);
 
         //查询走访商户数量
-        SweepVillageVisitRecordingQuery recordingQuery = new SweepVillageVisitRecordingQuery();
+        SweepStreetVisitRecordingQuery recordingQuery = new SweepStreetVisitRecordingQuery();
         recordingQuery.setActivityIds(activityIds);
-        List<SweepVillageVisitRecordingDO> recordingDOS = sweepVillageVisitRecordingMapper.find(recordingQuery);
-        Map<Long, List<SweepVillageVisitRecordingDO>> listMap = new HashMap<>();
+        List<SweepStreetVisitRecordingDO> recordingDOS = sweepStreetVisitRecordingMapper.find(recordingQuery);
+        Map<Long, List<SweepStreetVisitRecordingDO>> listMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(recordingDOS)) {
-            listMap = recordingDOS.stream().collect(Collectors.groupingBy(SweepVillageVisitRecordingDO::getActivityId));
+            listMap = recordingDOS.stream().collect(Collectors.groupingBy(SweepStreetVisitRecordingDO::getActivityId));
         }
         Map<Long, List<SweepStreetMarketingNumberDO>> map = numberDOS.stream().collect(Collectors.groupingBy(SweepStreetMarketingNumberDO::getSweepStreetId));
         for (SweepStreetActivityVO activityVO : vos) {
@@ -136,9 +138,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                 activityVO.setBusinessCount(marketingNumberDOS.get(0).getCount());
             }
             if (!CollectionUtils.isEmpty(listMap)) {
-                List<SweepVillageVisitRecordingDO> sweepVillageVisitRecordingDOS = listMap.get(activityVO.getId());
-                if (!CollectionUtils.isEmpty(sweepVillageVisitRecordingDOS)) {
-                    activityVO.setVisitCount(sweepVillageVisitRecordingDOS.size());
+                List<SweepStreetVisitRecordingDO> visitRecordingDOS = listMap.get(activityVO.getId());
+                if (!CollectionUtils.isEmpty(visitRecordingDOS)) {
+                    activityVO.setVisitCount(visitRecordingDOS.size());
                 }
             }
         }
