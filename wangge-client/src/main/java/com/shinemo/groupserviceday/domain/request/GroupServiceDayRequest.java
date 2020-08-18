@@ -35,7 +35,6 @@ public class GroupServiceDayRequest {
     /**
      * 集团地址
      */
-    @NotBlank(message = "集团地址不能为空")
     private String groupAddress;
     /**
      * 计划开始时间
