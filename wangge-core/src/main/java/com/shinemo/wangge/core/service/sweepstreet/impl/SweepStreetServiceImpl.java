@@ -6,12 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
-import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
-import com.shinemo.groupserviceday.domain.huawei.HuaWeiCreateGroupServiceDayRequest;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
@@ -31,6 +25,7 @@ import com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
+import com.shinemo.sweepstreet.domain.request.HuaweiMerchantRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
@@ -38,8 +33,6 @@ import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
-import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
-import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -49,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -333,6 +327,26 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         log.info("[createSweepStreet] 新建扫村活动成功, 父活动id:{},创建人mobile:{}", parentSweepStreetActivityDO.getId(), parentSweepStreetActivityDO.getMobile());
         return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<Map<String, Object>> getMerchantList(HuaweiMerchantRequest request) {
+        //透传华为
+        String[] split = request.getLocation().split(",");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("groupName", request.getQueryParam());
+        map.put("contractPhone", request.getQueryParam());
+        map.put("contractName", request.getQueryParam());
+        map.put("longitude", split[0]);
+        map.put("latitude", split[1]);
+        map.put("pageSize", request.getPageSize());
+        map.put("PageNum", request.getCurrentPage());
+        if(!StringUtils.isEmpty(request.getRadius())){
+            map.put("radius", SmartGridContext.getMobile());
+        }
+
+        ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
+        return result;
     }
 
     private SweepStreetActivityDO getDOById(Long id) {

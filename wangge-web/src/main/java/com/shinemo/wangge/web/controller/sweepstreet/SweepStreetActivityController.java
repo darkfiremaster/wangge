@@ -1,12 +1,10 @@
 package com.shinemo.wangge.web.controller.sweepstreet;
 
 
+import com.shinemo.ace4j.protocol.In;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetBusinessRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessIndexVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMarketNumberVO;
@@ -148,6 +146,23 @@ class SweepStreetActivityController {
     public ApiResult getFinishedCount(Integer type) {
 
         return sweepStreetService.getFinishedCount(type);
+    }
+
+
+    @GetMapping("/findMerchantList")
+    public ApiResult findMerchantList(@RequestParam(required = false) String queryParam,
+                                      @RequestParam String location,
+                                      @RequestParam(required = false) Integer pageSize,
+                                      @RequestParam(required = false) Integer currentPage,
+                                      @RequestParam(required = false) Boolean pageFlag){
+        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
+                .queryParam(queryParam)
+                .location(location)
+                .pageSize(pageSize)
+                .currentPage(currentPage)
+                .pageFlag(pageFlag)
+                .build());
+
     }
 
 }

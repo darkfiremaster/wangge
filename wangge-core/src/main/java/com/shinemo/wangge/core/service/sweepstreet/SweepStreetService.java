@@ -3,11 +3,14 @@ package com.shinemo.wangge.core.service.sweepstreet;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepstreet.domain.model.SweepStreetActivityDO;
+import com.shinemo.sweepstreet.domain.request.HuaweiMerchantRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
+
+import java.util.Map;
 
 public interface SweepStreetService {
     /** 查詢活動列表 */
@@ -36,5 +39,11 @@ public interface SweepStreetService {
      * 新建扫街计划
      */
     ApiResult<Void> createSweepStreet(SweepStreetActivityRequest sweepStreetActivityRequest);
+
+
+    /**
+     * 获取商户列表 透传华为
+     */
+    ApiResult<Map<String, Object>> getMerchantList(HuaweiMerchantRequest request);
 
 }
