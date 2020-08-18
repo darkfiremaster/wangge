@@ -1,5 +1,7 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.google.common.collect.Lists;
 import com.shinemo.client.util.EnvUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
@@ -75,6 +77,9 @@ public class HuaWeiServiceImpl implements HuaWeiService {
     public String signkey;
     @Value("${smartgrid.huawei.aesKey}")
     public String aeskey;
+
+    @NacosValue(value = "${huawei.getGridUserInfo.mock.mobile}", autoRefreshed = true)
+    private String getGridUserInfoMockMobile;
 
     @Override
     public ApiResult<List<String>> getUserList(HuaWeiRequest request) {
@@ -212,7 +217,10 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 
         //todo mock待删除
         if (!EnvUtil.isOnline()) {
-            List<String> list = Arrays.asList("18376680417", "18777272624", "18523280364", "15797953927", "13107701611", "15958032925", "18790513853", "15226536886", "15000001171", "18850583991", "13396631940", "18790513853", "13588039023", "13107701611", "18776892034", "13407710166", "18249960242");
+            List<String> list = new ArrayList<>();
+            if (StrUtil.isNotBlank(getGridUserInfoMockMobile)) {
+                list = StrUtil.split(getGridUserInfoMockMobile, ',');
+            }
 
             if (request.getMobile().equals("15000001172")) {
                 //6个网格

@@ -32,6 +32,10 @@ import com.shinemo.sweepfloor.domain.response.IndexInfoResponse;
 import com.shinemo.sweepfloor.domain.vo.SmartGridVO;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorActivityVO;
 import com.shinemo.sweepfloor.domain.vo.SweepFloorBusinessCountAndHouseCountVO;
+import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
+import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import com.shinemo.sweepvillage.domain.request.SweepVillageActivityQueryRequest;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityFinishVO;
 import com.shinemo.sweepvillage.domain.vo.SweepVillageActivityResultVO;
@@ -41,6 +45,7 @@ import com.shinemo.wangge.core.service.groupserviceday.GroupServiceDayService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
+import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.sweepvillage.SweepVillageActivityService;
 import lombok.Getter;
 import lombok.Setter;
@@ -80,6 +85,9 @@ public class IndexController {
 
     @Resource
     private GroupServiceDayService groupServiceDayService;
+
+    @Resource
+    private SweepStreetService sweepStreetService;
 
     @Resource
     private HuaWeiService huaWeiService;
@@ -151,6 +159,21 @@ public class IndexController {
         }
         ApiResult<GroupServiceDayFinishedVO> finishedCount = groupServiceDayService.getFinishedCount(1);
         response.setGroupServiceDayFinishedVO(finishedCount.getData());
+
+
+        // 扫街相关 获取进行中的活动信息及 '周营销数据'
+        SweepStreetListRequest sweepStreetListRequest = new SweepStreetListRequest();
+        sweepStreetListRequest.setStatus(SweepStreetStatusEnum.PROCESSING.getId());
+        ApiResult<ListVO<SweepStreetActivityVO>> sweepStreetActivityListResult = sweepStreetService.getSweepStreetList(sweepStreetListRequest);
+
+        if (CollUtil.isNotEmpty(sweepStreetActivityListResult.getData().getRows())) {
+            SweepStreetActivityVO sweepStreetActivityVO = sweepStreetActivityListResult.getData().getRows().get(0);
+            response.setSweepStreetActivityVO(sweepStreetActivityVO);
+        } else {
+            response.setSweepStreetActivityVO(null);
+        }
+        ApiResult<SweepStreetActivityFinishedVO> streetFinlishVO = sweepStreetService.getFinishedCount(1);
+        response.setSweepStreetActivityFinishedVO(streetFinlishVO.getData());
 
         // 首页
         List<StallUpBizType> homePageBizList = stallUpService.getGridBiz(uid + "").stream()

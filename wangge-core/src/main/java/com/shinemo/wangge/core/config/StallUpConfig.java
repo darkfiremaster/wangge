@@ -82,6 +82,11 @@ public class StallUpConfig {
         config.setInformationGroupServiceDayBizList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ.getType()));
         config.setInformationGroupServiceDayBizDataList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ_DATA.getType()));
 
+        //扫街配置
+        config.setSweepStreetToolList(bizConfigMap.get(BusinessConfigEnum.SWEEP_STREET_TOOL.getType()));
+        config.setSweepStreetBizList(bizConfigMap.get(BusinessConfigEnum.SWEEP_STREET_BIZ.getType()));
+        config.setSweepStreetBizDataList(bizConfigMap.get(BusinessConfigEnum.SWEEP_STREET_BIZ_DATA.getType()));
+
         //查询全量业务列表
         SmartGridBizQuery bizQuery = new SmartGridBizQuery();
         bizQuery.setStatus(1);
@@ -165,6 +170,24 @@ public class StallUpConfig {
         Map<Long, StallUpBizType> tmpInformationGroupServiceDayBizDataMap = new HashMap<>();
         List<StallUpBizType> tmpInformationGroupServiceDayBizDataList = initListAndMap(tmpMap, config.getInformationGroupServiceDayBizDataList(), tmpInformationGroupServiceDayBizDataMap);
         config.setInformationGroupServiceDayBizDataList(tmpInformationGroupServiceDayBizDataList);
+
+
+        /**
+         * 扫街配置
+         */
+        Map<Long, StallUpBizType> tmpSweepStreetToolMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepStreetToolList = initListAndMap(tmpMap, config.getSweepStreetToolList(), tmpSweepStreetToolMap);
+        config.setSweepStreetToolList(tmpSweepStreetToolList);
+
+        Map<Long, StallUpBizType> tmpSweepStreetBizMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepStreetBizList = initListAndMap(tmpMap, config.getSweepStreetBizList(), tmpSweepStreetBizMap);
+        config.setPublicGroupServiceDayBizList(tmpSweepStreetBizList);
+
+        Map<Long, StallUpBizType> tmpSweepStreetBizDataMap = new HashMap<>();
+        List<StallUpBizType> tmpSweepStreetBizDataList = initListAndMap(tmpMap, config.getSweepStreetBizDataList(), tmpSweepStreetBizDataMap);
+        config.setPublicGroupServiceDayBizDataList(tmpSweepStreetBizDataList);
+
+
 
         //初始化url参数拼接handler
         MaDianConfig MaDianConfig = config.getMaDianConfig();
@@ -448,6 +471,15 @@ public class StallUpConfig {
         private List<StallUpBizType> publicGroupServiceDayBizDataList;
         private List<StallUpBizType> informationGroupServiceDayBizList;
         private List<StallUpBizType> informationGroupServiceDayBizDataList;
+
+
+        /**
+         * 扫街
+         */
+        private List<StallUpBizType> sweepStreetToolList;
+        private List<StallUpBizType> sweepStreetBizList;
+        private List<StallUpBizType> sweepStreetBizDataList;
+
 
         /**
          * url参数拼接map

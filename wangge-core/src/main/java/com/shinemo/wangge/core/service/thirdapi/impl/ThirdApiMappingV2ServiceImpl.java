@@ -1,5 +1,7 @@
 package com.shinemo.wangge.core.service.thirdapi.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.util.EnvUtil;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,6 +63,9 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     @Value("${smartgrid.huawei.aesKey}")
     public String aeskey;
 
+    @NacosValue(value = "${third.api.mock.mobile}", autoRefreshed = true)
+    public String mockMobile;
+
     @Resource
     private HuaweiApiLogMapper huaweiApiLogMapper;
     @Resource
@@ -68,6 +74,7 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
     private static final String HUAWEI_RESPONSE_PARAM_CODE = "resultCode";
     private static final String HUAWEI_RESPONSE_PARAM_DATA = "data";
     private static final String HUAWEI_RESPONSE_PARAM_MESSAGE = "resultDesc";
+    private static final String HUAWEI_RESPONSE_PARAM_INFO = "resultInfo";
     private static final String MOBILE_PARAM = "mobile";
 
 
@@ -88,14 +95,26 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             throw new ApiException("url不存在");
         }
 
+        String mobile = getMobile();
+
         //根据业务类型判断调谁的接口
         if (isHuaweiApi(thirdApiMappingDO)) {
-            if (isMock(thirdApiMappingDO)) {
-                return handleMockRequest(requestData, thirdApiMappingDO);
+            if (EnvUtil.isDaily()) {
+                //走mock数据
+                if (StrUtil.isNotBlank(mockMobile)) {
+                    List<String> mockMobileList = StrUtil.split(mockMobile, ',');
+                    if (mockMobileList.contains(mobile)) {
+                        log.info("[dispatch] 用户是模拟用户,mobile:{}", mobile);
+                        return handleMockRequest(requestData, thirdApiMappingDO);
+                    }
+                }
+
+                if (isMock(thirdApiMappingDO)) {
+                    return handleMockRequest(requestData, thirdApiMappingDO);
+                }
             }
 
             //调华为接口
-            String mobile = getMobile();
             if (StringUtils.isBlank(mobile)) {
                 //当异步调用时,会无法从SmartGridContext获取到手机号,所以从请求参数中获取
                 mobile = (String) requestData.get(MOBILE_PARAM);
@@ -176,7 +195,11 @@ public class ThirdApiMappingV2ServiceImpl implements ThirdApiMappingV2Service {
             if (!huaweiRequestSuccess(huaweiResponse)) {
                 log.error("[dispatch] huawei api error,url={}, request={}, param={}, huaweiResponse = {}",
                         thirdApiMappingDO.getUrl(), requestData, param, huaweiResponse);
-                return ApiResult.fail(huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE).toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
+                Object resultDesc = huaweiResponse.get(HUAWEI_RESPONSE_PARAM_MESSAGE);
+                if (resultDesc == null) {
+                    resultDesc = huaweiResponse.get(HUAWEI_RESPONSE_PARAM_INFO);
+                }
+                return ApiResult.fail(resultDesc.toString(), ThirdApiErrorCodes.HUA_WEI_ERROR.code);
             }
             Map<String, Object> result = new HashMap<>();
             if (thirdApiMappingDO.dataArrarFlag()) {

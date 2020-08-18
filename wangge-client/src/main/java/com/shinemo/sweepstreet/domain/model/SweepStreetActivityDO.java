@@ -86,4 +86,6 @@ public class SweepStreetActivityDO extends BaseDO {
      * 扩展字段
      */
     private String extend;
+
+    private String address;
 }

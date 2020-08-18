@@ -38,6 +38,16 @@ public class RpcConsumerConfiguration {
         return aaceConsumerBean;
     }
 
+    @Bean(initMethod = "init" ,name = "pushMsgService")
+    public AaceConsumerBean pushMsgService() {
+        AaceConsumerBean aaceConsumerBean = new AaceConsumerBean();
+        aaceConsumerBean.setInterfaceName("com.shinemo.client.ace.msg.service.PushMsgService");
+        aaceConsumerBean.setProxy("PushMsg");
+        aaceConsumerBean.setRegisterInterfaceName("PushMsg");
+        aaceConsumerBean.setRpcType("aace");
+        //aaceConsumerBean.setAceType("http");
+        return aaceConsumerBean;
+    }
 
     @Bean(initMethod = "init" ,name = "userProfileService")
     public AaceConsumerBean userProfileService(@Value("${userProfile.aace.proxy.name}") String proxy) {

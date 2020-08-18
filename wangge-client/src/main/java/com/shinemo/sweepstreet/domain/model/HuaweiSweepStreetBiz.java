@@ -1,7 +1,6 @@
-package com.shinemo.sweepstreet.domain.vo;
+package com.shinemo.sweepstreet.domain.model;
 
-import com.shinemo.client.common.BaseDO;
-import com.shinemo.groupserviceday.domain.vo.GroupServiceDayBizDetailVO;
+import com.shinemo.groupserviceday.domain.model.HuaweiGroupServiceDayBizDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 类说明: 扫街业务办理VO
+ * 类说明: 集团服务日业务办理VO
  *
  * @author zengpeng
  */
@@ -18,14 +17,18 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SweepStreetMarketNumberVO extends BaseDO {
+public class HuaweiSweepStreetBiz {
+
     /**
      * 业务列表
      */
-    private List<SweepStreetBizDetailVO> bizInfoList;
+    private List<HuaweiSweepStreetBizDetail> bizInfoList;
 
     /**
      * 备注
      */
     private String bizRemark;
+
+
+
 }

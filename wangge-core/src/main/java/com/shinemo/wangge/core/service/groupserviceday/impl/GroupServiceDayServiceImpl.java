@@ -435,6 +435,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         requestData.remove("queryParam");
         requestData.put("userName",param);
         requestData.put("userPhone",param);
+        if (requestData.get("pageNum") == null) {
+            requestData.put("pageNum","1");
+        }
+        if (requestData.get("pageSize") == null) {
+            requestData.put("pageSize","20");
+        }
         return thirdApiMappingV2Service.dispatch(requestData, "getPartnerList");
     }
 
@@ -647,8 +653,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         parentGroupServiceDayDO.setGroupId(groupServiceDayRequest.getGroupId());
         parentGroupServiceDayDO.setGroupName(groupServiceDayRequest.getGroupName());
         parentGroupServiceDayDO.setGroupAddress(groupServiceDayRequest.getGroupAddress());
-        parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
-        parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        if (StrUtil.isNotBlank(SmartGridContext.getUid())) {
+            parentGroupServiceDayDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
+        }
+        if (StrUtil.isNotBlank(SmartGridContext.getOrgId())) {
+            parentGroupServiceDayDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        }
         parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
         parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
