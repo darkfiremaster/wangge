@@ -8,6 +8,7 @@ import com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
+import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
 import com.shinemo.wangge.core.service.sweepstreet.VisitStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
@@ -37,6 +38,10 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
 
+    private static final String ID_PREFIX = "SJ_RECORD_";
+
+    private static final String ACTIVITYID_PREFIX = "SJ_ACTIVITY_";
+
     @Override
     public ApiResult<Void> add(SweepStreetVisitRecordingVO request) {
         String mobile = SmartGridContext.getMobile();
@@ -49,7 +54,7 @@ public class VisitStreetServiceImpl implements VisitStreetService {
         sweepStreetVisitRecordingMapper.insert(visitRecordingDO);
 
         /*扫街录入数据同步华为*/
-//        synchronizeSweepingData(visitRecordingDO,"");
+        synchronizeSweepingData(visitRecordingDO, HuaweiSweepStreetActivityUrlEnum.CREATE_SWEEP_STREET_VISITRECORD.getApiName());
         return ApiResult.of(0);
     }
 
@@ -101,27 +106,42 @@ public class VisitStreetServiceImpl implements VisitStreetService {
         return ApiResult.of(0,sweepStreetBusinessVO);
     }
 
-
     private void synchronizeSweepingData(SweepStreetVisitRecordingDO visitRecordingDO, String apiName) {
 
         Map<String,Object> map = new HashMap<>();
-        map.put("id",visitRecordingDO.getId());
+        map.put("visitId",ID_PREFIX+visitRecordingDO.getId());
 
-        map.put("activityId", SweepVillageConstants.ID_PREFIX + visitRecordingDO.getActivityId());
-        map.put("merchantId",visitRecordingDO.getMerchantId());
-        map.put("successFlag",visitRecordingDO.getSuccessFlag());
-        map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag());
+        map.put("activityId", ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
+        map.put("groupId",visitRecordingDO.getMerchantId());
+        map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
+        map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");
         map.put("location",visitRecordingDO.getLocation());
         map.put("bizType",visitRecordingDO.getBusinessType());
+
+        if (visitRecordingDO.getHomeBroadband() != null) {
+            map.put("broadbandType",visitRecordingDO.getHomeBroadband());
+        }
+        if (visitRecordingDO.getBroadbandRemark() != null) {
+            map.put("broadbandRemark",visitRecordingDO.getBroadbandRemark());
+        }
+        if (visitRecordingDO.getBroadbandMonthlyRent() != null) {
+            map.put("broadbandMonthMoney",visitRecordingDO.getBroadbandMonthlyRent());
+        }
+        if (visitRecordingDO.getHomeTvBox() != null) {
+            map.put("familyTv",visitRecordingDO.getHomeTvBox());
+        }
+        if (visitRecordingDO.getTvBoxRemark() != null) {
+            map.put("familyTvRemark",visitRecordingDO.getTvBoxRemark());
+        }
         if (visitRecordingDO.getBroadbandExpireTime() != null) {
             map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime().getTime());
         }
         if (visitRecordingDO.getTvBoxExpireTime() != null) {
             map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime().getTime());
         }
-        map.put("remark",visitRecordingDO.getRemark());
-
-
+        if (visitRecordingDO.getRemark() != null) {
+            map.put("remark",visitRecordingDO.getRemark());
+        }
         thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
     }
 }
