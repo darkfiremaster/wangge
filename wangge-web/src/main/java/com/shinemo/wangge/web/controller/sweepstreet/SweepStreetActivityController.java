@@ -4,6 +4,7 @@ package com.shinemo.wangge.web.controller.sweepstreet;
 import com.shinemo.ace4j.protocol.In;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessIndexVO;
@@ -172,7 +173,7 @@ class SweepStreetActivityController {
                 .location(location)
                 .pageSize(pageSize)
                 .currentPage(currentPage)
-                .radius("1000")
+                .radius(SweepStreetActivityConstants.DEFAULT_DISTANCE)
                 .build());
     }
 
