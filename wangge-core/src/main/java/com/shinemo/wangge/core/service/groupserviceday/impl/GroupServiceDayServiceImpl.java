@@ -229,6 +229,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
             serviceDayQuery.setStatusList(statusList);
             serviceDayQuery.setStatus(null);
+            serviceDayQuery.setOrderByEnable(true);
+            serviceDayQuery.putOrderBy("real_end_time",false);
         }
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
