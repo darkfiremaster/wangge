@@ -4,10 +4,12 @@ import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
+import com.shinemo.groupserviceday.domain.enums.HuaweiBizTypeEnum;
 import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import com.shinemo.sweepstreet.domain.model.HuaweiSweepStreetBiz;
 import com.shinemo.sweepstreet.domain.model.HuaweiSweepStreetBizDetail;
 import com.shinemo.sweepstreet.domain.model.SweepStreetMarketingNumberDO;
@@ -15,6 +17,7 @@ import com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery;
 import com.shinemo.sweepstreet.domain.request.SweepStreetBusinessRequest;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBizDetailVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMarketNumberVO;
+import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
@@ -138,12 +141,12 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         HuaweiSweepStreetBiz sweepStreetBiz = new HuaweiSweepStreetBiz();
         sweepStreetBiz.setBizRemark(marketingNumberDO.getBizRemark());
         sweepStreetBiz.setBizInfoList(transformationToHuawei(detailsNew));
+        sweepStreetBiz.setBizTypeId(HuaweiBizTypeEnum.STREET_BIZ.getId());
 
-
-        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
+        map.put("activityId", SweepStreetActivityConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
         map.put("bizTypeList", sweepStreetBizs);
 
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
 
         return ApiResult.success();
     }

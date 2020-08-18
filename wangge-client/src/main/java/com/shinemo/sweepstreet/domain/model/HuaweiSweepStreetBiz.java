@@ -20,6 +20,11 @@ import java.util.List;
 public class HuaweiSweepStreetBiz {
 
     /**
+     * 业务分类ID
+     */
+    private String bizTypeId;
+
+    /**
      * 业务列表
      */
     private List<HuaweiSweepStreetBizDetail> bizInfoList;
