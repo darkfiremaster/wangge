@@ -188,6 +188,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         serviceDayQuery.setMobile(mobile);
         serviceDayQuery.setEndFilterStartTime(startTime);
         serviceDayQuery.setEndFilterEndTime(new Date());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(GroupServiceDayStatusEnum.END.getId());
+        statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
+        statusList.add(GroupServiceDayStatusEnum.AUTO_END.getId());
+        serviceDayQuery.setStatusList(statusList);
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
             log.error("[getFinishedCount] activityList is empty!");
