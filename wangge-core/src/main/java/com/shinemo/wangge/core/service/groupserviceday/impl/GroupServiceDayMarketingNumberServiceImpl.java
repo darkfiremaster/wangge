@@ -120,7 +120,8 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         GroupServiceDayMarketingNumberQuery query = new GroupServiceDayMarketingNumberQuery();
         query.setGroupServiceDayId(request.getActivityId());
         GroupServiceDayMarketingNumberDO queryResult = groupServiceDayMarketingNumberMapper.get(query);
-
+        GroupServiceDayMarketNumberDetail marketNumberDetail = GsonUtil.
+                fromGson2Obj(queryResult.getDetail(), new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
 
 
         //3.插入或更新
@@ -138,7 +139,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 .build();
 
         //若未传入办理量 默认填充0值
-        if(CollectionUtils.isEmpty(request.getPublicBizList())){
+        if(CollectionUtils.isEmpty(marketNumberDetail.getPublicBizInfoList())){
             marketingNumberDO.setCount(0);
             List<StallUpBizType> groupServiceDayBizDataList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
@@ -152,7 +153,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             detail.setPublicBizInfoList(details);
         }
 
-        if(CollectionUtils.isEmpty(request.getInformationBizList())){
+        if(CollectionUtils.isEmpty(marketNumberDetail.getInformationBizInfoList())){
             //政企
             List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
