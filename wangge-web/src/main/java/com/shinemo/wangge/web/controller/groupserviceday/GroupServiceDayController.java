@@ -147,8 +147,7 @@ class GroupServiceDayController {
             groupServiceDayBusinessIndexVO.setMarketToolList(new ArrayList<>());
             groupServiceDayBusinessIndexVO.setPublicMarketBizList(new ArrayList<>());
             groupServiceDayBusinessIndexVO.setPublicMarketBizDataList(new ArrayList<>());
-            groupServiceDayBusinessIndexVO.setInformationBizList(new ArrayList<>());
-            groupServiceDayBusinessIndexVO.setInformationBizDataList(new ArrayList<>());
+
 
             return ApiResult.of(0, groupServiceDayBusinessIndexVO);
         }
@@ -159,10 +158,6 @@ class GroupServiceDayController {
                 setPublicMarketBizList(config.getPublicGroupServiceDayBizList() == null ? new ArrayList<>() : config.getPublicGroupServiceDayBizList());
         groupServiceDayBusinessIndexVO.
                 setPublicMarketBizDataList(config.getPublicGroupServiceDayBizDataList() == null ? new ArrayList<>() : config.getPublicGroupServiceDayBizDataList());
-        groupServiceDayBusinessIndexVO.
-                setInformationBizList(config.getInformationGroupServiceDayBizList() == null ? new ArrayList<>() : config.getInformationGroupServiceDayBizList());
-        groupServiceDayBusinessIndexVO.
-                setInformationBizDataList(config.getInformationGroupServiceDayBizDataList() == null ? new ArrayList<>() : config.getInformationGroupServiceDayBizDataList());
 
 
         return ApiResult.of(0, groupServiceDayBusinessIndexVO);
