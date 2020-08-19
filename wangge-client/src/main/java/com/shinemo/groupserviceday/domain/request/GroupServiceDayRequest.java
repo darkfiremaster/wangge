@@ -35,8 +35,28 @@ public class GroupServiceDayRequest {
     /**
      * 集团地址
      */
-    @NotBlank(message = "集团地址不能为空")
     private String groupAddress;
+
+    /**
+     * 集团归属市id
+     */
+    private String groupCityId;
+
+    private String groupCityName;
+
+    /**
+     * 集团归属县id
+     */
+    private String groupCountryId;
+
+    private String groupCountryName;
+    /**
+     * 集团归属网格id
+     */
+    private String groupGridId;
+
+    private String groupGridName;
+
     /**
      * 计划开始时间
      */
@@ -67,7 +87,40 @@ public class GroupServiceDayRequest {
         @NotBlank(message = "参与人名字不能为空")
         private String name;
 
+        /**
+         * 参与人id:华为侧的用户ID
+         */
         private String userId;
+
+        /**
+         * 参与人归属地市ID
+         */
+        private String cityId;
+
+        /**
+         * 参与人归属地市名称
+         */
+        private String cityName;
+
+        /**
+         * 参与人归属区县ID
+         */
+        private String countyId;
+
+        /**
+         * 参与人归属区县名称
+         */
+        private String countyName;
+
+        /**
+         * 参与人归属网格ID，如果有多个值，以英文逗号分隔
+         */
+        private String gridId;
+
+        /**
+         * 参与人归属网格名称，如果有多个归属网格，以逗号,分隔
+         */
+        private String gridName;
     }
 
 }

@@ -535,56 +535,57 @@ public class HuaWeiServiceImpl implements HuaWeiService {
 		    .costTime(1)
 		    .build();*/
         insertApiLog(HuaweiStallUpUrlEnum.QUERY_BELONG_GRID_USER.getUrl(), httpResult, param, request.getMobile());
-        if (httpResult != null && httpResult.success()) {
-            GetGridUserListResult result = httpResult.getResult(GetGridUserListResult.class);
-            if (result == null || result.getCode() != 200) {
-                log.error("[getGridUserList] huawei getGridUserList error,request={},param={},httpResult = {}",
-                        request, param, httpResult);
-                return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
-            }
-            List<GetGridUserListResult.DataBean.UserListBean> list = Optional.ofNullable(result)
-                    .map(v -> v.getData())
-                    .map(v -> v.getUserList())
-                    .orElse(null);
-            GridUserListResponse response = new GridUserListResponse();
-            Map<String, GridUserDetail> gridUserDetailMap = new HashMap<>();
-            if (!CollectionUtils.isEmpty(list)) {
-                list.forEach(v -> {
-                    String userTel = v.getUserTel();
-                    String mobile = AESUtil.decrypt(userTel, aeskey);
-                    GridUserDetail gridUserDetail = gridUserDetailMap.get(mobile);
-                    if (gridUserDetail == null) {
-                        GridUserDetail detail = GridUserDetail.builder()
-                                .seMobile(userTel)
-                                .name(v.getUserName())
-                                .role(v.getUserRole())
-                                .order(Integer.MAX_VALUE).userId(v.getUserId())
-                                .build();
-
-                        if (request.getMobile().equals(mobile)) {
-                            detail.setOrder(Integer.MIN_VALUE);
-                            //todo
-                            detail.setName(detail.getName());
-                        }
-                        gridUserDetailMap.put(mobile, detail);
-                    } else {
-                        gridUserDetail.setRole(gridUserDetail.getRole() + "、" + v.getUserRole());
-                    }
-                });
-            }
-            if (gridUserDetailMap.get(request.getMobile()) == null) {
-                gridUserDetailMap.put(
-                        request.getMobile(),
-                        GridUserDetail.builder().seMobile(AESUtil.encrypt(request.getMobile(), aeskey)).name(SmartGridContext.getUserName()).order(Integer.MIN_VALUE).role("").build()
-                );
-            }
-            response.setGetGridUserList(
-                    gridUserDetailMap.values().stream().sorted(Comparator.comparing(GridUserDetail::getOrder)).collect(Collectors.toList())
-            );
-            return ApiResult.of(0, response);
+        httpResult.setContent("{\"code\":200,\"message\":\"success\",\"page\":0,\"size\":0,\"total\":null,\"data\":{\"userList\":[{\"userTel\":\"b6c3e2fe09e36e60f80b4e4e89fababac1d161ff9eceda3be7982f1bd07f0706fb75ea319eb5c4\",\"userRoleId\":\"10001\",\"userName\":\"黄丹\",\"userRole\":\"小区看护人\",\"userId\":\"13677712975\"},{\"userTel\":\"0091295068c281bd76db7101c7385466cc09054aa3af2980555afa2060e696b3d9ad9d545710ba\",\"userRoleId\":\"10001\",\"userName\":\"陈冬梅\",\"userRole\":\"小区看护人\",\"userId\":\"17877112575\"},{\"userTel\":\"cad817d66b4c00271a28c5c91c26eae75a6bb2006c96ac757321605b4ddcbadad0f367014deeb7\",\"userRoleId\":\"10001\",\"userName\":\"滕杏连\",\"userRole\":\"小区看护人\",\"userId\":\"18207710658\"},{\"userTel\":\"6a472d6477405fd83370b29c55f2fea577549a82b1bae10234dc4d88ce30581885f5948b8af32d\",\"userRoleId\":\"10001\",\"userName\":\"李香洁\",\"userRole\":\"小区看护人\",\"userId\":\"18260896239\"},{\"userTel\":\"3dd1f8336c41b13a5269a29dd8679abd61dd77a3b18c6cee1d622189fc710093792dfcbf0faf77\",\"userRoleId\":\"10001\",\"userName\":\"高艳林\",\"userRole\":\"小区看护人\",\"userId\":\"gaoyanlin2\"},{\"userTel\":\"b48ded5821b15abe0047921d1aac9b53e6cf2586aa267843893fd3571a8b7ae0511011f98d0121\",\"userRoleId\":\"10001\",\"userName\":\"梁年珠\",\"userRole\":\"小区看护人\",\"userId\":\"liangnianzhu\"},{\"userTel\":\"e0b1a62aa392ca663036103b547393e4cf1555a1f5912f48e046046f0383618dba5a3579898e25\",\"userRoleId\":\"20004\",\"userName\":\"梁嵩\",\"userRole\":\"微格经理\",\"userId\":\"liangsong4\"},{\"userTel\":\"316bc990b47bc3ad6901fb837c4a7f94ec592bb50d2dcc898cd947e44ee39d9ed2d9344c4c4156\",\"userRoleId\":\"20004\",\"userName\":\"梁嵩\",\"userRole\":\"网格经理\",\"userId\":\"liangsong4\"},{\"userTel\":\"8c7bfde684338d1c5d7cd90fdc765f17d507ef87c341c8528e39af041915c59a64e1ee858c675b\",\"userRoleId\":\"10001\",\"userName\":\"覃彬\",\"userRole\":\"小区看护人\",\"userId\":\"tanbin3\"},{\"userTel\":\"a1a32f21086a96d36001acfc490ef6d25589bc75ea03ca0be85eae9939924cbe666f437b818284\",\"userRoleId\":\"10001\",\"userName\":\"周玉峰\",\"userRole\":\"小区看护人\",\"userId\":\"zhouyufeng\"}]}}\n");
+        GetGridUserListResult result = httpResult.getResult(GetGridUserListResult.class);
+        if (result == null || result.getCode() != 200) {
+            log.error("[getGridUserList] huawei getGridUserList error,request={},param={},httpResult = {}",
+                    request, param, httpResult);
+            return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
         }
-        log.error("[getGridUserList] http error,request = {},param = {}", request, param);
-        return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
+        List<GetGridUserListResult.DataBean.UserListBean> list = Optional.ofNullable(result)
+                .map(v -> v.getData())
+                .map(v -> v.getUserList())
+                .orElse(null);
+        GridUserListResponse response = new GridUserListResponse();
+        Map<String, GridUserDetail> gridUserDetailMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(v -> {
+                String userTel = v.getUserTel();
+                //String mobile = AESUtil.decrypt(userTel, aeskey);
+                GridUserDetail gridUserDetail = gridUserDetailMap.get(userTel);
+                if (gridUserDetail == null) {
+                    GridUserDetail detail = GridUserDetail.builder()
+                            .seMobile(userTel)
+                            .name(v.getUserName())
+                            .role(v.getUserRole())
+                            .order(Integer.MAX_VALUE).userId(v.getUserId())
+                            .build();
+
+                    if (request.getMobile().equals(userTel)) {
+                        detail.setOrder(Integer.MIN_VALUE);
+                        //todo
+                        detail.setName(detail.getName());
+                    }
+                    gridUserDetailMap.put(userTel, detail);
+                } else {
+                    gridUserDetail.setRole(gridUserDetail.getRole() + "、" + v.getUserRole());
+                }
+            });
+        }
+        if (gridUserDetailMap.get(request.getMobile()) == null) {
+            gridUserDetailMap.put(
+                    request.getMobile(),
+                    GridUserDetail.builder().seMobile(AESUtil.encrypt(request.getMobile(), aeskey)).name(SmartGridContext.getUserName()).order(Integer.MIN_VALUE).role("").build()
+            );
+        }
+        response.setGetGridUserList(
+                gridUserDetailMap.values().stream().sorted(Comparator.comparing(GridUserDetail::getOrder)).collect(Collectors.toList())
+        );
+        return ApiResult.of(0, response);
+//        if (httpResult != null && httpResult.success()) {
+//        }
+//        log.error("[getGridUserList] http error,request = {},param = {}", request, param);
+//        return ApiResultWrapper.fail(StallUpErrorCodes.BASE_ERROR);
     }
 
     @Override
