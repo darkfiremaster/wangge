@@ -105,12 +105,12 @@ public class GroupServiceDayRequest {
         /**
          * 参与人归属区县ID
          */
-        private String countyId;
+        private String countryId;
 
         /**
          * 参与人归属区县名称
          */
-        private String countyName;
+        private String countryName;
 
         /**
          * 参与人归属网格ID，如果有多个值，以英文逗号分隔
