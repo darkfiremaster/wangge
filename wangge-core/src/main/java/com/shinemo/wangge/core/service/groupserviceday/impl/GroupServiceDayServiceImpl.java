@@ -642,6 +642,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setGroupId(parentGroupServiceDayDO.getGroupId());
         groupServiceDayDO.setGroupName(parentGroupServiceDayDO.getGroupName());
         groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
+        groupServiceDayDO.setGroupDetail(parentGroupServiceDayDO.getGroupDetail());
         groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
         groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
         groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
@@ -652,6 +653,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
         groupServiceDayDO.setMobile(partnerBean.getMobile());
         groupServiceDayDO.setName(partnerBean.getName());
+        //设置当前参与人的详情
+        groupServiceDayDO.setExtend(GsonUtils.toJson(partnerBean));
         return groupServiceDayDO;
     }
 
@@ -669,6 +672,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         }
         parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
+        LinkedHashMap<String, String> groupDetailMap = new LinkedHashMap<>();
+        groupDetailMap.put("cityId", groupServiceDayRequest.getGroupCityId());
+        groupDetailMap.put("countryId", groupServiceDayRequest.getGroupCountyId());
+        groupDetailMap.put("gridId", groupServiceDayRequest.getGroupGridId());
+        parentGroupServiceDayDO.setGroupDetail(GsonUtils.toJson(groupDetailMap));
         parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
         parentGroupServiceDayDO.setPlanEndTime(new Date(groupServiceDayRequest.getPlanEndTime()));
         parentGroupServiceDayDO.setLocation(groupServiceDayRequest.getLocation());
