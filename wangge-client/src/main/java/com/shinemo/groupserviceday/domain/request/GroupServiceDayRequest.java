@@ -108,6 +108,7 @@ public class GroupServiceDayRequest {
         private String countryId;
 
         /**
+         *
          * 参与人归属区县名称
          */
         private String countryName;
