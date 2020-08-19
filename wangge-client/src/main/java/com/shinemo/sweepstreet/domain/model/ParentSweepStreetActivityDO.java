@@ -1,11 +1,10 @@
 package com.shinemo.sweepstreet.domain.model;
 
-import java.util.Date;
-
+import com.shinemo.client.common.BaseDO;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.shinemo.client.common.BaseDO;
+import java.util.Date;
 
 
 /**
@@ -83,5 +82,4 @@ public class ParentSweepStreetActivityDO extends BaseDO {
 	*/
 	private String extend;
 
-	private String address;
 }
