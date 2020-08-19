@@ -237,6 +237,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             serviceDayQuery.setOrderByEnable(true);
             serviceDayQuery.putOrderBy("real_end_time",false);
         }
+
+        if (request.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId())) {
+            serviceDayQuery.setOrderByEnable(true);
+            serviceDayQuery.putOrderBy("plan_start_time",true);
+        }
+
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
             return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
