@@ -47,9 +47,9 @@ public class GroupServiceDayRequest {
     /**
      * 集团归属县id
      */
-    private String groupCountyId;
+    private String groupCountryId;
 
-    private String groupCountyName;
+    private String groupCountryName;
     /**
      * 集团归属网格id
      */
