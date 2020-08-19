@@ -13,6 +13,7 @@ import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,11 +72,15 @@ class SweepStreetActivityController {
      * @param request
      * @return
      */
+    @Transactional
     @PostMapping("/createSweepStreetActivity")
     public ApiResult createSweepStreetActivity(@RequestBody SweepStreetActivityRequest request) {
         Assert.notNull(request,"request is null");
-
-        return sweepStreetService.createSweepStreet(request);
+        //1.创建扫街活动
+        sweepStreetService.createSweepStreet(request);
+        sweepStreetMarketService.enterDefaultMarketingNumber(request.getId());
+        //2.创建对应的业务办理
+        return ApiResult.success();
     }
     /**
      * 业务列表查询接口
@@ -95,7 +100,9 @@ class SweepStreetActivityController {
     public ApiResult addBusiness(@RequestBody SweepStreetBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
-        return sweepStreetMarketService.enterMarketingNumber(request);
+        Assert.notEmpty(request.getBizList(),"sweep street bizList is empty");
+
+        return sweepStreetMarketService.updateMarketingNumber(request);
     }
 
 
