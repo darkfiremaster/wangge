@@ -356,10 +356,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         //距离校验
         String location = request.getLocationDetailVO().getLocation();
-//        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
-//        if (!apiResult.isSuccess()) {
-//            return apiResult;
-//        }
+        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
+
         //更新签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityId(groupServiceDayDO.getId());
@@ -379,8 +377,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         Date endTime = new Date();
         GroupServiceDayDO updateActivityDO = new GroupServiceDayDO();
         updateActivityDO.setId(groupServiceDayDO.getId());
-        updateActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
         updateActivityDO.setRealEndTime(endTime);
+        if (apiResult == null) {
+            updateActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+        }else {
+            updateActivityDO.setStatus(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
+        }
         groupServiceDayMapper.update(updateActivityDO);
         //更新父活动
         updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.END.getId(), endTime);
@@ -631,7 +633,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         if (distance > 5000) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
-        return ApiResult.of(0);
+        return null;
     }
 
 
