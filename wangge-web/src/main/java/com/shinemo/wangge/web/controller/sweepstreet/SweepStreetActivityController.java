@@ -78,8 +78,10 @@ class SweepStreetActivityController {
         Assert.notNull(request,"request is null");
         //1.创建扫街活动
         sweepStreetService.createSweepStreet(request);
-        sweepStreetMarketService.enterDefaultMarketingNumber(request.getId());
+
         //2.创建对应的业务办理
+        sweepStreetMarketService.enterDefaultMarketingNumber(request.getId());
+
         return ApiResult.success();
     }
     /**
