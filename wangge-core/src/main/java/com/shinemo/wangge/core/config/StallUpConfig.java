@@ -79,8 +79,6 @@ public class StallUpConfig {
         config.setGroupServiceDayToolList(bizConfigMap.get(BusinessConfigEnum.GROUP_SERVICE_DAY_TOOL.getType()));
         config.setPublicGroupServiceDayBizList(bizConfigMap.get(BusinessConfigEnum.PUBLIC_GROUP_SERVICE_DAY_BIZ.getType()));
         config.setPublicGroupServiceDayBizDataList(bizConfigMap.get(BusinessConfigEnum.PUBLIC_GROUP_SERVICE_DAY_BIZ_DATA.getType()));
-        config.setInformationGroupServiceDayBizList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ.getType()));
-        config.setInformationGroupServiceDayBizDataList(bizConfigMap.get(BusinessConfigEnum.INFORMATION_GROUP_SERVICE_DAY_BIZ_DATA.getType()));
 
         //扫街配置
         config.setSweepStreetToolList(bizConfigMap.get(BusinessConfigEnum.SWEEP_STREET_TOOL.getType()));
@@ -163,13 +161,6 @@ public class StallUpConfig {
         config.setPublicGroupServiceDayBizDataList(tmpPublicGroupServiceDayBizDataList);
 
 
-        Map<Long, StallUpBizType> tmpInformationGroupServiceDayBizMap = new HashMap<>();
-        List<StallUpBizType> tmpInformationGroupServiceDayBizList = initListAndMap(tmpMap, config.getInformationGroupServiceDayBizList(), tmpInformationGroupServiceDayBizMap);
-        config.setInformationGroupServiceDayBizList(tmpInformationGroupServiceDayBizList);
-
-        Map<Long, StallUpBizType> tmpInformationGroupServiceDayBizDataMap = new HashMap<>();
-        List<StallUpBizType> tmpInformationGroupServiceDayBizDataList = initListAndMap(tmpMap, config.getInformationGroupServiceDayBizDataList(), tmpInformationGroupServiceDayBizDataMap);
-        config.setInformationGroupServiceDayBizDataList(tmpInformationGroupServiceDayBizDataList);
 
 
         /**
@@ -469,8 +460,6 @@ public class StallUpConfig {
         private List<StallUpBizType> groupServiceDayToolList;
         private List<StallUpBizType> publicGroupServiceDayBizList;
         private List<StallUpBizType> publicGroupServiceDayBizDataList;
-        private List<StallUpBizType> informationGroupServiceDayBizList;
-        private List<StallUpBizType> informationGroupServiceDayBizDataList;
 
 
         /**
