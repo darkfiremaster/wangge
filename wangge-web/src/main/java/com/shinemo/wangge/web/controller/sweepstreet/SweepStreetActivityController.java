@@ -175,18 +175,18 @@ class SweepStreetActivityController {
                 .build());
     }
 
-    @GetMapping("/findMerchantListWithMap")
-    public ApiResult findMerchantListWithMap(@RequestParam(required = false) String queryParam,
-                                      @RequestParam String location,
-                                      @RequestParam Integer pageSize,
-                                      @RequestParam Integer currentPage){
-        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
-                .queryParam(queryParam)
-                .location(location)
-                .pageSize(pageSize)
-                .currentPage(currentPage)
-                .radius(SweepStreetActivityConstants.DEFAULT_DISTANCE)
-                .build());
-    }
+//    @GetMapping("/findMerchantListWithMap")
+//    public ApiResult findMerchantListWithMap(@RequestParam(required = false) String queryParam,
+//                                      @RequestParam String location,
+//                                      @RequestParam Integer pageSize,
+//                                      @RequestParam Integer currentPage){
+//        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
+//                .queryParam(queryParam)
+//                .location(location)
+//                .pageSize(pageSize)
+//                .currentPage(currentPage)
+//                .radius(SweepStreetActivityConstants.DEFAULT_DISTANCE)
+//                .build());
+//    }
 
 }
