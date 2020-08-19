@@ -97,7 +97,7 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
                 .sweepStreetId(request.getActivityId())
                 .userId(SmartGridContext.getUid())
                 .detail(GsonUtil.toJson(request.getBizList()))
-                .bizRemark(request.getRemark())
+                .bizRemark(request.getBizRemark())
                 .count(count)
                 .id(queryResult.getId())
                 .build();
