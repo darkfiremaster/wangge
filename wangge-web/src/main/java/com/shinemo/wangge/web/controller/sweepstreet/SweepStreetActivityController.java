@@ -107,7 +107,7 @@ class SweepStreetActivityController {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
 
-        return sweepStreetMarketService.enterDefaultMarketingNumber(request.getActivityId());
+        return sweepStreetMarketService.syncSweepStreetActivityBusi(request.getActivityId());
     }
 
 
