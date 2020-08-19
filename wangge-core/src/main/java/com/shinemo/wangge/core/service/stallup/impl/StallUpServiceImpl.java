@@ -1223,27 +1223,7 @@ public class StallUpServiceImpl implements StallUpService {
         }
         return ApiResult.of(0, resultList);
     }
-
-    /**
-     * bean的集合按照指定bean的字段排序
-     * @param list 要排序的集合
-     * @param filedName 字段名称
-     * @param ascFlag 是否升序
-     */
-    public static void sort(List list, String filedName, boolean ascFlag) {
-        if (list.size() == 0 || filedName.equals("")) {
-            return;
-        }
-        Comparator<?> cmp = ComparableComparator.getInstance();
-        if (ascFlag) {
-            cmp = ComparatorUtils.nullLowComparator(cmp);
-        } else {
-            cmp = ComparatorUtils.reversedComparator(cmp);
-
-        }
-        Collections.sort(list, new BeanComparator(filedName, cmp));
-    }
-
+    
 
     /**
      * 获取待开始和已开始的VO

@@ -3,6 +3,7 @@ package com.shinemo.wangge.core.service.stallup;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.model.CommunityVO;
 import com.shinemo.stallup.domain.model.StallUpActivity;
+import com.shinemo.stallup.domain.model.StallUpImportantRegion;
 import com.shinemo.stallup.domain.request.GetParentListRequest;
 import com.shinemo.stallup.domain.request.StallUpEndRequest;
 import com.shinemo.stallup.domain.request.StallUpRequest;
@@ -172,4 +173,10 @@ public interface StallUpService {
 	ApiResult<String> getRedirctSmsHotUrl(Long activityId);
 
 
+	/**
+	 * 获取报坐标5000米内的重点小区
+	 * @param location
+	 * @return
+	 */
+	ApiResult<List<StallUpImportantRegion>> getImportRegion(String location);
 }
