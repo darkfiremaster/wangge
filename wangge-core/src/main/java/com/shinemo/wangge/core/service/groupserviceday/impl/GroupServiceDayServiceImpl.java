@@ -683,8 +683,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         LinkedHashMap<String, String> groupDetailMap = new LinkedHashMap<>();
         groupDetailMap.put("cityId", groupServiceDayRequest.getGroupCityId());
         groupDetailMap.put("cityName", groupServiceDayRequest.getGroupCityName());
-        groupDetailMap.put("countryId", groupServiceDayRequest.getGroupCountyId());
-        groupDetailMap.put("countryName", groupServiceDayRequest.getGroupCountyName());
+        groupDetailMap.put("countryId", groupServiceDayRequest.getGroupCountryId());
+        groupDetailMap.put("countryName", groupServiceDayRequest.getGroupCountryName());
         groupDetailMap.put("gridId", groupServiceDayRequest.getGroupGridId());
         groupDetailMap.put("gridName", groupServiceDayRequest.getGroupGridName());
         parentGroupServiceDayDO.setGroupDetail(GsonUtils.toJson(groupDetailMap));
