@@ -42,15 +42,20 @@ public class GroupServiceDayRequest {
      */
     private String groupCityId;
 
+    private String groupCityName;
+
     /**
      * 集团归属县id
      */
     private String groupCountyId;
 
+    private String groupCountyName;
     /**
      * 集团归属网格id
      */
     private String groupGridId;
+
+    private String groupGridName;
 
     /**
      * 计划开始时间

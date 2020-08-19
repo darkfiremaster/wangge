@@ -682,8 +682,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
         LinkedHashMap<String, String> groupDetailMap = new LinkedHashMap<>();
         groupDetailMap.put("cityId", groupServiceDayRequest.getGroupCityId());
+        groupDetailMap.put("cityName", groupServiceDayRequest.getGroupCityName());
         groupDetailMap.put("countryId", groupServiceDayRequest.getGroupCountyId());
+        groupDetailMap.put("countryName", groupServiceDayRequest.getGroupCountyName());
         groupDetailMap.put("gridId", groupServiceDayRequest.getGroupGridId());
+        groupDetailMap.put("gridName", groupServiceDayRequest.getGroupGridName());
         parentGroupServiceDayDO.setGroupDetail(GsonUtils.toJson(groupDetailMap));
         parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
         parentGroupServiceDayDO.setPlanEndTime(new Date(groupServiceDayRequest.getPlanEndTime()));
