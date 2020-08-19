@@ -29,8 +29,11 @@ import com.shinemo.sweepstreet.domain.request.HuaweiMerchantRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.response.HuaweiMerchantResponse;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantListVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
@@ -47,6 +50,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,6 +80,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     @Resource
     private SweepStreetVisitRecordingMapper sweepStreetVisitRecordingMapper;
+
+
+    private SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+
 
     @Override
     public ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request) {
@@ -339,7 +349,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     }
 
     @Override
-    public ApiResult<Map<String, Object>> getMerchantList(HuaweiMerchantRequest request) {
+    public ApiResult<SweepStreetMerchantListVO> getMerchantList(HuaweiMerchantRequest request) {
         //透传华为
         String[] split = request.getLocation().split(",");
         HashMap<String, Object> map = new HashMap<>();
@@ -355,7 +365,38 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         }
 
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
-        return result;
+
+        //华为response -> 前端VO
+        Map<String, Object> data = result.getData();
+        List<HuaweiMerchantResponse> merchantList = (List<HuaweiMerchantResponse>) data.get("data");
+        List<SweepStreetMerchantVO> merchantVOList = new ArrayList<>();
+        for(HuaweiMerchantResponse response : merchantList) {
+            Date broadbandExpireTime = null;
+            Date visitTime = null;
+            try {
+                broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
+                visitTime = format.parse(response.getVisitTime());
+            } catch (ParseException e) {
+                log.error("[getMerchantList] ParseException e:{}",e);
+                return ApiResult.fail(500,e.getMessage());
+            }
+            merchantVOList.add(SweepStreetMerchantVO.builder()
+                    .merchantsId(response.getMerchantsId())
+                    .merchantsName(response.getGroupName())
+                    .merchantsAddress(response.getGroupAddress())
+                    .creatorMobile(response.getCreatorMobile())
+                    .contactPerson(response.getContactPerson())
+                    .contactMobile(response.getContactMobile())
+                    .hasBroadband(response.getHasBroadband())
+                    .broadbandExpireTime(broadbandExpireTime.getTime())
+                    .location(response.getLocation())
+                    .visitTime(visitTime.getTime())
+                    .distance(response.getDistance())
+                    .build());
+        }
+        SweepStreetMerchantListVO sweepStreetMerchantListVO = new SweepStreetMerchantListVO();
+        sweepStreetMerchantListVO.setMerchantsList(merchantVOList);
+        return ApiResult.of(0,sweepStreetMerchantListVO);
     }
 
     private SweepStreetActivityDO getDOById(Long id) {
