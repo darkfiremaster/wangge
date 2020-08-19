@@ -72,16 +72,11 @@ class SweepStreetActivityController {
      * @param request
      * @return
      */
-    @Transactional
     @PostMapping("/createSweepStreetActivity")
     public ApiResult createSweepStreetActivity(@RequestBody SweepStreetActivityRequest request) {
         Assert.notNull(request,"request is null");
-        //1.创建扫街活动
+        //创建扫街活动
         sweepStreetService.createSweepStreet(request);
-
-        //2.创建对应的业务办理
-        sweepStreetMarketService.enterDefaultMarketingNumber(request.getId());
-
         return ApiResult.success();
     }
     /**
@@ -105,6 +100,14 @@ class SweepStreetActivityController {
         Assert.notEmpty(request.getBizList(),"sweep street bizList is empty");
 
         return sweepStreetMarketService.updateMarketingNumber(request);
+    }
+
+    @PostMapping("/syncSweepStreetActivityBusi")
+    public ApiResult syncSweepStreetActivityBusi(@RequestBody SweepStreetBusinessRequest request) {
+        Assert.notNull(request,"request is null");
+        Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
+
+        return sweepStreetMarketService.enterDefaultMarketingNumber(request.getActivityId());
     }
 
 

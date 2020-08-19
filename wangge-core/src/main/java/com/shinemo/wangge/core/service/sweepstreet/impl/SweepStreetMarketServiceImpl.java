@@ -112,6 +112,7 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
     @Override
     public ApiResult enterDefaultMarketingNumber(Long activityId) {
         Assert.notNull(activityId,"activityId is null");
+
         List<StallUpBizType> sweepStreetBizList = stallUpConfig.getConfig().getSweepStreetBizDataList();
         List<SweepStreetBizDetailVO> details = new ArrayList<>();
         for (StallUpBizType bizType : sweepStreetBizList) {
@@ -129,9 +130,25 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
                 .build();
         log.info("[enterDefaultMarketingNumber] insert marketingNumberDO:{}",marketingNumberDO);
         sweepStreetMarketingNumberMapper.insert(marketingNumberDO);
-        //同步给华为
-        syncSweepStreetMarketNumber(marketingNumberDO);
 
+
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult syncSweepStreetActivityBusi(Long activityId){
+        Assert.notNull(activityId,"activityId is null");
+
+        SweepStreetMarketingNumberQuery query = new SweepStreetMarketingNumberQuery();
+        query.setSweepStreetId(activityId);
+        SweepStreetMarketingNumberDO sweepStreetMarketingNumberDO = sweepStreetMarketingNumberMapper.get(query);
+        if(sweepStreetMarketingNumberDO == null){
+            log.error("[syncSweepStreetActivityBusi] get error,query:{},result:{}",query,sweepStreetMarketingNumberDO);
+            return ApiResult.fail(500,"sweep street matker number not exits");
+        }
+
+        //同步华为
+        syncSweepStreetMarketNumber(sweepStreetMarketingNumberDO);
         return ApiResult.success();
     }
 

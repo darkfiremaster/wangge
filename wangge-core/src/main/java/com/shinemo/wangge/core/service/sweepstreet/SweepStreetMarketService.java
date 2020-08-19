@@ -27,9 +27,16 @@ public interface SweepStreetMarketService {
     ApiResult updateMarketingNumber(SweepStreetBusinessRequest request);
 
     /**
-     * 录入默认的业务办理量
+     * 录入默认的业务办理量 不同步华为
      * @param activityId
      * @return
      */
     ApiResult enterDefaultMarketingNumber(Long activityId);
+
+    /**
+     * 将数据库中的业务办理量同步给华为
+     * @param activityId
+     * @return
+     */
+    ApiResult syncSweepStreetActivityBusi(Long activityId);
 }

@@ -33,6 +33,7 @@ import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
+import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -41,6 +42,7 @@ import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -57,6 +59,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     @Resource
     private SweepStreetMarketingNumberMapper sweepStreetMarketingNumberMapper;
+
+    @Resource
+    private SweepStreetMarketService sweepStreetMarketService;
 
     @Resource
     private SignRecordMapper signRecordMapper;
@@ -305,6 +310,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         return ApiResult.of(0, result);
     }
 
+    @Transactional
     @Override
     public ApiResult<Void> createSweepStreet(SweepStreetActivityRequest sweepStreetActivityRequest) {
         ValidatorUtil.validateEntity(sweepStreetActivityRequest);
@@ -319,13 +325,16 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             //创建子活动
             SweepStreetActivityDO sweepStreetActivityDO = getSweepStreetActivityDO(parentSweepStreetActivityDO, partnerBean);
             sweepStreetActivityMapper.insert(sweepStreetActivityDO);
+            //创建业务办理 不同步华为
+            sweepStreetMarketService.enterDefaultMarketingNumber(sweepStreetActivityDO.getId());
             childActivityList.add(sweepStreetActivityDO);
         }
 
         //同步华为
         syncCreateSweepStreetActivity(sweepStreetActivityRequest, parentSweepStreetActivityDO, childActivityList);
-
         log.info("[createSweepStreet] 新建扫村活动成功, 父活动id:{},创建人mobile:{}", parentSweepStreetActivityDO.getId(), parentSweepStreetActivityDO.getMobile());
+
+
         return ApiResult.of(0);
     }
 
