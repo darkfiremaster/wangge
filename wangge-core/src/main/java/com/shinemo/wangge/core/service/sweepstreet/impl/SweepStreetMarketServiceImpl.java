@@ -58,24 +58,13 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         SweepStreetMarketingNumberQuery query = new SweepStreetMarketingNumberQuery();
         query.setSweepStreetId(activityId);
 
-        //若不存在记录，返回默认值
+        //若不存在记录，请求失败
         SweepStreetMarketingNumberDO sweepStreetMarketingNumberDO = sweepStreetMarketingNumberMapper.get(query);
-
         if(sweepStreetMarketingNumberDO == null){
-            List<StallUpBizType> sweepStreetBizList = stallUpConfig.getConfig().getSweepStreetBizDataList();
-            List<SweepStreetBizDetailVO> details = new ArrayList<>();
-            for (StallUpBizType bizType : sweepStreetBizList) {
-                SweepStreetBizDetailVO bizDetail = new SweepStreetBizDetailVO();
-                bizDetail.setId(bizType.getId());
-                bizDetail.setName(bizType.getName());
-                bizDetail.setNum(0);
-                details.add(bizDetail);
-            }
-
-            return ApiResult.of(0, SweepStreetMarketNumberVO.builder()
-                    .bizInfoList(details)
-                    .build());
+            log.error("[getByActivityId] marketNumber is null");
+            return ApiResult.fail(500, "sweep street marketNumber is null");
         }
+
         SweepStreetMarketNumberVO sweepStreetMarketNumberVO = new SweepStreetMarketNumberVO();
         List<SweepStreetBizDetailVO> details = GsonUtil.fromGson2Obj(sweepStreetMarketingNumberDO.getDetail(),
                 new TypeToken<List<SweepStreetBizDetailVO>>() {}.getType());
@@ -86,7 +75,10 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
     }
 
     @Override
-    public ApiResult enterMarketingNumber(SweepStreetBusinessRequest request) {
+    public ApiResult updateMarketingNumber(SweepStreetBusinessRequest request) {
+        Assert.notNull(request,"enterMarketingNumber request is null");
+        Assert.notEmpty(request.getBizList(),"sweep street bizList is empty");
+
         //1.统计办理量
         List<SweepStreetBizDetailVO> bizList = request.getBizList();
         int count = bizList.stream().mapToInt(p -> p.getNum()).sum();
@@ -95,59 +87,68 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         SweepStreetMarketingNumberQuery query = new SweepStreetMarketingNumberQuery();
         query.setSweepStreetId(request.getActivityId());
         SweepStreetMarketingNumberDO queryResult = sweepStreetMarketingNumberMapper.get(query);
+        if(queryResult == null){
+            log.error("[enterMarketingNumber] marketingNumber not exits , query:{} , result；{}",query,queryResult);
+            return ApiResult.fail(500,"enterMarketingNumber not exits");
+        }
 
-        //3.插入或更新
-
+        //3.更新
         SweepStreetMarketingNumberDO marketingNumberDO = SweepStreetMarketingNumberDO.builder()
                 .sweepStreetId(request.getActivityId())
                 .userId(SmartGridContext.getUid())
                 .detail(GsonUtil.toJson(request.getBizList()))
                 .bizRemark(request.getRemark())
                 .count(count)
+                .id(queryResult.getId())
                 .build();
+        log.info("[enterMarketingNumber] update sweep street  marketingNumberDO:{}",marketingNumberDO);
+        sweepStreetMarketingNumberMapper.update(marketingNumberDO);
 
-        //若未传入办理量 默认填充0值
-        if(CollectionUtils.isEmpty(request.getBizList())){
-            marketingNumberDO.setCount(0);
-            List<StallUpBizType> sweepStreetBizList = stallUpConfig.getConfig().getSweepStreetBizDataList();
-            List<SweepStreetBizDetailVO> details = new ArrayList<>();
-            for (StallUpBizType bizType : sweepStreetBizList) {
-                SweepStreetBizDetailVO bizDetail = new SweepStreetBizDetailVO();
-                bizDetail.setId(bizType.getId());
-                bizDetail.setName(bizType.getName());
-                bizDetail.setNum(0);
-                details.add(bizDetail);
-            }
-            marketingNumberDO.setDetail(GsonUtils.toJson(details));
-        }
-
-
-        if(queryResult == null){
-            //插入
-            log.info("[enterMarketingNumber] insert sweep street marketingNumberDO:{}",marketingNumberDO);
-            sweepStreetMarketingNumberMapper.insert(marketingNumberDO);
-        }else {
-            marketingNumberDO.setId(queryResult.getId());
-            log.info("[enterMarketingNumber] update sweep street  marketingNumberDO:{}",marketingNumberDO);
-            sweepStreetMarketingNumberMapper.update(marketingNumberDO);
-        }
         //4.同步给华为
-        Map<String, Object> map = new HashMap<>(16);
-        List<SweepStreetBizDetailVO> detailsNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
-                new TypeToken<List<SweepStreetBizDetailVO>>() {}.getType());
+        syncSweepStreetMarketNumber(marketingNumberDO);
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult enterDefaultMarketingNumber(Long activityId) {
+        Assert.notNull(activityId,"activityId is null");
+
+        List<StallUpBizType> sweepStreetBizList = stallUpConfig.getConfig().getSweepStreetBizDataList();
+        List<SweepStreetBizDetailVO> details = new ArrayList<>();
+        for (StallUpBizType bizType : sweepStreetBizList) {
+            SweepStreetBizDetailVO bizDetail = new SweepStreetBizDetailVO();
+            bizDetail.setId(bizType.getId());
+            bizDetail.setName(bizType.getName());
+            bizDetail.setNum(0);
+            details.add(bizDetail);
+        }
+        SweepStreetMarketingNumberDO marketingNumberDO = SweepStreetMarketingNumberDO.builder()
+                .sweepStreetId(activityId)
+                .userId(SmartGridContext.getUid())
+                .detail(GsonUtil.toJson(details))
+                .count(0)
+                .build();
+        log.info("[enterDefaultMarketingNumber] insert marketingNumberDO:{}",marketingNumberDO);
+        sweepStreetMarketingNumberMapper.insert(marketingNumberDO);
 
 
-        List<HuaweiSweepStreetBiz> sweepStreetBizs = new ArrayList<>();
-        HuaweiSweepStreetBiz sweepStreetBiz = new HuaweiSweepStreetBiz();
-        sweepStreetBiz.setBizRemark(marketingNumberDO.getBizRemark());
-        sweepStreetBiz.setBizInfoList(transformationToHuawei(detailsNew));
-        sweepStreetBiz.setBizTypeId(HuaweiBizTypeEnum.STREET_BIZ.getId());
+        return ApiResult.success();
+    }
 
-        map.put("activityId", SweepStreetActivityConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
-        map.put("bizTypeList", sweepStreetBizs);
+    @Override
+    public ApiResult syncSweepStreetActivityBusi(Long activityId){
+        Assert.notNull(activityId,"activityId is null");
 
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
+        SweepStreetMarketingNumberQuery query = new SweepStreetMarketingNumberQuery();
+        query.setSweepStreetId(activityId);
+        SweepStreetMarketingNumberDO sweepStreetMarketingNumberDO = sweepStreetMarketingNumberMapper.get(query);
+        if(sweepStreetMarketingNumberDO == null){
+            log.error("[syncSweepStreetActivityBusi] get error,query:{},result:{}",query,sweepStreetMarketingNumberDO);
+            return ApiResult.fail(500,"sweep street matker number not exits");
+        }
 
+        //同步华为
+        syncSweepStreetMarketNumber(sweepStreetMarketingNumberDO);
         return ApiResult.success();
     }
 
@@ -164,5 +165,25 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         }
 
         return bizDetails;
+    }
+
+
+    private void syncSweepStreetMarketNumber(SweepStreetMarketingNumberDO marketingNumberDO){
+        Map<String, Object> map = new HashMap<>(16);
+        List<SweepStreetBizDetailVO> detailsNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
+                new TypeToken<List<SweepStreetBizDetailVO>>() {}.getType());
+
+
+        List<HuaweiSweepStreetBiz> sweepStreetBizs = new ArrayList<>();
+        HuaweiSweepStreetBiz sweepStreetBiz = new HuaweiSweepStreetBiz();
+        sweepStreetBiz.setBizRemark(marketingNumberDO.getBizRemark());
+        sweepStreetBiz.setBizInfoList(transformationToHuawei(detailsNew));
+        sweepStreetBiz.setBizTypeId(HuaweiBizTypeEnum.STREET_BIZ.getId());
+
+        map.put("activityId", SweepStreetActivityConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
+        map.put("bizTypeList", sweepStreetBizs);
+
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_SWEEP_STREET_ACTIVITY_DATA.getApiName(), SmartGridContext.getMobile());
+
     }
 }

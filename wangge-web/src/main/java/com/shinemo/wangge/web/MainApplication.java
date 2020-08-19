@@ -94,6 +94,7 @@ public class MainApplication implements WebMvcConfigurer {
                 .addPathPatterns("/todo/thing/**")
                 .addPathPatterns("/targetcustomer/getByMobile/**")
                 .addPathPatterns("/groupServiceDay/**")
+                .addPathPatterns("/sweepStreet/**")
                 .excludePathPatterns("/backdoor/**",
                         "/error",
                         "/todo/operateTodoThing",

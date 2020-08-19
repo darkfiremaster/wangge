@@ -6,12 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
-import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
-import com.shinemo.groupserviceday.domain.huawei.HuaWeiCreateGroupServiceDayRequest;
-import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.model.ParentGroupServiceDayDO;
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
@@ -31,15 +25,19 @@ import com.shinemo.sweepstreet.domain.query.ParentSweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetActivityQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetMarketingNumberQuery;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
+import com.shinemo.sweepstreet.domain.request.HuaweiMerchantRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.response.HuaweiMerchantListResponse;
+import com.shinemo.sweepstreet.domain.response.HuaweiMerchantResponse;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantListVO;
+import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
-import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
-import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
+import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.core.util.HuaWeiUtil;
@@ -48,9 +46,14 @@ import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +68,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     private SweepStreetMarketingNumberMapper sweepStreetMarketingNumberMapper;
 
     @Resource
+    private SweepStreetMarketService sweepStreetMarketService;
+
+    @Resource
     private SignRecordMapper signRecordMapper;
 
     @Resource
@@ -75,6 +81,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     @Resource
     private SweepStreetVisitRecordingMapper sweepStreetVisitRecordingMapper;
+
+
+    private SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+
 
     @Override
     public ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request) {
@@ -134,7 +144,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             List<SweepStreetMarketingNumberDO> marketingNumberDOS = map.get(activityVO.getId());
             if (CollectionUtils.isEmpty(marketingNumberDOS)) {
                 activityVO.setBusinessCount(0);
-            }else {
+            } else {
                 activityVO.setBusinessCount(marketingNumberDOS.get(0).getCount());
             }
             if (!CollectionUtils.isEmpty(listMap)) {
@@ -209,10 +219,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_END_ERROR);
         }
         /*更新子活动表的个人活动数据*/
-        SignRecordQuery query =new SignRecordQuery();
+        SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(request.getActivityId());
         query.setUserId(SmartGridContext.getUid());
-        SignRecordDO signRecordDO=signRecordMapper.get(query);
+        SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         if (signRecordDO == null) {
             log.error("[endSign] signRecordDO is null,activityId = {}", sweepStreetActivityDO.getId());
@@ -229,7 +239,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         /*更新子表活动记录*/
         Date endTime = new Date();
-        SweepStreetActivityDO updateStreetActivityDO=new SweepStreetActivityDO();
+        SweepStreetActivityDO updateStreetActivityDO = new SweepStreetActivityDO();
         updateStreetActivityDO.setId(sweepStreetActivityDO.getId());
         updateStreetActivityDO.setStatus(SweepStreetStatusEnum.END.getId());
         updateStreetActivityDO.setRealEndTime(endTime);
@@ -242,10 +252,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     @Override
     public ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO) {
-        SignRecordQuery query =new SignRecordQuery();
+        SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(streetActivityDO.getId());
         query.setUserId(SmartGridContext.getUid());
-        SignRecordDO signRecordDO=signRecordMapper.get(query);
+        SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         int status = SweepStreetStatusEnum.AUTO_END.getId();
         Date endTime = new Date();
@@ -311,6 +321,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         return ApiResult.of(0, result);
     }
 
+    @Transactional
     @Override
     public ApiResult<Void> createSweepStreet(SweepStreetActivityRequest sweepStreetActivityRequest) {
         ValidatorUtil.validateEntity(sweepStreetActivityRequest);
@@ -325,14 +336,67 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             //创建子活动
             SweepStreetActivityDO sweepStreetActivityDO = getSweepStreetActivityDO(parentSweepStreetActivityDO, partnerBean);
             sweepStreetActivityMapper.insert(sweepStreetActivityDO);
+            //创建业务办理 不同步华为
+            sweepStreetMarketService.enterDefaultMarketingNumber(sweepStreetActivityDO.getId());
             childActivityList.add(sweepStreetActivityDO);
         }
 
         //同步华为
         syncCreateSweepStreetActivity(sweepStreetActivityRequest, parentSweepStreetActivityDO, childActivityList);
+        log.info("[createSweepStreet] 新建扫街活动成功, 父活动id:{},创建人mobile:{}", parentSweepStreetActivityDO.getId(), parentSweepStreetActivityDO.getMobile());
 
-        log.info("[createSweepStreet] 新建扫村活动成功, 父活动id:{},创建人mobile:{}", parentSweepStreetActivityDO.getId(), parentSweepStreetActivityDO.getMobile());
+
         return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<SweepStreetMerchantListVO> getMerchantList(HuaweiMerchantRequest request) {
+        //透传华为
+        String[] split = request.getLocation().split(",");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("groupName", request.getQueryParam());
+        map.put("contractPhone", request.getQueryParam());
+        map.put("contractName", request.getQueryParam());
+        map.put("longitude", split[0]);
+        map.put("latitude", split[1]);
+        map.put("pageSize", request.getPageSize());
+        map.put("PageNum", request.getCurrentPage());
+        if (!StringUtils.isEmpty(request.getRadius())) {
+            map.put("radius", SmartGridContext.getMobile());
+        }
+
+        ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
+
+        //华为response -> 前端VO
+        HuaweiMerchantListResponse merchantListResponse = BeanUtil.mapToBean(result.getData(), HuaweiMerchantListResponse.class, false);
+        List<SweepStreetMerchantVO> merchantVOList = new ArrayList<>();
+        for(HuaweiMerchantResponse response : merchantListResponse.getGroupList()) {
+            Date broadbandExpireTime = null;
+            Date visitTime = null;
+            try {
+                broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
+                visitTime = format.parse(response.getVisitTime());
+            } catch (ParseException e) {
+                log.error("[getMerchantList] ParseException e:{}",e);
+                return ApiResult.fail(500,e.getMessage());
+            }
+            merchantVOList.add(SweepStreetMerchantVO.builder()
+                    .merchantsId(response.getMerchantsId())
+                    .merchantsName(response.getGroupName())
+                    .merchantsAddress(response.getGroupAddress())
+                    .creatorMobile(response.getCreatorMobile())
+                    .contactPerson(response.getContactPerson())
+                    .contactMobile(response.getContactMobile())
+                    .hasBroadband(response.getHasBroadband())
+                    .broadbandExpireTime(broadbandExpireTime.getTime())
+                    .location(response.getLocation())
+                    .visitTime(visitTime.getTime())
+                    .distance(response.getDistance())
+                    .build());
+        }
+        SweepStreetMerchantListVO sweepStreetMerchantListVO = new SweepStreetMerchantListVO();
+        sweepStreetMerchantListVO.setMerchantsList(merchantVOList);
+        return ApiResult.of(0,sweepStreetMerchantListVO);
     }
 
     private SweepStreetActivityDO getDOById(Long id) {
@@ -408,6 +472,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     /**
      * 拼装活动打卡位置信息
+     *
      * @param vos
      */
     private void buildLocation(List<SweepStreetActivityVO> vos) {
@@ -423,7 +488,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             return;
         }
         Map<Long, List<SignRecordDO>> listMap = signRecordDOS.stream().collect(Collectors.groupingBy(SignRecordDO::getActivityId));
-        for (SweepStreetActivityVO activityVO:vos) {
+        for (SweepStreetActivityVO activityVO : vos) {
             List<SignRecordDO> recordDOS = listMap.get(activityVO.getId());
             if (!CollectionUtils.isEmpty(recordDOS)) {
                 LocationDetailVO locationDetailVO = GsonUtils.fromGson2Obj(recordDOS.get(0).getStartLocation(), LocationDetailVO.class);
@@ -480,17 +545,15 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         huaWeiRequest.setChildrenList(childSweepStreetActivityArrayList);
         Map<String, Object> map = BeanUtil.beanToMap(huaWeiRequest, false, true);
-        log.info("[syncCreateSweepStreetActivuty] 新建扫村活动同步华为,请求参数:{}", GsonUtils.toJson(map));
+        log.info("[syncCreateSweepStreetActivuty] 新建扫街活动同步华为,请求参数:{}", GsonUtils.toJson(map));
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.CREATE_SWEEP_STREET_ACTIVITY.getApiName(), SmartGridContext.getMobile());
     }
 
 
-
-    private SweepStreetActivityDO  getSweepStreetActivityDO(ParentSweepStreetActivityDO parentSweepStreetActivityDO, SweepStreetActivityRequest.PartnerBean partnerBean) {
+    private SweepStreetActivityDO getSweepStreetActivityDO(ParentSweepStreetActivityDO parentSweepStreetActivityDO, SweepStreetActivityRequest.PartnerBean partnerBean) {
         SweepStreetActivityDO sweepStreetActivityDO = new SweepStreetActivityDO();
         sweepStreetActivityDO.setParentId(parentSweepStreetActivityDO.getId());
         sweepStreetActivityDO.setTitle(parentSweepStreetActivityDO.getTitle());
-        sweepStreetActivityDO.setAddress(parentSweepStreetActivityDO.getAddress());
         sweepStreetActivityDO.setCreatorId(parentSweepStreetActivityDO.getCreatorId());
         sweepStreetActivityDO.setCreatorName(parentSweepStreetActivityDO.getCreatorName());
         sweepStreetActivityDO.setPlanStartTime(parentSweepStreetActivityDO.getPlanStartTime());
@@ -500,6 +563,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         sweepStreetActivityDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
         sweepStreetActivityDO.setMobile(partnerBean.getMobile());
         sweepStreetActivityDO.setName(partnerBean.getName());
+        sweepStreetActivityDO.setCurrentPartnerDetail(GsonUtils.toJson(partnerBean));
         return sweepStreetActivityDO;
     }
 
@@ -507,10 +571,13 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     private ParentSweepStreetActivityDO getParentSweepStreetActivityDO(SweepStreetActivityRequest request) {
         ParentSweepStreetActivityDO parentSweepStreetActivityDO = new ParentSweepStreetActivityDO();
         parentSweepStreetActivityDO.setTitle(request.getTitle());
+        if (StrUtil.isNotBlank(SmartGridContext.getUid())) {
+            parentSweepStreetActivityDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
+        }
+        if (StrUtil.isNotBlank(SmartGridContext.getOrgId())) {
+            parentSweepStreetActivityDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
+        }
 
-        parentSweepStreetActivityDO.setAddress(request.getAddress());
-        parentSweepStreetActivityDO.setCreatorId(Long.valueOf(SmartGridContext.getUid()));
-        parentSweepStreetActivityDO.setCreatorOrgId(Long.valueOf(SmartGridContext.getOrgId()));
         parentSweepStreetActivityDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentSweepStreetActivityDO.setMobile(SmartGridContext.getMobile());
         parentSweepStreetActivityDO.setPlanStartTime(new Date(request.getPlanStartTime()));

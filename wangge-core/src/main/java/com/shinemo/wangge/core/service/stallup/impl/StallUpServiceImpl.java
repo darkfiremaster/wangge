@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
@@ -23,10 +24,7 @@ import com.shinemo.stallup.domain.enums.StallUpExceptionEnum;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.huawei.GetGridUserInfoResult;
 import com.shinemo.stallup.domain.model.*;
-import com.shinemo.stallup.domain.query.ParentStallUpActivityQuery;
-import com.shinemo.stallup.domain.query.StallUpActivityQuery;
-import com.shinemo.stallup.domain.query.StallUpCommunityQuery;
-import com.shinemo.stallup.domain.query.StallUpMarketingNumberQuery;
+import com.shinemo.stallup.domain.query.*;
 import com.shinemo.stallup.domain.request.*;
 import com.shinemo.stallup.domain.response.*;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
@@ -46,6 +44,9 @@ import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.ComparatorUtils;
+import org.apache.commons.collections.comparators.ComparableComparator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -108,6 +109,8 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private UserConfigMapper userConfigMapper;
+    @Resource
+    private StallUpImportantRegionMapper stallUpImportantRegionMapper;
 
     @Resource
     private StallUpMarketingNumberMapper stallUpMarketingNumberMapper;
@@ -1195,6 +1198,32 @@ public class StallUpServiceImpl implements StallUpService {
         return ApiResult.of(0, smsHotUrl);
     }
 
+    /**
+     * 获取报坐标5000米内的重点小区
+     * @param location
+     * @return
+     */
+    @Override
+    public ApiResult<List<StallUpImportantRegion>> getImportRegion(String location) {
+        /*获取所有重点小区数据*/
+        StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+        query.setPageEnable(false);
+        List<StallUpImportantRegion> regions= stallUpImportantRegionMapper.find(query);
+        List<StallUpImportantRegion> resultList=new ArrayList<>();
+        for (StallUpImportantRegion importantRegion: regions) {
+            if (StringUtils.isEmpty(importantRegion.getLocation())){
+                continue;
+            }
+            /*计算距离*/
+            Integer distance=DistanceUtils.getDistance(importantRegion.getLocation(),location);
+            /*5000米内的小区全部返回*/
+            if (distance<=5000){
+                resultList.add(importantRegion);
+            }
+        }
+        return ApiResult.of(0, resultList);
+    }
+    
 
     /**
      * 获取待开始和已开始的VO

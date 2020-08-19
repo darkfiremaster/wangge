@@ -1,12 +1,11 @@
 package com.shinemo.wangge.web.controller.sweepstreet;
 
 
+import com.shinemo.ace4j.protocol.In;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetBusinessRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
-import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
+import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessIndexVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMarketNumberVO;
@@ -14,6 +13,7 @@ import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,8 +75,9 @@ class SweepStreetActivityController {
     @PostMapping("/createSweepStreetActivity")
     public ApiResult createSweepStreetActivity(@RequestBody SweepStreetActivityRequest request) {
         Assert.notNull(request,"request is null");
-
-        return sweepStreetService.createSweepStreet(request);
+        //创建扫街活动
+        sweepStreetService.createSweepStreet(request);
+        return ApiResult.success();
     }
     /**
      * 业务列表查询接口
@@ -96,7 +97,17 @@ class SweepStreetActivityController {
     public ApiResult addBusiness(@RequestBody SweepStreetBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
-        return sweepStreetMarketService.enterMarketingNumber(request);
+        Assert.notEmpty(request.getBizList(),"sweep street bizList is empty");
+
+        return sweepStreetMarketService.updateMarketingNumber(request);
+    }
+
+    @PostMapping("/syncSweepStreetActivityBusi")
+    public ApiResult syncSweepStreetActivityBusi(@RequestBody SweepStreetBusinessRequest request) {
+        Assert.notNull(request,"request is null");
+        Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
+
+        return sweepStreetMarketService.syncSweepStreetActivityBusi(request.getActivityId());
     }
 
 
@@ -149,5 +160,33 @@ class SweepStreetActivityController {
 
         return sweepStreetService.getFinishedCount(type);
     }
+
+
+    @GetMapping("/findMerchantList")
+    public ApiResult findMerchantList(@RequestParam(required = false) String queryParam,
+                                      @RequestParam String location,
+                                      @RequestParam Integer pageSize,
+                                      @RequestParam Integer currentPage){
+        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
+                .queryParam(queryParam)
+                .location(location)
+                .pageSize(pageSize)
+                .currentPage(currentPage)
+                .build());
+    }
+
+//    @GetMapping("/findMerchantListWithMap")
+//    public ApiResult findMerchantListWithMap(@RequestParam(required = false) String queryParam,
+//                                      @RequestParam String location,
+//                                      @RequestParam Integer pageSize,
+//                                      @RequestParam Integer currentPage){
+//        return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
+//                .queryParam(queryParam)
+//                .location(location)
+//                .pageSize(pageSize)
+//                .currentPage(currentPage)
+//                .radius(SweepStreetActivityConstants.DEFAULT_DISTANCE)
+//                .build());
+//    }
 
 }

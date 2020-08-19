@@ -1,6 +1,5 @@
 package com.shinemo.sweepstreet.domain.request;
 
-import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,17 +39,10 @@ public class SweepStreetActivityRequest {
     @NotNull(message = "结束时间不能为空")
     private Long planEndTime;
     /**
-     * 扫村活动坐标
+     * 创建人创建活动时的坐标
      */
-    @NotBlank(message = "坐标不能为空")
     private String location;
 
-
-    /**
-     * 坐标
-     */
-    @NotBlank(message = "地址不能为空")
-    private String address;
     /**
      * 参与人详情
      */
@@ -67,6 +59,36 @@ public class SweepStreetActivityRequest {
         private String name;
 
         private String userId;
+
+        /**
+         * 参与人归属地市ID
+         */
+        private String cityId;
+
+        /**
+         * 参与人归属地市名称
+         */
+        private String cityName;
+
+        /**
+         * 参与人归属区县ID
+         */
+        private String countyId;
+
+        /**
+         * 参与人归属区县名称
+         */
+        private String countyName;
+
+        /**
+         * 参与人归属网格ID，如果有多个值，以英文逗号分隔
+         */
+        private String gridId;
+
+        /**
+         * 参与人归属网格名称，如果有多个归属网格，以逗号,分隔
+         */
+        private String gridName;
     }
 
 }
