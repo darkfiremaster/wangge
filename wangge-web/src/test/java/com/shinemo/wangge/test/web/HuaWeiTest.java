@@ -259,9 +259,10 @@ public class HuaWeiTest {
     @Test
     public void test7() {
        String location = "120.06385674071397,30.284102815819203";
-       String location2 = "110.3079298078,25.26249578092";
+       String location2 = "120.06369053851603,30.284089616624556";
         ApiResult apiResult = checkDistaneWhencSign(location, location2);
         System.out.println(GsonUtils.toJson(apiResult));
+        System.out.println(5 % 60);
     }
 
 
