@@ -74,17 +74,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 details.add(bizDetail);
             }
             numberVO.setPublicBizInfoList(details);
-
-            List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
-            List<GroupServiceDayBizDetailVO> informationDetails = new ArrayList<>();
-            for (StallUpBizType bizType : informationGroupServiceDayBizDataList) {
-                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
-                bizDetail.setId(bizType.getId());
-                bizDetail.setName(bizType.getName());
-                bizDetail.setNum(0);
-                informationDetails.add(bizDetail);
-            }
-            numberVO.setInformationBizInfoList(informationDetails);
             return ApiResult.of(0, numberVO);
         }
 
@@ -96,8 +85,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         GroupServiceDayMarketNumberVO build = GroupServiceDayMarketNumberVO.builder()
                 .publicBizInfoList(detail.getPublicBizInfoList())
                 .publicBizRemark(marketingNumberDO.getPublicBizRemark())
-                .informationBizInfoList(detail.getInformationBizInfoList())
-                .informationBizRemark(marketingNumberDO.getInformationBizRemark())
                 .build();
 
         return ApiResult.success(build);
@@ -106,7 +93,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
     @Override
     public ApiResult enterMarketingNumber(GroupServiceDayBusinessRequest request) {
         //1.统计办理量
-        List<GroupServiceDayBizDetailVO> informationBizList = request.getInformationBizList();
         List<GroupServiceDayBizDetailVO> publicBizList = request.getPublicBizList();
 
         //2.判断是否存在记录
@@ -124,7 +110,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                         .groupServiceDayId(request.getActivityId())
                         .userId(SmartGridContext.getUid())
                         .publicBizRemark(request.getPublicBizRemark())
-                        .informationBizRemark(request.getInformationRemark())
                         .build();
                 //插入
                 log.info("[enterMarketingNumber] insert marketingNumberDO:{}",insert);
@@ -142,16 +127,13 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         if(publicBizList != null){
             count = publicBizList.stream().mapToInt(p -> p.getNum()).sum();
         }
-        if(informationBizList != null){
-            count = count + informationBizList.stream().mapToInt(p -> p.getNum()).sum();
-        }
+
         GroupServiceDayMarketNumberDetail detail = initMarketNumDetail(request);
         GroupServiceDayMarketingNumberDO marketingNumberDO = GroupServiceDayMarketingNumberDO.builder()
                 .groupServiceDayId(request.getActivityId())
                 .userId(SmartGridContext.getUid())
                 .detail(GsonUtil.toJson(detail))
                 .publicBizRemark(request.getPublicBizRemark())
-                .informationBizRemark(request.getInformationRemark())
                 .count(count)
                 .build();
 
@@ -185,13 +167,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         publicBiz.setBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
         bizList.add(publicBiz);
 
-        if(marketingNumberDO.getInformationBizRemark() != null){
-            HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
-            informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
-            informationBiz.setBizRemark(marketingNumberDO.getInformationBizRemark());
-            informationBiz.setBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
-            bizList.add(informationBiz);
-        }
 
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
         map.put("bizTypeList", bizList);
@@ -202,7 +177,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
     private GroupServiceDayMarketNumberDetail initMarketNumDetail(GroupServiceDayBusinessRequest request){
         GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
                 .publicBizInfoList(request.getPublicBizList())
-                .informationBizInfoList(request.getInformationBizList())
                 .build();
         //若未传入办理量 默认填充0值
         if(CollectionUtils.isEmpty(request.getPublicBizList())){
@@ -218,21 +192,6 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             detail.setPublicBizInfoList(details);
         }
 
-        if(CollectionUtils.isEmpty(request.getInformationBizList())){
-            //政企
-            List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
-            List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
-            for (StallUpBizType bizType : informationGroupServiceDayBizDataList) {
-                GroupServiceDayBizDetailVO bizDetail = new GroupServiceDayBizDetailVO();
-                bizDetail.setId(bizType.getId());
-                bizDetail.setName(bizType.getName());
-                bizDetail.setNum(0);
-                informationList.add(bizDetail);
-            }
-            detail.setInformationBizInfoList(informationList);
-
-//            marketingNumberDO.setDetail(GsonUtils.toJson(detail));
-        }
         return detail;
     }
 
