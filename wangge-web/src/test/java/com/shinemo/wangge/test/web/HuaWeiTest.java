@@ -48,7 +48,7 @@ public class HuaWeiTest {
 
     @Test
     public void testGetGroupList() {
-        String mobile = "15978197192";
+        String mobile = "13607713224";
         String huaweiUrl = "/SGCoreMarketing/groupService/getGroupList";
 
         Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);

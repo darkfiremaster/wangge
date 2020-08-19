@@ -108,6 +108,36 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         //1.统计办理量
         List<GroupServiceDayBizDetailVO> informationBizList = request.getInformationBizList();
         List<GroupServiceDayBizDetailVO> publicBizList = request.getPublicBizList();
+
+        //2.判断是否存在记录
+        GroupServiceDayMarketingNumberQuery query = new GroupServiceDayMarketingNumberQuery();
+        query.setGroupServiceDayId(request.getActivityId());
+        GroupServiceDayMarketingNumberDO queryResult = groupServiceDayMarketingNumberMapper.get(query);
+
+        //3.type为1的情况下 插入
+        if(request.getType() == 1){
+            if(queryResult == null){
+                GroupServiceDayMarketNumberDetail detail = initMarketNumDetail(request);
+                GroupServiceDayMarketingNumberDO insert = GroupServiceDayMarketingNumberDO.builder()
+                        .detail(GsonUtil.toJson(detail))
+                        .count(0)
+                        .groupServiceDayId(request.getActivityId())
+                        .userId(SmartGridContext.getUid())
+                        .publicBizRemark(request.getPublicBizRemark())
+                        .informationBizRemark(request.getInformationRemark())
+                        .build();
+                //插入
+                log.info("[enterMarketingNumber] insert marketingNumberDO:{}",insert);
+                groupServiceDayMarketingNumberMapper.insert(insert);
+                //同步华为
+                syncGroupServiceDayMarketNumber(insert);
+                return ApiResult.success();
+            }
+            syncGroupServiceDayMarketNumber(queryResult);
+            return ApiResult.success();
+        }
+
+        //4.type不为1的情况下 插入或更新
         int count = 0;
         if(publicBizList != null){
             count = publicBizList.stream().mapToInt(p -> p.getNum()).sum();
@@ -115,23 +145,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
         if(informationBizList != null){
             count = count + informationBizList.stream().mapToInt(p -> p.getNum()).sum();
         }
-
-        //2.判断是否存在记录
-        GroupServiceDayMarketingNumberQuery query = new GroupServiceDayMarketingNumberQuery();
-        query.setGroupServiceDayId(request.getActivityId());
-        GroupServiceDayMarketingNumberDO queryResult = groupServiceDayMarketingNumberMapper.get(query);
-
-        GroupServiceDayMarketNumberDetail marketNumberDetail = null;
-        if(queryResult != null){
-            marketNumberDetail = GsonUtil.
-                    fromGson2Obj(queryResult.getDetail(), new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
-        }
-
-        //3.插入或更新
-        GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
-                .publicBizInfoList(request.getPublicBizList())
-                .informationBizInfoList(request.getInformationBizList())
-                .build();
+        GroupServiceDayMarketNumberDetail detail = initMarketNumDetail(request);
         GroupServiceDayMarketingNumberDO marketingNumberDO = GroupServiceDayMarketingNumberDO.builder()
                 .groupServiceDayId(request.getActivityId())
                 .userId(SmartGridContext.getUid())
@@ -141,9 +155,57 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
                 .count(count)
                 .build();
 
+        if(queryResult == null){
+            //插入
+            log.info("[enterMarketingNumber] insert marketingNumberDO:{}",marketingNumberDO);
+            groupServiceDayMarketingNumberMapper.insert(marketingNumberDO);
+        }else {
+            marketingNumberDO.setId(queryResult.getId());
+            log.info("[enterMarketingNumber] update marketingNumberDO:{}",marketingNumberDO);
+            groupServiceDayMarketingNumberMapper.update(marketingNumberDO);
+        }
+        //5.同步给华为
+        syncGroupServiceDayMarketNumber(marketingNumberDO);
+        return ApiResult.success();
+    }
+
+    /**
+     * 办理量同步华为
+     * @param marketingNumberDO
+     */
+    private void syncGroupServiceDayMarketNumber(GroupServiceDayMarketingNumberDO marketingNumberDO){
+        Map<String, Object> map = new HashMap<>(16);
+        GroupServiceDayMarketNumberDetail detailNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
+                new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
+
+        List<HuaweiGroupServiceDayBiz> bizList = new ArrayList<>();
+        HuaweiGroupServiceDayBiz publicBiz = new HuaweiGroupServiceDayBiz();
+        publicBiz.setBizTypeId(HuaweiBizTypeEnum.PUBLIC.getId());
+        publicBiz.setBizRemark(marketingNumberDO.getPublicBizRemark());
+        publicBiz.setBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
+        bizList.add(publicBiz);
+
+        if(marketingNumberDO.getInformationBizRemark() != null){
+            HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
+            informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
+            informationBiz.setBizRemark(marketingNumberDO.getInformationBizRemark());
+            informationBiz.setBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
+            bizList.add(informationBiz);
+        }
+
+        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
+        map.put("bizTypeList", bizList);
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
+    }
+
+
+    private GroupServiceDayMarketNumberDetail initMarketNumDetail(GroupServiceDayBusinessRequest request){
+        GroupServiceDayMarketNumberDetail detail = GroupServiceDayMarketNumberDetail.builder()
+                .publicBizInfoList(request.getPublicBizList())
+                .informationBizInfoList(request.getInformationBizList())
+                .build();
         //若未传入办理量 默认填充0值
-        if(CollectionUtils.isEmpty(request.getPublicBizList()) && CollectionUtils.isEmpty(marketNumberDetail.getPublicBizInfoList())){
-            marketingNumberDO.setCount(0);
+        if(CollectionUtils.isEmpty(request.getPublicBizList())){
             List<StallUpBizType> groupServiceDayBizDataList = stallUpConfig.getConfig().getPublicGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> details = new ArrayList<>();
             for (StallUpBizType bizType : groupServiceDayBizDataList) {
@@ -156,7 +218,7 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             detail.setPublicBizInfoList(details);
         }
 
-        if(CollectionUtils.isEmpty(request.getInformationBizList()) &&CollectionUtils.isEmpty(marketNumberDetail.getInformationBizInfoList())){
+        if(CollectionUtils.isEmpty(request.getInformationBizList())){
             //政企
             List<StallUpBizType> informationGroupServiceDayBizDataList = stallUpConfig.getConfig().getInformationGroupServiceDayBizDataList();
             List<GroupServiceDayBizDetailVO> informationList = new ArrayList<>();
@@ -169,48 +231,10 @@ public class GroupServiceDayMarketingNumberServiceImpl implements GroupServiceDa
             }
             detail.setInformationBizInfoList(informationList);
 
-            marketingNumberDO.setDetail(GsonUtils.toJson(detail));
+//            marketingNumberDO.setDetail(GsonUtils.toJson(detail));
         }
-
-
-        if(queryResult == null){
-            //插入
-            log.info("[enterMarketingNumber] insert marketingNumberDO:{}",marketingNumberDO);
-            groupServiceDayMarketingNumberMapper.insert(marketingNumberDO);
-        }else {
-            marketingNumberDO.setId(queryResult.getId());
-            log.info("[enterMarketingNumber] update marketingNumberDO:{}",marketingNumberDO);
-            groupServiceDayMarketingNumberMapper.update(marketingNumberDO);
-        }
-        //4.同步给华为
-        Map<String, Object> map = new HashMap<>(16);
-        GroupServiceDayMarketNumberDetail detailNew = GsonUtil.fromGson2Obj(marketingNumberDO.getDetail(),
-                new TypeToken<GroupServiceDayMarketNumberDetail>() {}.getType());
-
-        List<HuaweiGroupServiceDayBiz> bizList = new ArrayList<>();
-        HuaweiGroupServiceDayBiz publicBiz = new HuaweiGroupServiceDayBiz();
-        publicBiz.setBizTypeId(HuaweiBizTypeEnum.PUBLIC.getId());
-        publicBiz.setBizRemark(marketingNumberDO.getPublicBizRemark());
-        publicBiz.setBizInfoList(transformationToHuawei(detailNew.getPublicBizInfoList()));
-        bizList.add(publicBiz);
-
-        if(request.getInformationBizList() != null){
-            HuaweiGroupServiceDayBiz informationBiz = new HuaweiGroupServiceDayBiz();
-            informationBiz.setBizTypeId(HuaweiBizTypeEnum.INFORMATION.getId());
-            informationBiz.setBizRemark(marketingNumberDO.getInformationBizRemark());
-            informationBiz.setBizInfoList(transformationToHuawei(detailNew.getInformationBizInfoList()));
-            bizList.add(informationBiz);
-        }
-
-        map.put("activityId", GroupServiceDayConstants.ID_PREFIX + marketingNumberDO.getGroupServiceDayId());
-//        map.put("mobile", SmartGridContext.getMobile());
-        map.put("bizTypeList", bizList);
-
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.ADD_OR_UPDATE_GROUP_SERVICE_DAY_DATA.getApiName(), SmartGridContext.getMobile());
-
-        return ApiResult.success();
+        return detail;
     }
-
 
     public List<HuaweiGroupServiceDayBizDetail> transformationToHuawei(List<GroupServiceDayBizDetailVO> bizDetailVOS){
         List<HuaweiGroupServiceDayBizDetail> bizDetails = new ArrayList<>();
