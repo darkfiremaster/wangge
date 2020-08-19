@@ -86,7 +86,12 @@
         from
         <include refid="table"/>
         <include refid="conditions"/>
-
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
     </select>
 
     <!-- 查询某条记录 -->

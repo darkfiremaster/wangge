@@ -37,4 +37,9 @@ public class GroupServiceDayBusinessRequest {
      */
     private String informationRemark;
 
+    /**
+     * 1：表示从数据库中获取办理信息，若数据库中不存在，则填充默认值
+     */
+    private Integer type;
+
 }

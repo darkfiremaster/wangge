@@ -23,6 +23,7 @@ import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.schedule.EndGroupServiceDaySchedule;
 import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
 import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
 import com.shinemo.wangge.core.service.common.ExcelService;
@@ -103,6 +104,9 @@ public class BackdoorController {
 
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
+
+    @Resource
+    private EndGroupServiceDaySchedule endGroupServiceDaySchedule;
 
     private final AppTypeEnum appType = AppTypeEnum.GUANGXI;
 
@@ -338,6 +342,12 @@ public class BackdoorController {
         }
         log.info("[refreshSweepVillageVisit] refresh finished,count = {}",count);
         return "success";
+    }
+
+    @GetMapping("groupServiceDay/autoEnd")
+    public String groupServiceDayEnd() {
+        endGroupServiceDaySchedule.execute();
+        return "success\n";
     }
 
 }

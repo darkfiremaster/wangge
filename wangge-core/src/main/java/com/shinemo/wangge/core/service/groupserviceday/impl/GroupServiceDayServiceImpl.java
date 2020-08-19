@@ -136,6 +136,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
                     //来自网格
                     participant.setUserSource("1");
                     participant.setUserId(partnerBean.getUserId());
+                    participant.setUserPhone(partnerBean.getMobile());
                 } else {
                     //来自通讯录
                     participant.setUserSource("2");
@@ -187,6 +188,11 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         serviceDayQuery.setMobile(mobile);
         serviceDayQuery.setEndFilterStartTime(startTime);
         serviceDayQuery.setEndFilterEndTime(new Date());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(GroupServiceDayStatusEnum.END.getId());
+        statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
+        statusList.add(GroupServiceDayStatusEnum.AUTO_END.getId());
+        serviceDayQuery.setStatusList(statusList);
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
             log.error("[getFinishedCount] activityList is empty!");
@@ -228,7 +234,15 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             statusList.add(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
             serviceDayQuery.setStatusList(statusList);
             serviceDayQuery.setStatus(null);
+            serviceDayQuery.setOrderByEnable(true);
+            serviceDayQuery.putOrderBy("real_end_time",false);
         }
+
+        if (request.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId())) {
+            serviceDayQuery.setOrderByEnable(true);
+            serviceDayQuery.putOrderBy("plan_start_time",true);
+        }
+
         List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(serviceDayQuery);
         if (CollectionUtils.isEmpty(groupServiceDayDOS)) {
             return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
@@ -348,10 +362,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
 
         //距离校验
         String location = request.getLocationDetailVO().getLocation();
-//        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
-//        if (!apiResult.isSuccess()) {
-//            return apiResult;
-//        }
+        ApiResult apiResult = checkDistaneWhencSign(groupServiceDayDO.getLocation(), location);
+
         //更新签到表
         SignRecordQuery signRecordQuery = new SignRecordQuery();
         signRecordQuery.setActivityId(groupServiceDayDO.getId());
@@ -371,8 +383,12 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         Date endTime = new Date();
         GroupServiceDayDO updateActivityDO = new GroupServiceDayDO();
         updateActivityDO.setId(groupServiceDayDO.getId());
-        updateActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
         updateActivityDO.setRealEndTime(endTime);
+        if (apiResult == null) {
+            updateActivityDO.setStatus(GroupServiceDayStatusEnum.END.getId());
+        }else {
+            updateActivityDO.setStatus(GroupServiceDayStatusEnum.ABNORMAL_END.getId());
+        }
         groupServiceDayMapper.update(updateActivityDO);
         //更新父活动
         updateParentStatus(groupServiceDayDO, GroupServiceDayStatusEnum.END.getId(), endTime);
@@ -623,7 +639,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         if (distance > 5000) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
-        return ApiResult.of(0);
+        return null;
     }
 
 
@@ -634,6 +650,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setGroupId(parentGroupServiceDayDO.getGroupId());
         groupServiceDayDO.setGroupName(parentGroupServiceDayDO.getGroupName());
         groupServiceDayDO.setGroupAddress(parentGroupServiceDayDO.getGroupAddress());
+        groupServiceDayDO.setGroupDetail(parentGroupServiceDayDO.getGroupDetail());
         groupServiceDayDO.setCreatorId(parentGroupServiceDayDO.getCreatorId());
         groupServiceDayDO.setCreatorName(parentGroupServiceDayDO.getCreatorName());
         groupServiceDayDO.setPlanStartTime(parentGroupServiceDayDO.getPlanStartTime());
@@ -644,6 +661,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         groupServiceDayDO.setStatus(GroupServiceDayStatusEnum.NOT_START.getId());
         groupServiceDayDO.setMobile(partnerBean.getMobile());
         groupServiceDayDO.setName(partnerBean.getName());
+        //设置当前参与人的详情
+        groupServiceDayDO.setExtend(GsonUtils.toJson(partnerBean));
         return groupServiceDayDO;
     }
 
@@ -661,6 +680,14 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         }
         parentGroupServiceDayDO.setCreatorName(HuaWeiUtil.getHuaweiUsername(SmartGridContext.getMobile()));
         parentGroupServiceDayDO.setMobile(SmartGridContext.getMobile());
+        LinkedHashMap<String, String> groupDetailMap = new LinkedHashMap<>();
+        groupDetailMap.put("cityId", groupServiceDayRequest.getGroupCityId());
+        groupDetailMap.put("cityName", groupServiceDayRequest.getGroupCityName());
+        groupDetailMap.put("countryId", groupServiceDayRequest.getGroupCountryId());
+        groupDetailMap.put("countryName", groupServiceDayRequest.getGroupCountryName());
+        groupDetailMap.put("gridId", groupServiceDayRequest.getGroupGridId());
+        groupDetailMap.put("gridName", groupServiceDayRequest.getGroupGridName());
+        parentGroupServiceDayDO.setGroupDetail(GsonUtils.toJson(groupDetailMap));
         parentGroupServiceDayDO.setPlanStartTime(new Date(groupServiceDayRequest.getPlanStartTime()));
         parentGroupServiceDayDO.setPlanEndTime(new Date(groupServiceDayRequest.getPlanEndTime()));
         parentGroupServiceDayDO.setLocation(groupServiceDayRequest.getLocation());
