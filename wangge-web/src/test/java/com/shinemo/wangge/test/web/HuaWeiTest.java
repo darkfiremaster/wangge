@@ -5,12 +5,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
+import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
 import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
+import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.http.HttpConnectionUtils;
 import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
+import com.shinemo.stallup.domain.utils.DistanceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -249,6 +253,30 @@ public class HuaWeiTest {
 
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
         log.info("httpResult:{}", httpResult);
+    }
+
+
+    @Test
+    public void test7() {
+       String location = "120.06385674071397,30.284102815819203";
+       String location2 = "110.3079298078,25.26249578092";
+        ApiResult apiResult = checkDistaneWhencSign(location, location2);
+        System.out.println(GsonUtils.toJson(apiResult));
+    }
+
+
+    private ApiResult checkDistaneWhencSign(String dbLocation, String reqLocation) {
+        String[] dbSplit = dbLocation.split(",");
+        String[] reqSplit = reqLocation.split(",");
+        double Lat1 = Double.parseDouble(dbSplit[1]);
+        double Lon1 = Double.parseDouble(dbSplit[0]);
+        double Lat2 = Double.parseDouble(reqSplit[1]);
+        double Lon2 = Double.parseDouble(reqSplit[0]);
+        double distance = DistanceUtils.getDistanceFromCoordinates(Lat1, Lon1, Lat2, Lon2);
+        if (distance > 5000) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
+        }
+        return ApiResult.of(0);
     }
 
 }

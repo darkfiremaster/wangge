@@ -633,7 +633,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         if (distance > 5000) {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
-        return ApiResult.of(0);
+        return null;
     }
 
 
