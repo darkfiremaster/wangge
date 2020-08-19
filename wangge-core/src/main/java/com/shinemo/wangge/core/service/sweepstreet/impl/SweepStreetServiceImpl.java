@@ -29,6 +29,7 @@ import com.shinemo.sweepstreet.domain.request.HuaweiMerchantRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetActivityRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetListRequest;
 import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
+import com.shinemo.sweepstreet.domain.response.HuaweiMerchantListResponse;
 import com.shinemo.sweepstreet.domain.response.HuaweiMerchantResponse;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
@@ -367,10 +368,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
 
         //华为response -> 前端VO
-        Map<String, Object> data = result.getData();
-        List<HuaweiMerchantResponse> merchantList = (List<HuaweiMerchantResponse>) data.get("data");
+        HuaweiMerchantListResponse merchantListResponse = BeanUtil.mapToBean(result.getData(), HuaweiMerchantListResponse.class, false);
         List<SweepStreetMerchantVO> merchantVOList = new ArrayList<>();
-        for(HuaweiMerchantResponse response : merchantList) {
+        for(HuaweiMerchantResponse response : merchantListResponse.getGroupList()) {
             Date broadbandExpireTime = null;
             Date visitTime = null;
             try {
