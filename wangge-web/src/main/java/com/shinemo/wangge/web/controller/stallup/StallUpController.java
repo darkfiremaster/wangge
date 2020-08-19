@@ -10,10 +10,7 @@ import com.shinemo.stallup.common.error.StallUpErrorCodes;
 import com.shinemo.stallup.common.statemachine.InvalidStateTransitionException;
 import com.shinemo.stallup.domain.enums.StallUpStatusEnum;
 import com.shinemo.stallup.domain.event.StallUpEvent;
-import com.shinemo.stallup.domain.model.CommunityVO;
-import com.shinemo.stallup.domain.model.GridUserDetail;
-import com.shinemo.stallup.domain.model.GridUserRoleDetail;
-import com.shinemo.stallup.domain.model.StallUpActivity;
+import com.shinemo.stallup.domain.model.*;
 import com.shinemo.stallup.domain.request.*;
 import com.shinemo.stallup.domain.response.*;
 import com.shinemo.wangge.core.config.StallUpConfig;
@@ -295,6 +292,18 @@ public class StallUpController {
 				.mobile(getMobile())
 				.build()
 		);
+	}
+
+	/**
+	 * 获取报坐标5000米内的重点小区
+	 * @param location
+	 * @return
+	 */
+	@GetMapping("getImportRegion")
+	@SmIgnore
+	public ApiResult<List<StallUpImportantRegion>> getImportRegion(@RequestParam String location) {
+		Assert.notNull(location, "location is null");
+		return stallUpService.getImportRegion(location);
 	}
 
 	@GetMapping("getDetail")

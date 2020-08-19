@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinemo.wangge.dal.mapper.StallUpImportantRegionMapper">
+
+    <!-- 结果集对应关系 -->
+    <resultMap id="result" type="com.shinemo.stallup.domain.model.StallUpImportantRegion" >
+        <id column="id" property="id"/>
+        <result property="city" column="city"/>
+        <result property="county" column="county"/>
+        <result property="town" column="town"/>
+        <result property="villager" column="villager"/>
+        <result property="street" column="street"/>
+        <result property="houseNumber" column="house_number"/>
+        <result property="communityId" column="community_id"/>
+        <result property="communityName" column="community_name"/>
+        <result property="regionAttribute" column="region_attribute"/>
+        <result property="ontractingFlag" column="ontracting_flag"/>
+        <result property="placeAttribute" column="place_attribute"/>
+        <result property="location" column="location"/>
+        <result property="locationBoundary" column="location_boundary"/>
+        <result property="regionWanggeId" column="region_wangge_id"/>
+        <result property="regionCityId" column="region_city_id"/>
+        <result property="regionCountyId" column="region_county_id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="extend" column="extend"/>
+    </resultMap>
+
+    <!-- 数据库字段 -->
+    <sql id="columns">
+        id, city, county, town, villager, street, house_number, community_id, community_name, region_attribute, ontracting_flag, place_attribute, location, location_boundary, region_wangge_id, region_city_id, region_county_id, gmt_create, extend
+    </sql>
+
+    <sql id="table">
+        t_stall_up_important_region
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="conditions">
+        <where>
+            <choose>
+                <when test="id != null">and id = #{id}</when>
+                <otherwise>
+                    <if test="city != null">and city = #{city}</if>
+                    <if test="county != null">and county = #{county}</if>
+                    <if test="town != null">and town = #{town}</if>
+                    <if test="villager != null">and villager = #{villager}</if>
+                    <if test="street != null">and street = #{street}</if>
+                    <if test="houseNumber != null">and house_number = #{houseNumber}</if>
+                    <if test="communityId != null">and community_id = #{communityId}</if>
+                    <if test="communityName != null">and community_name = #{communityName}</if>
+                    <if test="regionAttribute != null">and region_attribute = #{regionAttribute}</if>
+                    <if test="ontractingFlag != null">and ontracting_flag = #{ontractingFlag}</if>
+                    <if test="placeAttribute != null">and place_attribute = #{placeAttribute}</if>
+                    <if test="location != null">and location = #{location}</if>
+                    <if test="locationBoundary != null">and location_boundary = #{locationBoundary}</if>
+                    <if test="regionWanggeId != null">and region_wangge_id = #{regionWanggeId}</if>
+                    <if test="regionCityId != null">and region_city_id = #{regionCityId}</if>
+                    <if test="regionCountyId != null">and region_county_id = #{regionCountyId}</if>
+                    <if test="gmtCreate != null">and gmt_create = #{gmtCreate}</if>
+                    <if test="extend != null">and extend = #{extend}</if>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+
+    <!-- 查询结果集 -->
+    <select id="find" resultMap="result"
+            parameterType="com.shinemo.stallup.domain.query.StallUpImportantRegionQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
+            order by
+            <foreach collection="orderByList" item="orderBy" separator=",">
+                ${orderBy.column} ${orderBy.sort}
+            </foreach>
+        </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
+    </select>
+
+    <!-- 查询某条记录 -->
+    <select id="get" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpImportantRegionQuery">
+        select
+        <include refid="columns"/>
+        from
+        <include refid="table"/>
+        <include refid="conditions"/>
+        limit 1
+    </select>
+
+    <!-- 统计查询结果数量 -->
+    <select id="count" resultType="long" parameterType="com.shinemo.stallup.domain.query.StallUpImportantRegionQuery">
+        select count(*) from
+        <include refid="table"/>
+        <include refid="conditions"/>
+    </select>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="com.shinemo.stallup.domain.query.StallUpImportantRegionQuery">
+        delete from
+        <include refid="table"/>
+        where id = #{id}
+    </delete>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.shinemo.stallup.domain.model.StallUpImportantRegion">
+        insert into
+        <include refid="table"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="county != null">
+                county,
+            </if>
+            <if test="town != null">
+                town,
+            </if>
+            <if test="villager != null">
+                villager,
+            </if>
+            <if test="street != null">
+                street,
+            </if>
+            <if test="houseNumber != null">
+                house_number,
+            </if>
+            <if test="communityId != null">
+                community_id,
+            </if>
+            <if test="communityName != null">
+                community_name,
+            </if>
+            <if test="regionAttribute != null">
+                region_attribute,
+            </if>
+            <if test="ontractingFlag != null">
+                ontracting_flag,
+            </if>
+            <if test="placeAttribute != null">
+                place_attribute,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="locationBoundary != null">
+                location_boundary,
+            </if>
+            <if test="regionWanggeId != null">
+                region_wangge_id,
+            </if>
+            <if test="regionCityId != null">
+                region_city_id,
+            </if>
+            <if test="regionCountyId != null">
+                region_county_id,
+            </if>
+            gmt_create,
+            <if test="extend != null">
+                extend,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=BIGINT},
+            </if>
+            <if test="city != null">
+                #{city, jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">
+                #{county, jdbcType=VARCHAR},
+            </if>
+            <if test="town != null">
+                #{town, jdbcType=VARCHAR},
+            </if>
+            <if test="villager != null">
+                #{villager, jdbcType=VARCHAR},
+            </if>
+            <if test="street != null">
+                #{street, jdbcType=VARCHAR},
+            </if>
+            <if test="houseNumber != null">
+                #{houseNumber, jdbcType=VARCHAR},
+            </if>
+            <if test="communityId != null">
+                #{communityId, jdbcType=VARCHAR},
+            </if>
+            <if test="communityName != null">
+                #{communityName, jdbcType=VARCHAR},
+            </if>
+            <if test="regionAttribute != null">
+                #{regionAttribute, jdbcType=VARCHAR},
+            </if>
+            <if test="ontractingFlag != null">
+                #{ontractingFlag, jdbcType=VARCHAR},
+            </if>
+            <if test="placeAttribute != null">
+                #{placeAttribute, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="locationBoundary != null">
+                #{locationBoundary, jdbcType=VARCHAR},
+            </if>
+            <if test="regionWanggeId != null">
+                #{regionWanggeId, jdbcType=BIGINT},
+            </if>
+            <if test="regionCityId != null">
+                #{regionCityId, jdbcType=BIGINT},
+            </if>
+            <if test="regionCountyId != null">
+                #{regionCountyId, jdbcType=BIGINT},
+            </if>
+            now(),
+            <if test="extend != null">
+                #{extend, jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.shinemo.stallup.domain.model.StallUpImportantRegion">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            <if test="city != null">
+                city = #{city, jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">
+                county = #{county, jdbcType=VARCHAR},
+            </if>
+            <if test="town != null">
+                town = #{town, jdbcType=VARCHAR},
+            </if>
+            <if test="villager != null">
+                villager = #{villager, jdbcType=VARCHAR},
+            </if>
+            <if test="street != null">
+                street = #{street, jdbcType=VARCHAR},
+            </if>
+            <if test="houseNumber != null">
+                house_number = #{houseNumber, jdbcType=VARCHAR},
+            </if>
+            <if test="communityId != null">
+                community_id = #{communityId, jdbcType=VARCHAR},
+            </if>
+            <if test="communityName != null">
+                community_name = #{communityName, jdbcType=VARCHAR},
+            </if>
+            <if test="regionAttribute != null">
+                region_attribute = #{regionAttribute, jdbcType=VARCHAR},
+            </if>
+            <if test="ontractingFlag != null">
+                ontracting_flag = #{ontractingFlag, jdbcType=VARCHAR},
+            </if>
+            <if test="placeAttribute != null">
+                place_attribute = #{placeAttribute, jdbcType=VARCHAR},
+            </if>
+            <if test="location != null">
+                location = #{location, jdbcType=VARCHAR},
+            </if>
+            <if test="locationBoundary != null">
+                location_boundary = #{locationBoundary, jdbcType=VARCHAR},
+            </if>
+            <if test="regionWanggeId != null">
+                region_wangge_id = #{regionWanggeId, jdbcType=BIGINT},
+            </if>
+            <if test="regionCityId != null">
+                region_city_id = #{regionCityId, jdbcType=BIGINT},
+            </if>
+            <if test="regionCountyId != null">
+                region_county_id = #{regionCountyId, jdbcType=BIGINT},
+            </if>
+            <if test="extend != null">
+                extend = #{extend, jdbcType=LONGVARCHAR}
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+</mapper>
