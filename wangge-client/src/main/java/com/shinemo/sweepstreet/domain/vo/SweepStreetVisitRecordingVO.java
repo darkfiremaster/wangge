@@ -113,4 +113,7 @@ public class SweepStreetVisitRecordingVO extends BaseDO {
 	* 商户创建人手机号
 	*/
 	private String createMerchantMobile;
+
+	/** 类型，1非历史走访，0历史走访 */
+	private Integer type;
 }

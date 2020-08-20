@@ -9,7 +9,6 @@ import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
-import com.shinemo.sweepvillage.domain.constant.SweepVillageConstants;
 import com.shinemo.wangge.core.service.sweepstreet.VisitStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
 import com.shinemo.wangge.dal.mapper.SweepStreetVisitRecordingMapper;
@@ -59,7 +58,7 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     }
 
     @Override
-    public ApiResult<List<SweepStreetVisitRecordingVO>> getVisitStreetByMerchantIdOrActivityId(SweepStreetVisitRecordingQuery query) {
+    public ApiResult<List<SweepStreetVisitRecordingVO>> getVisitStreetByActivityId(SweepStreetVisitRecordingQuery query) {
         List<SweepStreetVisitRecordingDO>  doList=sweepStreetVisitRecordingMapper.find(query);
         if (CollectionUtils.isEmpty(doList)) {
             return ApiResult.of(0,new ArrayList<>());
@@ -70,7 +69,6 @@ public class VisitStreetServiceImpl implements VisitStreetService {
             SweepStreetVisitRecordingVO recordingVO=new SweepStreetVisitRecordingVO();
             BeanUtils.copyProperties(recordingDO,recordingVO);
             vos.add(recordingVO);
-
         }
         return ApiResult.of(0,vos);
     }
@@ -104,6 +102,28 @@ public class VisitStreetServiceImpl implements VisitStreetService {
         SweepStreetBusinessVO sweepStreetBusinessVO= new SweepStreetBusinessVO();
         BeanUtils.copyProperties(doList.get(0),sweepStreetBusinessVO);
         return ApiResult.of(0,sweepStreetBusinessVO);
+    }
+
+    @Override
+    public ApiResult getVisitStreetByMerchantId(SweepStreetVisitRecordingQuery query, Long activityId) {
+
+        List<SweepStreetVisitRecordingDO>  doList=sweepStreetVisitRecordingMapper.find(query);
+        if (CollectionUtils.isEmpty(doList)) {
+            return ApiResult.of(0,new ArrayList<>());
+        }
+
+        List<SweepStreetVisitRecordingVO> vos=new ArrayList<>(doList.size());
+        for (SweepStreetVisitRecordingDO recordingDO:doList) {
+            SweepStreetVisitRecordingVO recordingVO=new SweepStreetVisitRecordingVO();
+            BeanUtils.copyProperties(recordingDO,recordingVO);
+            if (recordingDO.getActivityId().equals(activityId)){
+                recordingVO.setType(1);
+            }else {
+                recordingVO.setType(0);
+            }
+            vos.add(recordingVO);
+        }
+        return ApiResult.of(0,vos);
     }
 
     private void synchronizeSweepingData(SweepStreetVisitRecordingDO visitRecordingDO, String apiName) {
