@@ -49,10 +49,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -247,6 +245,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         //更新父活动
         updateParentStatus(sweepStreetActivityDO, SweepStreetStatusEnum.END.getId(), endTime);
 
+        //todo 同步华为
+
         return ApiResult.of(0);
     }
 
@@ -281,6 +281,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         sweepStreetActivityMapper.update(streetActivityDO);
         //更新父活动表
         updateParentStatus(streetActivityDO, status, endTime);
+
+        //todo 同步华为
+
         return ApiResult.of(0);
     }
 

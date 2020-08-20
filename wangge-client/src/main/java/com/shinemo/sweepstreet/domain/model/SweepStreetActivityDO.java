@@ -93,5 +93,4 @@ public class SweepStreetActivityDO extends BaseDO {
     private String signAddress;
     /** 打卡坐标 */
     private String signLocation;
-
 }
