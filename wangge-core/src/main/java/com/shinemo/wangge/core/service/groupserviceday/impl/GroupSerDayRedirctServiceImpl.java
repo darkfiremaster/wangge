@@ -1,14 +1,23 @@
 package com.shinemo.wangge.core.service.groupserviceday.impl;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
+import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
+import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
+import com.shinemo.groupserviceday.error.GroupServiceDayErrorCodes;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.wangge.core.service.groupserviceday.GroupSerDayRedirctService;
+import com.shinemo.wangge.dal.mapper.GroupServiceDayMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,6 +40,9 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
     private String seed;
     @NacosValue(value = "${huawei.smshot.url}", autoRefreshed = true)
     private String smsHotUrl;
+
+    @Resource
+    private GroupServiceDayMapper groupServiceDayMapper;
 
     private static final String ID_PREFIX = "GROUP_SERVICE_";
 
@@ -75,14 +87,43 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
     @Override
     public ApiResult<String> getRedirctSmsHotUrl(Long activityId) {
 
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("G7710125987","南宁市蓝天钢管厂");
-        long timestamp = System.currentTimeMillis();
+        GroupServiceDayQuery serviceDayQuery = new GroupServiceDayQuery();
+        serviceDayQuery.setId(activityId);
+        GroupServiceDayDO serviceDayDO = groupServiceDayMapper.get(serviceDayQuery);
+        if (serviceDayDO == null) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+        String extend = serviceDayDO.getExtend();
         Map<String, Object> formData = new HashMap<>();
-        formData.put("mobile", "17377273810");
-        formData.put("gridId", "774_A2106_06");
-        //新加网格名
-        formData.put("gridName", "梧州城区三云网格");
+
+        if (!StringUtils.isBlank(extend)) {
+            GroupServiceDayRequest.PartnerBean partnerBean = GsonUtils.fromGson2Obj(extend, GroupServiceDayRequest.PartnerBean.class);
+            String gridId = partnerBean.getGridId();
+            String gridName = partnerBean.getGridName();
+            String cityId = partnerBean.getCityId();
+            String cityName = partnerBean.getCityName();
+            String countryId = partnerBean.getCountryId();
+            String countryName = partnerBean.getCountryName();
+            if (!StringUtils.isBlank(gridId) && !StringUtils.isBlank(gridName)) {
+                formData.put("gridId", gridId);
+                formData.put("gridName", gridName);
+            }else if (!StringUtils.isBlank(cityId) && !StringUtils.isBlank(cityName)) {
+                formData.put("gridId", cityId);
+                formData.put("gridName", cityName);
+            }else if (!StringUtils.isBlank(countryId) && !StringUtils.isBlank(countryName)) {
+                formData.put("gridId", countryId);
+                formData.put("gridName", countryName);
+            }else {
+                log.error("[getRedirctSmsHotUrl] grid info is null,partnerBean = {}",partnerBean);
+            }
+        }
+
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(serviceDayDO.getGroupId(),serviceDayDO.getGroupName());
+        long timestamp = System.currentTimeMillis();
+
+        formData.put("mobile", SmartGridContext.getMobile());
+
         formData.put("timestamp", timestamp);
         formData.put("building", map);
         formData.put("prehotObjectType", 8);

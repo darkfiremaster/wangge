@@ -189,4 +189,14 @@ class SweepStreetActivityController {
 //                .build());
 //    }
 
+    /**
+     * 取消活动
+     * @return
+     */
+    @PostMapping("/cancel")
+    public ApiResult cancel(@RequestParam Long id) {
+        Assert.notNull(id,"id is null");
+        return sweepStreetService.cancel(id);
+    }
+
 }

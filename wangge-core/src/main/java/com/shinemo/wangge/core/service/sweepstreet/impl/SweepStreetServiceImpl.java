@@ -37,6 +37,7 @@ import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantListVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
+import com.shinemo.sweepstreet.error.SweepStreetErrorCodes;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
@@ -397,6 +398,29 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         SweepStreetMerchantListVO sweepStreetMerchantListVO = new SweepStreetMerchantListVO();
         sweepStreetMerchantListVO.setMerchantsList(merchantVOList);
         return ApiResult.of(0,sweepStreetMerchantListVO);
+    }
+
+    @Override
+    public ApiResult cancel(Long id) {
+        SweepStreetActivityDO streetActivityDO = getDOById(id);
+        if (streetActivityDO == null) {
+            return ApiResultWrapper.fail(SweepStreetErrorCodes.ACTIVITY_NOT_EXIT);
+        }
+        if (!SmartGridContext.getMobile().equals(streetActivityDO.getMobile())) {
+            return ApiResultWrapper.fail(SweepStreetErrorCodes.AUTH_ERROR);
+        }
+        //更新子活动
+        Date time = new Date();
+        SweepStreetActivityDO upActivityDO = new SweepStreetActivityDO();
+        upActivityDO.setId(streetActivityDO.getId());
+        upActivityDO.setStatus(SweepStreetStatusEnum.CANCEL.getId());
+        sweepStreetActivityMapper.update(upActivityDO);
+        //更新父活动
+        updateParentStatus(streetActivityDO,SweepStreetStatusEnum.CANCEL.getId(),time);
+
+        //todo 同步华为
+
+        return ApiResult.of(0);
     }
 
     private SweepStreetActivityDO getDOById(Long id) {

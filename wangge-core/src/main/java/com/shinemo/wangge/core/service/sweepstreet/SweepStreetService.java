@@ -10,6 +10,7 @@ import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantListVO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -47,5 +48,7 @@ public interface SweepStreetService {
      * 获取商户列表 透传华为
      */
     ApiResult<SweepStreetMerchantListVO> getMerchantList(HuaweiMerchantRequest request);
+
+    ApiResult cancel(Long id);
 
 }
