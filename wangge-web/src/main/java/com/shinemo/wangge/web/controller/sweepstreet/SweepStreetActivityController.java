@@ -93,7 +93,7 @@ class SweepStreetActivityController {
      * @param request
      * @return
      */
-    @PostMapping("/saveSweepStreetActivityBusi")
+    @PostMapping("/saveStreetScanBiz")
     public ApiResult addBusiness(@RequestBody SweepStreetBusinessRequest request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");

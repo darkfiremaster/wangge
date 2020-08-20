@@ -21,5 +21,5 @@ public class SweepStreetBusinessRequest extends BaseDO {
 
     private List<SweepStreetBizDetailVO> bizList;
 
-    private String remark;
+    private String bizRemark;
 }
