@@ -24,11 +24,13 @@
         <result property="status" column="status"/>
         <result property="gridId" column="grid_id"/>
         <result property="extend" column="extend"/>
+        <result property="signLocation" column="sign_location"/>
+        <result property="signAddress" column="sign_address"/>
     </resultMap>
 
     <!-- 数据库字段 -->
     <sql id="columns">
-        id, parent_id, gmt_create, gmt_modified, title, creator_id, creator_name, mobile, name, plan_start_time, plan_end_time, real_start_time, real_end_time, location, partner, current_partner_detail, status, grid_id, extend
+        id, parent_id, gmt_create, gmt_modified, title, creator_id, creator_name, mobile, name, plan_start_time, plan_end_time, real_start_time, real_end_time, location, partner, current_partner_detail, status, grid_id, extend,sign_location,sign_address
     </sql>
 
     <sql id="table">
@@ -167,6 +169,12 @@
             <if test="extend != null">
                 extend,
             </if>
+            <if test="signAddress != null">
+                sign_address,
+            </if>
+            <if test="signLocation != null">
+                sign_location,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -221,6 +229,12 @@
             </if>
             <if test="extend != null">
                 #{extend, jdbcType=LONGVARCHAR},
+            </if>
+            <if test="signAddress != null">
+                #{signAddress, jdbcType=VARCHAR},
+            </if>
+            <if test="signLocation != null">
+                #{signLocation, jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -278,6 +292,12 @@
             </if>
             <if test="extend != null">
                 extend = #{extend, jdbcType=LONGVARCHAR}
+            </if>
+            <if test="signLocation != null">
+                sign_location = #{signLocation, jdbcType=VARCHAR},
+            </if>
+            <if test="signAddress != null">
+                sign_address = #{signAddress, jdbcType=VARCHAR},
             </if>
         </set>
         WHERE

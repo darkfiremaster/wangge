@@ -116,13 +116,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         for (SweepStreetActivityDO activityDO : activityDOS) {
             SweepStreetActivityVO activityVO = new SweepStreetActivityVO();
             BeanUtils.copyProperties(activityDO, activityVO);
+            activityVO.setAddress(activityDO.getSignAddress());
             vos.add(activityVO);
         }
         if (!request.getStatus().equals(SweepStreetStatusEnum.END.getId())) {
-            if (request.getStatus().equals(SweepStreetStatusEnum.PROCESSING.getId())) {
-                //进行中的查询打卡地址
-                buildLocation(vos);
-            }
             return ApiResult.of(0, ListVO.list(vos, vos.size()));
         }
         long count = sweepStreetActivityMapper.count(streetActivityQuery);
@@ -167,9 +164,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.ACTIVITY_NOT_EXIT);
         }
 
-//        if (!SmartGridContext.getMobile().equals(groupServiceDayDO.getMobile())) {
-//            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
-//        }
+        if (!SmartGridContext.getMobile().equals(sweepStreetActivityDO.getMobile())) {
+            return ApiResultWrapper.fail(GroupServiceDayErrorCodes.AUTH_ERROR);
+        }
 
         //校验当前活动状态
         if (SweepStreetStatusEnum.NOT_START.getId() != sweepStreetActivityDO.getStatus()) {
@@ -198,6 +195,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         updateActivityDO.setId(sweepStreetActivityDO.getId());
         updateActivityDO.setStatus(SweepStreetStatusEnum.PROCESSING.getId());
         updateActivityDO.setRealStartTime(startTime);
+        updateActivityDO.setSignAddress(request.getLocationDetailVO().getAddress());
+        updateActivityDO.setSignLocation(request.getLocationDetailVO().getLocation());
         sweepStreetActivityMapper.update(updateActivityDO);
         //更新父活动状态
         updateParentStatus(sweepStreetActivityDO, SweepStreetStatusEnum.PROCESSING.getId(), startTime);
