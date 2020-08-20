@@ -146,7 +146,7 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
                 .append("&sign=").append(sign);
 
         String smsHotUrl = sb.toString();
-        log.info("[getRedirctSmsHotUrl]摆摊活动id:{},生成短信预热url:{}", activityId, smsHotUrl);
+        log.info("[getRedirctSmsHotUrl]集团服务日活动id:{},生成短信预热url:{}", activityId, smsHotUrl);
 
         return ApiResult.of(0, smsHotUrl);
     }
