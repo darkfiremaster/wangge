@@ -59,5 +59,5 @@ public interface SweepStreetService {
      *
      * @return
      */
-    ApiResult<String> getBusinessDetailUrl(String merchantsId,String location);
+    ApiResult<String> getBusinessDetailUrl(String merchantId,String location);
 }

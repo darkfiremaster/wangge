@@ -470,12 +470,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     }
 
     @Override
-    public ApiResult<String> getBusinessDetailUrl(String merchantsId,String location) {
+    public ApiResult<String> getBusinessDetailUrl(String merchantId,String location) {
         long timestamp = System.currentTimeMillis();
 
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", SmartGridContext.getMobile());
-        formData.put("groupid",merchantsId);
+        formData.put("groupid",merchantId);
         formData.put("timestamp",timestamp);
         formData.put("menuid","groupinfo");
         String[] split = StrUtil.split(location, ",");
@@ -499,7 +499,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                 .append("&sign=").append(sign);
 
         String businessDetailUrl = sb.toString();
-        log.info("[getBusinessDetailUrl]商户id:{},生成商户详情url:{}", merchantsId, businessDetailUrl);
+        log.info("[getBusinessDetailUrl]商户id:{},生成商户详情url:{}", merchantId, businessDetailUrl);
 
         return ApiResult.of(0, businessDetailUrl);
 

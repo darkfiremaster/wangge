@@ -211,10 +211,10 @@ class SweepStreetActivityController {
      * 获取跳转商户详情url
      */
     @GetMapping("/getBusinessDetailUrl")
-    public ApiResult<String> getBusinessDetailUrl(String merchantsId,String location) {
-        Assert.notNull(merchantsId, "groupId is null");
+    public ApiResult<String> getBusinessDetailUrl(String merchantId,String location) {
+        Assert.notNull(merchantId, "merchantId is null");
         Assert.notNull(location, "location is null");
-        return sweepStreetService.getBusinessDetailUrl(merchantsId,location);
+        return sweepStreetService.getBusinessDetailUrl(merchantId,location);
     }
 
 }
