@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class SweepStreetMerchantVO extends BaseDO {
     private String merchantsId;
 
-    private String merchantsName;
+    private String merchantName;
 
     private String merchantsAddress;
 

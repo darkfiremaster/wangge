@@ -1,9 +1,14 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.util.DateUtil;
 import com.shinemo.client.util.GsonUtil;
@@ -11,6 +16,7 @@ import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.domain.LockContext;
 import com.shinemo.my.redis.service.RedisLock;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.domain.model.UserConfigDO;
 import com.shinemo.smartgrid.domain.query.UserConfigQuery;
@@ -102,6 +108,8 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Resource
     private SignRecordMapper signRecordMapper;
+    @Resource
+    private RedisService redisService;
 
     @Resource
     private UserConfigMapper userConfigMapper;
@@ -1202,11 +1210,20 @@ public class StallUpServiceImpl implements StallUpService {
     @Override
     public ApiResult<List<StallUpImportantRegion>> getImportRegion(String location) {
         /*获取所有重点小区数据*/
-        StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
-        query.setPageEnable(false);
-        List<StallUpImportantRegion> regions= stallUpImportantRegionMapper.find(query);
+
+        String redisString=redisService.get("stallUpImportantRegion");
+        JSONArray array= JSONUtil.parseArray(redisString);
+        List<StallUpImportantRegion>  redisList=  JSONUtil.toList(array,StallUpImportantRegion.class);
+        if (null ==redisList){
+            StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+            query.setPageEnable(false);
+            redisList= stallUpImportantRegionMapper.find(query);
+            /*设置2天缓存*/
+            redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
+        }
+
         List<StallUpImportantRegion> resultList=new ArrayList<>();
-        for (StallUpImportantRegion importantRegion: regions) {
+        for (StallUpImportantRegion importantRegion: redisList) {
             if (StringUtils.isEmpty(importantRegion.getLocation())){
                 continue;
             }
@@ -1219,7 +1236,22 @@ public class StallUpServiceImpl implements StallUpService {
         }
         return ApiResult.of(0, resultList);
     }
-    
+
+    @Override
+    public void reload() {
+        /*删除缓存*/
+        redisService.del("stallUpImportantRegion");
+
+        /*更新缓存*/
+        StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+        query.setPageEnable(false);
+        List<StallUpImportantRegion> redisList= stallUpImportantRegionMapper.find(query);
+        /*设置2天缓存*/
+        redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
+    }
+
+
+
 
     /**
      * 获取待开始和已开始的VO
