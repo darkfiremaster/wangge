@@ -57,8 +57,7 @@ public interface SweepStreetService {
     /**
      * 获取跳转商户详情url
      *
-     * @param groupId
      * @return
      */
-    ApiResult<String> getBusinessDetailUrl(String groupId,String location);
+    ApiResult<String> getBusinessDetailUrl(String merchantsId,String location);
 }
