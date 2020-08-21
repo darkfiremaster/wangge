@@ -13,4 +13,5 @@ import java.util.List;
 @Data
 public class HuaweiMerchantListResponse extends BaseDO {
     private List<HuaweiMerchantResponse> groupList;
+    private Integer totalSize;
 }

@@ -434,6 +434,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         }
         SweepStreetMerchantListVO sweepStreetMerchantListVO = new SweepStreetMerchantListVO();
         sweepStreetMerchantListVO.setMerchantsList(merchantVOList);
+        sweepStreetMerchantListVO.setTotalSize(merchantListResponse.getTotalSize());
         return ApiResult.of(0, sweepStreetMerchantListVO);
     }
 
