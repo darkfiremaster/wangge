@@ -4,12 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
+import com.shinemo.stallup.domain.utils.Md5Util;
 import com.shinemo.sweepfloor.common.enums.SignRecordBizTypeEnum;
 import com.shinemo.sweepfloor.domain.model.SignRecordDO;
 import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
@@ -83,6 +86,10 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     private SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
 
+    @NacosValue(value = "${groupSer.seed}", autoRefreshed = true)
+    private String groupSeed;
+    @NacosValue(value = "${huawei.groupSer.url}", autoRefreshed = true)
+    private String groupSerUrl;
 
     @Override
     public ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request) {
@@ -459,6 +466,43 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         cancelSyncHuaWei(upActivityDO);
 
         return ApiResult.of(0);
+    }
+
+    @Override
+    public ApiResult<String> getBusinessDetailUrl(String groupId,String location) {
+        long timestamp = System.currentTimeMillis();
+
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("mobile", SmartGridContext.getMobile());
+        formData.put("groupid",groupId);
+        formData.put("timestamp",timestamp);
+        formData.put("menuid","groupinfo");
+        String[] split = StrUtil.split(location, ",");
+        formData.put("longitude",split[0]);
+        formData.put("latitude",split[1]);
+
+        log.info("[getBusinessDetailUrl] 请求参数 formData:{}", formData);
+        String paramStr = EncryptUtil.buildParameterString(formData);
+
+        //1、加密
+        String encryptData = EncryptUtil.encrypt(paramStr, groupSeed);
+
+        //2、生成签名
+        String sign = Md5Util.getMD5Str(encryptData + "," + groupSeed + "," + timestamp);
+
+        String url = groupSerUrl + "?";
+
+        StringBuilder sb = new StringBuilder(url);
+        sb.append("paramData=").append(encryptData)
+                .append("&timestamp=").append(timestamp)
+                .append("&sign=").append(sign);
+
+        String businessDetailUrl = sb.toString();
+        log.info("[getBusinessDetailUrl]商户信息 groupId:{},生成商户详情url:{}", groupId, businessDetailUrl);
+
+        return ApiResult.of(0, businessDetailUrl);
+
+
     }
 
     private void cancelSyncHuaWei(SweepStreetActivityDO upActivityDO) {

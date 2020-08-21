@@ -3,6 +3,7 @@ package com.shinemo.wangge.core.service.groupserviceday.impl;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
 import com.shinemo.groupserviceday.domain.model.GroupServiceDayDO;
 import com.shinemo.groupserviceday.domain.query.GroupServiceDayQuery;
 import com.shinemo.groupserviceday.domain.request.GroupServiceDayRequest;
@@ -44,8 +45,6 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
     @Resource
     private GroupServiceDayMapper groupServiceDayMapper;
 
-    private static final String ID_PREFIX = "GROUP_SERVICE_";
-
 
     /**
      * 集团服务日跳转企业信息页面url拼接
@@ -60,7 +59,9 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
         formData.put("mobile", SmartGridContext.getMobile());
         formData.put("groupid",groupId);
         formData.put("timestamp",timestamp);
-        formData.put("menuid","groupinfo");
+        formData.put("menuid","businessinfo");
+        formData.put("longitude","businessinfo");
+        formData.put("latitude","businessinfo");
 
         log.info("[getRedirctGrouSerUrl] 请求参数 formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);
@@ -127,7 +128,7 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
         formData.put("timestamp", timestamp);
         formData.put("building", map);
         formData.put("prehotObjectType", 8);
-        formData.put("activityId", ID_PREFIX + activityId);
+        formData.put("activityId", GroupServiceDayConstants.ID_PREFIX + activityId);
 
         log.info("[redirctSmsHot] 请求参数formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);
