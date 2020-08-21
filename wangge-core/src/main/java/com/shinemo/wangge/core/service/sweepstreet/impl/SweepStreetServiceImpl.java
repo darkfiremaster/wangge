@@ -258,7 +258,6 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         //更新父活动
         updateParentStatus(sweepStreetActivityDO, SweepStreetStatusEnum.END.getId(), endTime);
 
-        //todo 同步华为
         //同步华为
         endSignSyncHuaWei(request, updateStreetActivityDO);
 
