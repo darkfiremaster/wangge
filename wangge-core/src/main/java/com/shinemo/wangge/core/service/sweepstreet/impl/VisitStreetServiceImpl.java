@@ -3,6 +3,7 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.domain.SmartGridContext;
+import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import com.shinemo.sweepstreet.domain.error.SweepStreetErrorCodes;
 import com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
@@ -37,9 +38,6 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     @Resource
     private ThirdApiMappingService thirdApiMappingService;
 
-    private static final String ID_PREFIX = "SJ_RECORD_";
-
-    private static final String ACTIVITYID_PREFIX = "SJ_ACTIVITY_";
 
     @Override
     public ApiResult<Void> add(SweepStreetVisitRecordingVO request) {
@@ -129,9 +127,9 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     private void synchronizeSweepingData(SweepStreetVisitRecordingDO visitRecordingDO, String apiName) {
 
         Map<String,Object> map = new HashMap<>();
-        map.put("visitId",ID_PREFIX+visitRecordingDO.getId());
+        map.put("visitId",SweepStreetActivityConstants.SJ_RECORD_PREFIX+visitRecordingDO.getId());
 
-        map.put("activityId", ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
+        map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
         map.put("groupId",visitRecordingDO.getMerchantId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");

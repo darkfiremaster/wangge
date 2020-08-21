@@ -570,7 +570,6 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         huaWeiRequest.setChildrenList(childSweepStreetActivityArrayList);
         Map<String, Object> map = BeanUtil.beanToMap(huaWeiRequest, false, true);
-        log.info("[syncCreateSweepStreetActivuty] 新建扫街活动同步华为,请求参数:{}", GsonUtils.toJson(map));
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.CREATE_SWEEP_STREET_ACTIVITY.getApiName(), SmartGridContext.getMobile());
     }
 
