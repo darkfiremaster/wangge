@@ -547,7 +547,7 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
         map.put("activityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getId());
         map.put("parentActivityId", GroupServiceDayConstants.ID_PREFIX + serviceDayDO.getParentId());
         map.put("status", GroupServiceDayStatusEnum.AUTO_END.getId());
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiGroupServiceDayUrlEnum.UPDATE_GROUP_SERVICE_DAY.getApiName(), serviceDayDO.getMobile());
     }
 
     /**

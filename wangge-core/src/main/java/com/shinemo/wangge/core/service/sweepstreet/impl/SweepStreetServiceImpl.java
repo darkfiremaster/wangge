@@ -329,7 +329,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + streetActivityDO.getId());
         map.put("parentActivityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + streetActivityDO.getParentId());
         map.put("status", SweepStreetStatusEnum.AUTO_END.getId());
-        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getApiName(), SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getApiName(), streetActivityDO.getMobile());
     }
 
     @Override
