@@ -176,7 +176,13 @@ public interface StallUpService {
 	/**
 	 * 获取报坐标5000米内的重点小区
 	 * @param location
+	 * @param refresh
 	 * @return
 	 */
 	ApiResult<List<StallUpImportantRegion>> getImportRegion(String location);
+
+	/**
+	 * 刷新早点小区的缓存数
+	 */
+	void reload();
 }

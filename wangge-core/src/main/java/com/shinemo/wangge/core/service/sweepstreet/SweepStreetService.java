@@ -10,19 +10,21 @@ import com.shinemo.sweepstreet.domain.request.SweepStreetSignRequest;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityFinishedVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetMerchantListVO;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.text.ParseException;
-import java.util.Map;
 
 public interface SweepStreetService {
-    /** 查詢活動列表 */
+    /**
+     * 查詢活動列表
+     */
     ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request);
-    /** 打卡 */
+
+    /**
+     * 打卡
+     */
     ApiResult startSign(SweepStreetSignRequest request);
 
     /**
      * 结束打卡
+     *
      * @param request
      * @return
      */
@@ -32,6 +34,7 @@ public interface SweepStreetService {
 
     /**
      * 本周，本月统计
+     *
      * @param type
      * @return
      */
@@ -51,4 +54,10 @@ public interface SweepStreetService {
 
     ApiResult cancel(Long id);
 
+    /**
+     * 获取跳转商户详情url
+     *
+     * @return
+     */
+    ApiResult<String> getBusinessDetailUrl(String merchantId,String location);
 }

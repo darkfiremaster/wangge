@@ -18,6 +18,6 @@ public class SweepStreetActivityFinishedVO {
 
     /** 活动次数 */
     private Integer activityCount;
-    /** 办理量次数 */
+    /** 走访商户数量 */
     private Integer businessCount;
 }

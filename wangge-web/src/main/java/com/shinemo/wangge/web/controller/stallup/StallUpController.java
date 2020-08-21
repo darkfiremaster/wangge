@@ -306,6 +306,12 @@ public class StallUpController {
 		return stallUpService.getImportRegion(location);
 	}
 
+	@GetMapping("importRegion/reloadCache")
+	public String reload() {
+		stallUpService.reload();
+		return "success\n";
+	}
+
 	@GetMapping("getDetail")
 	@SmIgnore
 	public ApiResult<GetDetailResponse> getDetail(@RequestParam Long id) {

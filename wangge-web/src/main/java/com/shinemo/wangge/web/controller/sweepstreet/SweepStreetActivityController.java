@@ -1,10 +1,8 @@
 package com.shinemo.wangge.web.controller.sweepstreet;
 
 
-import com.shinemo.ace4j.protocol.In;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessIndexVO;
@@ -13,17 +11,16 @@ import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+
 @Slf4j
 @RestController
 @RequestMapping("/sweepStreet")
 class SweepStreetActivityController {
-
 
 
     @Resource
@@ -37,6 +34,7 @@ class SweepStreetActivityController {
 
     /**
      * 集团服务日业务查询首页
+     *
      * @return
      */
     @GetMapping("/sweepStreetActivityBizDetail")
@@ -69,18 +67,21 @@ class SweepStreetActivityController {
 
     /**
      * 创建扫街活动
+     *
      * @param request
      * @return
      */
     @PostMapping("/createSweepStreetActivity")
     public ApiResult createSweepStreetActivity(@RequestBody SweepStreetActivityRequest request) {
-        Assert.notNull(request,"request is null");
+        Assert.notNull(request, "request is null");
         //创建扫街活动
         sweepStreetService.createSweepStreet(request);
         return ApiResult.success();
     }
+
     /**
      * 业务列表查询接口
+     *
      * @param activityId
      * @return
      */
@@ -88,24 +89,26 @@ class SweepStreetActivityController {
     public ApiResult<SweepStreetMarketNumberVO> getSweepStreetBizDetail(@RequestParam Long activityId) {
         return sweepStreetMarketService.getByActivityId(activityId);
     }
+
     /**
      * 业务列表录入接口
+     *
      * @param request
      * @return
      */
     @PostMapping("/saveStreetScanBiz")
     public ApiResult addBusiness(@RequestBody SweepStreetBusinessRequest request) {
-        Assert.notNull(request,"request is null");
-        Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
-        Assert.notEmpty(request.getBizList(),"sweep street bizList is empty");
+        Assert.notNull(request, "request is null");
+        Assert.notNull(request.getActivityId(), "sweepStreet activityId is null");
+        Assert.notEmpty(request.getBizList(), "sweep street bizList is empty");
 
         return sweepStreetMarketService.updateMarketingNumber(request);
     }
 
     @PostMapping("/syncSweepStreetActivityBusi")
     public ApiResult syncSweepStreetActivityBusi(@RequestBody SweepStreetBusinessRequest request) {
-        Assert.notNull(request,"request is null");
-        Assert.notNull(request.getActivityId(),"sweepStreet activityId is null");
+        Assert.notNull(request, "request is null");
+        Assert.notNull(request.getActivityId(), "sweepStreet activityId is null");
 
         return sweepStreetMarketService.syncSweepStreetActivityBusi(request.getActivityId());
     }
@@ -113,45 +116,49 @@ class SweepStreetActivityController {
 
     /**
      * 掃街列表
+     *
      * @param request
      * @return
      */
     @GetMapping("/getSweepStreetList")
     public ApiResult<ListVO<SweepStreetActivityVO>> getSweepStreetList(SweepStreetListRequest request) {
-        Assert.notNull(request,"request is null");
-        Assert.notNull(request.getStatus(),"status is null");
+        Assert.notNull(request, "request is null");
+        Assert.notNull(request.getStatus(), "status is null");
         return sweepStreetService.getSweepStreetList(request);
     }
 
     /**
      * 開始打卡
+     *
      * @param request
      * @return
      */
     @PostMapping("/startSign")
     public ApiResult startSign(@RequestBody SweepStreetSignRequest request) {
-        Assert.notNull(request,"request is null");
-        Assert.notNull(request.getActivityId(),"activityId is null");
-        Assert.notNull(request.getLocationDetailVO(),"locationDetailVO is null");
+        Assert.notNull(request, "request is null");
+        Assert.notNull(request.getActivityId(), "activityId is null");
+        Assert.notNull(request.getLocationDetailVO(), "locationDetailVO is null");
         return sweepStreetService.startSign(request);
     }
 
     /**
      * 结束打卡
+     *
      * @param request
      * @return
      */
     @PostMapping("/endSign")
     public ApiResult endSign(@RequestBody SweepStreetSignRequest request) {
-        Assert.notNull(request,"request is null");
-        Assert.notNull(request.getActivityId(),"activityId is null");
-        Assert.notNull(request.getLocationDetailVO(),"locationDetailVO is null");
+        Assert.notNull(request, "request is null");
+        Assert.notNull(request.getActivityId(), "activityId is null");
+        Assert.notNull(request.getLocationDetailVO(), "locationDetailVO is null");
         return sweepStreetService.endSign(request);
     }
 
 
     /**
      * 周，月办理量
+     *
      * @param type
      * @return
      */
@@ -166,7 +173,7 @@ class SweepStreetActivityController {
     public ApiResult findMerchantList(@RequestParam(required = false) String queryParam,
                                       @RequestParam String location,
                                       @RequestParam Integer pageSize,
-                                      @RequestParam Integer currentPage){
+                                      @RequestParam Integer currentPage) {
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
                 .queryParam(queryParam)
                 .location(location)
@@ -191,12 +198,23 @@ class SweepStreetActivityController {
 
     /**
      * 取消活动
+     *
      * @return
      */
     @PostMapping("/cancel")
     public ApiResult cancel(@RequestParam Long id) {
-        Assert.notNull(id,"id is null");
+        Assert.notNull(id, "id is null");
         return sweepStreetService.cancel(id);
+    }
+
+    /**
+     * 获取跳转商户详情url
+     */
+    @GetMapping("/getBusinessDetailUrl")
+    public ApiResult<String> getBusinessDetailUrl(String merchantId,String location) {
+        Assert.notNull(merchantId, "merchantId is null");
+        Assert.notNull(location, "location is null");
+        return sweepStreetService.getBusinessDetailUrl(merchantId,location);
     }
 
 }
