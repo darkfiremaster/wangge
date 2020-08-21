@@ -1,4 +1,4 @@
-package com.shinemo.wangge.web.controller.groupserviceday;
+package com.shinemo.wangge.wefb.controller.groupserviceday;
 
 
 import com.shinemo.client.common.ListVO;
