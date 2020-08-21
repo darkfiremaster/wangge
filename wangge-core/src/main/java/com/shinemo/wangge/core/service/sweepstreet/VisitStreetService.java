@@ -1,7 +1,6 @@
 package com.shinemo.wangge.core.service.sweepstreet;
 
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
@@ -21,11 +20,11 @@ public interface VisitStreetService {
     ApiResult<Void> add(SweepStreetVisitRecordingVO request);
 
     /**
-     * 根据商户id或活动id查询走访记录
+     * 根据活动id查询走访记录
      * @param query
      * @return
      */
-    ApiResult<List<SweepStreetVisitRecordingVO>> getVisitStreetByMerchantIdOrActivityId(SweepStreetVisitRecordingQuery query);
+    ApiResult<List<SweepStreetVisitRecordingVO>> getVisitStreetByActivityId(SweepStreetVisitRecordingQuery query);
 
 
     /**
@@ -41,4 +40,12 @@ public interface VisitStreetService {
      * @return
      */
     ApiResult<SweepStreetBusinessVO> getBusinessDetail(String merchantId);
+
+    /**
+     * 根据商户id查询走访记录
+     * @param query
+     * @param activityId
+     * @return
+     */
+    ApiResult getVisitStreetByMerchantId(SweepStreetVisitRecordingQuery query, Long activityId);
 }

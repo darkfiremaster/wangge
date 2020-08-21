@@ -2,7 +2,6 @@ package com.shinemo.wangge.web.controller.sweepstreet;
 
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.smartgrid.common.GridIdChecker;
-import com.shinemo.sweepstreet.domain.model.SweepStreetVisitRecordingDO;
 import com.shinemo.sweepstreet.domain.query.SweepStreetVisitRecordingQuery;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
 import com.shinemo.wangge.core.service.sweepstreet.VisitStreetService;
@@ -41,15 +40,16 @@ public class VisitStreetController {
      * @return
      */
     @GetMapping("/getVisitStreetByMerchantId")
-    public ApiResult getVisitStreetByMerchantId( String merchantId){
+    public ApiResult getVisitStreetByMerchantId( String merchantId,Long activityId){
         Assert.notNull(merchantId,"merchantId is null");
+        Assert.notNull(activityId,"activityId is null");
 
         SweepStreetVisitRecordingQuery query =new SweepStreetVisitRecordingQuery();
         query.setMerchantId(merchantId);
         query.setStatus(1);
         query.setOrderByEnable(true);
         query.putOrderBy("gmt_create",false);
-        return visitStreetService.getVisitStreetByMerchantIdOrActivityId(query);
+        return visitStreetService.getVisitStreetByMerchantId(query,activityId);
     }
 
     /**
@@ -65,7 +65,7 @@ public class VisitStreetController {
         query.setStatus(1);
         query.setOrderByEnable(true);
         query.putOrderBy("gmt_create",false);
-        return visitStreetService.getVisitStreetByMerchantIdOrActivityId(query);
+        return visitStreetService.getVisitStreetByActivityId(query);
     }
 
     /**
