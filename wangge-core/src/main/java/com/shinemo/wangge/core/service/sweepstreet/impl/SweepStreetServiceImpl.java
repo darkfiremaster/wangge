@@ -427,7 +427,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             }
             merchantVOList.add(SweepStreetMerchantVO.builder()
                     .merchantsId(response.getMerchantsId())
-                    .merchantsName(response.getGroupName())
+                    .merchantName(response.getGroupName())
                     .merchantsAddress(response.getGroupAddress())
                     .creatorMobile(response.getCreatorMobile())
                     .contactName(response.getContactPerson())
