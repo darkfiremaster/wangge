@@ -24,7 +24,7 @@ public class SweepStreetMerchantVO extends BaseDO {
 
     private String creatorMobile;
 
-    private String contactPerson;
+    private String contactName;
 
     private String contactMobile;
 

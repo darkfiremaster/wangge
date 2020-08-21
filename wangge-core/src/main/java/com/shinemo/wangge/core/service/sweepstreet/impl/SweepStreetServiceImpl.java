@@ -430,7 +430,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .merchantsName(response.getGroupName())
                     .merchantsAddress(response.getGroupAddress())
                     .creatorMobile(response.getCreatorMobile())
-                    .contactPerson(response.getContactPerson())
+                    .contactName(response.getContactPerson())
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
                     .broadbandExpireTime(broadbandExpireTime.getTime())
@@ -441,6 +441,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         }
         SweepStreetMerchantListVO sweepStreetMerchantListVO = new SweepStreetMerchantListVO();
         sweepStreetMerchantListVO.setMerchantsList(merchantVOList);
+        sweepStreetMerchantListVO.setTotalSize(merchantListResponse.getTotalSize());
         return ApiResult.of(0, sweepStreetMerchantListVO);
     }
 

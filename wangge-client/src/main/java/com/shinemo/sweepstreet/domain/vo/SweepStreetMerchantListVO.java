@@ -13,4 +13,9 @@ import java.util.List;
 @Data
 public class SweepStreetMerchantListVO extends BaseDO {
     private List<SweepStreetMerchantVO> merchantsList;
+
+    /**
+     * 总记录数，分页
+     */
+    private Integer totalSize;
 }
