@@ -2,9 +2,9 @@ package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -22,9 +22,9 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @Author shangkaihui
@@ -276,5 +276,9 @@ public class StaticTest {
 
 
         log.info("[getZhuangyiDataBroadUrl] 生成装移数据看板跳转url:{}", url);
+    }
+
+    @Test
+    public void testObj() {
     }
 }

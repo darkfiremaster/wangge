@@ -3,11 +3,8 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.domain.constant.GroupServiceDayConstants;
 import com.shinemo.groupserviceday.domain.enums.HuaweiBizTypeEnum;
-import com.shinemo.groupserviceday.domain.enums.HuaweiGroupServiceDayUrlEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
-import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.model.StallUpBizType;
 import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import com.shinemo.sweepstreet.domain.model.HuaweiSweepStreetBiz;
@@ -25,7 +22,6 @@ import com.shinemo.wangge.dal.mapper.SweepStreetMarketingNumberMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -180,7 +176,7 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         sweepStreetBiz.setBizInfoList(transformationToHuawei(detailsNew));
         sweepStreetBiz.setBizTypeId(HuaweiBizTypeEnum.STREET_BIZ.getId());
 
-        map.put("activityId", SweepStreetActivityConstants.ID_PREFIX + marketingNumberDO.getSweepStreetId());
+        map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + marketingNumberDO.getSweepStreetId());
         map.put("bizTypeList", sweepStreetBizs);
 
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.ADD_OR_UPDATE_SWEEP_STREET_ACTIVITY_DATA.getApiName(), SmartGridContext.getMobile());

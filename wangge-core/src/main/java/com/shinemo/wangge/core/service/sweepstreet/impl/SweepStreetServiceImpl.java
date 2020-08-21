@@ -525,7 +525,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
     private void syncCreateSweepStreetActivity(SweepStreetActivityRequest request, ParentSweepStreetActivityDO parentSweepStreetActivityDO, List<SweepStreetActivityDO> childActivityList) {
         HuaWeiCreateSweepStreetActivityRequest huaWeiRequest = new HuaWeiCreateSweepStreetActivityRequest();
-        huaWeiRequest.setParentActivityId(SweepStreetActivityConstants.ID_PREFIX + parentSweepStreetActivityDO.getId());
+        huaWeiRequest.setParentActivityId(SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + parentSweepStreetActivityDO.getId());
         huaWeiRequest.setTitle(request.getTitle());
         huaWeiRequest.setStartTime(DateUtil.formatDateTime(parentSweepStreetActivityDO.getPlanStartTime()));
         huaWeiRequest.setEndTime(DateUtil.formatDateTime(parentSweepStreetActivityDO.getPlanEndTime()));
@@ -535,7 +535,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         for (SweepStreetActivityDO sweepStreetActivityDO : childActivityList) {
             HuaWeiCreateSweepStreetActivityRequest.ChildSweepStreetActivity childSweepStreetActivity = new HuaWeiCreateSweepStreetActivityRequest.ChildSweepStreetActivity();
-            childSweepStreetActivity.setActivityId(SweepStreetActivityConstants.ID_PREFIX + sweepStreetActivityDO.getId());
+            childSweepStreetActivity.setActivityId(SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + sweepStreetActivityDO.getId());
             List<HuaWeiCreateSweepStreetActivityRequest.ChildSweepStreetActivity.Participant> participantList = new ArrayList<>();
             List<SweepStreetActivityRequest.PartnerBean> partnerBeanList = GsonUtils.fromJsonToList(sweepStreetActivityDO.getPartner(), SweepStreetActivityRequest.PartnerBean[].class);
             for (SweepStreetActivityRequest.PartnerBean partnerBean : partnerBeanList) {
@@ -545,6 +545,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     //来自网格
                     participant.setUserSource("1");
                     participant.setUserId(partnerBean.getUserId());
+                    participant.setUserPhone(partnerBean.getMobile());
                 } else {
                     //来自通讯录
                     participant.setUserSource("2");

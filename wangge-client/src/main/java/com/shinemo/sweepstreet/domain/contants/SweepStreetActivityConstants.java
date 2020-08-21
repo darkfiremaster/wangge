@@ -6,7 +6,7 @@ package com.shinemo.sweepstreet.domain.contants;
  * @author zengpeng
  */
 public class SweepStreetActivityConstants {
-    public static final String ID_PREFIX = "SSA_ACTIVITY_";
+    public static final String SJ_ACTIVITYID_PREFIX = "SJ_ACTIVITY_";
     public static final String DEFAULT_DISTANCE = "1000";
 
 }
