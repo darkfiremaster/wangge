@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SweepStreetMerchantVO extends BaseDO {
-    private String merchantsId;
+    private String merchantId;
 
     private String merchantName;
 
-    private String merchantsAddress;
+    private String merchantAddress;
 
     private String creatorMobile;
 
