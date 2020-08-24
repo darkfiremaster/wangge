@@ -15,11 +15,14 @@ import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -358,8 +361,12 @@ public class HuaWeiTest {
     }
 
     @Test
-    public void updateSweepStreet() {
-
+    public void smsHot() {
+        String source = "Wv26iIap71FZr0_7UXsw_RsqEixhjkMSqH8VazKEbgTEM0mhVQWsljBj9n6CpbcLQI6LvMFUhqE_xku3J7y0CsTxZk4-fHbFta2dUnx_yOXBLEJtxQskrocl2bwPExB9_dMZ0Op_N-tFvm58qNY1Ly0WNjHb8c7-s_p8fkFUmredqrCJHT0iyiG0k-DQd_Zyjek7gkAqse5yZe0QSd2vIPWXiCGQE1NxFo_d_mFv6wIbjyvEcpz_07TKwoWI97nSoGH1tUoLWyhGvyhVu1l8LkIAdzAu8yo5cCzcQo30ooch14dCDhUrG1Ih2l3mVL8oG37kWNRqT7KEzM4vctCxJ_9Ixnhs2JIBYkiFAoQHv5eYeQwv8-2sTfQ0cx19Q9XL";
+        String key = "a8537aaefdd489789c07ae8a9760203";
+        String decrypt = EncryptUtil.decrypt(source, key);
+        String decode = URLDecoder.decode(decrypt);
+        System.out.println(decode);
     }
 
 }
