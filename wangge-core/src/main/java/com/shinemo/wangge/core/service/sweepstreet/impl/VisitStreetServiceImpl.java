@@ -46,8 +46,8 @@ public class VisitStreetServiceImpl implements VisitStreetService {
 
         SweepStreetVisitRecordingDO visitRecordingDO=new SweepStreetVisitRecordingDO();
         BeanUtils.copyProperties(request,visitRecordingDO);
-        visitRecordingDO.setMobile("13200000001");
-        visitRecordingDO.setMarketingUserName("test");
+        visitRecordingDO.setMobile(mobile);
+        visitRecordingDO.setMarketingUserName(userName);
         sweepStreetVisitRecordingMapper.insert(visitRecordingDO);
 
         /*扫街录入数据同步华为*/

@@ -13,14 +13,8 @@ import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
-import com.shinemo.stallup.domain.utils.EncryptUtil;
-import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
-import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**

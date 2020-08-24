@@ -24,7 +24,7 @@ public class VisitStreetController {
 
 
     @PostMapping("/addVisitStreet")
-//    @GridIdChecker
+    @GridIdChecker
     public ApiResult<Void> addVisitStreet(@RequestBody SweepStreetVisitRecordingVO request) {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
