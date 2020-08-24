@@ -278,4 +278,9 @@ public class HuaWeiTest {
         return ApiResult.of(0);
     }
 
+    @Test
+    public void updateSweepStreet() {
+
+    }
+
 }
