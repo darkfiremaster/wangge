@@ -416,7 +416,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         map.put("longitude", split[0]);
         map.put("latitude", split[1]);
         map.put("pageSize", request.getPageSize());
-        map.put("PageNum", request.getCurrentPage());
+        map.put("pageNum", request.getCurrentPage());
+        map.put("radius", "");
 
 
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
