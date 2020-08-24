@@ -175,6 +175,7 @@ public class SweepStreetMarketServiceImpl implements SweepStreetMarketService {
         sweepStreetBiz.setBizRemark(marketingNumberDO.getBizRemark());
         sweepStreetBiz.setBizInfoList(transformationToHuawei(detailsNew));
         sweepStreetBiz.setBizTypeId(HuaweiBizTypeEnum.STREET_BIZ.getId());
+        sweepStreetBizs.add(sweepStreetBiz);
 
         map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + marketingNumberDO.getSweepStreetId());
         map.put("bizTypeList", sweepStreetBizs);
