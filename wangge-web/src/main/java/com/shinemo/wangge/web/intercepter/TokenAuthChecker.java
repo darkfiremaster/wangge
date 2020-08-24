@@ -60,81 +60,80 @@ public class TokenAuthChecker extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        return  true;
-//        String uid = null;
-//        String token = null;
-//        long timestamp = 0;
-//        String orgId = null;
-//        Cookie[] cookies = request.getCookies();
-//        if (null != cookies) {
-//            token = getValueFromCookies("token", cookies);
-//            if (token == null) {
-//                token = getValueFromCookies("ticket", cookies);
-//            }
-//
-//            timestamp = NumberUtils.toLong(getValueFromCookies("timeStamp", cookies));
-//            if (timestamp == 0) {
-//                timestamp = NumberUtils.toLong(getValueFromCookies("ts", cookies));
-//            }
-//
-//            uid = getValueFromCookies("userId", cookies);
-//
-//            if (uid == null) {
-//                uid = getValueFromCookies("uid", cookies);
-//            }
-//
-//            orgId = getValueFromCookies("orgId", cookies);
-//        }
-//
-//        if (token == null || uid == null) {
-//            token = request.getParameter("token");
-//            timestamp = NumberUtils.toLong(request.getParameter("timeStamp"));
-//            uid = request.getParameter("userId");
-//        }
-//
-//        if (token == null || uid == null) {
-//            String json = request.getHeader("token");
-//            if (json != null) {
-//                Map<String, String> map = GsonUtils.getStringMap(json);
-//                if (map != null) {
-//                    token = map.get("token");
-//                    timestamp = NumberUtils.toLong(map.get("ts"));
-//                    uid = map.get("uid");
-//                    orgId = map.get("orgId");
-//                }
-//            }
-//        }
-//
-//        if (StringUtils.isBlank(token) || StringUtils.isBlank(uid)) {
-//            log.error("check token fail, token or uid from cookies is not allow blank");
-//            throw new ApiException(INVALID_TOKEN);
-//        }
-//
-//        int ret = RET_SUCCESS;
-//        MutableBoolean isSuccess = new MutableBoolean();
-//        AaceContext ctx = new AaceContext(AppTypeEnum.GUANGXI.getId() + "");
-//        ctx.set("uid", uid + "");
-//        try {
-//            ret = aaceIMLoginService.verifyToken(uid, token, timestamp, isSuccess, ctx);
-//        } catch (Exception ex) {
-//            log.error("check token fail, ret={}, token={}", ret, token, ex);
-//        }
-//
-//        if (ret == RET_SUCCESS) {
-//            // 特殊场景下cookie里没有orgId
-//            if (Utils.isEmpty(orgId)) {
-//                orgId = request.getParameter("orgId");
-//            }
-//
-//            LoginContext.setUid(uid);
-//            if (orgId != null) {
-//                LoginContext.setOrgId(orgId);
-//            }
-//
-//            return true;
-//        }
-//
-//        log.error("token token fail, uid:{}, token:{}, timestamp:{}, retCode:{}", uid, token, timestamp, ret);
-//        throw new ApiException(INVALID_TOKEN);
+        String uid = null;
+        String token = null;
+        long timestamp = 0;
+        String orgId = null;
+        Cookie[] cookies = request.getCookies();
+        if (null != cookies) {
+            token = getValueFromCookies("token", cookies);
+            if (token == null) {
+                token = getValueFromCookies("ticket", cookies);
+            }
+
+            timestamp = NumberUtils.toLong(getValueFromCookies("timeStamp", cookies));
+            if (timestamp == 0) {
+                timestamp = NumberUtils.toLong(getValueFromCookies("ts", cookies));
+            }
+
+            uid = getValueFromCookies("userId", cookies);
+
+            if (uid == null) {
+                uid = getValueFromCookies("uid", cookies);
+            }
+
+            orgId = getValueFromCookies("orgId", cookies);
+        }
+
+        if (token == null || uid == null) {
+            token = request.getParameter("token");
+            timestamp = NumberUtils.toLong(request.getParameter("timeStamp"));
+            uid = request.getParameter("userId");
+        }
+
+        if (token == null || uid == null) {
+            String json = request.getHeader("token");
+            if (json != null) {
+                Map<String, String> map = GsonUtils.getStringMap(json);
+                if (map != null) {
+                    token = map.get("token");
+                    timestamp = NumberUtils.toLong(map.get("ts"));
+                    uid = map.get("uid");
+                    orgId = map.get("orgId");
+                }
+            }
+        }
+
+        if (StringUtils.isBlank(token) || StringUtils.isBlank(uid)) {
+            log.error("check token fail, token or uid from cookies is not allow blank");
+            throw new ApiException(INVALID_TOKEN);
+        }
+
+        int ret = RET_SUCCESS;
+        MutableBoolean isSuccess = new MutableBoolean();
+        AaceContext ctx = new AaceContext(AppTypeEnum.GUANGXI.getId() + "");
+        ctx.set("uid", uid + "");
+        try {
+            ret = aaceIMLoginService.verifyToken(uid, token, timestamp, isSuccess, ctx);
+        } catch (Exception ex) {
+            log.error("check token fail, ret={}, token={}", ret, token, ex);
+        }
+
+        if (ret == RET_SUCCESS) {
+            // 特殊场景下cookie里没有orgId
+            if (Utils.isEmpty(orgId)) {
+                orgId = request.getParameter("orgId");
+            }
+
+            LoginContext.setUid(uid);
+            if (orgId != null) {
+                LoginContext.setOrgId(orgId);
+            }
+
+            return true;
+        }
+
+        log.error("token token fail, uid:{}, token:{}, timestamp:{}, retCode:{}", uid, token, timestamp, ret);
+        throw new ApiException(INVALID_TOKEN);
     }
 }
