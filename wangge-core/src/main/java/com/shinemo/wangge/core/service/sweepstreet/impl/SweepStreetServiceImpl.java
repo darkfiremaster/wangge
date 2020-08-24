@@ -429,8 +429,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             Date broadbandExpireTime = null;
             Date visitTime = null;
             try {
-                broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
-                visitTime = format.parse(response.getVisitTime());
+                if(response.getBroadbandExpireTime() != null){
+                    broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
+                }
+                if(response.getVisitTime() != null){
+                    visitTime = format.parse(response.getVisitTime());
+                }
             } catch (ParseException e) {
                 log.error("[getMerchantList] ParseException e:{}", e);
                 return ApiResult.fail(500, e.getMessage());
@@ -443,9 +447,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .contactName(response.getContactPerson())
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
-                    .broadbandExpireTime(broadbandExpireTime.getTime())
+                    .broadbandExpireTime(broadbandExpireTime == null ? null:broadbandExpireTime.getTime())
                     .location(response.getLocation())
-                    .visitTime(visitTime.getTime())
+                    .visitTime(visitTime == null ? null:visitTime.getTime())
                     .distance(response.getDistance())
                     .build());
         }
