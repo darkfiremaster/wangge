@@ -488,11 +488,12 @@ public class StallUpServiceImpl implements StallUpService {
         }
         try {
             updateParent(child, null, endTime);
-
-            syncTodoUpdate(status, request.getId());
         } finally {
             redisLock.unlock(LockContext.create(key));
         }
+
+        //同步代办事项
+        syncTodoUpdate(status, request.getId());
     }
 
     @Override
