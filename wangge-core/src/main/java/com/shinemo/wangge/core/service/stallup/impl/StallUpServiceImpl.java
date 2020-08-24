@@ -3,12 +3,9 @@ package com.shinemo.wangge.core.service.stallup.impl;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.shinemo.client.util.DateUtil;
 import com.shinemo.client.util.GsonUtil;
@@ -1214,7 +1211,7 @@ public class StallUpServiceImpl implements StallUpService {
         String redisString=redisService.get("stallUpImportantRegion");
         JSONArray array= JSONUtil.parseArray(redisString);
         List<StallUpImportantRegion>  redisList=  JSONUtil.toList(array,StallUpImportantRegion.class);
-        if (null ==redisList){
+        if (CollectionUtils.isEmpty(redisList)){
             StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
             query.setPageEnable(false);
             redisList= stallUpImportantRegionMapper.find(query);
