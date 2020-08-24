@@ -8,6 +8,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -110,7 +111,15 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             statusList.add(SweepStreetStatusEnum.END.getId());
             streetActivityQuery.setStatusList(statusList);
             streetActivityQuery.setStatus(null);
+            streetActivityQuery.setOrderByEnable(true);
+            streetActivityQuery.putOrderBy("real_end_time",false);
         }
+
+        if (request.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId())) {
+            streetActivityQuery.setOrderByEnable(true);
+            streetActivityQuery.putOrderBy("plan_start_time",true);
+        }
+
         List<SweepStreetActivityDO> activityDOS = sweepStreetActivityMapper.find(streetActivityQuery);
         if (CollectionUtils.isEmpty(activityDOS)) {
             return ApiResult.of(0, ListVO.list(new ArrayList<>(), 0));
