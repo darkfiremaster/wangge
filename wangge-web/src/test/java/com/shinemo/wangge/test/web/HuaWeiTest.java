@@ -1,5 +1,6 @@
 package com.shinemo.wangge.test.web;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -359,7 +360,14 @@ public class HuaWeiTest {
 
     @Test
     public void updateSweepStreet() {
+        String startTime = "2020-08-24 16:52:00";
+        long time = DateUtil.parseDateTime(startTime).getTime();
+        System.out.println("time = " + time);
+        DateTime date = DateUtil.date(time);
+        System.out.println("date = " + date);
 
+        long l = System.currentTimeMillis();
+        System.out.println("l = " + l);
     }
 
 }

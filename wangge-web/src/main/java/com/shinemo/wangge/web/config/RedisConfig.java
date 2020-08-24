@@ -1,7 +1,15 @@
 package com.shinemo.wangge.web.config;
 
-import java.net.UnknownHostException;
-
+import com.shinemo.my.redis.domain.RedisSentinelNode;
+import com.shinemo.my.redis.service.RedisLock;
+import com.shinemo.my.redis.service.RedisService;
+import com.shinemo.my.redis.service.impl.RedisLockImpl;
+import com.shinemo.my.redis.service.impl.RedisServiceImpl;
+import com.shinemo.rds.RedisConf;
+import com.shinemo.rds.RedisConfProxy;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,13 +22,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.shinemo.my.redis.domain.RedisSentinelNode;
-import com.shinemo.my.redis.service.RedisLock;
-import com.shinemo.my.redis.service.RedisService;
-import com.shinemo.my.redis.service.impl.RedisLockImpl;
-import com.shinemo.my.redis.service.impl.RedisServiceImpl;
-import com.shinemo.rds.RedisConf;
-import com.shinemo.rds.RedisConfProxy;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableCaching
@@ -39,7 +44,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Bean(name = "redisService")
     @ConditionalOnMissingBean(RedisService.class)
     public RedisService redisServiceUrl(@Value("${shinemo.redis.dataName}") String dataName,
-            @Value("${shinemo.redis.database}") Integer database) {
+                                        @Value("${shinemo.redis.database}") Integer database) {
         RedisConf redisConf = RedisConfProxy.get(dataName);
         RedisSentinelNode node = new RedisSentinelNode(redisConf.getSentinels(), redisConf.getMastername());
         node.setDatabase(database);
@@ -53,6 +58,33 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisLockImpl redisLock = new RedisLockImpl();
         redisLock.setRedisService(redisService);
         return redisLock;
+    }
+
+    /**
+     * 哨兵模式 redisson 客户端
+     *
+     * @return
+     */
+
+    @Bean(name = "redissonClient")
+    @ConditionalOnMissingBean(name = "redissonClient")
+    public RedissonClient redissonSentinel(@Value("${shinemo.redis.dataName}") String dataName,
+                                    @Value("${shinemo.redis.database}") Integer database) {
+        RedisConf redisConf = RedisConfProxy.get(dataName);
+        Config config = new Config();
+        String[] nodes = redisConf.getSentinels().split(",");
+        List<String> newNodes = new ArrayList(nodes.length);
+        Arrays.stream(nodes).forEach((index) -> newNodes.add(
+                index.startsWith("redis://") ? index : "redis://" + index));
+
+        config.useSentinelServers()
+                .addSentinelAddress(newNodes.toArray(new String[0]))
+                .setMasterName(redisConf.getMastername())
+                .setPassword(redisConf.getPasswd())
+                .setDatabase(database);
+
+
+        return Redisson.create(config);
     }
 
 }

@@ -76,6 +76,7 @@ public class MainApplication implements WebMvcConfigurer {
                         properties.getCheckStatusPath(),
                         "/backdoor/**")
                 .excludePathPatterns(properties.getAuth().getExcludeUrlPatterns())
+                .excludePathPatterns("/test/**")
                 .order(0);
         registry.addInterceptor(intranetInterceptor)
                 .addPathPatterns("/backdoor/**")

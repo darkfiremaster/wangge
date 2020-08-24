@@ -1,6 +1,7 @@
 package com.shinemo.wangge.test.web;
 
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.web.MainApplication;
 import org.junit.Test;
@@ -24,11 +25,21 @@ public class ThirdApiTest {
     @Resource
     private ThirdApiMappingV2Service thirdApiMappingV2Service;
 
+    @Resource
+    private SweepStreetService sweepStreetService;
+
     @Test
     public void test1() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("mobile", "13588039023");
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, "getGroupList");
+        System.out.println("result = " + result);
+
+    }
+
+    @Test
+    public void testGetBusinessDetailUrl() {
+        ApiResult<String> result = sweepStreetService.getBusinessDetailUrl("G7712423433", "108.3805869280,22.76371734557");
         System.out.println("result = " + result);
 
     }
