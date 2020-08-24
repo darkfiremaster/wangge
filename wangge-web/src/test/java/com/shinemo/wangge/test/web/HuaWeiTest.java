@@ -1,7 +1,5 @@
 package com.shinemo.wangge.test.web;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -104,81 +102,6 @@ public class HuaWeiTest {
                 "        }\n" +
                 "    ]\n" +
                 "}";
-        log.info("param:{}", param);
-
-        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
-        log.info("httpResult:{}", httpResult);
-
-        //printResult(header, requestData, httpResult);
-    }
-
-    @Test
-    public void testCreateSweepStreet() {
-        String mobile = "13607713224";
-        String huaweiUrl = HuaweiSweepStreetActivityUrlEnum.CREATE_SWEEP_STREET_ACTIVITY.getUrl();
-
-        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
-        log.info("header:{}", header);
-
-        //HashMap<String, Object> requestData = new HashMap<>();
-        //requestData.put("groupName", "银行");
-        //String param = GsonUtils.toJson(requestData);
-
-        String param = "{\n" +
-                "    \"parentActivityId\":\"SJ_ACTIVITY_32\",\n" +
-                "    \"title\":\"测试扫街活动\",\n" +
-                "    \"startTime\":\"2020-08-21 14:59:17\",\n" +
-                "    \"endTime\":\"2020-08-21 15:59:17\",\n" +
-                "    \"status\":\"0\",\n" +
-                "    \"childrenList\":[\n" +
-                "        {\n" +
-                "            \"activityId\":\"SJ_ACTIVITY_29\",\n" +
-                "            \"participantList\":[\n" +
-                "                {\n" +
-                "                    \"userSource\":\"2\",\n" +
-                "                    \"userName\":\"吴健\",\n" +
-                "                    \"userPhone\":\"13607713224\",\n" +
-                "                    \"userType\":\"1\"\n" +
-                "                }\n" +
-                "            ]\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
-        log.info("param:{}", param);
-
-        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
-        log.info("httpResult:{}", httpResult);
-
-        //printResult(header, requestData, httpResult);
-    }
-
-    @Test
-    public void testUpdateSweepStreet() {
-        String mobile = "13607713224";
-        String huaweiUrl = HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getUrl();
-
-        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
-        log.info("header:{}", header);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("activityId", "SJ_ACTIVITY_29");
-        map.put("parentActivityId","SJ_ACTIVITY_32");
-        map.put("status", SweepStreetStatusEnum.PROCESSING.getId());
-        String location = "120.0687009006076,30.28182427300347";
-        String[] locations = StrUtil.split(location, ",");
-        map.put("startLongitude", locations[0]);
-        map.put("startLatitude", locations[1]);
-        map.put("startAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
-        map.put("startTime", DateUtil.formatDateTime(new Date()));
-
-        map.put("endLongitude", locations[0]);
-        map.put("endLatitude", locations[1]);
-        map.put("endAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
-        map.put("endTime", DateUtil.formatDateTime(new Date()));
-        map.put("remark", "备注");
-        map.put("picUrl", "1.png,2.png");
-
-        String param = GsonUtils.toJson(map);
         log.info("param:{}", param);
 
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
@@ -358,15 +281,6 @@ public class HuaWeiTest {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
         return ApiResult.of(0);
-    }
-
-    @Test
-    public void smsHot() {
-        String source = "Wv26iIap71FZr0_7UXsw_RsqEixhjkMSqH8VazKEbgTEM0mhVQWsljBj9n6CpbcLQI6LvMFUhqE_xku3J7y0CsTxZk4-fHbFta2dUnx_yOXBLEJtxQskrocl2bwPExB9_dMZ0Op_N-tFvm58qNY1Ly0WNjHb8c7-s_p8fkFUmredqrCJHT0iyiG0k-DQd_Zyjek7gkAqse5yZe0QSd2vIPWXiCGQE1NxFo_d_mFv6wIbjyvEcpz_07TKwoWI97nSoGH1tUoLWyhGvyhVu1l8LkIAdzAu8yo5cCzcQo30ooch14dCDhUrG1Ih2l3mVL8oG37kWNRqT7KEzM4vctCxJ_9Ixnhs2JIBYkiFAoQHv5eYeQwv8-2sTfQ0cx19Q9XL";
-        String key = "a8537aaefdd489789c07ae8a9760203";
-        String decrypt = EncryptUtil.decrypt(source, key);
-        String decode = URLDecoder.decode(decrypt);
-        System.out.println(decode);
     }
 
 }

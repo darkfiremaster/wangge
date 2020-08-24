@@ -46,8 +46,8 @@ public class VisitStreetServiceImpl implements VisitStreetService {
 
         SweepStreetVisitRecordingDO visitRecordingDO=new SweepStreetVisitRecordingDO();
         BeanUtils.copyProperties(request,visitRecordingDO);
-        visitRecordingDO.setMobile(mobile);
-        visitRecordingDO.setMarketingUserName(userName);
+        visitRecordingDO.setMobile("13200000001");
+        visitRecordingDO.setMarketingUserName("test");
         sweepStreetVisitRecordingMapper.insert(visitRecordingDO);
 
         /*扫街录入数据同步华为*/
@@ -128,12 +128,10 @@ public class VisitStreetServiceImpl implements VisitStreetService {
 
         Map<String,Object> map = new HashMap<>();
         map.put("visitId",SweepStreetActivityConstants.SJ_RECORD_PREFIX+visitRecordingDO.getId());
-
         map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
         map.put("groupId",visitRecordingDO.getMerchantId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");
-        map.put("location",visitRecordingDO.getLocation());
         map.put("bizType",visitRecordingDO.getBusinessType());
 
         if (visitRecordingDO.getHomeBroadband() != null) {
