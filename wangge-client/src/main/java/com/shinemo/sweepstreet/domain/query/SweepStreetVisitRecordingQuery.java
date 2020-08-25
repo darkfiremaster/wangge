@@ -1,12 +1,11 @@
 package com.shinemo.sweepstreet.domain.query;
 
-import java.util.Date;
-import java.util.List;
-
+import com.shinemo.client.common.QueryBase;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.shinemo.client.common.QueryBase;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 查询类
@@ -116,4 +115,13 @@ public class SweepStreetVisitRecordingQuery extends QueryBase {
 	private String createMerchantMobile;
 
 	private List<Long> activityIds;
+
+	/**
+	 * filterCreateTime为true时，根据创建时间过滤
+	 * 默认为false
+	 */
+	private Boolean filterCreateTime = false;
+
+	private Date startTime;
+	private Date endTime;
 }
