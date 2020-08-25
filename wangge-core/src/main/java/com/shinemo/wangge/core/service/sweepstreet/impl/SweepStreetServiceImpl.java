@@ -322,6 +322,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         //更新子活动表
         streetActivityDO.setStatus(status);
+        streetActivityDO.setRealEndTime(endTime);
         sweepStreetActivityMapper.update(streetActivityDO);
         //更新父活动表
         updateParentStatus(streetActivityDO, status, endTime);
@@ -422,7 +423,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         map.put("latitude", split[1]);
         map.put("pageSize", request.getPageSize());
         map.put("pageNum", request.getCurrentPage());
-        map.put("radius", "");
+        map.put("radius", SweepStreetActivityConstants.DEFAULT_RADIUS);
 
 
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
@@ -434,8 +435,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             Date broadbandExpireTime = null;
             Date visitTime = null;
             try {
-                broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
-                visitTime = format.parse(response.getVisitTime());
+                if(response.getBroadbandExpireTime() != null){
+                    broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
+                }
+                if(response.getVisitTime() != null){
+                    visitTime = format.parse(response.getVisitTime());
+                }
             } catch (ParseException e) {
                 log.error("[getMerchantList] ParseException e:{}", e);
                 return ApiResult.fail(500, e.getMessage());
@@ -448,9 +453,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .contactName(response.getContactPerson())
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
-                    .broadbandExpireTime(broadbandExpireTime.getTime())
+                    .broadbandExpireTime(broadbandExpireTime == null ? null:broadbandExpireTime.getTime())
                     .location(response.getLocation())
-                    .visitTime(visitTime.getTime())
+                    .visitTime(visitTime == null ? null:visitTime.getTime())
                     .distance(response.getDistance())
                     .build());
         }

@@ -1,7 +1,5 @@
 package com.shinemo.wangge.test.web;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,11 +13,8 @@ import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
-import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
-import com.shinemo.sweepstreet.enums.SweepStreetStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-
 import java.util.*;
 
 /**
@@ -101,81 +96,6 @@ public class HuaWeiTest {
                 "        }\n" +
                 "    ]\n" +
                 "}";
-        log.info("param:{}", param);
-
-        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
-        log.info("httpResult:{}", httpResult);
-
-        //printResult(header, requestData, httpResult);
-    }
-
-    @Test
-    public void testCreateSweepStreet() {
-        String mobile = "13607713224";
-        String huaweiUrl = HuaweiSweepStreetActivityUrlEnum.CREATE_SWEEP_STREET_ACTIVITY.getUrl();
-
-        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
-        log.info("header:{}", header);
-
-        //HashMap<String, Object> requestData = new HashMap<>();
-        //requestData.put("groupName", "银行");
-        //String param = GsonUtils.toJson(requestData);
-
-        String param = "{\n" +
-                "    \"parentActivityId\":\"SJ_ACTIVITY_32\",\n" +
-                "    \"title\":\"测试扫街活动\",\n" +
-                "    \"startTime\":\"2020-08-21 14:59:17\",\n" +
-                "    \"endTime\":\"2020-08-21 15:59:17\",\n" +
-                "    \"status\":\"0\",\n" +
-                "    \"childrenList\":[\n" +
-                "        {\n" +
-                "            \"activityId\":\"SJ_ACTIVITY_29\",\n" +
-                "            \"participantList\":[\n" +
-                "                {\n" +
-                "                    \"userSource\":\"2\",\n" +
-                "                    \"userName\":\"吴健\",\n" +
-                "                    \"userPhone\":\"13607713224\",\n" +
-                "                    \"userType\":\"1\"\n" +
-                "                }\n" +
-                "            ]\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}";
-        log.info("param:{}", param);
-
-        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
-        log.info("httpResult:{}", httpResult);
-
-        //printResult(header, requestData, httpResult);
-    }
-
-    @Test
-    public void testUpdateSweepStreet() {
-        String mobile = "13607713224";
-        String huaweiUrl = HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getUrl();
-
-        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
-        log.info("header:{}", header);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("activityId", "SJ_ACTIVITY_29");
-        map.put("parentActivityId","SJ_ACTIVITY_32");
-        map.put("status", SweepStreetStatusEnum.PROCESSING.getId());
-        String location = "120.0687009006076,30.28182427300347";
-        String[] locations = StrUtil.split(location, ",");
-        map.put("startLongitude", locations[0]);
-        map.put("startLatitude", locations[1]);
-        map.put("startAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
-        map.put("startTime", DateUtil.formatDateTime(new Date()));
-
-        map.put("endLongitude", locations[0]);
-        map.put("endLatitude", locations[1]);
-        map.put("endAddress", "浙江省杭州市西湖区文二西路靠近西溪壹号");
-        map.put("endTime", DateUtil.formatDateTime(new Date()));
-        map.put("remark", "备注");
-        map.put("picUrl", "1.png,2.png");
-
-        String param = GsonUtils.toJson(map);
         log.info("param:{}", param);
 
         HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
@@ -355,11 +275,6 @@ public class HuaWeiTest {
             return ApiResultWrapper.fail(GroupServiceDayErrorCodes.GROUP_SERVICE_SIGN_DISTANCE_ERROR);
         }
         return ApiResult.of(0);
-    }
-
-    @Test
-    public void updateSweepStreet() {
-
     }
 
 }
