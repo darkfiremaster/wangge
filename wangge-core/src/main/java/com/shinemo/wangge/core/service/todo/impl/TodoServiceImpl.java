@@ -31,6 +31,7 @@ import com.shinemo.todo.vo.TodoIndexVO;
 import com.shinemo.todo.vo.TodoTypeVO;
 import com.shinemo.todo.vo.TodoVO;
 import com.shinemo.wangge.core.aop.TodoLog;
+import com.shinemo.wangge.core.event.DaoSanJiaoTodoCreateEvent;
 import com.shinemo.wangge.core.service.todo.TodoAuthCheckService;
 import com.shinemo.wangge.core.service.todo.TodoService;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
@@ -38,6 +39,7 @@ import com.shinemo.wangge.dal.mapper.TodoLogMapper;
 import com.shinemo.wangge.dal.mapper.TodoTypeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -66,10 +68,16 @@ public class TodoServiceImpl implements TodoService {
     @Resource
     private TodoAuthCheckService todoAuthCheckService;
 
+    @Resource
+    private ApplicationEventPublisher publisher;
+
+
     @CreateCache(name = "TodoServiceImpl.todoTypeCache-", cacheType = CacheType.LOCAL, expire = 60 * 60)
     private Cache<String, TodoTypeVO> todoTypeCache;
 
     private static final String TODO_TYPE_CACHE_KEY = "todo_type_list";
+
+
 
 
     @TodoLog
@@ -128,6 +136,11 @@ public class TodoServiceImpl implements TodoService {
             //新增
             TodoDO todoDO = getTodoDO(todoDTO);
             thirdTodoMapper.insert(todoDO);
+
+            if (todoDO.getThirdType().equals(ThirdTodoTypeEnum.DAO_SAN_JIAO_ORDER.getId())) {
+                publisher.publishEvent(new DaoSanJiaoTodoCreateEvent(this, todoDO));
+            }
+
         }
 
         return ApiResult.of(0);

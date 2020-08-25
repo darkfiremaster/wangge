@@ -30,11 +30,11 @@ public class StallUpEndDelayJobExecutor implements DelayJobExecutor {
         log.info("[StallUpEndDelayJobExecute.execute] 开始执行任务:{}", jobParams);
 
         //判断活动是否是未开始
-        String activityId = MapUtil.getStr(jobParams, "id");
-        Assert.notBlank(activityId, "活动id不能为空");
+        Long activityId = MapUtil.getLong(jobParams, "id");
+        Assert.notNull(activityId, "活动id不能为空");
 
         StallUpActivityQuery stallUpActivityQuery = new StallUpActivityQuery();
-        stallUpActivityQuery.setId(Long.valueOf(activityId));
+        stallUpActivityQuery.setId(activityId);
         StallUpActivity stallUpActivity = stallUpActivityMapper.get(stallUpActivityQuery);
 
         if (stallUpActivity.getStatus().equals(StallUpStatusEnum.PREPARE.getId()) || stallUpActivity.getStatus().equals(StallUpStatusEnum.STARTED.getId())) {
