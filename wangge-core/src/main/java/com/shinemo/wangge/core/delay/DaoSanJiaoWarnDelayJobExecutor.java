@@ -2,6 +2,9 @@ package com.shinemo.wangge.core.delay;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
+import com.shinemo.Aace.context.AaceContext;
+import com.shinemo.client.ace.Sms.SmsService;
+import com.shinemo.client.order.AppTypeEnum;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
@@ -9,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -22,6 +26,9 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
 
     @Resource
     private ThirdTodoMapper thirdTodoMapper;
+
+    @Resource
+    private SmsService smsService;
 
     @Override
     public void execute(DelayJob job) {
@@ -41,8 +48,17 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
 
         //判断工单的状态,如果是已执行,则不发送
         if (todoDO.getStatus().equals(0)) {
-            log.info("您有一条倒三角支撑工单，剩余处理时限4小时，请尽快处理。");
-            //todo 发短信
+            // 发短信
+            ArrayList<String> mobile = new ArrayList<>();
+            mobile.add(todoDO.getOperatorMobile());
+            ArrayList<String> contents = new ArrayList<>();
+            ArrayList<String> successMobiles = new ArrayList<>();
+            int ret = smsService.sendSms(mobile, 234, AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
+            if (ret == 0) {
+                log.info("[sendSms] 发送短信成功,mobile:{}", mobile);
+            } else {
+                log.error("[sendSms] 发送短信失败,mobile:{}", mobile);
+            }
         }
 
 
