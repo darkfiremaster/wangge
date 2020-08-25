@@ -2,6 +2,7 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
@@ -340,6 +341,15 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         map.put("parentActivityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + streetActivityDO.getParentId());
         map.put("status", SweepStreetStatusEnum.AUTO_END.getId());
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getApiName(), streetActivityDO.getMobile());
+    }
+
+    public static void main(String[] args) {
+        Date thisWeekMonday = DateUtils.getThisWeekMonday();
+        System.out.println("thisWeekMonday = " + thisWeekMonday);
+        DateTime dateTime = DateUtil.beginOfWeek(new Date());
+        System.out.println("dateTime = " + dateTime);
+        DateTime dateTime1 = DateUtil.beginOfMonth(new Date());
+        System.out.println("dateTime1 = " + dateTime1);
     }
 
     @Override
