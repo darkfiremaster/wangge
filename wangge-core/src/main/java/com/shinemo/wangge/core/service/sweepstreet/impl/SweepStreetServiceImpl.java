@@ -460,7 +460,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
                     .broadbandExpireTime(broadbandExpireTime == null ? null:broadbandExpireTime.getTime())
-                    .location(response.getLocation())
+                    .location(response.getLongitude()+","+response.getLatitude())
                     .visitTime(visitTime == null ? null:visitTime.getTime())
                     .distance(response.getDistance())
                     .build());
