@@ -8,7 +8,6 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -356,6 +355,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         query.setMobile(mobile);
         query.setEndFilterStartTime(startTime);
         query.setEndFilterEndTime(new Date());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(SweepStreetStatusEnum.END.getId());
+        statusList.add(SweepStreetStatusEnum.ABNORMAL_END.getId());
+        statusList.add(SweepStreetStatusEnum.AUTO_END.getId());
+        query.setStatusList(statusList);
+
         List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper.find(query);
         if (CollectionUtils.isEmpty(sweepStreetActivityDOS)) {
             log.info("[getFinishedCount] activityList is empty!");
