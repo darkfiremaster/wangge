@@ -2,13 +2,14 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
+import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -342,6 +343,15 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getApiName(), streetActivityDO.getMobile());
     }
 
+    public static void main(String[] args) {
+        Date thisWeekMonday = DateUtils.getThisWeekMonday();
+        System.out.println("thisWeekMonday = " + thisWeekMonday);
+        DateTime dateTime = DateUtil.beginOfWeek(new Date());
+        System.out.println("dateTime = " + dateTime);
+        DateTime dateTime1 = DateUtil.beginOfMonth(new Date());
+        System.out.println("dateTime1 = " + dateTime1);
+    }
+
     @Override
     public ApiResult<SweepStreetActivityFinishedVO> getFinishedCount(Integer type) {
         SweepStreetActivityFinishedVO result = new SweepStreetActivityFinishedVO();
@@ -357,23 +367,22 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         query.setMobile(mobile);
         query.setEndFilterStartTime(startTime);
         query.setEndFilterEndTime(new Date());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(SweepStreetStatusEnum.END.getId());
+        statusList.add(SweepStreetStatusEnum.ABNORMAL_END.getId());
+        statusList.add(SweepStreetStatusEnum.AUTO_END.getId());
+        query.setStatusList(statusList);
         List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper.find(query);
-        if (CollectionUtils.isEmpty(sweepStreetActivityDOS)) {
-            log.info("[getFinishedCount] activityList is empty!");
-            result.setActivityCount(0);
-            result.setBusinessCount(0);
-            return ApiResult.of(0, result);
-        }
-        result.setActivityCount(sweepStreetActivityDOS.size());
-        List<Long> activityIdList = sweepStreetActivityDOS.stream().map(SweepStreetActivityDO::getId).collect(Collectors.toList());
+
         SweepStreetVisitRecordingQuery recordingQuery = new SweepStreetVisitRecordingQuery();
-        recordingQuery.setActivityIds(activityIdList);
+        recordingQuery.setFilterCreateTime(true);
+        recordingQuery.setStartTime(startTime);
+        recordingQuery.setEndTime(new Date());
+        recordingQuery.setMobile(SmartGridContext.getMobile());
+        recordingQuery.setStatus(StatusEnum.NORMAL.getId());
         List<SweepStreetVisitRecordingDO> recordingDOS = sweepStreetVisitRecordingMapper.find(recordingQuery);
-        if (CollectionUtils.isEmpty(recordingDOS)) {
-            log.info("[getFinishedCount] activity visit record is empty!");
-            result.setBusinessCount(0);
-            return ApiResult.of(0, result);
-        }
+
+        result.setActivityCount(sweepStreetActivityDOS.size());
         result.setBusinessCount(recordingDOS.size());
         return ApiResult.of(0, result);
     }
