@@ -46,6 +46,7 @@ public class EndGroupServiceDaySchedule {
 		statusList.add(GroupServiceDayStatusEnum.NOT_START.getId());
 		statusList.add(GroupServiceDayStatusEnum.PROCESSING.getId());
 		groupServiceDayQuery.setStatusList(statusList);
+		groupServiceDayQuery.setPageEnable(false);
 		List<GroupServiceDayDO> groupServiceDayDOS = groupServiceDayMapper.find(groupServiceDayQuery);
 		for (GroupServiceDayDO serviceDayDO: groupServiceDayDOS) {
 			if (serviceDayDO.getPlanEndTime().getTime() < begin) {

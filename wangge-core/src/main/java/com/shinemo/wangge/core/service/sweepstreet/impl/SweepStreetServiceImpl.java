@@ -114,6 +114,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             streetActivityQuery.setStatus(null);
             streetActivityQuery.setOrderByEnable(true);
             streetActivityQuery.putOrderBy("real_end_time",false);
+        }else {
+            streetActivityQuery.setPageEnable(false);
         }
 
         if (request.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId())) {
