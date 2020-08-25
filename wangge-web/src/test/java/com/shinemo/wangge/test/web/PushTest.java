@@ -1,5 +1,7 @@
 package com.shinemo.wangge.test.web;
 
+import com.shinemo.Aace.context.AaceContext;
+import com.shinemo.client.ace.Sms.SmsService;
 import com.shinemo.wangge.core.push.PushService;
 import com.shinemo.wangge.core.push.domain.PushMsgExtra;
 import com.shinemo.wangge.web.MainApplication;
@@ -9,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 
 /**
  * @Author shangkaihui
@@ -22,6 +25,10 @@ public class PushTest {
     @Resource
     private PushService pushService;
 
+    @Resource
+    private SmsService smsService;
+
+
     @Test
     public void pushTest() {
         PushMsgExtra pushMsgExtra = PushMsgExtra.builder()
@@ -33,6 +40,18 @@ public class PushTest {
                 .messageTitle("测试messageTitle")
                 .build();
         pushService.push(pushMsgExtra, 53, 69553056L);
+
+    }
+
+    @Test
+    public void smsTest() {
+
+        ArrayList<String> mobile = new ArrayList();
+        ArrayList<String> content = new ArrayList();
+        ArrayList<String> successMobile = new ArrayList();
+        Integer templateId = 1;
+        int result = smsService.sendSms(mobile, templateId, 53, content, successMobile, new AaceContext());
+        System.out.println("result = " + result);
     }
 
 
