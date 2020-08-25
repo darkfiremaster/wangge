@@ -1,20 +1,17 @@
 package com.shinemo.wangge.core.delay;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
-import org.redisson.codec.JsonJacksonCodec;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,41 +37,22 @@ public class TestDelayJobController {
         map.put("id", id);
         map.put("startTime", startTime);
         delayJob.setJobParams(map);
-        delayJob.setClazz(StallUpStartDelayJobExecute.class);
+        delayJob.setClazz(StallUpStartDelayJobExecutor.class);
         delayJob.setExecuteTime(startTime);
 
         long delayTime = DateUtil.parseDateTime(startTime).getTime() - System.currentTimeMillis();
         delayJobService.submitJob(delayJob, delayTime, TimeUnit.MILLISECONDS);
-        log.info("[putJob]添加任务成功,job:{}", delayJob);
 
         return ApiResult.of(0);
     }
 
     @GetMapping("/getQueueSize")
     public ApiResult getQueueSize() {
-        RBlockingQueue<DelayJob> blockingQueue1 = redissonClient.getBlockingQueue(DelayJobTimer.delayJobsTag);
-        RDelayedQueue<DelayJob> delayedQueue = redissonClient.getDelayedQueue(blockingQueue1);
-        List<DelayJob> delayJobs = delayedQueue.readAll();
-        delayedQueue.clear();
-        System.out.println("delayJobs = " + delayJobs);
-        log.info("队列大小:{}", delayedQueue.size());
+        RBlockingQueue<DelayJob> blockingQueue = redissonClient.getBlockingQueue(DelayJobTimer.delayJobsTag);
+        RDelayedQueue<DelayJob> delayedQueue = redissonClient.getDelayedQueue(blockingQueue);
+        log.info("block队列大小:{}", blockingQueue.size());
+        log.info("delay队列大小:{}", delayedQueue.size());
         return ApiResult.of(0);
     }
 
-    @GetMapping("/put")
-    public ApiResult put() {
-        RBlockingQueue<Integer> blockingQueue1 = redissonClient.getBlockingQueue("test_queue",JsonJacksonCodec.INSTANCE);
-        blockingQueue1.offer(RandomUtil.randomInt());
-        log.info("队列大小:{}", blockingQueue1.size());
-        return ApiResult.of(0);
-    }
-
-    @GetMapping("/get")
-    public ApiResult get() throws InterruptedException {
-        RBlockingQueue<Integer> blockingQueue1 = redissonClient.getBlockingQueue("test_queue",JsonJacksonCodec.INSTANCE);
-        Integer result = blockingQueue1.take();
-        log.info("队列大小:{}", blockingQueue1.size());
-        log.info("result:{}", result);
-        return ApiResult.of(0);
-    }
 }

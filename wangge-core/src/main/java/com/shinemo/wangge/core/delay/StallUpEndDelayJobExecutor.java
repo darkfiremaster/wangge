@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class StallUpStartDelayJobExecute implements ExecuteJob {
+public class StallUpEndDelayJobExecutor implements DelayJobExecutor {
 
     @Resource
     private StallUpActivityMapper stallUpActivityMapper;
@@ -27,7 +27,7 @@ public class StallUpStartDelayJobExecute implements ExecuteJob {
     @Override
     public void execute(DelayJob job) {
         Map<String, Object> jobParams = job.getJobParams();
-        log.info("[StallUpStartDelayJobExecute.execute] 开始执行任务:{}", jobParams);
+        log.info("[StallUpEndDelayJobExecute.execute] 开始执行任务:{}", jobParams);
 
         //判断活动是否是未开始
         String activityId = MapUtil.getStr(jobParams, "id");
@@ -37,13 +37,10 @@ public class StallUpStartDelayJobExecute implements ExecuteJob {
         stallUpActivityQuery.setId(Long.valueOf(activityId));
         StallUpActivity stallUpActivity = stallUpActivityMapper.get(stallUpActivityQuery);
 
-        if (stallUpActivity.getStatus().equals(StallUpStatusEnum.PREPARE.getId())) {
+        if (stallUpActivity.getStatus().equals(StallUpStatusEnum.PREPARE.getId()) || stallUpActivity.getStatus().equals(StallUpStatusEnum.STARTED.getId())) {
             //todo 发短信
-            log.info("摆摊活动未开始,发送短信,提醒用户");
+            log.info("摆摊活动未结束,发送短信,提醒用户");
         }
-
-
-
 
     }
 }

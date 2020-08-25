@@ -40,7 +40,7 @@ import com.shinemo.todo.enums.TodoMethodOperateEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import com.shinemo.todo.vo.TodoDTO;
 import com.shinemo.wangge.core.config.StallUpConfig;
-import com.shinemo.wangge.core.delay.DelayJobService;
+import com.shinemo.wangge.core.event.StallUpCreateEvent;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
@@ -49,6 +49,7 @@ import com.shinemo.wangge.dal.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -144,7 +145,7 @@ public class StallUpServiceImpl implements StallUpService {
     private StallUpCommunityMapper stallUpCommunityMapper;
 
     @Resource
-    private DelayJobService delayJobService;
+    private ApplicationEventPublisher publisher;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -235,10 +236,11 @@ public class StallUpServiceImpl implements StallUpService {
             insertStallCommunity(request, parent);
             //同步华为数据
             synchronizeToHuaWei(request, parent);
-            //同步代办事项
             for (StallUpActivity stallUpActivity : insertList) {
-                //todo 增加延迟任务
+                //同步代办事项
                 syncTodoCreate(stallUpActivity);
+                //发布摆摊创建成功事件
+                publisher.publishEvent(new StallUpCreateEvent(this, stallUpActivity));
             }
 
             log.info("[create] 新建摆摊成功,父摆摊活动id:{}", parent.getId());

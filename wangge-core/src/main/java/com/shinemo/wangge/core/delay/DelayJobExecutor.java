@@ -1,5 +1,5 @@
 package com.shinemo.wangge.core.delay;
 
-public interface ExecuteJob {
+public interface DelayJobExecutor {
      void execute(DelayJob job);
 }
