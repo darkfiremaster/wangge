@@ -35,8 +35,13 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
         todoQuery.setId(id);
         TodoDO todoDO = thirdTodoMapper.get(todoQuery);
 
+        if (todoDO == null) {
+            return;
+        }
+
         //判断工单的状态,如果是已执行,则不发送
         if (todoDO.getStatus().equals(0)) {
+            log.info("您有一条倒三角支撑工单，剩余处理时限4小时，请尽快处理。");
             //todo 发短信
         }
 
