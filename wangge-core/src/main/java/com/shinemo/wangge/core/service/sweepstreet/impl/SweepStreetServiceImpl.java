@@ -323,6 +323,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         //更新子活动表
         streetActivityDO.setStatus(status);
+        streetActivityDO.setRealEndTime(endTime);
         sweepStreetActivityMapper.update(streetActivityDO);
         //更新父活动表
         updateParentStatus(streetActivityDO, status, endTime);
