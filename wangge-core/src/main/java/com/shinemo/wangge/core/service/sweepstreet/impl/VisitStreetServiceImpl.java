@@ -128,12 +128,10 @@ public class VisitStreetServiceImpl implements VisitStreetService {
 
         Map<String,Object> map = new HashMap<>();
         map.put("visitId",SweepStreetActivityConstants.SJ_RECORD_PREFIX+visitRecordingDO.getId());
-
         map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
         map.put("groupId",visitRecordingDO.getMerchantId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");
-        map.put("location",visitRecordingDO.getLocation());
         map.put("bizType",visitRecordingDO.getBusinessType());
 
         if (visitRecordingDO.getHomeBroadband() != null) {
