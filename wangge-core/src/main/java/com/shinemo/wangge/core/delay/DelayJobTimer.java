@@ -40,14 +40,13 @@ public class DelayJobTimer {
             while (true) {
                 try {
                     DelayJob job = blockingQueue.take();
-                    log.info("[startJobTimer] 获取到延迟任务:{}", job);
-                    log.info("[startJobTimer] 延迟队列剩余数量:{}", blockingQueue.size());
+                    log.info("[startJobTimer] 获取到延迟任务:{},剩余任务数:{}", job, blockingQueue.size());
                     if (job == null) {
                         continue;
                     }
-                    executorService.execute(new ExecutorTask(context, job));
+                    executorService.execute(new ExecutorDelayTask(context, job));
                 } catch (Exception e) {
-                    log.error("[startJobTimer] 出现异常:{}", e.getMessage());
+                    log.error("[startJobTimer] 执行延迟任务出现异常,异常原因:{}", e.getMessage());
                     try {
                         TimeUnit.SECONDS.sleep(60);
                     } catch (InterruptedException ex) {
@@ -58,13 +57,13 @@ public class DelayJobTimer {
         }).start();
     }
 
-    class ExecutorTask implements Runnable {
+    class ExecutorDelayTask implements Runnable {
 
         private ApplicationContext context;
 
         private DelayJob delayJob;
 
-        public ExecutorTask(ApplicationContext context, DelayJob delayJob) {
+        public ExecutorDelayTask(ApplicationContext context, DelayJob delayJob) {
             this.context = context;
             this.delayJob = delayJob;
         }

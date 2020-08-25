@@ -40,6 +40,7 @@ import com.shinemo.todo.enums.TodoMethodOperateEnum;
 import com.shinemo.todo.enums.TodoStatusEnum;
 import com.shinemo.todo.vo.TodoDTO;
 import com.shinemo.wangge.core.config.StallUpConfig;
+import com.shinemo.wangge.core.delay.DelayJobService;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import com.shinemo.wangge.core.service.stallup.StallUpService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
@@ -142,6 +143,9 @@ public class StallUpServiceImpl implements StallUpService {
     @Resource
     private StallUpCommunityMapper stallUpCommunityMapper;
 
+    @Resource
+    private DelayJobService delayJobService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(StallUpRequest stallUpRequest) {
@@ -233,6 +237,7 @@ public class StallUpServiceImpl implements StallUpService {
             synchronizeToHuaWei(request, parent);
             //同步代办事项
             for (StallUpActivity stallUpActivity : insertList) {
+                //todo 增加延迟任务
                 syncTodoCreate(stallUpActivity);
             }
 
