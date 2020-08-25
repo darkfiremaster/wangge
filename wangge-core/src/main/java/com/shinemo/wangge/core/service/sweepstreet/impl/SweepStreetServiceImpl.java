@@ -299,7 +299,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     public ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO) {
         SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(streetActivityDO.getId());
-        query.setUserId(SmartGridContext.getUid());
+        query.setMobile(streetActivityDO.getMobile());
         SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         int status = SweepStreetStatusEnum.AUTO_END.getId();
