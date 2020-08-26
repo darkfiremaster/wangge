@@ -303,6 +303,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(streetActivityDO.getId());
         query.setMobile(streetActivityDO.getMobile());
+        query.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
         SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         int status = SweepStreetStatusEnum.AUTO_END.getId();
