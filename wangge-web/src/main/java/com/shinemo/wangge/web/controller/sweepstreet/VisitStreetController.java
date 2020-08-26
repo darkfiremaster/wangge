@@ -29,8 +29,6 @@ public class VisitStreetController {
         Assert.notNull(request,"request is null");
         Assert.notNull(request.getActivityId(),"activityId is null");
         Assert.notNull(request.getMerchantId(),"merchantId is null");
-        Assert.notNull(request.getContactName(),"contactName is null");
-        Assert.notNull(request.getContactMobile(),"contactMobile is null");
         return visitStreetService.add(request);
     }
 
