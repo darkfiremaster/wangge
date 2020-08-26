@@ -92,6 +92,9 @@
                 ${orderBy.column} ${orderBy.sort}
             </foreach>
         </if>
+        <if test="pageEnable">
+            limit #{startRow}, #{pageSize}
+        </if>
     </select>
 
     <!-- 查询某条记录 -->

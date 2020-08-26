@@ -39,7 +39,8 @@ public class EndStreetServiceSchedule {
         statusList.add(GroupServiceDayStatusEnum.NOT_START.getId());
         statusList.add(GroupServiceDayStatusEnum.PROCESSING.getId());
         query.setStatusList(statusList);
-        List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper. find(query);
+        query.setPageEnable(false);
+        List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper.find(query);
         for (SweepStreetActivityDO streetActivityDO: sweepStreetActivityDOS) {
             if (streetActivityDO.getPlanEndTime().getTime() < begin) {
                 //自动结束

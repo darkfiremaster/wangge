@@ -114,6 +114,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             streetActivityQuery.setStatus(null);
             streetActivityQuery.setOrderByEnable(true);
             streetActivityQuery.putOrderBy("real_end_time",false);
+        }else {
+            streetActivityQuery.setPageEnable(false);
         }
 
         if (request.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId())) {
@@ -300,7 +302,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     public ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO) {
         SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(streetActivityDO.getId());
-        query.setUserId(SmartGridContext.getUid());
+        query.setMobile(streetActivityDO.getMobile());
         SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         int status = SweepStreetStatusEnum.AUTO_END.getId();
@@ -458,7 +460,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
                     .broadbandExpireTime(broadbandExpireTime == null ? null:broadbandExpireTime.getTime())
-                    .location(response.getLocation())
+                    .location(response.getLongitude()+","+response.getLatitude())
                     .visitTime(visitTime == null ? null:visitTime.getTime())
                     .distance(response.getDistance())
                     .build());
