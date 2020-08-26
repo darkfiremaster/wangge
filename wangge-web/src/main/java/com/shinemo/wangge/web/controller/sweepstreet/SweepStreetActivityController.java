@@ -2,6 +2,7 @@ package com.shinemo.wangge.web.controller.sweepstreet;
 
 
 import com.shinemo.client.common.ListVO;
+import com.shinemo.client.util.EnvUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
@@ -174,6 +175,9 @@ class SweepStreetActivityController {
                                       @RequestParam String location,
                                       @RequestParam Integer pageSize,
                                       @RequestParam Integer currentPage) {
+        if(EnvUtil.isDaily()){
+            location = "108.4184,22.8777";
+        }
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
                 .queryParam(queryParam)
                 .location(location)
