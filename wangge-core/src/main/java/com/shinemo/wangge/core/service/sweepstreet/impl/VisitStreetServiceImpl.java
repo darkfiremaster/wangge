@@ -12,6 +12,7 @@ import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.wangge.core.service.sweepstreet.VisitStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.SweepStreetVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     private SweepStreetVisitRecordingMapper sweepStreetVisitRecordingMapper;
 
     @Resource
-    private ThirdApiMappingService thirdApiMappingService;
+    private ThirdApiMappingV2Service thirdApiMappingV2Service;
 
 
     @Override
@@ -158,6 +159,6 @@ public class VisitStreetServiceImpl implements VisitStreetService {
         if (visitRecordingDO.getRemark() != null) {
             map.put("remark",visitRecordingDO.getRemark());
         }
-        thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, apiName,SmartGridContext.getMobile());
     }
 }
