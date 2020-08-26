@@ -4,6 +4,7 @@ package com.shinemo.wangge.web.controller.sweepstreet;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.client.util.EnvUtil;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.sweepstreet.domain.request.*;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetActivityVO;
 import com.shinemo.sweepstreet.domain.vo.SweepStreetBusinessIndexVO;
@@ -176,7 +177,9 @@ class SweepStreetActivityController {
                                       @RequestParam Integer pageSize,
                                       @RequestParam Integer currentPage) {
         if(EnvUtil.isDaily()){
-            location = "108.4184,22.8777";
+            if(SmartGridContext.getMobile().equals("15958032925")){
+                location = "108.4184,22.8777";
+            }
         }
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
                 .queryParam(queryParam)
