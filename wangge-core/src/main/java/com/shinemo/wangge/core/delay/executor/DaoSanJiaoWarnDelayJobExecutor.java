@@ -1,12 +1,15 @@
-package com.shinemo.wangge.core.delay;
+package com.shinemo.wangge.core.delay.executor;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import com.shinemo.Aace.context.AaceContext;
 import com.shinemo.client.ace.Sms.SmsService;
 import com.shinemo.client.order.AppTypeEnum;
+import com.shinemo.smartgrid.enums.SmsTemplateEnum;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.query.TodoQuery;
+import com.shinemo.wangge.core.delay.DelayJob;
+import com.shinemo.wangge.core.delay.DelayJobExecutor;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -53,7 +56,7 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
             mobile.add(todoDO.getOperatorMobile());
             ArrayList<String> contents = new ArrayList<>();
             ArrayList<String> successMobiles = new ArrayList<>();
-            int ret = smsService.sendSms(mobile, 234, AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
+            int ret = smsService.sendSms(mobile, SmsTemplateEnum.DAOSANJIAO_WARN.getTemplateId(), AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
             if (ret == 0) {
                 log.info("[sendSms] 发送短信成功,mobile:{}", mobile);
             } else {

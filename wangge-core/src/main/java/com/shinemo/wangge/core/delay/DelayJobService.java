@@ -6,8 +6,6 @@ import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.JsonJacksonCodec;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,12 +17,6 @@ public class DelayJobService {
 
     @Resource
     private RedissonClient client;
-
-    @Resource
-    private ApplicationContext context;
-
-    @Resource
-    private ThreadPoolTaskExecutor delayJobServiceExecutor;
 
     /**
      * 提交延迟任务
@@ -49,20 +41,5 @@ public class DelayJobService {
         RDelayedQueue delayedQueue = client.getDelayedQueue(blockingQueue);
         delayedQueue.offer(job, delay, timeUnit);
         log.info("[submitJob] 添加延迟任务成功,job:{}", job);
-    }
-
-    /**
-     * 直接执行任务
-     *
-     * @param job
-     */
-    public void executeJobNow(DelayJob job) {
-        Assert.notNull(job, "任务不能为空");
-        Assert.notNull(job.getJobParams(), "任务参数不能为空");
-        Assert.notNull(job.getClazz(), "任务实现类不能为空");
-
-        delayJobServiceExecutor.execute(new ExecutorDelayTask(context, job));
-        log.info("[executeJobNow] 直接执行延迟任务,job:{}", job);
-
     }
 }
