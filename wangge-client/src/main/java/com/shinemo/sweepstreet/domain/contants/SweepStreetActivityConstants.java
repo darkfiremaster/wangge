@@ -8,6 +8,6 @@ package com.shinemo.sweepstreet.domain.contants;
 public class SweepStreetActivityConstants {
     public static final String SJ_ACTIVITYID_PREFIX = "SJ_ACTIVITY_";
     public static final String SJ_RECORD_PREFIX = "SJ_RECORD_";
-    public static final String DEFAULT_RADIUS = "10000";
+    public static final String DEFAULT_RADIUS = "100";
 
 }

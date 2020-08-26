@@ -177,8 +177,10 @@ class SweepStreetActivityController {
                                       @RequestParam Integer pageSize,
                                       @RequestParam Integer currentPage) {
         if(EnvUtil.isDaily()){
+            System.out.println(SmartGridContext.getMobile());
             if(SmartGridContext.getMobile().equals("15958032925")){
                 location = "108.4184,22.8777";
+                SmartGridContext.setMobile("13607713224");
             }
         }
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
