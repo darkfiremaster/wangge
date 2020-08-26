@@ -36,6 +36,8 @@ public class TestController {
 
     @GetMapping("/stallUpDelay")
     public ApiResult putJob(String id,String startTime) {
+        System.out.println("hello");
+
         DelayJob delayJob = new DelayJob();
         HashMap<String, Object> map = new HashMap<>();
         map.put("id", id);
