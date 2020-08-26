@@ -1,6 +1,7 @@
 package com.shinemo.wangge.web.controller.sweepstreet;
 
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
 import com.shinemo.client.util.EnvUtil;
 import com.shinemo.common.tools.result.ApiResult;
@@ -13,6 +14,7 @@ import com.shinemo.wangge.core.config.StallUpConfig;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetMarketService;
 import com.shinemo.wangge.core.service.sweepstreet.SweepStreetService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,8 @@ class SweepStreetActivityController {
     @Resource
     private SweepStreetMarketService sweepStreetMarketService;
 
+    @Value("${sweep.street.mock.location}")
+    private String locationMock;
     /**
      * 集团服务日业务查询首页
      *
@@ -179,7 +183,7 @@ class SweepStreetActivityController {
         if(EnvUtil.isDaily()){
             System.out.println(SmartGridContext.getMobile());
             if(SmartGridContext.getMobile().equals("15958032925")){
-                location = "108.4184,22.8777";
+                location = locationMock;
                 SmartGridContext.setMobile("13607713224");
             }
         }
