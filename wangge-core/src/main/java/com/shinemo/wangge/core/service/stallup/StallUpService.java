@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup;
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.stallup.domain.model.CommunityVO;
 import com.shinemo.stallup.domain.model.StallUpActivity;
@@ -175,11 +176,11 @@ public interface StallUpService {
 
 	/**
 	 * 获取报坐标5000米内的重点小区
-	 * @param location
 	 * @param refresh
+	 * @param location
 	 * @return
 	 */
-	ApiResult<List<StallUpImportantRegion>> getImportRegion(String location);
+	ApiResult<ListVO<StallUpImportantRegion>> getImportRegion(String location);
 
 	/**
 	 * 刷新早点小区的缓存数

@@ -1,5 +1,6 @@
 package com.shinemo.wangge.web.controller.stallup;
 
+import com.shinemo.client.common.ListVO;
 import com.shinemo.common.annotation.SmIgnore;
 import com.shinemo.common.tools.exception.ApiException;
 import com.shinemo.common.tools.result.ApiResult;
@@ -301,7 +302,7 @@ public class StallUpController {
 	 */
 	@GetMapping("getImportRegion")
 	@SmIgnore
-	public ApiResult<List<StallUpImportantRegion>> getImportRegion(@RequestParam String location) {
+	public ApiResult<ListVO<StallUpImportantRegion>> getImportRegion(@RequestParam String location) {
 		Assert.notNull(location, "location is null");
 		return stallUpService.getImportRegion(location);
 	}
