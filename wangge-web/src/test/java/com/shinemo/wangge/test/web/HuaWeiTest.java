@@ -13,6 +13,7 @@ import com.shinemo.smartgrid.http.HttpResult;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.smartgrid.utils.SmartGridUtils;
 import com.shinemo.stallup.domain.utils.DistanceUtils;
+import com.shinemo.sweepstreet.domain.contants.SweepStreetActivityConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import java.util.*;
@@ -262,6 +263,29 @@ public class HuaWeiTest {
         System.out.println(5 % 60);
     }
 
+
+    @Test
+    public void test8() {
+        String mobile = "15978197192";
+        String huaweiUrl = "/SGCoreMarketing/groupService/addVisitRecord";
+
+        Map<String, Object> header = SmartGridUtils.buildHeader(mobile, accessKeyId, secretKey);
+        log.info("header:{}", header);
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("visitId","126");
+        map.put("activityId", "123");
+        map.put("groupId","123");
+        map.put("successFlag","Y");
+        map.put("complaintFlag","y");
+        map.put("bizType","qwe");
+        map.put("tvBoxExpireTime",133);
+        String param = GsonUtils.toJson(map);
+        log.info("param:{}", param);
+
+        HttpResult httpResult = HttpConnectionUtils.httpPost(domain + huaweiUrl, param, header);
+        log.info("httpResult:{}", httpResult);
+    }
 
     private ApiResult checkDistaneWhencSign(String dbLocation, String reqLocation) {
         String[] dbSplit = dbLocation.split(",");

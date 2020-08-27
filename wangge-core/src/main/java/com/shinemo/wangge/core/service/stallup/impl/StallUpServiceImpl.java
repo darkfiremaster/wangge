@@ -7,6 +7,7 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.reflect.TypeToken;
+import com.shinemo.client.common.ListVO;
 import com.shinemo.client.util.DateUtil;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.exception.ApiException;
@@ -1206,19 +1207,24 @@ public class StallUpServiceImpl implements StallUpService {
      * @return
      */
     @Override
-    public ApiResult<List<StallUpImportantRegion>> getImportRegion(String location) {
+    public ApiResult<ListVO<StallUpImportantRegion>> getImportRegion(String location) {
         /*获取所有重点小区数据*/
+//        String redisString=redisService.get("stallUpImportantRegion");
+//        JSONArray array= JSONUtil.parseArray(redisString);
+//        List<StallUpImportantRegion>  redisList=  JSONUtil.toList(array,StallUpImportantRegion.class);
+//        if (CollectionUtils.isEmpty(redisList)){
+//            StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+//            query.setPageEnable(false);
+//            redisList= stallUpImportantRegionMapper.find(query);
+//            /*设置2天缓存*/
+//            redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
+//        }
 
-        String redisString=redisService.get("stallUpImportantRegion");
-        JSONArray array= JSONUtil.parseArray(redisString);
-        List<StallUpImportantRegion>  redisList=  JSONUtil.toList(array,StallUpImportantRegion.class);
-        if (CollectionUtils.isEmpty(redisList)){
-            StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
-            query.setPageEnable(false);
-            redisList= stallUpImportantRegionMapper.find(query);
-            /*设置2天缓存*/
-            redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
-        }
+
+        /*获取所有重点小区数据*/
+        StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+        query.setPageEnable(false);
+        List<StallUpImportantRegion> redisList= stallUpImportantRegionMapper.find(query);
 
         List<StallUpImportantRegion> resultList=new ArrayList<>();
         for (StallUpImportantRegion importantRegion: redisList) {
@@ -1228,11 +1234,11 @@ public class StallUpServiceImpl implements StallUpService {
             /*计算距离*/
             Integer distance=DistanceUtils.getDistance(importantRegion.getLocation(),location);
             /*5000米内的小区全部返回*/
-            if (distance<=5000){
+            if (distance<=1000){
                 resultList.add(importantRegion);
             }
         }
-        return ApiResult.of(0, resultList);
+        return ApiResult.of(0, ListVO.list(resultList,resultList.size()));
     }
 
     @Override
