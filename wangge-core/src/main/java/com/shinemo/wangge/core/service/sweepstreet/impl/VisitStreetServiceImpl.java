@@ -133,8 +133,10 @@ public class VisitStreetServiceImpl implements VisitStreetService {
         map.put("groupId",visitRecordingDO.getMerchantId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");
-        map.put("bizType",visitRecordingDO.getBusinessType());
 
+        if (visitRecordingDO.getBusinessType() != null){
+            map.put("bizType",visitRecordingDO.getBusinessType());
+        }
         if (visitRecordingDO.getHomeBroadband() != null) {
             map.put("broadbandType",visitRecordingDO.getHomeBroadband());
         }
@@ -151,10 +153,10 @@ public class VisitStreetServiceImpl implements VisitStreetService {
             map.put("familyTvRemark",visitRecordingDO.getTvBoxRemark());
         }
         if (visitRecordingDO.getBroadbandExpireTime() != null) {
-            map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime().getTime());
+            map.put("broadbandExpireTime",String.valueOf(visitRecordingDO.getBroadbandExpireTime().getTime()));
         }
         if (visitRecordingDO.getTvBoxExpireTime() != null) {
-            map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime().getTime());
+            map.put("tvBoxExpireTime",String.valueOf(visitRecordingDO.getTvBoxExpireTime().getTime()));
         }
         if (visitRecordingDO.getRemark() != null) {
             map.put("remark",visitRecordingDO.getRemark());
