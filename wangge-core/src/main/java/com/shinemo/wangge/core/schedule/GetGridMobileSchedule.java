@@ -1,6 +1,8 @@
 package com.shinemo.wangge.core.schedule;
 
+import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.result.ApiResult;
+import com.shinemo.my.redis.service.RedisService;
 import com.shinemo.stallup.domain.request.HuaWeiRequest;
 import com.shinemo.wangge.core.service.stallup.HuaWeiService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,11 @@ public class GetGridMobileSchedule {
 	@Resource
 	private HuaWeiService huaWeiService;
 
+	@Resource
+	private RedisService redisService;
+	private final String WANNGE_USER_MOBILE_LIST_KEY = "WANNGE_USER_MOBILE_LIST_KEY";
+
+
 	@Scheduled(cron = "0 0 2 * * ?")
 	public void execute() {
 		long begin = System.currentTimeMillis();
@@ -45,6 +52,8 @@ public class GetGridMobileSchedule {
 			return;
 		}
 		List<String> list = result.getData();
+
+		redisService.set(WANNGE_USER_MOBILE_LIST_KEY, GsonUtil.toJson(list));
 		String separator = System.getProperty("line.separator");
 		File file;
 		OutputStreamWriter ops = null;
