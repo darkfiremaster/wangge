@@ -186,4 +186,11 @@ public interface StallUpService {
 	 * 刷新早点小区的缓存数
 	 */
 	void reload();
+
+	/**
+	 * 根据活动子id查询早点小区信息
+	 * @param activityId
+	 * @return
+	 */
+	ApiResult<List<StallUpImportantRegion>> getImportRegionByActivity(Long activityId);
 }
