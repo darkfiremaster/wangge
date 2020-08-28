@@ -26,7 +26,9 @@ public class HuaweiMerchantResponse extends BaseDO {
 
     private String broadbandExpireTime;
 
-    private String location;
+//    private String location;
+    private String latitude;
+    private String longitude;
 
     private String visitTime;
 

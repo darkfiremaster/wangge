@@ -236,6 +236,8 @@ public class GroupServiceDayServiceImpl implements GroupServiceDayService {
             serviceDayQuery.setStatus(null);
             serviceDayQuery.setOrderByEnable(true);
             serviceDayQuery.putOrderBy("real_end_time",false);
+        }else {
+            serviceDayQuery.setPageEnable(false);
         }
 
         if (request.getStatus().equals(GroupServiceDayStatusEnum.NOT_START.getId())) {

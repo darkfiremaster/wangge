@@ -139,9 +139,9 @@ public class RedirectServiceImpl implements RedirectService {
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobileTel", SmartGridContext.getMobile());
-        formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getName());
-        formData.put("areaName", SmartGridContext.getSelectGridUserRoleDetail().getCityName());
-        formData.put("countyName", SmartGridContext.getSelectGridUserRoleDetail().getCountyName());
+        formData.put("gridName", SmartGridContext.getSelectGridUserRoleDetail().getId());
+        formData.put("areaName", SmartGridContext.getSelectGridUserRoleDetail().getCityCode());
+        formData.put("countyName", SmartGridContext.getSelectGridUserRoleDetail().getCountyCode());
         //todo 将我们的角色转化为装移那边的角色名称
         String roleName = "";
         String roleId = SmartGridContext.getSelectGridUserRoleDetail().getRoleList().get(0).getId();

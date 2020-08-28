@@ -12,6 +12,7 @@ import com.shinemo.sweepstreet.domain.vo.SweepStreetVisitRecordingVO;
 import com.shinemo.sweepstreet.enums.HuaweiSweepStreetActivityUrlEnum;
 import com.shinemo.wangge.core.service.sweepstreet.VisitStreetService;
 import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingService;
+import com.shinemo.wangge.core.service.thirdapi.ThirdApiMappingV2Service;
 import com.shinemo.wangge.dal.mapper.SweepStreetVisitRecordingMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class VisitStreetServiceImpl implements VisitStreetService {
     private SweepStreetVisitRecordingMapper sweepStreetVisitRecordingMapper;
 
     @Resource
-    private ThirdApiMappingService thirdApiMappingService;
+    private ThirdApiMappingV2Service thirdApiMappingV2Service;
 
 
     @Override
@@ -128,14 +129,14 @@ public class VisitStreetServiceImpl implements VisitStreetService {
 
         Map<String,Object> map = new HashMap<>();
         map.put("visitId",SweepStreetActivityConstants.SJ_RECORD_PREFIX+visitRecordingDO.getId());
-
         map.put("activityId", SweepStreetActivityConstants.SJ_ACTIVITYID_PREFIX + visitRecordingDO.getActivityId());
         map.put("groupId",visitRecordingDO.getMerchantId());
         map.put("successFlag",visitRecordingDO.getSuccessFlag()==1?"Y":"N");
         map.put("complaintFlag",visitRecordingDO.getComplaintSensitiveCustomersFlag()==1?"Y":"N");
-        map.put("location",visitRecordingDO.getLocation());
-        map.put("bizType",visitRecordingDO.getBusinessType());
 
+        if (visitRecordingDO.getBusinessType() != null){
+            map.put("bizType",visitRecordingDO.getBusinessType());
+        }
         if (visitRecordingDO.getHomeBroadband() != null) {
             map.put("broadbandType",visitRecordingDO.getHomeBroadband());
         }
@@ -152,14 +153,14 @@ public class VisitStreetServiceImpl implements VisitStreetService {
             map.put("familyTvRemark",visitRecordingDO.getTvBoxRemark());
         }
         if (visitRecordingDO.getBroadbandExpireTime() != null) {
-            map.put("broadbandExpireTime",visitRecordingDO.getBroadbandExpireTime().getTime());
+            map.put("broadbandExpireTime",String.valueOf(visitRecordingDO.getBroadbandExpireTime().getTime()));
         }
         if (visitRecordingDO.getTvBoxExpireTime() != null) {
-            map.put("TVBoxExpireTime",visitRecordingDO.getTvBoxExpireTime().getTime());
+            map.put("tvBoxExpireTime",String.valueOf(visitRecordingDO.getTvBoxExpireTime().getTime()));
         }
         if (visitRecordingDO.getRemark() != null) {
             map.put("remark",visitRecordingDO.getRemark());
         }
-        thirdApiMappingService.asyncDispatch(map, apiName,SmartGridContext.getMobile());
+        thirdApiMappingV2Service.asyncDispatch(map, apiName,SmartGridContext.getMobile());
     }
 }

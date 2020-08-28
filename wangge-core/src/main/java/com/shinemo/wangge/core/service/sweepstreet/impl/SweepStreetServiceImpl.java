@@ -2,13 +2,14 @@ package com.shinemo.wangge.core.service.sweepstreet.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.shinemo.client.common.ListVO;
+import com.shinemo.client.common.StatusEnum;
 import com.shinemo.cmmc.report.client.wrapper.ApiResultWrapper;
 import com.shinemo.common.tools.result.ApiResult;
-import com.shinemo.groupserviceday.enums.GroupServiceDayStatusEnum;
 import com.shinemo.smartgrid.domain.SmartGridContext;
 import com.shinemo.smartgrid.utils.DateUtils;
 import com.shinemo.smartgrid.utils.GsonUtils;
@@ -113,6 +114,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             streetActivityQuery.setStatus(null);
             streetActivityQuery.setOrderByEnable(true);
             streetActivityQuery.putOrderBy("real_end_time",false);
+        }else {
+            streetActivityQuery.setPageEnable(false);
         }
 
         if (request.getStatus().equals(SweepStreetStatusEnum.NOT_START.getId())) {
@@ -299,7 +302,8 @@ public class SweepStreetServiceImpl implements SweepStreetService {
     public ApiResult<Void> autoEnd(SweepStreetActivityDO streetActivityDO) {
         SignRecordQuery query = new SignRecordQuery();
         query.setActivityId(streetActivityDO.getId());
-        query.setUserId(SmartGridContext.getUid());
+        query.setMobile(streetActivityDO.getMobile());
+        query.setBizType(SignRecordBizTypeEnum.SWEEP_STREET.getId());
         SignRecordDO signRecordDO = signRecordMapper.get(query);
 
         int status = SweepStreetStatusEnum.AUTO_END.getId();
@@ -323,6 +327,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
 
         //更新子活动表
         streetActivityDO.setStatus(status);
+        streetActivityDO.setRealEndTime(endTime);
         sweepStreetActivityMapper.update(streetActivityDO);
         //更新父活动表
         updateParentStatus(streetActivityDO, status, endTime);
@@ -341,6 +346,15 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         thirdApiMappingV2Service.asyncDispatch(map, HuaweiSweepStreetActivityUrlEnum.UPDATE_SWEEP_STREET_ACTIVITY.getApiName(), streetActivityDO.getMobile());
     }
 
+    public static void main(String[] args) {
+        Date thisWeekMonday = DateUtils.getThisWeekMonday();
+        System.out.println("thisWeekMonday = " + thisWeekMonday);
+        DateTime dateTime = DateUtil.beginOfWeek(new Date());
+        System.out.println("dateTime = " + dateTime);
+        DateTime dateTime1 = DateUtil.beginOfMonth(new Date());
+        System.out.println("dateTime1 = " + dateTime1);
+    }
+
     @Override
     public ApiResult<SweepStreetActivityFinishedVO> getFinishedCount(Integer type) {
         SweepStreetActivityFinishedVO result = new SweepStreetActivityFinishedVO();
@@ -356,23 +370,22 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         query.setMobile(mobile);
         query.setEndFilterStartTime(startTime);
         query.setEndFilterEndTime(new Date());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(SweepStreetStatusEnum.END.getId());
+        statusList.add(SweepStreetStatusEnum.ABNORMAL_END.getId());
+        statusList.add(SweepStreetStatusEnum.AUTO_END.getId());
+        query.setStatusList(statusList);
         List<SweepStreetActivityDO> sweepStreetActivityDOS = sweepStreetActivityMapper.find(query);
-        if (CollectionUtils.isEmpty(sweepStreetActivityDOS)) {
-            log.info("[getFinishedCount] activityList is empty!");
-            result.setActivityCount(0);
-            result.setBusinessCount(0);
-            return ApiResult.of(0, result);
-        }
-        result.setActivityCount(sweepStreetActivityDOS.size());
-        List<Long> activityIdList = sweepStreetActivityDOS.stream().map(SweepStreetActivityDO::getId).collect(Collectors.toList());
+
         SweepStreetVisitRecordingQuery recordingQuery = new SweepStreetVisitRecordingQuery();
-        recordingQuery.setActivityIds(activityIdList);
+        recordingQuery.setFilterCreateTime(true);
+        recordingQuery.setStartTime(startTime);
+        recordingQuery.setEndTime(new Date());
+        recordingQuery.setMobile(SmartGridContext.getMobile());
+        recordingQuery.setStatus(StatusEnum.NORMAL.getId());
         List<SweepStreetVisitRecordingDO> recordingDOS = sweepStreetVisitRecordingMapper.find(recordingQuery);
-        if (CollectionUtils.isEmpty(recordingDOS)) {
-            log.info("[getFinishedCount] activity visit record is empty!");
-            result.setBusinessCount(0);
-            return ApiResult.of(0, result);
-        }
+
+        result.setActivityCount(sweepStreetActivityDOS.size());
         result.setBusinessCount(recordingDOS.size());
         return ApiResult.of(0, result);
     }
@@ -417,7 +430,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         map.put("latitude", split[1]);
         map.put("pageSize", request.getPageSize());
         map.put("pageNum", request.getCurrentPage());
-        map.put("radius", "");
+        map.put("radius", SweepStreetActivityConstants.DEFAULT_RADIUS);
 
 
         ApiResult<Map<String, Object>> result = thirdApiMappingV2Service.dispatch(map, HuaweiSweepStreetActivityUrlEnum.FIND_MERCHANT_LIST.getApiName());
@@ -429,8 +442,12 @@ public class SweepStreetServiceImpl implements SweepStreetService {
             Date broadbandExpireTime = null;
             Date visitTime = null;
             try {
-                broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
-                visitTime = format.parse(response.getVisitTime());
+                if(response.getBroadbandExpireTime() != null){
+                    broadbandExpireTime = format.parse(response.getBroadbandExpireTime());
+                }
+                if(response.getVisitTime() != null){
+                    visitTime = format.parse(response.getVisitTime());
+                }
             } catch (ParseException e) {
                 log.error("[getMerchantList] ParseException e:{}", e);
                 return ApiResult.fail(500, e.getMessage());
@@ -443,9 +460,9 @@ public class SweepStreetServiceImpl implements SweepStreetService {
                     .contactName(response.getContactPerson())
                     .contactMobile(response.getContactMobile())
                     .hasBroadband(response.getHasBroadband())
-                    .broadbandExpireTime(broadbandExpireTime.getTime())
-                    .location(response.getLocation())
-                    .visitTime(visitTime.getTime())
+                    .broadbandExpireTime(broadbandExpireTime == null ? null:broadbandExpireTime.getTime())
+                    .location(response.getLongitude()+","+response.getLatitude())
+                    .visitTime(visitTime == null ? null:visitTime.getTime())
                     .distance(response.getDistance())
                     .build());
         }
