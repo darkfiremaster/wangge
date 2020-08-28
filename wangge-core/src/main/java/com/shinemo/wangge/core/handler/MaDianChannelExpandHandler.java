@@ -24,7 +24,6 @@ public class MaDianChannelExpandHandler extends MaDianCommonHandler {
 
     @Override
     public String getUrl(UrlRedirectHandlerRequest request) {
-        String queryMobile = request.getQueryMobile();
         String requestBody = String.format(body,
                 request.getUserPhone(),
                 StrUtil.isNotBlank(request.getActivityStrId()) ? request.getActivityStrId() : "",
