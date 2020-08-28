@@ -16,6 +16,7 @@ import com.shinemo.todo.enums.ThirdTodoTypeEnum;
 import com.shinemo.todo.query.TodoLogQuery;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.todo.query.TodoUrlQuery;
+import com.shinemo.wangge.core.schedule.YuJingWarnSchedule;
 import com.shinemo.wangge.core.service.redirect.RedirectService;
 import com.shinemo.wangge.core.service.todo.TodoLogService;
 import com.shinemo.wangge.core.service.todo.TodoService;
@@ -239,5 +240,13 @@ public class TodoTest {
     public void getSmartReportUrl() {
         ApiResult<String> redirectUrl = redirectService.getRedirectUrl(2);
         System.out.println("redirectUrl = " + redirectUrl);
+    }
+
+    @Resource
+    private YuJingWarnSchedule yuJingWarnSchedule;
+
+    @Test
+    public void testYuJingWarn() {
+        yuJingWarnSchedule.yujingTodoTimeoutWarn();
     }
 }

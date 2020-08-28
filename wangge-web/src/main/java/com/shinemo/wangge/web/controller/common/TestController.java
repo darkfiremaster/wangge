@@ -6,6 +6,7 @@ import com.shinemo.wangge.core.delay.DelayJob;
 import com.shinemo.wangge.core.delay.DelayJobService;
 import com.shinemo.wangge.core.delay.DelayJobTimer;
 import com.shinemo.wangge.core.delay.executor.StallUpStartDelayJobExecutor;
+import com.shinemo.wangge.core.schedule.YuJingWarnSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
@@ -34,8 +35,11 @@ public class TestController {
     @Resource
     private RedissonClient redissonClient;
 
+    @Resource
+    private YuJingWarnSchedule yuJingWarnSchedule;
+
     @GetMapping("/stallUpDelay")
-    public ApiResult putJob(String id,String startTime) {
+    public ApiResult putJob(String id, String startTime) {
 
         DelayJob delayJob = new DelayJob();
         HashMap<String, Object> map = new HashMap<>();
@@ -57,6 +61,12 @@ public class TestController {
         RDelayedQueue<DelayJob> delayedQueue = redissonClient.getDelayedQueue(blockingQueue);
         log.info("block队列大小:{}", blockingQueue.size());
         log.info("delay队列大小:{}", delayedQueue.size());
+        return ApiResult.of(0);
+    }
+
+    @GetMapping("/yuJingWarnSchedule")
+    public ApiResult yuJingWarnSchedule() {
+        yuJingWarnSchedule.yujingTodoTimeoutWarn();
         return ApiResult.of(0);
     }
 

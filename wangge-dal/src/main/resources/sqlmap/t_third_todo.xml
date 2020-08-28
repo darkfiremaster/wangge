@@ -43,7 +43,8 @@
                     <if test="startTime != null"><![CDATA[and operator_time >= #{startTime}]]></if>
                     <if test="endTime != null"><![CDATA[and operator_time <= #{endTime}]]></if>
                     <if test="timeType == 1">
-                        and IF(ISNULL(start_time),DATE(operator_time)=DATE(NOW()), DATE(NOW()) BETWEEN DATE(start_time)and DATE(operator_time))
+                        and IF(ISNULL(start_time),DATE(operator_time)=DATE(NOW()), DATE(NOW()) BETWEEN
+                        DATE(start_time)and DATE(operator_time))
                     </if>
                     <if test="orderByEnable and orderByList != null and orderByList.size() > 0">
                         order by
@@ -215,33 +216,46 @@
 
 
     <select id="getTodayTodoCount" resultType="java.lang.Integer">
-        select count(*) from t_third_todo
-        where `status`=0 and operator_mobile=#{mobile}
-          and IF(ISNULL(start_time),DATE(operator_time)=DATE(NOW()), DATE(NOW()) BETWEEN DATE(start_time)and DATE(operator_time))
+        select count(*)
+        from t_third_todo
+        where `status` = 0
+          and operator_mobile = #{mobile}
+          and IF(ISNULL(start_time), DATE(operator_time) = DATE(NOW()),
+                 DATE(NOW()) BETWEEN DATE(start_time) and DATE(operator_time))
     </select>
 
     <select id="getAllTodoCount" resultType="java.lang.Integer">
-        select count(*) from t_third_todo where `status`=0 and operator_mobile=#{mobile}
+        select count(*)
+        from t_third_todo
+        where `status` = 0
+          and operator_mobile = #{mobile}
     </select>
 
-    <select id="getAllTodoTypeList"  parameterType="com.shinemo.todo.query.TodoQuery"
+    <select id="getAllTodoTypeList" parameterType="com.shinemo.todo.query.TodoQuery"
             resultType="com.shinemo.todo.dto.TodoTypeDTO">
-        select
-            third_type as todoType,
-            t2.type,
-            t2.name,
-            t2.`status`,
-            count(*) as todoCount
-        from
-            t_third_todo t1
-            left join t_todo_type t2  on t1.third_type = t2.todo_type
-        WHERE
-            1=1
-            and t1.status=#{status}
-            and t1.operator_mobile=#{mobile}
-            and t2.status=1
-        GROUP BY
-            t1.third_type;
+        select third_type as todoType,
+               t2.type,
+               t2.name,
+               t2.`status`,
+               count(*)   as todoCount
+        from t_third_todo t1
+                 left join t_todo_type t2 on t1.third_type = t2.todo_type
+        WHERE 1 = 1
+          and t1.status = #{status}
+          and t1.operator_mobile = #{mobile}
+          and t2.status = 1
+        GROUP BY t1.third_type;
+    </select>
+
+
+    <select id="getYuJingTimeoutCount" resultType="com.shinemo.todo.dto.TodoCountDTO">
+        select operator_mobile as mobile, count(*) as todoCount
+        from t_third_todo
+        where third_type = 5
+          and status = 0
+          <![CDATA[and start_time > #{startTime}]]>
+          <![CDATA[and start_time <= #{endTime}]]>
+        group by operator_mobile;
     </select>
 
 
