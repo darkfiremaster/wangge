@@ -31,7 +31,8 @@ public class GetGridMobileSchedule {
 
 	@Resource
 	private RedisService redisService;
-	private final String WANNGE_USER_MOBILE_LIST_KEY = "WANNGE_USER_MOBILE_LIST_KEY";
+	private final String WANGGE_USER_MOBILE_LIST_KEY = "WANGGE_USER_MOBILE_LIST_KEY";
+
 
 
 	@Scheduled(cron = "0 0 2 * * ?")
@@ -53,7 +54,7 @@ public class GetGridMobileSchedule {
 		}
 		List<String> list = result.getData();
 
-		redisService.set(WANNGE_USER_MOBILE_LIST_KEY, GsonUtil.toJson(list));
+		redisService.set(WANGGE_USER_MOBILE_LIST_KEY, GsonUtil.toJson(list));
 		String separator = System.getProperty("line.separator");
 		File file;
 		OutputStreamWriter ops = null;
