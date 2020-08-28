@@ -225,6 +225,11 @@ public class StallUpConfig {
         tmpUrlMap.put(ThirdHandlerTypeEnum.MA_DIAN_INTELLIGENT.getType(), maDianIntelligentHandler);
         tmpUrlMap.put(ThirdHandlerTypeEnum.MA_DIAN_INTELLIGENT_WITH_MOBILE.getType(), maDianIntelligentHandler);
 
+        //码店渠道拓展
+        MaDianChannelExpandHandler maDianChannelExpandHandler = new MaDianChannelExpandHandler();
+        maDianChannelExpandHandler.setPath(MaDianConfig.getChannelExpandPath());
+        tmpUrlMap.put(ThirdHandlerTypeEnum.MA_DIAN_CHANNEL_EXPAND.getType(), maDianChannelExpandHandler);
+
         //倒三角配置
         DaoSanJiaoConfig daoSanJiaoConfig = config.getDaoSanJiaoConfig();
         DaoSanJiaoHandler daoSanJiaoHandler = new DaoSanJiaoHandler();
@@ -524,6 +529,10 @@ public class StallUpConfig {
          * 码店智慧查询
          */
         private String intelligentPath;
+        /**
+         * 码店渠道拓展
+         */
+        private String channelExpandPath;
     }
 
     @Setter
