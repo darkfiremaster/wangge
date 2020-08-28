@@ -8,13 +8,16 @@ import com.shinemo.stallup.domain.enums.BusinessConfigEnum;
 import com.shinemo.stallup.domain.enums.ThirdHandlerTypeEnum;
 import com.shinemo.stallup.domain.model.SmartGridBiz;
 import com.shinemo.stallup.domain.model.StallUpBizType;
+import com.shinemo.stallup.domain.model.StallUpImportantRegion;
 import com.shinemo.stallup.domain.params.BizParams;
 import com.shinemo.stallup.domain.query.SmartGridBizQuery;
+import com.shinemo.stallup.domain.query.StallUpImportantRegionQuery;
 import com.shinemo.sweepfloor.domain.model.BusinessConfigDO;
 import com.shinemo.sweepfloor.domain.query.BusinessConfigQuery;
 import com.shinemo.wangge.core.handler.*;
 import com.shinemo.wangge.dal.mapper.BusinessConfigMapper;
 import com.shinemo.wangge.dal.mapper.SmartGridBizMapper;
+import com.shinemo.wangge.dal.mapper.StallUpImportantRegionMapper;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +49,8 @@ public class StallUpConfig {
     private RedisService redisService;
     @Resource
     private SmsHotHandler smsHotHandler;
+    @Resource
+    private StallUpImportantRegionMapper stallUpImportantRegionMapper;
     private static final Integer BASE_CONFIG_TYPE = 1;
     private static final Integer BIZ_TYPE = 2;
 
@@ -97,6 +102,15 @@ public class StallUpConfig {
         Map<Long, StallUpBizType> tmpMap = new HashMap<>();
         config.getList().forEach(v -> tmpMap.put(v.getId(), v));
         config.setMap(tmpMap);
+
+
+        /*获取所有重点小区数据*/
+        StallUpImportantRegionQuery stallUpImportantRegionQuery=new StallUpImportantRegionQuery();
+        stallUpImportantRegionQuery.setPageEnable(false);
+        List<StallUpImportantRegion> importantList= stallUpImportantRegionMapper.find(stallUpImportantRegionQuery);
+        Map<String, StallUpImportantRegion> importMap=importantList.stream().collect(Collectors.toMap(StallUpImportantRegion::getCommunityId,StallUpImportantRegion->StallUpImportantRegion));
+        config.setImportantRegionMap(importMap);
+
 
         //摆摊业务办理配置
         Map<Long, StallUpBizType> tmpBizMap = new HashMap<>();
@@ -468,6 +482,11 @@ public class StallUpConfig {
         private List<StallUpBizType> sweepStreetToolList;
         private List<StallUpBizType> sweepStreetBizList;
         private List<StallUpBizType> sweepStreetBizDataList;
+
+        /**
+         * 重点小区
+         */
+        private Map<String, StallUpImportantRegion> importantRegionMap;
 
 
         /**

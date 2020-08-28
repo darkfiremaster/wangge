@@ -80,6 +80,17 @@
         limit 10
     </select>
 
+    <select id="findCommunityByChildActivityId" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
+        SELECT
+	        a.*, c.id
+            FROM
+                t_stall_up_community a
+            LEFT JOIN t_parent_stall_up_activity b ON a.activity_id = b.id
+            LEFT JOIN t_stall_up_activity c ON b.id = c.parent_id
+            WHERE
+            c.id=#{childActivityId}
+    </select>
+
     <!-- 查询某条记录 -->
     <select id="get" resultMap="result" parameterType="com.shinemo.stallup.domain.query.StallUpCommunityQuery">
         select
