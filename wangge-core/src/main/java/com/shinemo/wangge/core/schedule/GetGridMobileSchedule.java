@@ -42,7 +42,7 @@ public class GetGridMobileSchedule {
 			.build());
 		if (!result.isSuccess()) {
 			System.out.println("error");
-			return;
+			return;HuaWeiTest
 		}
 		List<String> list = result.getData();
 		String separator = System.getProperty("line.separator");
