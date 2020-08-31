@@ -29,7 +29,7 @@ public class StallUpCreateEventListener {
     @EventListener(classes = {StallUpCreateEvent.class})
     @Async
     public void handleStallUpCreateEvent(StallUpCreateEvent event) {
-        log.info("[handleStallUpCreateEvent] 监听到事件:{},子活动id:{}", event, event.getStallUpActivity().getId());
+        log.info("[handleStallUpCreateEvent] 监听到事件:{}", event);
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("id", event.getStallUpActivity().getId());

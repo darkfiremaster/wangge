@@ -3,9 +3,9 @@ package com.shinemo.wangge.core.event;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.shinemo.todo.domain.TodoDO;
-import com.shinemo.wangge.core.delay.executor.DaoSanJiaoWarnDelayJobExecutor;
 import com.shinemo.wangge.core.delay.DelayJob;
 import com.shinemo.wangge.core.delay.DelayJobService;
+import com.shinemo.wangge.core.delay.executor.DaoSanJiaoWarnDelayJobExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -43,25 +43,24 @@ public class DaoSanJiaoTodoCreateEventListener {
         }
 
         //休息时间不做提醒:中午12:00-14:30；18:00-次日8:30
-        String today = DateUtil.today();
-        String beginTime1 = today + " 12:00:00";
-        String endTime1 = today + " 14:30:00";
-        DateTime begin1 = DateUtil.parseDateTime(beginTime1);
-        DateTime end1 = DateUtil.parseDateTime(endTime1);
+        //00:00-08:30 12:00-14:30 18:00-23:59 在这三个时间段内,不做提醒
+        executeTime = DateUtil.parseTime(executeTime.toTimeStr());
+        DateTime begin = DateUtil.parseTime("00:00:00");
+        DateTime end = DateUtil.parseTime("08:00:00");
+        boolean isInMorning = DateUtil.isIn(executeTime, begin, end);
+
+        DateTime begin1 = DateUtil.parseTime("12:00:00");
+        DateTime end1 = DateUtil.parseTime("14:30:00");
         boolean isInNoon = DateUtil.isIn(executeTime, begin1, end1);
 
-        DateTime tomorrow = DateUtil.tomorrow();
-        String tomorrowTime = DateUtil.formatDate(tomorrow);
-        String beginTime2 = today + " 18:00:00";
-        String endTime2 = tomorrowTime + " 08:00:00";
-        DateTime begin2 = DateUtil.parseDateTime(beginTime2);
-        DateTime end2 = DateUtil.parseDateTime(endTime2);
+        DateTime begin2 = DateUtil.parseTime("18:00:00");
+        DateTime end2 = DateUtil.parseTime("23:59:59");
         boolean isInNight = DateUtil.isIn(executeTime, begin2, end2);
 
-        if (isInNoon || isInNight) {
+        if (isInMorning || isInNoon || isInNight) {
             //在休息时间内
-            log.info("[handleDaoSanJiaoTodoCreateEvent] 倒三角工单超时提醒时间在休息时间内,工单执行时间:{},isInNoon:{},isInNight:{}",
-                    todoDO.getOperatorTime(), isInNoon, isInNight);
+            log.info("[handleDaoSanJiaoTodoCreateEvent] 倒三角工单超时提醒时间在休息时间内,工单执行时间:{},isInMorning:{},isInNoon:{},isInNight:{}",
+                    todoDO.getOperatorTime(), isInMorning, isInNoon, isInNight);
             return;
         } else {
             DelayJob delayJob = new DelayJob();
@@ -72,5 +71,36 @@ public class DaoSanJiaoTodoCreateEventListener {
             delayJob.setClazz(DaoSanJiaoWarnDelayJobExecutor.class);
             delayJobService.submitJob(delayJob, delayTime, TimeUnit.MILLISECONDS);
         }
+    }
+
+    public static void main(String[] args) {
+
+        DateTime dateTime = DateUtil.parseDateTime("2020-09-03 02:00:00");
+        String time = dateTime.toTimeStr();
+        System.out.println("time = " + time);
+        DateTime executeTime = DateUtil.offsetHour(dateTime, -4);//向前偏移4小时
+        System.out.println("executeTime = " + executeTime);
+        //如果执行时间小于当前时间,则不执行
+        long delayTime = executeTime.getTime() - System.currentTimeMillis();
+        if (delayTime <= 0) {
+            return;
+        }
+
+        //休息时间不做提醒:中午12:00-14:30；18:00-次日8:30
+        //00:00-08:30 12:00-14:30 18:00-23:59 在这三个时间段内,不做提醒
+        executeTime = DateUtil.parseTime(executeTime.toTimeStr());
+        System.out.println("executeTime = " + executeTime);
+        DateTime begin = DateUtil.parseTime("00:00:00");
+        DateTime end = DateUtil.parseTime("08:00:00");
+        boolean isInMorning = DateUtil.isIn(executeTime, begin, end);
+        System.out.println("isInMorning = " + isInMorning);
+        DateTime begin1 = DateUtil.parseTime("12:00:00");
+        DateTime end1 = DateUtil.parseTime("14:30:00");
+        boolean isInNoon = DateUtil.isIn(executeTime, begin1, end1);
+        System.out.println("isInNoon = " + isInNoon);
+        DateTime begin2 = DateUtil.parseTime("18:00:00");
+        DateTime end2 = DateUtil.parseTime("23:59:59");
+        boolean isInNight = DateUtil.isIn(executeTime, begin2, end2);
+        System.out.println("isInNight = " + isInNight);
     }
 }
