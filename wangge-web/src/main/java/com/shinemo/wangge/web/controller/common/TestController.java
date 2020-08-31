@@ -1,6 +1,8 @@
 package com.shinemo.wangge.web.controller.common;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.wangge.core.delay.DelayJob;
 import com.shinemo.wangge.core.delay.DelayJobService;
@@ -41,6 +43,11 @@ public class TestController {
     @GetMapping("/stallUpDelay")
     public ApiResult putJob(String id, String startTime) {
 
+        if (StrUtil.isBlank(startTime)) {
+            DateTime dateTime = DateUtil.offsetSecond(DateUtil.parseDateTime(DateUtil.now()), 5);
+            startTime = DateUtil.formatDateTime(dateTime);
+        }
+
         DelayJob delayJob = new DelayJob();
         HashMap<String, Object> map = new HashMap<>();
         map.put("id", id);
@@ -61,6 +68,13 @@ public class TestController {
         RDelayedQueue<DelayJob> delayedQueue = redissonClient.getDelayedQueue(blockingQueue);
         log.info("block队列大小:{}", blockingQueue.size());
         log.info("delay队列大小:{}", delayedQueue.size());
+
+        //blockingQueue.stream().forEach((q) -> System.out.println(q));
+
+        System.out.println("----");
+
+        delayedQueue.stream().forEach((q) -> System.out.println(q));
+
         return ApiResult.of(0);
     }
 
