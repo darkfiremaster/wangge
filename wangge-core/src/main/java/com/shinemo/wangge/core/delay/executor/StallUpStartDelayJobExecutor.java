@@ -36,7 +36,7 @@ public class StallUpStartDelayJobExecutor implements DelayJobExecutor {
 
     @Override
     public void execute(DelayJob job) {
-        log.info("开始执行任务:{}", job);
+        log.info("[摆摊开始提醒] 开始执行任务:{}", job);
         Map<String, Object> jobParams = job.getJobParams();
         Long activityId = MapUtil.getLong(jobParams, "id");
         Assert.notNull(activityId, "活动id不能为空");
@@ -44,6 +44,11 @@ public class StallUpStartDelayJobExecutor implements DelayJobExecutor {
         StallUpActivityQuery stallUpActivityQuery = new StallUpActivityQuery();
         stallUpActivityQuery.setId(activityId);
         StallUpActivity stallUpActivity = stallUpActivityMapper.get(stallUpActivityQuery);
+
+        if (stallUpActivity == null) {
+            log.error("[execute] 摆摊活动不存在,活动id:{}",activityId);
+            return;
+        }
 
         if (stallUpActivity.getStatus().equals(StallUpStatusEnum.PREPARE.getId())) {
             //发短信
@@ -54,9 +59,9 @@ public class StallUpStartDelayJobExecutor implements DelayJobExecutor {
             ArrayList<String> successMobiles = new ArrayList<>();
             int ret = smsService.sendSms(mobile, SmsTemplateEnum.STALL_UP_START.getTemplateId(), AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
             if (ret == 0) {
-                log.info("[sendSms] 发送短信成功,mobile:{}", mobile);
+                log.info("[sendSms] 发送短信成功,mobile:{},活动id:{},活动标题:{}", stallUpActivity.getMobile(), stallUpActivity.getId(), stallUpActivity.getTitle());
             } else {
-                log.error("[sendSms] 发送短信失败,mobile:{}", mobile);
+                log.info("[sendSms] 发送短信失败,mobile:{},活动id:{},活动标题:{}", stallUpActivity.getMobile(), stallUpActivity.getId(), stallUpActivity.getTitle());
             }
         }
 

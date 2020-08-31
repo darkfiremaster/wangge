@@ -28,4 +28,6 @@
 
     <bean id="cmmcBaseClient" class="com.shinemo.jace.api.cmmc.base.CmmcBaseClient"/>
 
+    <bean id="springUtil" class="cn.hutool.extra.spring.SpringUtil"/>
+
 </beans>

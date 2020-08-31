@@ -7,6 +7,7 @@ import com.shinemo.client.ace.Sms.SmsService;
 import com.shinemo.client.order.AppTypeEnum;
 import com.shinemo.smartgrid.enums.SmsTemplateEnum;
 import com.shinemo.todo.domain.TodoDO;
+import com.shinemo.todo.enums.TodoStatusEnum;
 import com.shinemo.todo.query.TodoQuery;
 import com.shinemo.wangge.core.delay.DelayJob;
 import com.shinemo.wangge.core.delay.DelayJobExecutor;
@@ -35,7 +36,7 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
 
     @Override
     public void execute(DelayJob job) {
-        log.info("[execute] 开始执行任务:{}", job);
+        log.info("[倒三角工单超时提醒] 开始执行任务:{}", job);
 
         Map<String, Object> jobParams = job.getJobParams();
         Long id = MapUtil.getLong(jobParams, "id");
@@ -46,11 +47,12 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
         TodoDO todoDO = thirdTodoMapper.get(todoQuery);
 
         if (todoDO == null) {
+            log.error("[execute] 倒三角工单不存在,id:{}",id);
             return;
         }
 
         //判断工单的状态,如果是已执行,则不发送
-        if (todoDO.getStatus().equals(0)) {
+        if (todoDO.getStatus().equals(TodoStatusEnum.NOT_FINISH.getId())) {
             // 发短信
             ArrayList<String> mobile = new ArrayList<>();
             mobile.add(todoDO.getOperatorMobile());
@@ -58,9 +60,9 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
             ArrayList<String> successMobiles = new ArrayList<>();
             int ret = smsService.sendSms(mobile, SmsTemplateEnum.DAOSANJIAO_WARN.getTemplateId(), AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
             if (ret == 0) {
-                log.info("[sendSms] 发送短信成功,mobile:{}", mobile);
+                log.info("[sendSms] 发送短信成功,mobile:{},工单id:{}", todoDO.getOperatorMobile(),todoDO.getThirdId());
             } else {
-                log.error("[sendSms] 发送短信失败,mobile:{}", mobile);
+                log.info("[sendSms] 发送短信失败,mobile:{},工单id:{}", todoDO.getOperatorMobile(),todoDO.getThirdId());
             }
         }
 

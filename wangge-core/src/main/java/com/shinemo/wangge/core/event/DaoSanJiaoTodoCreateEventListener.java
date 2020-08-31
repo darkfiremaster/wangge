@@ -48,7 +48,7 @@ public class DaoSanJiaoTodoCreateEventListener {
         String endTime1 = today + " 14:30:00";
         DateTime begin1 = DateUtil.parseDateTime(beginTime1);
         DateTime end1 = DateUtil.parseDateTime(endTime1);
-        boolean isIn = DateUtil.isIn(executeTime, begin1, end1);
+        boolean isInNoon = DateUtil.isIn(executeTime, begin1, end1);
 
         DateTime tomorrow = DateUtil.tomorrow();
         String tomorrowTime = DateUtil.formatDate(tomorrow);
@@ -56,10 +56,12 @@ public class DaoSanJiaoTodoCreateEventListener {
         String endTime2 = tomorrowTime + " 08:00:00";
         DateTime begin2 = DateUtil.parseDateTime(beginTime2);
         DateTime end2 = DateUtil.parseDateTime(endTime2);
-        boolean isIn2 = DateUtil.isIn(executeTime, begin2, end2);
+        boolean isInNight = DateUtil.isIn(executeTime, begin2, end2);
 
-        if (isIn || isIn2) {
+        if (isInNoon || isInNight) {
             //在休息时间内
+            log.info("[handleDaoSanJiaoTodoCreateEvent] 倒三角工单超时提醒时间在休息时间内,工单执行时间:{},isInNoon:{},isInNight:{}",
+                    todoDO.getOperatorTime(), isInNoon, isInNight);
             return;
         } else {
             DelayJob delayJob = new DelayJob();

@@ -3,7 +3,9 @@ package com.shinemo.wangge.core.schedule;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import com.shinemo.todo.dto.TodoCountDTO;
+import com.shinemo.wangge.core.task.YuJingTimeoutWarnTask;
 import com.shinemo.wangge.dal.mapper.ThirdTodoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,6 +32,11 @@ public class YuJingWarnSchedule {
     private ThirdTodoMapper thirdTodoMapper;
 
     /**
+     * 每个线程执行的任务数
+     */
+    private static final Integer TASK_SIZE = 100;
+
+    /**
      * 每天早上9点触发预警工单超时提醒
      */
     @Scheduled(cron = "0 0 9 * * ? ")
@@ -42,23 +49,25 @@ public class YuJingWarnSchedule {
         List<TodoCountDTO> todoCountDTOList = thirdTodoMapper.getYuJingTimeoutCount(startTime.toString(), endTime.toString());
 
         //模拟数据
-        for (int i = 1; i <= 15; i++) {
-            TodoCountDTO todoCountDTO = new TodoCountDTO();
-            todoCountDTO.setMobile("13588039023");
-            todoCountDTO.setTodoCount(i);
-            todoCountDTOList.add(todoCountDTO);
-        }
+        //if (EnvUtil.isDaily()) {
+        //    todoCountDTOList.clear();
+        //    for (int i = 1; i <= 10; i++) {
+        //        TodoCountDTO todoCountDTO = new TodoCountDTO();
+        //        todoCountDTO.setMobile("13588039023");
+        //        todoCountDTO.setTodoCount(i);
+        //        todoCountDTOList.add(todoCountDTO);
+        //    }
+        //}
 
         if (CollUtil.isEmpty(todoCountDTOList)) {
             log.info("[yujingTodoTimeoutWarn] data is null");
             return;
         }
 
-
         //2.使用多线程拆解任务,发短信
-        List<List<TodoCountDTO>> taskList = CollUtil.split(todoCountDTOList, 10);
-        ExecutorService executorService = Executors.newFixedThreadPool(taskList.size());
-        log.info("[yujingTodoTimeoutWarn] 需要发送的短信数量:{}, 需要创建线程数:{}", todoCountDTOList.size(), taskList.size());
+        List<List<TodoCountDTO>> taskList = CollUtil.split(todoCountDTOList, TASK_SIZE);
+        ExecutorService executorService = Executors.newFixedThreadPool(taskList.size(), ThreadUtil.newNamedThreadFactory("YuJing-Timeout-Warn-",false));
+        log.info("[yujingTodoTimeoutWarn] 预警工单超时提醒需要发送的短信数量:{}, 需要创建线程数:{}", todoCountDTOList.size(), taskList.size());
 
         List<CompletableFuture> futureList = new ArrayList<>();
         for (List<TodoCountDTO> todoCountDTOS : taskList) {
@@ -67,7 +76,7 @@ public class YuJingWarnSchedule {
         }
         CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0])).join();
         executorService.shutdown();
-        log.info("[yujingTodoTimeoutWarn] 发送短信完成,耗时:{}毫秒", System.currentTimeMillis() - start);
+        log.info("[yujingTodoTimeoutWarn] 预警工单超时提醒发送短信完成,耗时:{}毫秒", System.currentTimeMillis() - start);
 
     }
 
