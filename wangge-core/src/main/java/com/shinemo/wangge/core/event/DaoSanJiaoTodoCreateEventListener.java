@@ -44,23 +44,24 @@ public class DaoSanJiaoTodoCreateEventListener {
 
         //休息时间不做提醒:中午12:00-14:30；18:00-次日8:30
         //00:00-08:30 12:00-14:30 18:00-23:59 在这三个时间段内,不做提醒
-        executeTime = DateUtil.parseTime(executeTime.toTimeStr());
+        //只有12点半-16点 18:30:00-22:00之间的可以被通知
+        DateTime time = DateUtil.parseTime(executeTime.toTimeStr());
         DateTime begin = DateUtil.parseTime("00:00:00");
-        DateTime end = DateUtil.parseTime("08:00:00");
-        boolean isInMorning = DateUtil.isIn(executeTime, begin, end);
+        DateTime end = DateUtil.parseTime("08:30:00");
+        boolean isInMorning = DateUtil.isIn(time, begin, end);
 
         DateTime begin1 = DateUtil.parseTime("12:00:00");
         DateTime end1 = DateUtil.parseTime("14:30:00");
-        boolean isInNoon = DateUtil.isIn(executeTime, begin1, end1);
+        boolean isInNoon = DateUtil.isIn(time, begin1, end1);
 
         DateTime begin2 = DateUtil.parseTime("18:00:00");
         DateTime end2 = DateUtil.parseTime("23:59:59");
-        boolean isInNight = DateUtil.isIn(executeTime, begin2, end2);
+        boolean isInNight = DateUtil.isIn(time, begin2, end2);
 
         if (isInMorning || isInNoon || isInNight) {
             //在休息时间内
-            log.info("[handleDaoSanJiaoTodoCreateEvent] 倒三角工单超时提醒时间在休息时间内,工单执行时间:{},isInMorning:{},isInNoon:{},isInNight:{}",
-                    todoDO.getOperatorTime(), isInMorning, isInNoon, isInNight);
+            log.info("[handleDaoSanJiaoTodoCreateEvent] 倒三角工单超时提醒时间在休息时间内,工单ID:{}, 工单执行时间:{},isInMorning:{},isInNoon:{},isInNight:{}",
+                    todoDO.getThirdId(), todoDO.getOperatorTime(), isInMorning, isInNoon, isInNight);
             return;
         } else {
             DelayJob delayJob = new DelayJob();
