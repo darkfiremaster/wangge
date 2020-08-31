@@ -48,17 +48,6 @@ public class YuJingWarnSchedule {
         DateTime endTime = DateUtil.beginOfDay(DateUtil.tomorrow());
         List<TodoCountDTO> todoCountDTOList = thirdTodoMapper.getYuJingTimeoutCount(startTime.toString(), endTime.toString());
 
-        //模拟数据
-        //if (EnvUtil.isDaily()) {
-        //    todoCountDTOList.clear();
-        //    for (int i = 1; i <= 10; i++) {
-        //        TodoCountDTO todoCountDTO = new TodoCountDTO();
-        //        todoCountDTO.setMobile("13588039023");
-        //        todoCountDTO.setTodoCount(i);
-        //        todoCountDTOList.add(todoCountDTO);
-        //    }
-        //}
-
         if (CollUtil.isEmpty(todoCountDTOList)) {
             log.info("[yujingTodoTimeoutWarn] data is null");
             return;

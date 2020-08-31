@@ -23,10 +23,7 @@ import com.shinemo.sweepfloor.domain.query.SignRecordQuery;
 import com.shinemo.sweepvillage.domain.model.SweepVillageVisitRecordingDO;
 import com.shinemo.sweepvillage.domain.query.SweepVillageVisitRecordingQuery;
 import com.shinemo.wangge.core.config.StallUpConfig;
-import com.shinemo.wangge.core.schedule.EndGroupServiceDaySchedule;
-import com.shinemo.wangge.core.schedule.EndStallUpSchedule;
-import com.shinemo.wangge.core.schedule.EndStreetServiceSchedule;
-import com.shinemo.wangge.core.schedule.GetGridMobileSchedule;
+import com.shinemo.wangge.core.schedule.*;
 import com.shinemo.wangge.core.service.common.ExcelService;
 import com.shinemo.wangge.core.service.operate.LoginStatisticsService;
 import com.shinemo.wangge.core.service.sweepfloor.SweepFloorService;
@@ -111,6 +108,9 @@ public class BackdoorController {
 
     @Resource
     private EndStreetServiceSchedule endStreetServiceSchedule;
+
+    @Resource
+    private YuJingWarnSchedule yuJingWarnSchedule;
 
     private final AppTypeEnum appType = AppTypeEnum.GUANGXI;
 
@@ -357,6 +357,12 @@ public class BackdoorController {
     @GetMapping("sweepStreet/autoEnd")
     public String sweepStreetEnd() {
         endStreetServiceSchedule.execute();
+        return "success\n";
+    }
+
+    @GetMapping("todo/yuJingTimeOutWarn")
+    public String yujingTimeOutWarn() {
+        yuJingWarnSchedule.yujingTodoTimeoutWarn();
         return "success\n";
     }
 
