@@ -504,7 +504,7 @@ public class SweepStreetServiceImpl implements SweepStreetService {
         formData.put("mobile", SmartGridContext.getMobile());
         formData.put("groupid",merchantId);
         formData.put("timestamp",timestamp);
-        formData.put("menuid","groupinfo");
+        formData.put("menuid","businessinfo");
         String[] split = StrUtil.split(location, ",");
         formData.put("longitude",split[0]);
         formData.put("latitude",split[1]);

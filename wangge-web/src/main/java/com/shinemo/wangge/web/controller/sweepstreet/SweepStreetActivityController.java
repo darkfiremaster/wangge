@@ -36,8 +36,8 @@ class SweepStreetActivityController {
     @Resource
     private SweepStreetMarketService sweepStreetMarketService;
 
-    @Value("${sweep.street.mock.location}")
-    private String locationMock;
+//    @Value("${sweep.street.mock.location}")
+//    private String locationMock;
     /**
      * 集团服务日业务查询首页
      *
@@ -180,13 +180,13 @@ class SweepStreetActivityController {
                                       @RequestParam String location,
                                       @RequestParam Integer pageSize,
                                       @RequestParam Integer currentPage) {
-        if(EnvUtil.isDaily()){
-            System.out.println(SmartGridContext.getMobile());
-            if(SmartGridContext.getMobile().equals("15958032925")){
-                location = locationMock;
-                SmartGridContext.setMobile("13607713224");
-            }
-        }
+//        if(EnvUtil.isDaily()){
+//            System.out.println(SmartGridContext.getMobile());
+//            if(SmartGridContext.getMobile().equals("15958032925")){
+//                location = locationMock;
+//                SmartGridContext.setMobile("13607713224");
+//            }
+//        }
         return sweepStreetService.getMerchantList(HuaweiMerchantRequest.builder()
                 .queryParam(queryParam)
                 .location(location)

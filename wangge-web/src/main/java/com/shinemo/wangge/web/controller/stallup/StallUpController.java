@@ -295,6 +295,12 @@ public class StallUpController {
 		);
 	}
 
+	@GetMapping("importRegion/reloadCache")
+	public String reload() {
+		stallUpService.reload();
+		return "success\n";
+	}
+
 	/**
 	 * 获取报坐标5000米内的重点小区
 	 * @param location
@@ -307,10 +313,16 @@ public class StallUpController {
 		return stallUpService.getImportRegion(location);
 	}
 
-	@GetMapping("importRegion/reloadCache")
-	public String reload() {
-		stallUpService.reload();
-		return "success\n";
+	/**
+	 * 根据活动子id查询早点小区信息
+	 * @param activityId
+	 * @return
+	 */
+	@GetMapping("getImportRegionByActivity")
+	@SmIgnore
+	public ApiResult<List<StallUpImportantRegion>> getImportRegionByActivity(@RequestParam Long activityId) {
+		Assert.notNull(activityId, "ActivityId is null");
+		return stallUpService.getImportRegionByActivity(activityId);
 	}
 
 	@GetMapping("getDetail")
