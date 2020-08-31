@@ -59,7 +59,9 @@ public class GroupSerDayRedirctServiceImpl implements GroupSerDayRedirctService 
         formData.put("mobile", SmartGridContext.getMobile());
         formData.put("groupid",groupId);
         formData.put("timestamp",timestamp);
-        formData.put("menuid","groupinfo");
+        formData.put("menuid","businessinfo");
+        formData.put("longitude","businessinfo");
+        formData.put("latitude","businessinfo");
 
         log.info("[getRedirctGrouSerUrl] 请求参数 formData:{}", formData);
         String paramStr = EncryptUtil.buildParameterString(formData);
