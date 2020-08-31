@@ -33,6 +33,8 @@ public enum ThirdHandlerTypeEnum {
     JI_HE(14, "稽核工作", null),
     DANSANJIAO_SUPPORT(15, "倒三角支撑", DaosanjiaoSupportParams.class),
     OAO_SERVICE(16, "OAO上门服务", OAOServiceParams.class),
+    GROUP_SERVICE_DAY_SMS_HOT(17, "集团服务日短信预热", null), //使用接口调用
+    MA_DIAN_CHANNEL_EXPAND(18, "码店渠道拓展", null),
     ;
     @Getter
     private Integer type;

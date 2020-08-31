@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.service.stallup.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -1227,20 +1228,26 @@ public class StallUpServiceImpl implements StallUpService {
 //            redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
 //        }
 
+        Map<String, StallUpImportantRegion> importantRegionMap=stallUpConfig.getConfig().getImportantRegionMap();
 
-        /*获取所有重点小区数据*/
-        StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
-        query.setPageEnable(false);
-        List<StallUpImportantRegion> redisList= stallUpImportantRegionMapper.find(query);
+        if (CollectionUtils.isEmpty(importantRegionMap)){
+            /*获取所有重点小区数据*/
+            StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
+            query.setPageEnable(false);
+            List<StallUpImportantRegion> importantList= stallUpImportantRegionMapper.find(query);
+            importantRegionMap=importantList.stream().collect(Collectors.toMap(StallUpImportantRegion::getCommunityId,StallUpImportantRegion->StallUpImportantRegion));
+            stallUpConfig.getConfig().setImportantRegionMap(importantRegionMap);
+        }
 
         List<StallUpImportantRegion> resultList=new ArrayList<>();
-        for (StallUpImportantRegion importantRegion: redisList) {
+        for (Map.Entry<String, StallUpImportantRegion>  regionMap: importantRegionMap.entrySet()) {
+            StallUpImportantRegion importantRegion=regionMap.getValue();
             if (StringUtils.isEmpty(importantRegion.getLocation())){
                 continue;
             }
             /*计算距离*/
             Integer distance=DistanceUtils.getDistance(importantRegion.getLocation(),location);
-            /*5000米内的小区全部返回*/
+            /*1000米内的小区全部返回*/
             if (distance<=1000){
                 resultList.add(importantRegion);
             }
@@ -1250,17 +1257,37 @@ public class StallUpServiceImpl implements StallUpService {
 
     @Override
     public void reload() {
-        /*删除缓存*/
-        redisService.del("stallUpImportantRegion");
-
-        /*更新缓存*/
+        /*获取所有重点小区数据*/
         StallUpImportantRegionQuery query=new StallUpImportantRegionQuery();
         query.setPageEnable(false);
-        List<StallUpImportantRegion> redisList= stallUpImportantRegionMapper.find(query);
-        /*设置2天缓存*/
-        redisService.set("stallUpImportantRegion",JSONUtil.toJsonStr(redisList),48*60*60);
+        List<StallUpImportantRegion> importantList= stallUpImportantRegionMapper.find(query);
+        Map<String, StallUpImportantRegion> importantRegionMap=importantList.stream().collect(Collectors.toMap(StallUpImportantRegion::getCommunityId,StallUpImportantRegion->StallUpImportantRegion));
+        /*刷新缓存*/
+        stallUpConfig.getConfig().setImportantRegionMap(importantRegionMap);
     }
 
+    @Override
+    public ApiResult<List<StallUpImportantRegion>> getImportRegionByActivity(Long activityId) {
+        /*查询活动下的小区信息*/
+        StallUpCommunityQuery communityQuery=new StallUpCommunityQuery();
+        communityQuery.setChildActivityId(activityId);
+        List<StallUpCommunityDO> communityDOList=stallUpCommunityMapper.findCommunityByChildActivityId(communityQuery);
+        if (CollectionUtil.isEmpty(communityDOList)){
+            return ApiResult.of(0,new ArrayList<>());
+        }
+        /*根据小区编号比对是否存在早点小区*/
+        Map<String, StallUpImportantRegion> importantRegionMap=stallUpConfig.getConfig().getImportantRegionMap();
+        List<StallUpImportantRegion> resultList=new ArrayList<>();
+        if (!CollectionUtils.isEmpty(importantRegionMap)){
+            for (StallUpCommunityDO communityDO:communityDOList) {
+                if (importantRegionMap.get(communityDO.getCommunityId())!=null){
+                    resultList.add(importantRegionMap.get(communityDO.getCommunityId()));
+                }
+            }
+        }
+
+        return ApiResult.of(0,resultList);
+    }
 
 
     /**

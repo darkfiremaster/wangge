@@ -20,4 +20,11 @@ public interface StallUpCommunityMapper extends BaseMapper<StallUpCommunityQuery
 
     List<StallUpCommunityDO> findRecentCommunity(StallUpCommunityQuery query);
 
+    /**
+     * 根据活动子id查询所有小区
+     * @param query
+     * @return
+     */
+    List<StallUpCommunityDO> findCommunityByChildActivityId(StallUpCommunityQuery query);
+
 }
