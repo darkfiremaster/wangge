@@ -33,7 +33,7 @@ public class DelayJobTimer {
         RBlockingQueue<DelayJob> blockingQueue = client.getBlockingQueue(delayJobsTag, JsonJacksonCodec.INSTANCE);
         //下面两行 必不可少 防止出现 服务器重启后，延迟队列take数据阻塞，不执行，必须等到下一个内容offer时，队列才会把阻塞的消息全部处理掉
         RDelayedQueue<DelayJob> delayedQueue = client.getDelayedQueue(blockingQueue);
-        delayedQueue.offer(null, 1, TimeUnit.SECONDS);
+        //delayedQueue.offer(null, 1, TimeUnit.SECONDS);
 
         new Thread(() -> {
             while (true) {
