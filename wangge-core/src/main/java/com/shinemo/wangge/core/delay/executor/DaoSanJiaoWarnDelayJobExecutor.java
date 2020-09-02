@@ -60,10 +60,12 @@ public class DaoSanJiaoWarnDelayJobExecutor implements DelayJobExecutor {
             ArrayList<String> successMobiles = new ArrayList<>();
             int ret = smsService.sendSms(mobile, SmsTemplateEnum.DAOSANJIAO_WARN.getTemplateId(), AppTypeEnum.GXNB.getId(), contents, successMobiles, new AaceContext());
             if (ret == 0) {
-                log.info("[sendSms] 发送短信成功,mobile:{},工单id:{}", todoDO.getOperatorMobile(),todoDO.getThirdId());
+                log.info("[sendSms] 发送短信成功,mobile:{},工单id:{}", todoDO.getOperatorMobile(), todoDO.getThirdId());
             } else {
-                log.info("[sendSms] 发送短信失败,mobile:{},工单id:{}", todoDO.getOperatorMobile(),todoDO.getThirdId());
+                log.info("[sendSms] 发送短信失败,mobile:{},工单id:{}", todoDO.getOperatorMobile(), todoDO.getThirdId());
             }
+        } else {
+            log.info("[execute] 工单状态为已执行, 不发送短信. 工单id:{}, 手机号:{}", todoDO.getThirdId(), todoDO.getOperatorMobile());
         }
 
 

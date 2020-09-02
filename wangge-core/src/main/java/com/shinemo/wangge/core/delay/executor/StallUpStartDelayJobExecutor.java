@@ -46,7 +46,7 @@ public class StallUpStartDelayJobExecutor implements DelayJobExecutor {
         StallUpActivity stallUpActivity = stallUpActivityMapper.get(stallUpActivityQuery);
 
         if (stallUpActivity == null) {
-            log.error("[execute] 摆摊活动不存在,活动id:{}",activityId);
+            log.error("[execute] 摆摊活动不存在,活动id:{}", activityId);
             return;
         }
 
@@ -63,6 +63,8 @@ public class StallUpStartDelayJobExecutor implements DelayJobExecutor {
             } else {
                 log.info("[sendSms] 发送短信失败,mobile:{},活动id:{},活动标题:{}", stallUpActivity.getMobile(), stallUpActivity.getId(), stallUpActivity.getTitle());
             }
+        } else {
+            log.info("[execute] 活动状态不匹配, 不发送短信. 活动Id:{},活动状态:{}", stallUpActivity.getId(), StallUpStatusEnum.getById(stallUpActivity.getStatus()).getName());
         }
 
 
