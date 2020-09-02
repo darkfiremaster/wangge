@@ -1,5 +1,6 @@
 package com.shinemo.wangge.core.schedule;
 
+import com.shinemo.client.util.EnvUtil;
 import com.shinemo.client.util.GsonUtil;
 import com.shinemo.common.tools.result.ApiResult;
 import com.shinemo.my.redis.service.RedisService;
@@ -53,6 +54,10 @@ public class GetGridMobileSchedule {
 			return;
 		}
 		List<String> list = result.getData();
+		if(EnvUtil.isDaily()){
+			list.add("15958032925");
+			list.add("15226536886");
+		}
 
 		redisService.set(WANGGE_USER_MOBILE_LIST_KEY, GsonUtil.toJson(list),expire);
 		String separator = System.getProperty("line.separator");
