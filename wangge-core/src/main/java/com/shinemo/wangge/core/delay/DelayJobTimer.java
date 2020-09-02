@@ -45,7 +45,7 @@ public class DelayJobTimer {
                     }
                     delayJobServiceExecutor.execute(new ExecutorDelayTask(context, job));
                 } catch (Exception e) {
-                    log.error("[startDelayJobTimer] 执行延迟任务出现异常,异常原因:{}", e.getMessage());
+                    log.error("[startDelayJobTimer] 执行延迟任务出现异常,异常原因:{}", e.getMessage(), e);
                     try {
                         TimeUnit.SECONDS.sleep(60);
                     } catch (InterruptedException ex) {
