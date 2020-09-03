@@ -277,12 +277,12 @@ public class HuaWeiTest {
         log.info("header:{}", header);
 
         Map<String,Object> map = new HashMap<>();
-        map.put("visitId","126");
+        map.put("visitId","127");
         map.put("activityId", "123");
         map.put("groupId","123");
         map.put("successFlag","Y");
         map.put("complaintFlag","y");
-        map.put("bizType","qwe");
+//        map.put("bizType","qwe");
         map.put("tvBoxExpireTime",133);
         String param = GsonUtils.toJson(map);
         log.info("param:{}", param);
