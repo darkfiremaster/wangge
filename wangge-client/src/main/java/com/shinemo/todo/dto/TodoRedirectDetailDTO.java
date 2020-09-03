@@ -22,4 +22,13 @@ public class TodoRedirectDetailDTO {
     private Integer redirectpage=0;
 
     private Long timestamp;
+
+    private String title;
+
+    private String address;
+
+    private String communityname;
+    private String communityid;
+    private String communityaddress;
+    private String communitylocation;
 }

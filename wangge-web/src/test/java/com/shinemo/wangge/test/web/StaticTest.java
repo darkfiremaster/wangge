@@ -4,13 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.http.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shinemo.smartgrid.utils.GsonUtils;
 import com.shinemo.stallup.domain.utils.EncryptUtil;
 import com.shinemo.stallup.domain.utils.Md5Util;
-import com.shinemo.stallup.domain.utils.SubTableUtils;
 import com.shinemo.todo.domain.TodoDO;
 import com.shinemo.todo.dto.TodoRedirectDetailDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +19,6 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,11 +33,18 @@ public class StaticTest {
 
     @Test
     public void testSubTable() {
-        String tableIndexByMonth = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.of(2020, 7, 1).minusDays(1));
-        System.out.println("tableIndexByMonth = " + tableIndexByMonth);
+        //String tableIndexByMonth = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.of(2020, 7, 1).minusDays(1));
+        //System.out.println("tableIndexByMonth = " + tableIndexByMonth);
+        //
+        //tableIndexByMonth = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.of(2020, 6, 29).plusDays(2));
+        //System.out.println("tableIndexByMonth = " + tableIndexByMonth);
 
-        tableIndexByMonth = SubTableUtils.getTableIndexByOnlyMonth(LocalDate.of(2020, 6, 29).plusDays(2));
-        System.out.println("tableIndexByMonth = " + tableIndexByMonth);
+    }
+
+    @Test
+    public void testDecode() {
+        Map<String, String> stringStringMap = HttpUtil.decodeParamMap("communitylocation=108.245974%2C22.835926&redirectpage=1&address=%E5%8D%97%E5%AE%81%E8%A5%BF%E4%B9%A1%E5%A1%98%E5%8C%BA%E8%A5%BF%E4%B9%A1%E5%A1%98%E5%8C%BA%E5%9F%8E%E5%8C%BA%E5%A4%A7%E5%AD%A6%E4%B8%9C%E8%B7%AF%E5%B9%BF%E8%A5%BF%E7%BB%8F%E6%B5%8E%E7%AE%A1%E7%90%86%E5%B9%B2%E9%83%A8%E5%AD%A6%E9%99%A2%28%E5%B0%8F%E5%BE%AE%29105%E5%8F%B7&thirdid=DK202006240707281&communityname=%E5%B9%BF%E8%A5%BF%E7%BB%8F%E6%B5%8E%E7%AE%A1%E7%90%86%E5%B9%B2%E9%83%A8%E5%AD%A6%E9%99%A2%28%E5%B0%8F%E5%BE%AE%29&mobile=13588039023&communityaddress=%E5%8D%97%E5%AE%81%E8%A5%BF%E4%B9%A1%E5%A1%98%E5%8C%BA%E8%A5%BF%E4%B9%A1%E5%A1%98%E5%8C%BA%E5%9F%8E%E5%8C%BA%E5%A4%A7%E5%AD%A6%E4%B8%9C%E8%B7%AF%E5%B9%BF%E8%A5%BF%E7%BB%8F%E6%B5%8E%E7%AE%A1%E7%90%86%E5%B9%B2%E9%83%A8%E5%AD%A6%E9%99%A2%28%E5%B0%8F%E5%BE%AE%29105%E5%8F%B7&thirdtype=5&communityid=BUSINESS_COMMUNITY-ff8080815fa666f0015fc7ca4dd633bd&title=163%E5%8F%B7%E6%9C%BA%E8%80%95%E9%98%9F%E5%B0%8F%E5%8C%BA%EF%BC%88%E9%AB%98%E4%BB%B7%E4%BD%8E%E5%8D%A0%EF%BC%89%E5%AE%BD%E5%B8%A6%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E9%A2%84%E8%AD%A6&timestamp=1599120604573&token=3cc201d4-f8b7-44ca-8852-2c5855cee6d9","UTF-8");
+        System.out.println("stringListMap = " + stringStringMap);
     }
 
     @Test

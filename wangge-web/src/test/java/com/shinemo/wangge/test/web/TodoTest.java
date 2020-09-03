@@ -2,6 +2,7 @@ package com.shinemo.wangge.test.web;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -30,10 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,12 +57,21 @@ public class TodoTest {
 
     @Test
     public void testGetRedirectUrl() {
-        String seed = "ffd40e661eb946f48fd3c759e6b8ef0b";
+        String seed = "a8537aaefdd489789c07ae8a9760203";
         String mobile = "13588039023";
-        String token = "xxxx";
-        String thirdId = "6c5127a3-9f1c-11ea-a34d-5254001a0735";
-        Integer thirdType=1;
+        String token = String.valueOf(UUID.randomUUID());
+        String thirdId = "DK202006240707281";
+        Integer thirdType=5;
         Integer redirectPage=1;
+
+        //摆摊标题,地址,小区信息
+        String title = "163号机耕队小区（高价低占）宽带目标用户预警";
+        String address = "南宁西乡塘区西乡塘区城区大学东路广西经济管理干部学院(小微)105号";
+        String communityName = "广西经济管理干部学院(小微)";
+        String communityId = "BUSINESS_COMMUNITY-ff8080815fa666f0015fc7ca4dd633bd";
+        String communityAddress = "南宁西乡塘区西乡塘区城区大学东路广西经济管理干部学院(小微)105号";
+        String communityLocation = "108.245974,22.835926";
+
         long timestamp = System.currentTimeMillis();
         Map<String, Object> formData = new HashMap<>();
         formData.put("mobile", mobile);
@@ -73,6 +80,13 @@ public class TodoTest {
         formData.put("token", token);
         formData.put("thirdType", thirdType);
         formData.put("redirectPage", redirectPage);
+        formData.put("title", title);
+        formData.put("address", address);
+        formData.put("communityName", communityName);
+        formData.put("communityId", communityId);
+        formData.put("communityAddress", communityAddress);
+        formData.put("communityLocation", communityLocation);
+
         String paramStr = EncryptUtil.buildParameterString(formData);
         //1、加密
         String encryptData = EncryptUtil.encrypt(paramStr, seed);

@@ -82,7 +82,7 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
     private Map<Integer, String> seedMap = new ConcurrentHashMap<>();
 
     private static final String USER_INFO_KEY = "sm_smartgrid_user_info_%s";
-    private static final Integer EXPIRE_TIME =  60 * 60;
+    private static final Integer EXPIRE_TIME = 60 * 60;
 
     @PostConstruct
     public void init() {
@@ -130,12 +130,13 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
         }
 
         String decryptData = EncryptUtil.decrypt(todoRedirectDTO.getParamData(), seed);
-        log.info("[redirectPage]解密后的参数decryptData:{}", decryptData);
         Map<String, String> map = HttpUtil.decodeParamMap(decryptData, CharsetUtil.charset("UTF-8"));
+        log.info("[redirectPage]解密后的参数decryptData:{}", map);
         TodoRedirectDetailDTO todoRedirectDetailDTO = BeanUtil.mapToBean(map, TodoRedirectDetailDTO.class, false);
         log.info("[redirectPage]map转化为bean后的的参数todoRedirectDetailDTO:{}", todoRedirectDetailDTO);
 
         Integer redirectPage = todoRedirectDetailDTO.getRedirectpage();
+
 
         if (redirectPage.equals(1)) {
             //跳转摆摊页面 工单id不能为空
@@ -158,7 +159,10 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
                 log.info("[redirectPage] 跳转首页:{}", smartGridUrlPropertity.getIndexUrl());
                 response.sendRedirect(smartGridUrlPropertity.getIndexUrl());
             } else if (redirectPage.equals(1)) {
-                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "?orderId=" + todoRedirectDetailDTO.getThirdid();
+                //华为预警工单跳转过来需要带上工单ID,摆摊的标题、小区、摆摊地点
+                String params = getStallUpRedirectParam(todoRedirectDetailDTO);
+                String createStallupUrl = smartGridUrlPropertity.getCreateStallupUrl() + "?"+params;
+
                 log.info("[redirectPage] 跳新建摆摊页面:{}", createStallupUrl);
                 response.sendRedirect(createStallupUrl);
             } else {
@@ -167,9 +171,42 @@ public class TodoRedirectUrlServiceImpl implements TodoRedirectUrlService {
             }
         } catch (Exception e) {
             log.error("[redirectPage] 页面跳转异常,request:{},异常原因:{}", todoRedirectDTO, e.getMessage(), e);
+            return ApiResult.fail("跳转页面异常", 500);
         }
         log.info("[redirectPage] 跳转成功");
         return ApiResult.of(0);
+    }
+
+    private String getStallUpRedirectParam(TodoRedirectDetailDTO todoRedirectDetailDTO) {
+        HashMap<String, String> paramsMap = new HashMap<>();
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getThirdid())) {
+            paramsMap.put("orderId", todoRedirectDetailDTO.getThirdid());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getTitle())) {
+            paramsMap.put("title", todoRedirectDetailDTO.getTitle());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getAddress())) {
+            paramsMap.put("address", todoRedirectDetailDTO.getAddress());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getCommunityid())) {
+            paramsMap.put("communityId", todoRedirectDetailDTO.getCommunityid());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getCommunityname())) {
+            paramsMap.put("communityName", todoRedirectDetailDTO.getCommunityname());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getCommunityaddress())) {
+            paramsMap.put("communityAddress", todoRedirectDetailDTO.getCommunityaddress());
+        }
+
+        if (StrUtil.isNotBlank(todoRedirectDetailDTO.getCommunitylocation())) {
+            paramsMap.put("communityLocation", todoRedirectDetailDTO.getCommunitylocation());
+        }
+        return HttpUtil.toParams(paramsMap);
     }
 
     private void setUserInfoCookie(HttpServletRequest request, HttpServletResponse response, UserInfoCache userInfoCache) {
